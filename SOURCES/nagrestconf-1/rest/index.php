@@ -1,0 +1,2427 @@
+<?php
+# Copyright(C) 2010 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#
+#    This software is provided under the terms of the GNU
+#    General Public License (GPL), as published at: 
+#    http://www.gnu.org/licenses/gpl.html .
+#
+#
+# File:     index.php
+# Author:   Mark Clarkson
+# Date:     11 Sep 2010
+# Version:  0.10
+# Modified:
+#           201X-0X-XX Mark Clarkson
+#           * XXX
+#
+# Purpose:  This a utility to help with creation of Nagios configuration
+#           files.
+#
+# Notes:
+#        TODO !!! Secure where name=value items are sent !!!
+#
+#        ERROR codes created with:
+#
+# awk 'BEGIN { a=1000; } /ERROR/ { gsub( "ERROR [0-9]*", "ERROR "a );
+#     print $0; a=a+1; } !/ERROR/ { print $0; }' \
+#     /var/www/html/rest/index.php > new
+#
+
+/*
+ * Client Access
+ * -------------
+ * POST with curl (-i shows headers):
+ *   curl --noproxy 127.0.0.1 -i -X POST \
+ *     -d 'json={"filter":"bob"}' \
+ *     http://127.0.0.1:9091/rest/adaf
+ *
+ * GET with curl:
+ *   curl -i -X GET 'http://192.168.2.99/rest/a/b?json=\{"filter":"bob"\}'
+ * 
+ * Security
+ * --------
+ * On the server add /etc/httpd/conf.d/rest.conf:
+
+<Directory /var/www/html/rest/>
+  AllowOverride All
+  AuthName "REST Access"
+  AuthType Basic
+  AuthUserFile /etc/nagios/htpasswd.users
+  Require valid-user
+</Directory>
+
+ * Then insert '-n' to curl command and use a ~/.netrc with mode 0600:
+ * Example ~/.netrc:
+
+machine 192.168.2.99 login nagiosadmin password Password
+
+ * URL Rewriting
+ * -------------
+ * Add a /var/www/html/rest/.htaccess file:
+
+Options +FollowSymLinks
+RewriteEngine on
+RewriteRule ^.*$ index.php
+
+ */
+
+define( 'NAGCTL_CMD', "/usr/bin/nagctl" );
+
+# ---------------------------------------------------------------------------
+class RestServer
+# ---------------------------------------------------------------------------
+{
+    private $request_vars;
+    private $data;
+    private $jadata;
+    private $http_accept;
+    private $method;
+    private $cmd;
+    private $subcmd;
+
+    # ------------------------------------------------------------------------
+    public function __construct()
+    # ------------------------------------------------------------------------
+    {
+        $this->request_vars     = array();
+        $this->data             = '';
+        $this->http_accept      =
+            (strpos($_SERVER['HTTP_ACCEPT'], 'json')) ? 'json' : 'xml';
+        $this->method           = 'get';
+
+        $request=stristr($_SERVER["REQUEST_URI"],
+            '?'.$_SERVER["QUERY_STRING"],true);
+        if( ! $request ) { $request=$_SERVER["REQUEST_URI"]; }
+        $parts = explode('/', $request);
+        $numparts = count($parts);
+        /*
+         * Accepts URL path of the form:
+         *   /rest/show/hostgroups?filter=all
+         *          |      |         |
+         *         cmd   subcmd    cmdargs
+         */
+        if( $numparts == 4 ) {
+            $this->cmd = $parts[$numparts-2];
+            $this->subcmd = $parts[$numparts-1];
+        } else {
+            $this->sendResponse( 404 );
+        }
+
+        $this->processRequest();
+    }
+
+    # ------------------------------------------------------------------------
+    public function setSubcmd( $subcmd )
+    # ------------------------------------------------------------------------
+    {
+        $this->subcmd = $subcmd;
+    }
+
+    # ------------------------------------------------------------------------
+    public function setCmd( $cmd )
+    # ------------------------------------------------------------------------
+    {
+        $this->cmd = $cmd;
+    }
+
+    # ------------------------------------------------------------------------
+    public function setData($data)
+    # ------------------------------------------------------------------------
+    {
+        $this->data = $data;
+    }
+
+    # ------------------------------------------------------------------------
+    public function setMethod($method)
+    # ------------------------------------------------------------------------
+    {
+        $this->method = $method;
+    }
+
+    # ------------------------------------------------------------------------
+    public function setRequestVars($request_vars)
+    # ------------------------------------------------------------------------
+    {
+        $this->request_vars = $request_vars;
+    }
+
+    # ------------------------------------------------------------------------
+    public function getCmd( )
+    # ------------------------------------------------------------------------
+    {
+        return $this->cmd;
+    }
+
+    # ------------------------------------------------------------------------
+    public function getSubcmd( )
+    # ------------------------------------------------------------------------
+    {
+        return $this->subcmd;
+    }
+
+    # ------------------------------------------------------------------------
+    public function getJAData()
+    # ------------------------------------------------------------------------
+    {
+        return $this->jadata;
+    }
+
+    # ------------------------------------------------------------------------
+    public function getData()
+    # ------------------------------------------------------------------------
+    {
+        return $this->data;
+    }
+
+    # ------------------------------------------------------------------------
+    public function getMethod()
+    # ------------------------------------------------------------------------
+    {
+        return $this->method;
+    }
+
+    # ------------------------------------------------------------------------
+    public function getHttpAccept()
+    # ------------------------------------------------------------------------
+    {
+        return $this->http_accept;
+    }
+
+    # ------------------------------------------------------------------------
+    public function getRequestVars()
+    # ------------------------------------------------------------------------
+    {
+        return $this->request_vars;
+    }
+
+    # ------------------------------------------------------------------------
+    public function processRequest()
+    # ------------------------------------------------------------------------
+    {
+        $request_method = strtolower($_SERVER['REQUEST_METHOD']);
+        $data           = array();
+
+        switch ($request_method)
+        {
+            case 'head':
+            case 'get':
+                $data = $_GET;
+                break;
+            case 'post':
+                $data = $_POST;
+                break;
+            case 'put':
+                parse_str(file_get_contents('php://input'), $put_vars);
+                $data = $put_vars;
+                break;
+        }
+
+        $this->setMethod($request_method);
+
+        $this->setRequestVars($data);
+
+        if(isset($data['json']))
+        {
+            $this->setData(json_decode($data['json']));
+            $this->jadata = json_decode($data['json'],True);
+
+            foreach( $this->jadata as &$item ) {
+               $item = strtr( $item, array(
+                              #"\\" => "\\\\",
+                              "`" => "`",
+                              "," => "`",
+                              #'"' => '"'
+                              ) );
+            }
+        }
+    }
+
+    # ------------------------------------------------------------------------
+    public function sendResponse( $status = 200, $body = '', 
+                                  $content_type = 'text/html')
+    # ------------------------------------------------------------------------
+    {
+        $status_header = 'HTTP/1.1 ' . $status . ' ' .
+                         $this->getStatusCodeMessage($status);
+        header($status_header);
+        header('Content-type: ' . $content_type);
+
+        if($body != '')
+        {
+            echo $body . "\n";
+            exit;
+        }
+        else
+        {
+            $message = '';
+
+            switch($status)
+            {
+                case 401:
+                    $message = 'You must be authorized to view this page.';
+                    break;
+                case 404:
+                    $message = 'The requested URL ' . $_SERVER['REQUEST_URI'] .
+                               ' was not found.';
+                    break;
+                case 500:
+                    $message = 'The server encountered an error processing ' .
+                               'your request.';
+                    break;
+                case 501:
+                    $message = 'The requested method is not implemented.';
+                    break;
+            }
+
+            echo $message;
+
+            exit;
+        }
+    }
+
+
+    # ------------------------------------------------------------------------
+    public function getStatusCodeMessage($status)
+    # ------------------------------------------------------------------------
+    {
+        $codes = Array(
+            100 => 'Continue',
+            101 => 'Switching Protocols',
+            200 => 'OK',
+            201 => 'Created',
+            202 => 'Accepted',
+            203 => 'Non-Authoritative Information',
+            204 => 'No Content',
+            205 => 'Reset Content',
+            206 => 'Partial Content',
+            300 => 'Multiple Choices',
+            301 => 'Moved Permanently',
+            302 => 'Found',
+            303 => 'See Other',
+            304 => 'Not Modified',
+            305 => 'Use Proxy',
+            306 => '(Unused)',
+            307 => 'Temporary Redirect',
+            400 => 'Bad Request',
+            401 => 'Unauthorized',
+            402 => 'Payment Required',
+            403 => 'Forbidden',
+            404 => 'Not Found',
+            405 => 'Method Not Allowed',
+            406 => 'Not Acceptable',
+            407 => 'Proxy Authentication Required',
+            408 => 'Request Timeout',
+            409 => 'Conflict',
+            410 => 'Gone',
+            411 => 'Length Required',
+            412 => 'Precondition Failed',
+            413 => 'Request Entity Too Large',
+            414 => 'Request-URI Too Long',
+            415 => 'Unsupported Media Type',
+            416 => 'Requested Range Not Satisfiable',
+            417 => 'Expectation Failed',
+            500 => 'Internal Server Error',
+            501 => 'Not Implemented',
+            502 => 'Bad Gateway',
+            503 => 'Service Unavailable',
+            504 => 'Gateway Timeout',
+            505 => 'HTTP Version Not Supported'
+        );
+
+        return (isset($codes[$status])) ? $codes[$status] : '';
+    }
+}
+
+# ---------------------------------------------------------------------------
+class WriteCmd
+# ---------------------------------------------------------------------------
+# Create a command that modifies the csv files.
+{
+    private $newcmdline;          /* the command, or an error message */
+    private $retcode;             /* the http return code to send */
+    private $cmd;                 /* The user command */
+    private $subcmd;              /* The user sub-command */
+    private $jsondata;            /* The user json data */
+    private $jsonadata;           /* The user json data */
+    private $subcmdtype;
+    // Add/Modify/Delete
+    const HOSTTEMPLATES = 1;
+    const SERVICETEMPLATES = 2;
+    const HOSTS = 3;
+    const SERVICES = 4;
+    const CONTACTS = 5;
+    const CONTACTGROUPS = 6;
+    const HOSTGROUPS = 7;
+    const SERVICESETS = 8;
+    const SERVICEGROUPS = 9;
+    const TIMEPERIODS = 10;
+    const COMMANDS = 11;
+    // Restart
+    const RESTART_NAGIOS = 1;
+    // Apply
+    const APPLY_NAGIOSCONFIG = 1;
+    const APPLY_NAGIOSLASTGOODCONFIG = 2;
+    // Pipecmd
+    const PIPECMD_ENABLEHOSTSVCCHECKS = 1;
+    const PIPECMD_DISABLEHOSTSVCCHECKS = 2;
+    const PIPECMD_DISABLESVCCHECK = 3;
+    const PIPECMD_ENABLESVCCHECK = 4;
+
+    private $cmdtype;
+    const CMD_ADD = 1;
+    const CMD_DELETE = 2;
+    const CMD_MODIFY = 3;
+    const CMD_RESTART = 4;
+    const CMD_APPLY = 5;
+    const CMD_PIPECMD = 6;
+
+    # ------------------------------------------------------------------------
+    public function __construct( $cmd, $subcmd, $jsondata, $jsonarrdata )
+    # ------------------------------------------------------------------------
+    {
+        $this->retcode = 200;
+
+        $this->cmd = $cmd;
+        if( ! $this->setCmdType() ) {
+            $this->newcmdline =
+                "ERROR 1000: Invalid command '" . $cmd . "'.";
+            $this->retcode = 405;
+            return;
+        }
+
+        $this->jsondata = $jsondata;
+        $this->jsonadata = $jsonarrdata;
+
+        $this->subcmd = $subcmd;
+        switch( $this->cmdtype )
+        {
+            case self::CMD_DELETE:
+                if( ! $this->setSubDeleteCmdType() ) {
+                    $this->newcmdline =
+                        "ERROR 1001: Invalid type '" . $subcmd . "'.";
+                    $this->retcode = 405;
+                    return;
+                }
+                if( ! $this->createDeleteCommand() ) {
+                    $this->retcode = 405;
+                    return;
+                }
+                break;
+            case self::CMD_MODIFY:
+                if( ! $this->setSubModifyCmdType() ) {
+                    $this->newcmdline =
+                        "ERROR 1002: Invalid type '" . $subcmd . "'.";
+                    $this->retcode = 405;
+                    return;
+                }
+                if( ! $this->createModifyCommand() ) {
+                    $this->retcode = 405;
+                    return;
+                }
+                break;
+            case self::CMD_ADD:
+                if( ! $this->setSubAddCmdType() ) {
+                    $this->newcmdline =
+                        "ERROR 1003: Invalid type '" . $subcmd . "'.";
+                    $this->retcode = 405;
+                    return;
+                }
+                if( ! $this->createAddCommand() ) {
+                    $this->retcode = 405;
+                    return;
+                }
+                break;
+            case self::CMD_RESTART:
+                if( ! $this->setSubRestartCmdType() ) {
+                    $this->newcmdline =
+                        "ERROR 1004: Invalid type '" . $subcmd . "'.";
+                    $this->retcode = 405;
+                    return;
+                }
+                if( ! $this->createRestartCommand() ) {
+                    $this->retcode = 405;
+                    return;
+                }
+                break;
+            case self::CMD_APPLY:
+                if( ! $this->setSubApplyCmdType() ) {
+                    $this->newcmdline =
+                        "ERROR 1005: Invalid type '" . $subcmd . "'.";
+                    $this->retcode = 405;
+                    return;
+                }
+                if( ! $this->createApplyCommand() ) {
+                    $this->retcode = 405;
+                    return;
+                }
+                break;
+            case self::CMD_PIPECMD:
+                if( ! $this->setSubPipecmdCmdType() ) {
+                    $this->newcmdline =
+                        "ERROR 1006: Invalid type '" . $subcmd . "'.";
+                    $this->retcode = 405;
+                    return;
+                }
+                if( ! $this->createPipecmdCommand() ) {
+                    $this->retcode = 405;
+                    return;
+                }
+                break;
+        }
+    }
+
+    # ------------------------------------------------------------------------
+    public function getCommand()
+    # ------------------------------------------------------------------------
+    {
+        return $this->newcmdline ;
+    }
+
+    # ------------------------------------------------------------------------
+    public function getReturnCode()
+    # ------------------------------------------------------------------------
+    {
+        return $this->retcode ;
+    }
+
+    # ------------------------------------------------------------------------
+    private function createApplyCommand()
+    # ------------------------------------------------------------------------
+    {
+        // apply nagios config
+        if( ! $this->jsondata->{'folder'} ) {
+            $this->newcmdline = "ERROR 1007: 'folder' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+        if( $this->subcmdtype == self::APPLY_NAGIOSCONFIG ) {
+            $this->newcmdline = NAGCTL_CMD .  " " .
+                $this->jsondata->{'folder'} .
+                " apply nagiosconfig";
+            if( isset($this->jsondata->{'verbose'}) &&
+                $this->jsondata->{'verbose'} == "true" ) {
+                    $this->newcmdline .= ' " verbose=1;"';
+            }
+        }
+        if( $this->subcmdtype == self::APPLY_NAGIOSLASTGOODCONFIG ) {
+            $this->newcmdline = NAGCTL_CMD .  " " .
+                $this->jsondata->{'folder'} .
+                " apply nagioslastgoodconfig";
+        }
+
+        return True;
+    }
+
+    # ------------------------------------------------------------------------
+    private function createRestartCommand()
+    # ------------------------------------------------------------------------
+    {
+        // restart nagios
+        if( ! $this->jsondata->{'folder'} ) {
+            $this->newcmdline = "ERROR 1008: 'folder' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+        $this->newcmdline = NAGCTL_CMD .  " " . $this->jsondata->{'folder'} .
+            " restart nagios";
+
+        return True;
+    }
+
+    # ------------------------------------------------------------------------
+    private function createDeleteCommand()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        $this->newcmdline = NAGCTL_CMD;
+
+        switch( $this->subcmdtype ) {
+            case self::HOSTTEMPLATES:
+                $retval = $this->createHosttemplatesDeleteCmd();
+                break;
+            case self::HOSTS:
+                $retval = $this->createHostsDeleteCmd();
+                break;
+            case self::SERVICETEMPLATES:
+                $retval = $this->createServicetemplatesDeleteCmd();
+                break;
+            case self::SERVICES:
+                $retval = $this->createServicesDeleteCmd();
+                break;
+            case self::HOSTGROUPS:
+                $retval = $this->createHostgroupsDeleteCmd();
+                break;
+            case self::SERVICEGROUPS:
+                $retval = $this->createServicegroupsDeleteCmd();
+                break;
+            case self::CONTACTS:
+                $retval = $this->createContactsDeleteCmd();
+                break;
+            case self::CONTACTGROUPS:
+                $retval = $this->createContactgroupsDeleteCmd();
+                break;
+            case self::SERVICESETS:
+                $retval = $this->createServicesetsDeleteCmd();
+                break;
+            case self::TIMEPERIODS:
+                $retval = $this->createTimeperiodsDeleteCmd();
+                break;
+            case self::COMMANDS:
+                $retval = $this->createCommandsDeleteCmd();
+                break;
+            default:
+                $this->newcmdline =
+                    "ERROR 1009: Unknown error.";
+                $retval = False;
+        }
+
+        return $retval ;
+    }
+
+    # ------------------------------------------------------------------------
+    private function createModifyCommand()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        $this->newcmdline = NAGCTL_CMD;
+
+        switch( $this->subcmdtype ) {
+            case self::HOSTTEMPLATES:
+                $retval = $this->createHosttemplatesModifyCmd();
+                break;
+            case self::HOSTS:
+                $retval = $this->createHostsModifyCmd();
+                break;
+            case self::SERVICETEMPLATES:
+                $retval = $this->createServicetemplatesModifyCmd();
+                break;
+            case self::SERVICES:
+                $retval = $this->createServicesModifyCmd();
+                break;
+            case self::HOSTGROUPS:
+                $retval = $this->createHostgroupsModifyCmd();
+                break;
+            case self::SERVICEGROUPS:
+                $retval = $this->createServicegroupsModifyCmd();
+                break;
+            case self::CONTACTS:
+                $retval = $this->createContactsModifyCmd();
+                break;
+            case self::CONTACTGROUPS:
+                $retval = $this->createContactgroupsModifyCmd();
+                break;
+            case self::SERVICESETS:
+                $retval = $this->createServicesetsModifyCmd();
+                break;
+            case self::TIMEPERIODS:
+                $retval = $this->createTimeperiodsModifyCmd();
+                break;
+            case self::COMMANDS:
+                $retval = $this->createCommandsModifyCmd();
+                break;
+            default:
+                $this->newcmdline =
+                    "ERROR 1010: Unknown error.";
+                $retval = False;
+        }
+
+        return $retval ;
+    }
+
+    # ------------------------------------------------------------------------
+    private function createPipecmdCommand()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        $this->newcmdline = NAGCTL_CMD;
+
+        switch( $this->subcmdtype ) {
+            case self::PIPECMD_ENABLEHOSTSVCCHECKS:
+                $retval = $this->createEnablehostsvcchecksPipecmdCmd();
+                break;
+            case self::PIPECMD_DISABLEHOSTSVCCHECKS:
+                $retval = $this->createDisablehostsvcchecksPipecmdCmd();
+                break;
+            case self::PIPECMD_ENABLESVCCHECK:
+                $retval = $this->createEnablesvccheckPipecmdCmd();
+                break;
+            case self::PIPECMD_DISABLESVCCHECK:
+                $retval = $this->createDisablesvccheckPipecmdCmd();
+                break;
+            default:
+                $this->newcmdline =
+                    "ERROR 1011: Unknown error.";
+                $retval = False;
+        }
+
+        return $retval ;
+    }
+
+    # ------------------------------------------------------------------------
+    private function createAddCommand()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        $this->newcmdline = NAGCTL_CMD;
+
+        switch( $this->subcmdtype ) {
+            case self::HOSTTEMPLATES:
+                $retval = $this->createHosttemplatesAddCmd();
+                break;
+            case self::HOSTS:
+                $retval = $this->createHostsAddCmd();
+                break;
+            case self::SERVICETEMPLATES:
+                $retval = $this->createServicetemplatesAddCmd();
+                break;
+            case self::SERVICES:
+                $retval = $this->createServicesAddCmd();
+                break;
+            case self::HOSTGROUPS:
+                $retval = $this->createHostgroupsAddCmd();
+                break;
+            case self::SERVICEGROUPS:
+                $retval = $this->createServicegroupsAddCmd();
+                break;
+            case self::CONTACTS:
+                $retval = $this->createContactsAddCmd();
+                break;
+            case self::CONTACTGROUPS:
+                $retval = $this->createContactgroupsAddCmd();
+                break;
+            case self::SERVICESETS:
+                $retval = $this->createServicesetsAddCmd();
+                break;
+            case self::TIMEPERIODS:
+                $retval = $this->createTimeperiodsAddCmd();
+                break;
+            case self::COMMANDS:
+                $retval = $this->createCommandsAddCmd();
+                break;
+            default:
+                $this->newcmdline =
+                    "ERROR 1012: Unknown error.";
+                $retval = False;
+        }
+
+        return $retval ;
+    }
+
+    # ------------------------------------------------------------------------
+    private function setCmdType()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        switch( $this->cmd ) {
+            case 'add':
+                $this->cmdtype = self::CMD_ADD;
+                break;
+            case 'modify':
+                $this->cmdtype = self::CMD_MODIFY;
+                break;
+            case 'delete':
+                $this->cmdtype = self::CMD_DELETE;
+                break;
+            case 'restart':
+                $this->cmdtype = self::CMD_RESTART;
+                break;
+            case 'apply':
+                $this->cmdtype = self::CMD_APPLY;
+                break;
+            case 'pipecmd':
+                $this->cmdtype = self::CMD_PIPECMD;
+                break;
+            default:
+                $retval = False;
+        }
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function setSubDeleteCmdType()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        switch( $this->subcmd ) {
+            case 'hosttemplates':
+                $this->subcmdtype = self::HOSTTEMPLATES;
+                break;
+            case 'servicetemplates':
+                $this->subcmdtype = self::SERVICETEMPLATES;
+                break;
+            case 'hosts':
+                $this->subcmdtype = self::HOSTS;
+                break;
+            case 'services':
+                $this->subcmdtype = self::SERVICES;
+                break;
+            case 'hostgroups':
+                $this->subcmdtype = self::HOSTGROUPS;
+                break;
+            case 'servicegroups':
+                $this->subcmdtype = self::SERVICEGROUPS;
+                break;
+            case 'contacts':
+                $this->subcmdtype = self::CONTACTS;
+                break;
+            case 'contactgroups':
+                $this->subcmdtype = self::CONTACTGROUPS;
+                break;
+            case 'servicesets':
+                $this->subcmdtype = self::SERVICESETS;
+                break;
+            case 'timeperiods':
+                $this->subcmdtype = self::TIMEPERIODS;
+                break;
+            case 'commands':
+                $this->subcmdtype = self::COMMANDS;
+                break;
+            default:
+                $retval = False;
+        }
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function setSubModifyCmdType()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        switch( $this->subcmd ) {
+            case 'hosttemplates':
+                $this->subcmdtype = self::HOSTTEMPLATES;
+                break;
+            case 'servicetemplates':
+                $this->subcmdtype = self::SERVICETEMPLATES;
+                break;
+            case 'hosts':
+                $this->subcmdtype = self::HOSTS;
+                break;
+            case 'services':
+                $this->subcmdtype = self::SERVICES;
+                break;
+            case 'hostgroups':
+                $this->subcmdtype = self::HOSTGROUPS;
+                break;
+            case 'servicegroups':
+                $this->subcmdtype = self::SERVICEGROUPS;
+                break;
+            case 'contacts':
+                $this->subcmdtype = self::CONTACTS;
+                break;
+            case 'contactgroups':
+                $this->subcmdtype = self::CONTACTGROUPS;
+                break;
+            case 'servicesets':
+                $this->subcmdtype = self::SERVICESETS;
+                break;
+            case 'timeperiods':
+                $this->subcmdtype = self::TIMEPERIODS;
+                break;
+            case 'commands':
+                $this->subcmdtype = self::COMMANDS;
+                break;
+            default:
+                $retval = False;
+        }
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function setSubAddCmdType()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        switch( $this->subcmd ) {
+            case 'hosttemplates':
+                $this->subcmdtype = self::HOSTTEMPLATES;
+                break;
+            case 'servicetemplates':
+                $this->subcmdtype = self::SERVICETEMPLATES;
+                break;
+            case 'hosts':
+                $this->subcmdtype = self::HOSTS;
+                break;
+            case 'services':
+                $this->subcmdtype = self::SERVICES;
+                break;
+            case 'hostgroups':
+                $this->subcmdtype = self::HOSTGROUPS;
+                break;
+            case 'servicegroups':
+                $this->subcmdtype = self::SERVICEGROUPS;
+                break;
+            case 'contacts':
+                $this->subcmdtype = self::CONTACTS;
+                break;
+            case 'contactgroups':
+                $this->subcmdtype = self::CONTACTGROUPS;
+                break;
+            case 'servicesets':
+                $this->subcmdtype = self::SERVICESETS;
+                break;
+            case 'timeperiods':
+                $this->subcmdtype = self::TIMEPERIODS;
+                break;
+            case 'commands':
+                $this->subcmdtype = self::COMMANDS;
+                break;
+            default:
+                $retval = False;
+        }
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function setSubPipecmdCmdType()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        switch( $this->subcmd ) {
+            case 'enablehostsvcchecks':
+                $this->subcmdtype = self::PIPECMD_ENABLEHOSTSVCCHECKS;
+                break;
+            case 'disablehostsvcchecks':
+                $this->subcmdtype = self::PIPECMD_DISABLEHOSTSVCCHECKS;
+                break;
+            case 'enablesvccheck':
+                $this->subcmdtype = self::PIPECMD_ENABLESVCCHECK;
+                break;
+            case 'disablesvccheck':
+                $this->subcmdtype = self::PIPECMD_DISABLESVCCHECK;
+                break;
+            default:
+                $retval = False;
+        }
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function setSubApplyCmdType()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        switch( $this->subcmd ) {
+            case 'nagiosconfig':
+                $this->subcmdtype = self::APPLY_NAGIOSCONFIG;
+                break;
+            case 'nagioslastgoodconfig':
+                $this->subcmdtype = self::APPLY_NAGIOSLASTGOODCONFIG;
+                break;
+            default:
+                $retval = False;
+        }
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function setSubRestartCmdType()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        switch( $this->subcmd ) {
+            case 'nagios':
+                $this->subcmdtype = self::RESTART_NAGIOS;
+                break;
+            default:
+                $retval = False;
+        }
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function genericPipecmdPrefix()
+    # ------------------------------------------------------------------------
+    {
+        if( ! $this->jsondata->{'folder'} ) {
+            $this->newcmdline = "ERROR 1013: 'folder' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+    
+        $this->newcmdline .= " " . $this->jsondata->{'folder'} . " pipecmd";
+
+        return True;
+    }
+    # ------------------------------------------------------------------------
+    private function createEnablehostsvcchecksPipecmdCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericPipecmdPrefix() == False ) return False;
+
+        $this->newcmdline .= " enablehostsvcchecks";
+
+        if( $this->jsondata->{'name'} ) {
+                $this->newcmdline .= ' " name=' . $this->jsondata->{'name'}
+                    . ';';
+        } else {
+            $this->newcmdline = "ERROR 1014: 'name' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+
+        $this->newcmdline .= '"';
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createDisablehostsvcchecksPipecmdCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericPipecmdPrefix() == False ) return False;
+
+        $this->newcmdline .= " disablehostsvcchecks";
+
+        if( $this->jsondata->{'name'} ) {
+                $this->newcmdline .= ' " name=' . $this->jsondata->{'name'}
+                    . ';';
+        } else {
+            $this->newcmdline = "ERROR 1015: 'name' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+        if( $this->jsondata->{'comment'} ) {
+                $this->newcmdline .= 'comment=\"' .
+                    $this->jsondata->{'comment'}
+                    . '\";';
+        }
+
+        $this->newcmdline .= '"';
+
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function createEnablesvccheckPipecmdCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericPipecmdPrefix() == False ) return False;
+
+        $this->newcmdline .= " enablesvccheck";
+
+        if( $this->jsondata->{'name'} ) {
+                $this->newcmdline .= ' " name=' . $this->jsondata->{'name'}
+                    . ';';
+        } else {
+            $this->newcmdline = "ERROR 1015: 'name' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+        if( $this->jsondata->{'svcdesc'} ) {
+                $this->newcmdline .= 'svcdesc=\"'
+                    . $this->jsondata->{'svcdesc'} . '\";';
+        } else {
+            $this->newcmdline = "ERROR 1015: 'svcdesc' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+        if( $this->jsondata->{'comment'} ) {
+                $this->newcmdline .= 'comment=\"' .
+                    $this->jsondata->{'comment'}
+                    . '\";';
+        }
+
+        $this->newcmdline .= '"';
+
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function createDisablesvccheckPipecmdCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericPipecmdPrefix() == False ) return False;
+
+        $this->newcmdline .= " disablesvccheck";
+
+        if( $this->jsondata->{'name'} ) {
+                $this->newcmdline .= ' " name=' . $this->jsondata->{'name'}
+                    . ';';
+        } else {
+            $this->newcmdline = "ERROR 1015: 'name' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+        if( $this->jsondata->{'svcdesc'} ) {
+                $this->newcmdline .= 'svcdesc='
+                    . $this->jsondata->{'svcdesc'} . ';';
+        } else {
+            $this->newcmdline = "ERROR 1015: 'svcdesc' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+        if( $this->jsondata->{'comment'} ) {
+                $this->newcmdline .= 'comment=\"' .
+                    $this->jsondata->{'comment'}
+                    . '\";';
+        }
+
+        $this->newcmdline .= '"';
+
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function genericDeletePrefix()
+    # ------------------------------------------------------------------------
+    {
+        if( ! $this->jsondata->{'folder'} ) {
+            $this->newcmdline = "ERROR 1016: 'folder' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+    
+        $this->newcmdline .= " " . $this->jsondata->{'folder'} . " delete";
+        $this->newcmdline .= " " . $this->subcmd . " '";
+
+        return True;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicetemplatesDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $use . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $notifopts . ",";
+        $this->newcmdline .= $checkinterval . ",";
+        $this->newcmdline .= $normchecki . ",";
+        $this->newcmdline .= $retryinterval . ",";
+        $this->newcmdline .= $notifinterval . ",";
+        $this->newcmdline .= $notifperiod;
+        $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$checkperiod;
+        $this->newcmdline .= ",".$maxcheckattempts;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHosttemplatesDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $use . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $normchecki . ",";
+        $this->newcmdline .= $checkinterval . ",";
+        $this->newcmdline .= $retryinterval . ",";
+        $this->newcmdline .= $notifperiod . ",";
+        $this->newcmdline .= $notifopts;
+        $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$checkperiod;
+        $this->newcmdline .= ",".$maxcheckattempts;
+        $this->newcmdline .= ",".$checkcommand;
+        $this->newcmdline .= ",".$notifinterval;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostsDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= $ipaddress . ",";
+        $this->newcmdline .= $template . ",";
+        $this->newcmdline .= $hostgroup . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $activechecks . ",";
+        $this->newcmdline .= $servicesets;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicesDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $template . ",";
+        $this->newcmdline .= $command . ",";
+        $this->newcmdline .= $svcdesc . ",";
+        $this->newcmdline .= $svcgroup . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $freshnessthresh . ",";
+        $this->newcmdline .= $activechecks . ",";
+        $this->newcmdline .= $customvars;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostgroupsDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicegroupsDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createContactsDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $use . ",";
+        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= $emailaddr . ",";
+        $this->newcmdline .= $svcnotifperiod . ",";
+        $this->newcmdline .= $svcnotifopts . ",";
+        $this->newcmdline .= $svcnotifcmds . ",";
+        $this->newcmdline .= $hstnotifperiod . ",";
+        $this->newcmdline .= $hstnotifopts . ",";
+        $this->newcmdline .= $hstnotifcmds . ",";
+        $this->newcmdline .= $cansubmitcmds;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createContactgroupsDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= $members;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicesetsDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $template . ",";
+        $this->newcmdline .= $command . ",";
+        $this->newcmdline .= $svcdesc . ",";
+        $this->newcmdline .= $svcgroup . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $freshnessthresh . ",";
+        $this->newcmdline .= $activechecks . ",";
+        $this->newcmdline .= $customvars;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createTimeperiodsDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= $definition . ",";
+        $this->newcmdline .= $exclude;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createCommandsDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($name) . ",";
+        $this->newcmdline .= $command;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function genericModifyPrefix()
+    # ------------------------------------------------------------------------
+    {
+        if( ! $this->jsondata->{'folder'} ) {
+            $this->newcmdline = "ERROR 1017: 'folder' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+    
+        $this->newcmdline .= " " . $this->jsondata->{'folder'} . " modify";
+        $this->newcmdline .= " " . $this->subcmd . " '";
+        
+        return True;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicetemplatesModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $use . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $notifopts . ",";
+        $this->newcmdline .= $checkinterval . ",";
+        $this->newcmdline .= $normchecki . ",";
+        $this->newcmdline .= $retryinterval . ",";
+        $this->newcmdline .= $notifinterval . ",";
+        $this->newcmdline .= $notifperiod;
+        $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$checkperiod;
+        $this->newcmdline .= ",".$maxcheckattempts;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHosttemplatesModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $use . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $normchecki . ",";
+        $this->newcmdline .= $checkinterval . ",";
+        $this->newcmdline .= $retryinterval . ",";
+        $this->newcmdline .= $notifperiod . ",";
+        $this->newcmdline .= $notifopts;
+        $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$checkperiod;
+        $this->newcmdline .= ",".$maxcheckattempts;
+        $this->newcmdline .= ",".$checkcommand;
+        $this->newcmdline .= ",".$notifinterval;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostsModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= $ipaddress . ",";
+        $this->newcmdline .= $template . ",";
+        $this->newcmdline .= $hostgroup . ",";
+        $this->newcmdline .= $contact . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $activechecks . ",";
+        $this->newcmdline .= $servicesets;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicesModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $template . ",";
+        $this->newcmdline .= $command . ",";
+        $this->newcmdline .= $svcdesc . ",";
+        $this->newcmdline .= $svcgroup . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $freshnessthresh . ",";
+        $this->newcmdline .= $activechecks . ",";
+        $this->newcmdline .= $customvars;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostgroupsModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicegroupsModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createContactsModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $use . ",";
+        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= $emailaddr . ",";
+        $this->newcmdline .= $svcnotifperiod . ",";
+        $this->newcmdline .= $svcnotifopts . ",";
+        $this->newcmdline .= $svcnotifcmds . ",";
+        $this->newcmdline .= $hstnotifperiod . ",";
+        $this->newcmdline .= $hstnotifopts . ",";
+        $this->newcmdline .= $hstnotifcmds . ",";
+        $this->newcmdline .= $cansubmitcmds;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createContactgroupsModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= $members;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicesetsModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $template . ",";
+        $this->newcmdline .= $command . ",";
+        $this->newcmdline .= $svcdesc . ",";
+        $this->newcmdline .= $svcgroup . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $freshnessthresh . ",";
+        $this->newcmdline .= $activechecks . ",";
+        $this->newcmdline .= $customvars;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createTimeperiodsModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= $definition . ",";
+        $this->newcmdline .= $exclude;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createCommandsModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($name) . ",";
+        $this->newcmdline .= $command;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function genericAddPrefix()
+    # ------------------------------------------------------------------------
+    {
+        if( ! $this->jsondata->{'folder'} ) {
+            $this->newcmdline = "ERROR 1018: 'folder' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+    
+        $this->newcmdline .= " " . $this->jsondata->{'folder'} . " add";
+        $this->newcmdline .= " " . $this->subcmd . " '";
+
+        return True;
+    }
+    # ------------------------------------------------------------------------
+    private function createHosttemplatesAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $use . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $normchecki . ",";
+        $this->newcmdline .= $checkinterval . ",";
+        $this->newcmdline .= $retryinterval . ",";
+        $this->newcmdline .= $notifperiod . ",";
+        $this->newcmdline .= $notifopts;
+        $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$checkperiod;
+        $this->newcmdline .= ",".$maxcheckattempts;
+        $this->newcmdline .= ",".$checkcommand;
+        $this->newcmdline .= ",".$notifinterval;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicetemplatesAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $use . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $notifopts . ",";
+        $this->newcmdline .= $checkinterval . ",";
+        $this->newcmdline .= $normchecki . ",";
+        $this->newcmdline .= $retryinterval . ",";
+        $this->newcmdline .= $notifinterval . ",";
+        $this->newcmdline .= $notifperiod;
+        $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$checkperiod;
+        $this->newcmdline .= ",".$maxcheckattempts;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostsAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= $ipaddress . ",";
+        $this->newcmdline .= $template . ",";
+        $this->newcmdline .= $hostgroup . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $activechecks . ",";
+        $this->newcmdline .= $servicesets;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicesAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $template . ",";
+        $this->newcmdline .= $command . ",";
+        $this->newcmdline .= $svcdesc . ",";
+        $this->newcmdline .= $svcgroup . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $freshnessthresh . ",";
+        $this->newcmdline .= $activechecks . ",";
+        $this->newcmdline .= $customvars;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostgroupsAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicegroupsAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createContactsAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $use . ",";
+        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= $emailaddr . ",";
+        $this->newcmdline .= $svcnotifperiod . ",";
+        $this->newcmdline .= $svcnotifopts . ",";
+        $this->newcmdline .= $svcnotifcmds . ",";
+        $this->newcmdline .= $hstnotifperiod . ",";
+        $this->newcmdline .= $hstnotifopts . ",";
+        $this->newcmdline .= $hstnotifcmds . ",";
+        $this->newcmdline .= $cansubmitcmds;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createContactgroupsAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= $members;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicesetsAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $template . ",";
+        $this->newcmdline .= $command . ",";
+        $this->newcmdline .= $svcdesc . ",";
+        $this->newcmdline .= $svcgroup . ",";
+        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contactgroups . ",";
+        $this->newcmdline .= $freshnessthresh . ",";
+        $this->newcmdline .= $activechecks . ",";
+        $this->newcmdline .= $customvars;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createTimeperiodsAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        $this->newcmdline .= $name . ",";
+        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= $definition . ",";
+        $this->newcmdline .= $exclude;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createCommandsAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($name) . ",";
+        $this->newcmdline .= $command;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+}
+
+# ---------------------------------------------------------------------------
+class ReadCmd
+# ---------------------------------------------------------------------------
+# Create a command that reads from the csv files.
+{
+    private $newcmdline;          /* the command, or an error message */
+    private $retcode;             /* the http return code to send */
+    private $subcmd;
+    private $subcmdtype;
+    const HOSTTEMPLATES = 1;
+    const SERVICETEMPLATES = 2;
+    const HOSTS = 3;
+    const SERVICES = 4;
+    const CONTACTS = 5;
+    const CONTACTGROUPS = 6;
+    const HOSTGROUPS = 7;
+    const NAGIOSCONFIG = 8;
+    const SERVICESETS = 9;
+    const SERVICEGROUPS = 10;
+    const TIMEPERIODS = 11;
+    const COMMANDS = 12;
+    private $jsondata;
+
+    # ------------------------------------------------------------------------
+    public function __construct( $cmd, $subcmd, $jsondata )
+    # ------------------------------------------------------------------------
+    {
+        $this->retcode = 200;
+
+        if( $cmd != "show" && $cmd != "check" ) {
+            $this->newcmdline =
+                "ERROR 1019: Invalid command for this request type.";
+            $this->retcode = 405;
+            return;
+        } else {
+            $this->newcmdline = "Valid";
+        }
+
+        $this->subcmd = $subcmd;
+        if( ! $this->setSubCmdType() ) {
+            $this->newcmdline =
+                "ERROR 1020: Invalid type '" . $subcmd . "' to show.";
+            $this->retcode = 405;
+            return;
+        }
+
+        $this->jsondata = $jsondata;
+
+        if( $cmd == "show" ) {
+            if( ! $this->createShowCommand() ) {
+                $this->retcode = 405;
+                return;
+            }
+        } else {
+            if( ! $this->createCheckCommand() ) {
+                $this->retcode = 405;
+                return;
+            }
+        }
+    }
+
+    # ------------------------------------------------------------------------
+    public function getCommand()
+    # ------------------------------------------------------------------------
+    {
+        return $this->newcmdline ;
+    }
+
+    # ------------------------------------------------------------------------
+    public function getReturnCode()
+    # ------------------------------------------------------------------------
+    {
+        return $this->retcode ;
+    }
+
+    # ------------------------------------------------------------------------
+    public function getSubCmdType()
+    # ------------------------------------------------------------------------
+    {
+        return $this->subcmdtype ;
+    }
+
+    # ------------------------------------------------------------------------
+    private function createCheckCommand()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        $this->newcmdline = NAGCTL_CMD;
+
+        switch( $this->subcmdtype ) {
+            case self::NAGIOSCONFIG:
+                $retval = $this->createCheckNagiosconfigCmd();
+                break;
+        }
+
+        return $retval ;
+    }
+
+    # ------------------------------------------------------------------------
+    private function createShowCommand()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        $this->newcmdline = NAGCTL_CMD;
+
+        switch( $this->subcmdtype ) {
+            case self::HOSTTEMPLATES:
+                $retval = $this->createHosttemplatesCmd();
+                break;
+            case self::SERVICETEMPLATES:
+                $retval = $this->createServicetemplatesCmd();
+                break;
+            case self::HOSTS:
+                $retval = $this->createHostsCmd();
+                break;
+            case self::SERVICES:
+                $retval = $this->createServicesCmd();
+                break;
+            case self::CONTACTS:
+                $retval = $this->createContactsCmd();
+                break;
+            case self::CONTACTGROUPS:
+                $retval = $this->createContactgroupsCmd();
+                break;
+            case self::HOSTGROUPS:
+                $retval = $this->createHostgroupsCmd();
+                break;
+            case self::SERVICEGROUPS:
+                $retval = $this->createServicegroupsCmd();
+                break;
+            case self::SERVICESETS:
+                $retval = $this->createServicesetsCmd();
+                break;
+            case self::TIMEPERIODS:
+                $retval = $this->createTimeperiodsCmd();
+                break;
+            case self::COMMANDS:
+                $retval = $this->createCommandsCmd();
+                break;
+            default:
+                $this->newcmdline = "ERROR 1021: Unknown error.";
+                $retval = False;
+        }
+
+        return $retval ;
+    }
+
+    # ------------------------------------------------------------------------
+    private function setSubCmdType()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        switch( $this->subcmd ) {
+            case 'hosttemplates':
+                $this->subcmdtype = self::HOSTTEMPLATES;
+                break;
+            case 'servicetemplates':
+                $this->subcmdtype = self::SERVICETEMPLATES;
+                break;
+            case 'hosts':
+                $this->subcmdtype = self::HOSTS;
+                break;
+            case 'services':
+                $this->subcmdtype = self::SERVICES;
+                break;
+            case 'contacts':
+                $this->subcmdtype = self::CONTACTS;
+                break;
+            case 'contactgroups':
+                $this->subcmdtype = self::CONTACTGROUPS;
+                break;
+            case 'hostgroups':
+                $this->subcmdtype = self::HOSTGROUPS;
+                break;
+            case 'servicegroups':
+                $this->subcmdtype = self::SERVICEGROUPS;
+                break;
+            case 'nagiosconfig':
+                $this->subcmdtype = self::NAGIOSCONFIG;
+                break;
+            case 'servicesets':
+                $this->subcmdtype = self::SERVICESETS;
+                break;
+            case 'timeperiods':
+                $this->subcmdtype = self::TIMEPERIODS;
+                break;
+            case 'commands':
+                $this->subcmdtype = self::COMMANDS;
+                break;
+            default:
+                $retval = False;
+        }
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function createSearchQuery()
+    # ------------------------------------------------------------------------
+    {
+        if( ! $this->jsondata->{'folder'} ) {
+            $this->newcmdline = "ERROR 1022: 'folder' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+    
+        $this->newcmdline .= " " . $this->jsondata->{'folder'} . " show";
+        $this->newcmdline .= " " . $this->subcmd . " \"";
+        if( isset($this->jsondata->{'column'}) && $this->jsondata->{'column'} )
+            $this->newcmdline .= "column='" . $this->jsondata->{'column'}
+                                 . "';";
+        else
+            $this->newcmdline .= "column='1';";
+
+        if( isset($this->jsondata->{'filter'}) && $this->jsondata->{'filter'} )
+            $this->newcmdline .= "filter='" . $this->jsondata->{'filter'}
+                                 . "';";
+        else
+            $this->newcmdline .= "filter='.*';";
+
+        $this->newcmdline .= "\"";
+
+        return True;
+    }
+    # ------------------------------------------------------------------------
+    private function createHosttemplatesCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createServicetemplatesCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createHostsCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createServicesCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createContactsCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createContactgroupsCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createHostgroupsCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createServicegroupsCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createServicesetsCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createTimeperiodsCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createCommandsCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createCheckNagiosconfigCmd()
+    # ------------------------------------------------------------------------
+    {
+        if( ! $this->jsondata->{'folder'} ) {
+            $this->newcmdline = "ERROR 1023: 'folder' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+    
+        $this->newcmdline .= " " . $this->jsondata->{'folder'};
+        $this->newcmdline .= " check nagiosconfig";
+        if( $this->jsondata->{'verbose'} == "true" ) {
+                $this->newcmdline .= ' " verbose=1;"';
+        }
+
+        return True;
+    }
+}
+
+
+# ---------------------------------------------------------------------------
+function csv2array( $output, $subcmd )
+# ---------------------------------------------------------------------------
+{
+    $cols = array(
+        'hosts' => array(
+            1 => "name",
+            2 => "alias",
+            3 => "ipaddress",
+            4 => "template",
+            5 => "hostgroup",
+            6 => "contact",
+            7 => "contactgroups",
+            8 => "activechecks",
+            9 => "servicesets",
+            10 => "disable",
+        ),
+        'services' => array(
+            1 => "name",
+            2 => "template",
+            3 => "command",
+            4 => "svcdesc",
+            5 => "svcgroup",
+            6 => "contacts",
+            7 => "contactgroups",
+            8 => "freshnessthresh",
+            9 => "activechecks",
+            10 => "customvars",
+            11 => "disable",
+        ),
+        'servicesets' => array(
+            1 => "name",
+            2 => "template",
+            3 => "command",
+            4 => "svcdesc",
+            5 => "svcgroup",
+            6 => "contacts",
+            7 => "contactgroups",
+            8 => "freshnessthresh",
+            9 => "activechecks",
+            10 => "customvars",
+            11 => "disable",
+        ),
+        'hosttemplates' => array(
+            1 => "name",
+            2 => "use",
+            3 => "contacts",
+            4 => "contactgroups",
+            5 => "normchecki",
+            6 => "checkinterval",
+            7 => "retryinterval",
+            8 => "notifperiod",
+            9 => "notifopts",
+            10 => "disable",
+            11 => "checkperiod",
+            12 => "maxcheckattempts",
+            13 => "checkcommand",
+            14 => "notifinterval",
+        ),
+        'servicetemplates' => array(
+            1 => "name",
+            2 => "use",
+            3 => "contacts",
+            4 => "contactgroups",
+            5 => "notifopts",
+            6 => "checkinterval",
+            7 => "normchecki",
+            8 => "retryinterval",
+            9 => "notifinterval",
+            10 => "notifperiod",
+            11 => "disable",
+            12 => "checkperiod",
+            13 => "maxcheckattempts",
+        ),
+        'hostgroups' => array(
+            1 => "name",
+            2 => "alias",
+            3 => "disable",
+        ),
+        'servicegroups' => array(
+            1 => "name",
+            2 => "alias",
+            3 => "disable",
+        ),
+        'contacts' => array(
+            1 => "name",
+            2 => "use",
+            3 => "alias",
+            4 => "emailaddr",
+            5 => "svcnotifperiod",
+            6 => "svcnotifopts",
+            7 => "svcnotifcmds",
+            8 => "hstnotifperiod",
+            9 => "hstnotifopts",
+            10 => "hstnotifcmds",
+            11 => "cansubmitcmds",
+            12 => "disable",
+        ),
+        'contactgroups' => array(
+            1 => "name",
+            2 => "alias",
+            3 => "members",
+            4 => "disable",
+        ),
+        'timeperiods' => array(
+            1 => "name",
+            2 => "alias",
+            3 => "definition",
+            4 => "exclude",
+            5 => "disable",
+        ),
+        'commands' => array(
+            1 => "name",
+            2 => "command",
+            3 => "disable",
+        ),
+    );
+
+    # Put commas back
+    $jsoutput = array();
+    for( $i=0; $i < sizeof($output) ; ++$i ) {
+        $inner = array();
+        $items = explode( ",", $output[$i] );
+        for( $j=0; $j < sizeof($items); ++$j ) {
+            $inner[] = array($cols[$subcmd][$j+1] =>
+                           strtr( $items[$j], '`', ',' ));
+        }
+        $jsoutput[] = $inner;
+    }
+
+    return $jsoutput;
+}
+
+# ---------------------------------------------------------------------------
+function main()
+# ---------------------------------------------------------------------------
+{
+    $rs = new RestServer();
+
+    switch( $rs->getMethod() )
+    {
+
+        case 'get':
+            /* It's a read request */
+            /* TODO check_user_read_access */
+            $rc = new ReadCmd( $rs->getCmd(),     /* E.g. show     */
+                               $rs->getSubcmd(),  /* E.g. hosts    */
+                               $rs->getData()     /* The json data */
+                             );
+            $cmd = $rc->getCommand();
+            if( $rc->getReturnCode() != 200 ) {
+                $rs->sendResponse( $rc->getReturnCode(),
+                                   //json_encode($ouput),
+                                   $cmd,
+                                   'application/json' );
+            }
+
+            $output = array();
+            $exit_status = 1;
+            exec( $cmd . " &>/dev/stdout", $output, $exit_status );
+            if( $exit_status > 0 ) {
+                $rs->sendResponse( 400,
+                                   json_encode($output[0]),
+                                   'application/json' );
+            }
+
+            if( $rs->getCmd() == "show" ) {
+                $jsoutput = csv2array( $output, $rs->getSubcmd() );
+            } else {
+                $jsoutput = $output;
+            }
+            
+            $rs->sendResponse( $rc->getReturnCode(),
+                               json_encode($jsoutput),
+                               'application/json' );
+            break;
+
+        case 'post':
+            /* It's a write request */
+            /* TODO check_user_read_access */
+            $wc = new WriteCmd( $rs->getCmd(),     /* E.g. show     */
+                                $rs->getSubcmd(),  /* E.g. hosts    */
+                                $rs->getData(),    /* The json data */
+                                $rs->getJAData()   /* The json array data */
+                              );
+            $cmd = $wc->getCommand();
+            if( $wc->getReturnCode() != 200 ) {
+                $rs->sendResponse( $wc->getReturnCode(),
+                                   json_encode($cmd),
+                                   'application/json' );
+            }
+            
+            $output = array();
+            $exit_status = 1;
+            exec( $cmd . ' &>/dev/stdout', $output, $exit_status );
+
+            if( $exit_status > 0 ) {
+                $rs->sendResponse( 400,
+                                   //json_encode($output[0] . " " . $cmd),
+                                   json_encode($output),
+                                   'application/json' );
+            }
+
+            $rs->sendResponse( $wc->getReturnCode(),
+                               json_encode($output),
+                               'application/json' );
+            break;
+    }
+}
+
+main();
+
+# vim:ts=4:et:sw=4:tw=76
+?>
+

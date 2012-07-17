@@ -1,0 +1,2118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.4.5" />
+<title>Nagrestconf README</title>
+<style type="text/css">
+/* Debug borders */
+p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
+/*
+  border: 1px solid red;
+*/
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+tt {
+  color: navy;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  font-family: sans-serif;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+
+div.sectionbody {
+  font-family: serif;
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+span#author {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+span#email {
+}
+span#revnumber, span#revdate, span#revremark {
+  font-family: sans-serif;
+}
+
+div#footer {
+  font-family: sans-serif;
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+div#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+div#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+div#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.verseblock > div.content {
+  white-space: pre;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 2px solid silver;
+}
+
+div.exampleblock > div.content {
+  border-left: 2px solid silver;
+  padding: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+@media print {
+  div#footer-badges { display: none; }
+}
+
+div#toctitle {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+/* Workarounds for IE6's broken and incomplete CSS2. */
+
+div.sidebar-content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+div.sidebar-title, div.image-title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  margin-top: 0.0em;
+  margin-bottom: 0.5em;
+}
+
+div.listingblock div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock-attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock-content {
+  white-space: pre;
+}
+div.verseblock-attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+
+div.exampleblock-content {
+  border-left: 2px solid silver;
+  padding-left: 0.5em;
+}
+
+/* IE6 sets dynamically generated links as visited. */
+div#toc a:visited { color: blue; }
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+window.onload = function(){generateToc(2)}
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, October 2006. License: GPL */
+
+function getText(el) {
+  var text = "";
+  for (var i = el.firstChild; i != null; i = i.nextSibling) {
+    if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+      text += i.data;
+    else if (i.firstChild != null)
+      text += getText(i);
+  }
+  return text;
+}
+
+function TocEntry(el, text, toclevel) {
+  this.element = el;
+  this.text = text;
+  this.toclevel = toclevel;
+}
+
+function tocEntries(el, toclevels) {
+  var result = new Array;
+  var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
+  // Function that scans the DOM tree for header elements (the DOM2
+  // nodeIterator API would be a better technique but not supported by all
+  // browsers).
+  var iterate = function (el) {
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+        var mo = re.exec(i.tagName)
+        if (mo)
+          result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+        iterate(i);
+      }
+    }
+  }
+  iterate(el);
+  return result;
+}
+
+// This function does the work. toclevels = 1..4.
+function generateToc(toclevels) {
+  var toc = document.getElementById("toc");
+  var entries = tocEntries(document.getElementsByTagName("body")[0], toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "toc" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    document.getElementById("header").removeChild(toc);
+}
+/*]]>*/
+</script>
+</head>
+<body>
+<div id="header">
+<h1>Nagrestconf README</h1>
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
+</div>
+</div>
+<h2 id="_screenshot">1. Screenshot</h2>
+<div class="sectionbody">
+<img src="http://www.smorg.co.uk/images/nagrestconfgui.png"
+alt="Nagrestconf GUI Screenshot" style="float:none" width="800px" />
+</div>
+<h2 id="_what_is_nagrestconf">2. What is Nagrestconf?</h2>
+<div class="sectionbody">
+<div class="paragraph"><p><em>Nagrestconf</em> is a REST interface and configuration GUI for Nagios.</p></div>
+<div class="paragraph"><p><em>Nagrestconf</em> is written in Bash and PHP.</p></div>
+<div class="paragraph"><p>Specifically, <em>Nagrestconf</em>:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+allows Nagios configuration files to be written using a REST api.
+</p>
+</li>
+<li>
+<p>
+allows the server to be restarted using the REST api.
+</p>
+</li>
+<li>
+<p>
+provides a configuration Web GUI built on the REST api.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>It can be useful for:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Bulk loading
+</p>
+</li>
+<li>
+<p>
+Bulk editing
+</p>
+</li>
+<li>
+<p>
+Automation
+</p>
+</li>
+<li>
+<p>
+Catching common configuration mistakes
+</p>
+</li>
+<li>
+<p>
+Configuration Delegation (using additional tools)
+</p>
+</li>
+<li>
+<p>
+Distributed monitoring (using additional tools)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Not all of the Nagios directives are implemented, refer to the <a href="#X20">Status</a> section.</p></div>
+</div>
+<h2 id="_how_does_it_work">3. How does it work?</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="left" valign="top"> Program </th>
+<th align="center" valign="top"> Language </th>
+<th align="left" valign="top"> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>rest/index.php</tt></p></td>
+<td align="center" valign="top"><p class="table">PHP</p></td>
+<td align="left" valign="top"><p class="table">Provides the REST interface and calls <em>nagctl</em>.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>nagctl</em></p></td>
+<td align="center" valign="top"><p class="table">Bash</p></td>
+<td align="left" valign="top"><p class="table">Writes the CSV .setup files and calls <em>csv2nag</em>.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>csv2nag</em></p></td>
+<td align="center" valign="top"><p class="table">Bash</p></td>
+<td align="left" valign="top"><p class="table">Writes the Nagios .cfg object files</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>restart_nagios</em></p></td>
+<td align="center" valign="top"><p class="table">Bash</p></td>
+<td align="left" valign="top"><p class="table">Called periodically by cron.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>slc_configure</em></p></td>
+<td align="center" valign="top"><p class="table">Bash</p></td>
+<td align="left" valign="top"><p class="table">For initial configuration.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>nagrestconf/index.php</tt></p></td>
+<td align="center" valign="top"><p class="table">PHP</p></td>
+<td align="left" valign="top"><p class="table">A Configuration GUI that uses the REST api.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<h2 id="_requirements">4. Requirements</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>For the Web GUI the following Browsers work: Firefox, Opera, Chrome, Safari -
+including Maemo, IPAD and Android versions.</p></div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col />
+<col />
+<thead>
+<tr>
+<th align="left" valign="top"> Software Requirement </th>
+<th align="left" valign="top"> Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">php</p></td>
+<td align="left" valign="top"><p class="table">for REST interface and Web GUI. v5.3+ only.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">nagios</p></td>
+<td align="left" valign="top"><p class="table">for checking the configuration. v3+ only.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">apache</p></td>
+<td align="left" valign="top"><p class="table">for serving PHP pages.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">subversion</p></td>
+<td align="left" valign="top"><p class="table">for managing configuration versions.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">mod_ssl</p></td>
+<td align="left" valign="top"><p class="table">for secure communications.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">bash</p></td>
+<td align="left" valign="top"><p class="table">for non-web scripts.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">grep</p></td>
+<td align="left" valign="top"><p class="table">used in the bash scripts.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">sed</p></td>
+<td align="left" valign="top"><p class="table">used in the bash scripts.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">gawk</p></td>
+<td align="left" valign="top"><p class="table">used in the bash scripts.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">procmail</p></td>
+<td align="left" valign="top"><p class="table">for locking with <em>lockfile</em>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<h2 id="_install">5. Install</h2>
+<div class="sectionbody">
+<h3 id="_prebuilt_packages">5.1. Prebuilt Packages</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Get the relevant RPM for Centos/Redhat from Sourceforge at:</p></div>
+<div class="paragraph"><p><a href="https://sourceforge.net/projects/nagrestconf/files/">https://sourceforge.net/projects/nagrestconf/files/</a></p></div>
+<h3 id="_install_using_prebuilt_packages">5.2. Install Using Prebuilt Packages</h3><div style="clear:left"></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Install the prebuilt package downloaded from Sourceforge. For example:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Centos
+</p>
+<div class="listingblock">
+<div class="content">
+<pre><tt>yum install nagrestconf-1-1.x.noarch.rpm</tt></pre>
+</div></div>
+</li>
+<li>
+<p>
+Debian
+</p>
+<div class="listingblock">
+<div class="content">
+<pre><tt>gdebi nagrestconf-1-1.x.noarch.deb</tt></pre>
+</div></div>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Configure the system:
+</p>
+<div class="paragraph"><p>For testing purposes (or for production use) copy the initial-config directory,
+which contains a minimal nagios configuration directory. For example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>cd /etc
+mv nagios nagios.orig
+cp -a /usr/share/doc/nagrestconf/initial-config nagios</tt></pre>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note" />
+</td>
+<td class="content">If the initial-config directory is not used then ensure that the text
+&#8216;&lt;SERVICE_LINE_CFG_ENTRY&gt;&#8217; is placed somewhere in the <tt>nagios.cfg</tt> file on a line
+by itself. This line is replaced with a &#8216;cfg_dir=&#8217; line by <em>slc_configure</em>.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p><em>slc_configure</em> will set up a subversion repository and will create a directory
+to hold nagios and CSV data in the nagios configuration directory tree. For example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>slc_configure --folder=local
+htpasswd /etc/nagios/htpasswd.users nagiosadmin</tt></pre>
+</div></div>
+<div class="paragraph"><p>Edit <tt>/etc/nagrestconf/nagrestconf.ini</tt> and change the &#8216;restuser =&#8217; and
+`restpass = ' lines.</p></div>
+<div class="paragraph"><p>The system should now be ready to configure using REST and by using the GUI at
+&#8216;http://localhost/nagrestconf&#8217;.</p></div>
+<div class="paragraph"><p>Test the installation with:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>bash /usr/share/doc/nagrestconf-1/bulk-loading/REST_setup_local.sh</tt></pre>
+</div></div>
+<div class="paragraph"><p>Then check that it can be seen and edited in the <em>Nagrestconf</em> GUI.</p></div>
+</li>
+</ol></div>
+<h3 id="_install_from_source">5.3. Install From Source</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Copy <em>csv2nag</em>, <em>nagctl</em>, <em>restart_nagios</em> and <em>slc_configure</em> from scripts
+directory to <tt>/usr/bin</tt> or <tt>/usr/local/bin</tt>.</p></div>
+<div class="paragraph"><p>Copy <tt>nagrestconf/</tt> and <tt>rest/</tt> directories to the web server document root and
+create a webserver configuration for it.</p></div>
+<div class="paragraph"><p>Copy the <tt>etc/nagrestconf/</tt> directory to <tt>/etc/</tt> and modify the configuration
+files.</p></div>
+<div class="paragraph"><p>Run the <em>slc_configure</em> script to configure the repository and configuration
+directory. Ensure a &#8216;cfg_dir=&#8217; entry exists in <tt>nagios.cfg</tt>.</p></div>
+</div>
+<h2 id="_rest_examples">6. REST Examples</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Please look at the <em>REST_setup_local.sh</em> script located in the <tt>bulk-loading/</tt>
+document directory. This script gives an example of &#8216;Bulk loading&#8217;.</p></div>
+<div class="paragraph"><p>Here is an example of showing the configuration of a host:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt># curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local","filter":"abcp3v-lin40.company.local"\}'
+
+[[{"name":"abcp3v-lin40.company.local"},{"alias":"abcp3v-lin40.company.local"},
+{"ipaddress":"192.168.1.40"},{"template":"abcprod_htmpl"},
+{"hostgroup":"abcprod"},{"contact":""},{"contactgroups":""},
+{"activechecks":""},{"servicesets":"basic-linux-checks"},{"disable":""}]]</tt></pre>
+</div></div>
+<div class="paragraph"><p>Here is an example of adding a new host:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>curl -knX POST -d 'json={"folder":"local", \
+        "name":"abcp3v-lin02.company.local", \
+        "alias":"abcp3v-lin02.company.local", \
+        "ipaddress":"192.168.1.2", \
+        "template":"abcprod_htmpl", \
+        "hostgroup":"abcprod", \
+        "servicesets":"basic-linux-checks"}' https://127.0.0.1/rest/add/hosts
+
+["Success"]</tt></pre>
+</div></div>
+<div class="paragraph"><p>A service set, basic-linux-checks, had previously been added using the REST
+interface as had hostgroups, hosttemplates, servicetemplates and contacts.</p></div>
+<div class="paragraph"><p>The following Nagios &#8216;.cfg&#8217; file was written for the host:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>#################################################################
+#         THIS FILE WAS CREATED BY THE CSV2NAG SCRIPT           #
+#   DON'T MODIFY THIS FILE. ALL CHANGES WILL BE OVERWRITTEN     #
+#################################################################
+
+define host {
+       use             abcprod_htmpl
+       host_name       abcp3v-lin02.company.local
+       alias           abcp3v-lin02.company.local
+       address         192.168.1.2
+       hostgroups      abcprod
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Load
+        check_command                   check_any!check_load -r -w 4,4,4 -c 8,8,8
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Puppet Log
+        check_command                   check_any!check_puppet_wrapper
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Read-write filesystems
+        check_command                   check_any!check_fs_ro.sh
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Puppet Version
+        check_command                   check_any!check_puppet_version.sh -v puppet-2.6.16-1
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             PING
+        check_command                   check_ping!100.0,20%!500.0,60%
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Swap
+        check_command                   check_any!check_swap -w 10% -c 5%
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             DNS
+        check_command                   check_any!check_dns -w 0.5 -c 1 -t 30 -H www.google.com
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_10trytmpl
+        service_description             NTP Time
+        check_command                   check_any!check_ntp -H 0.uk.pool.ntp.org -w 0.5 -c 1.0
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Num Users
+        check_command                   check_any!check_users -w 15 -c 20
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Processes: Zombies
+        check_command                   check_any!check_procs -w 40 -c 80 -s Z
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             CPU
+        check_command                   check_any!check_cpu.sh
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Memory
+        check_command                   check_any!check_mem.pl -w 80 -c 95
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Disks
+        check_command                   check_any!check_disk -e -w 10% -c 5%
+}</tt></pre>
+</div></div>
+</div>
+<h2 id="X20">7. Status</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Currently implemented directives (57/187) = 30%.</p></div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Currently implemented directives</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="left" valign="top"> Definition </th>
+<th align="center" valign="top"> No. in Nagios </th>
+<th align="center" valign="top"> No. in Nagrestconf </th>
+<th align="right" valign="top"> %</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Contacts</p></td>
+<td align="center" valign="top"><p class="table">17</p></td>
+<td align="center" valign="top"><p class="table">10</p></td>
+<td align="right" valign="top"><p class="table">59%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Contact Groups</p></td>
+<td align="center" valign="top"><p class="table">3</p></td>
+<td align="center" valign="top"><p class="table">3</p></td>
+<td align="right" valign="top"><p class="table">100%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Hosts</p></td>
+<td align="center" valign="top"><p class="table">43</p></td>
+<td align="center" valign="top"><p class="table">17</p></td>
+<td align="right" valign="top"><p class="table">40%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Host Groups</p></td>
+<td align="center" valign="top"><p class="table">7</p></td>
+<td align="center" valign="top"><p class="table">2</p></td>
+<td align="right" valign="top"><p class="table">28%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Services</p></td>
+<td align="center" valign="top"><p class="table">39</p></td>
+<td align="center" valign="top"><p class="table">17</p></td>
+<td align="right" valign="top"><p class="table">44%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Service Groups</p></td>
+<td align="center" valign="top"><p class="table">7</p></td>
+<td align="center" valign="top"><p class="table">2</p></td>
+<td align="right" valign="top"><p class="table">28%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Service Sets</p></td>
+<td align="center" valign="top"><p class="table">N/A</p></td>
+<td align="center" valign="top"><p class="table">10</p></td>
+<td align="right" valign="top"><p class="table">N/A</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Time Periods</p></td>
+<td align="center" valign="top"><p class="table">5</p></td>
+<td align="center" valign="top"><p class="table">4</p></td>
+<td align="right" valign="top"><p class="table">80%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Commands</p></td>
+<td align="center" valign="top"><p class="table">2</p></td>
+<td align="center" valign="top"><p class="table">2</p></td>
+<td align="right" valign="top"><p class="table">100%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Host Dependency</p></td>
+<td align="center" valign="top"><p class="table">8</p></td>
+<td align="center" valign="top"><p class="table">0</p></td>
+<td align="right" valign="top"><p class="table">0%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Host Escalation</p></td>
+<td align="center" valign="top"><p class="table">9</p></td>
+<td align="center" valign="top"><p class="table">0</p></td>
+<td align="right" valign="top"><p class="table">0%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Service Dependency</p></td>
+<td align="center" valign="top"><p class="table">10</p></td>
+<td align="center" valign="top"><p class="table">0</p></td>
+<td align="right" valign="top"><p class="table">0%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Service Escalation</p></td>
+<td align="center" valign="top"><p class="table">10</p></td>
+<td align="center" valign="top"><p class="table">0</p></td>
+<td align="right" valign="top"><p class="table">0%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Hostextinfo</p></td>
+<td align="center" valign="top"><p class="table">10</p></td>
+<td align="center" valign="top"><p class="table">0</p></td>
+<td align="right" valign="top"><p class="table">0%</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Serviceextinfo</p></td>
+<td align="center" valign="top"><p class="table">7</p></td>
+<td align="center" valign="top"><p class="table">0</p></td>
+<td align="right" valign="top"><p class="table">0%</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<h2 id="_rest_commands">8. REST Commands</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>The URL is in the form <em>https://&lt;HOST&gt;/rest/&lt;COMMAND&gt;/&lt;COMMANDARG&gt;</em>.</p></div>
+<div class="paragraph"><p>GET requests don&#8217;t modify the configuration:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>https://&lt;HOST&gt;/rest/</tt>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>check/</tt>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+nagiosconfig json={“folder”:”&lt;name&gt;”[,”verbose”:”true”]}
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<tt>show/</tt>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+hosttemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicetemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hosts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+services json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicesets json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicegroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+contacts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+contactgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+timeperiods json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+commands json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="paragraph"><p>POST requests are for modifying the configuration:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>https://&lt;HOST&gt;/rest/</tt>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>add/</tt>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+hosttemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicetemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hosts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+services json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicesets json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicegroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+contacts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+contactgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+timeperiods json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+commands json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<tt>delete/</tt>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+hosttemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicetemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hosts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+services json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicesets json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicegroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+contacts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+contactgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+timeperiods json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+commands json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<tt>modify/</tt>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+hosttemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicetemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hosts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+services json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicesets json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicegroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+contacts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+contactgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+timeperiods json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+commands json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<tt>restart/</tt>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+nagios json={“folder”:”&lt;name&gt;”}
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<tt>apply/</tt>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+nagiosconfig json={“folder”:”&lt;name&gt;”[,”verbose”:”true”]}
+</p>
+</li>
+<li>
+<p>
+nagioslastgoodconfig json={“folder”:”&lt;name&gt;”}
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<tt>pipecmd/</tt>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+enablehostsvcchecks json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname&gt;}
+</p>
+</li>
+<li>
+<p>
+disablehostsvcchecks json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname&gt;” [,”comment”,”&lt;comment&gt;”]}
+</p>
+</li>
+<li>
+<p>
+enablesvccheck json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname&gt;, “svcdesc”:”&lt;Service Description&gt;” [,”comment”,”&lt;comment&gt;”]}
+</p>
+</li>
+<li>
+<p>
+disablesvccheck json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname&gt;” “svcdesc”:”&lt;Service Description&gt;” [,”comment”,”&lt;comment&gt;”]}
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</div>
+<h2 id="_currently_implemented_definitions_and_directives">9. Currently Implemented Definitions and Directives</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Key for Flags column:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+'U' - the option is Unimplemented.
+</p>
+</li>
+<li>
+<p>
+'R' for a required field.
+</p>
+</li>
+<li>
+<p>
+'K' to show the fields required to specify a unique key.
+</p>
+</li>
+<li>
+<p>
+'L' for a list field. Lists consist of zero or more items separated by spaces.
+</p>
+</li>
+<li>
+<p>
+'C' for a compound field: &lt;name&gt;|&lt;value&gt;[,&lt;name&gt;|&lt;value&gt;]&#8230;
+</p>
+</li>
+</ul></div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Contacts File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Contact name</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Use</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">use</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Alias pretty name</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">alias</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Email address</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">emailaddr</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">Service notification period</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">svcnotifperiod</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>6.</em></p></td>
+<td align="left" valign="top"><p class="table">Service notification options</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">svcnotifopts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>7.</em></p></td>
+<td align="left" valign="top"><p class="table">Service notification commands</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">svcnotifcmds</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>8.</em></p></td>
+<td align="left" valign="top"><p class="table">Host notification period</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">hstnotifperiod</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>9.</em></p></td>
+<td align="left" valign="top"><p class="table">Host notification options</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">hstnotifopts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>10.</em></p></td>
+<td align="left" valign="top"><p class="table">Host notification commands</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">hstnotifcmds</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>11.</em></p></td>
+<td align="left" valign="top"><p class="table">Can submit commands</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">cansubmitcmds</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>12.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Contactgroups Files</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Contact group name</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Alias pretty name</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">alias</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Members list</p></td>
+<td align="center" valign="top"><p class="table">RL</p></td>
+<td align="left" valign="top"><p class="table">members</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Hosts File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Host name</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Alias</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">alias</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">IP Address</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">ipaddress</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Template</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">template</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">Shown Hostgroup</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">hostgroup</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>6.</em></p></td>
+<td align="left" valign="top"><p class="table">Contact</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">contact</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>7.</em></p></td>
+<td align="left" valign="top"><p class="table">Contact Group</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">contactgroups</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>8.</em></p></td>
+<td align="left" valign="top"><p class="table">Active checks</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">activechecks</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>9.</em></p></td>
+<td align="left" valign="top"><p class="table">Service Set</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">servicesets</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>10.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Hosttemplates File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Name</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Use</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">use</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Contacts</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Contact groups</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">contactgroups</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">Normal check interval</p></td>
+<td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">normchecki</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>6.</em></p></td>
+<td align="left" valign="top"><p class="table">Check interval</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">checkinterval</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>7.</em></p></td>
+<td align="left" valign="top"><p class="table">Retry interval</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">retryinterval</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>8.</em></p></td>
+<td align="left" valign="top"><p class="table">Notification period</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">notifperiod</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>9.</em></p></td>
+<td align="left" valign="top"><p class="table">Notification options</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">notifopts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>10.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>11.</em></p></td>
+<td align="left" valign="top"><p class="table">Check period</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">checkperiod</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>12.</em></p></td>
+<td align="left" valign="top"><p class="table">Max check attempts</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">maxcheckattempts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>13.</em></p></td>
+<td align="left" valign="top"><p class="table">Check command</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">checkcommand</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>14.</em></p></td>
+<td align="left" valign="top"><p class="table">Notification interval</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">notifinterval</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Services File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Name</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Service template</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">template</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Service command</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">command</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Service description</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">svcdesc</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">Service groups</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">svcgroup</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>6.</em></p></td>
+<td align="left" valign="top"><p class="table">Contacts</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>7.</em></p></td>
+<td align="left" valign="top"><p class="table">Contact groups</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">contactgroups</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>8.</em></p></td>
+<td align="left" valign="top"><p class="table">Freshness threshold</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">freshnessthresh</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>9.</em></p></td>
+<td align="left" valign="top"><p class="table">Active checks</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">activechecks</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>10.</em></p></td>
+<td align="left" valign="top"><p class="table">Custom variables</p></td>
+<td align="center" valign="top"><p class="table">C</p></td>
+<td align="left" valign="top"><p class="table">customvars</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>11.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Servicesets File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Name</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Service template</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">template</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Service command</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">command</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Service description</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">svcdesc</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">Service groups</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">svcgroup</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>6.</em></p></td>
+<td align="left" valign="top"><p class="table">Contacts</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>7.</em></p></td>
+<td align="left" valign="top"><p class="table">Contact groups</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">contactgroups</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>8.</em></p></td>
+<td align="left" valign="top"><p class="table">Freshness threshold</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">freshnessthresh</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>9.</em></p></td>
+<td align="left" valign="top"><p class="table">Active checks</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">activechecks</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>10.</em></p></td>
+<td align="left" valign="top"><p class="table">Custom variables</p></td>
+<td align="center" valign="top"><p class="table">C</p></td>
+<td align="left" valign="top"><p class="table">customvars</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>11.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Servicetemplates File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Name</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Use</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">use</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Contacts</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Contact groups</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">contactgroups</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">Notification options</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">notifopts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>6.</em></p></td>
+<td align="left" valign="top"><p class="table">Check interval</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">checkinterval</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>7.</em></p></td>
+<td align="left" valign="top"><p class="table">Normal check interval</p></td>
+<td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">normchecki</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>8.</em></p></td>
+<td align="left" valign="top"><p class="table">Retry interval</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">retryinterval</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>9.</em></p></td>
+<td align="left" valign="top"><p class="table">Notification interval</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">notifinterval</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>10.</em></p></td>
+<td align="left" valign="top"><p class="table">Notification period</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">notifperiod</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>11.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>12.</em></p></td>
+<td align="left" valign="top"><p class="table">Check period</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">checkperiod</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>13.</em></p></td>
+<td align="left" valign="top"><p class="table">Max check attempts</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">maxcheckattempts</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Commands File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Command name</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Command line</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">command</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Hostgroups File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Hostgroup name</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Alias</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">alias</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Servicegroups File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Hostgroup name</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Alias</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">alias</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Timeperiods File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Timeperiod name</p></td>
+<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Alias</p></td>
+<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">alias</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Freestyle time definition</p></td>
+<td align="center" valign="top"><p class="table">C</p></td>
+<td align="left" valign="top"><p class="table">definition</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Timeperiod to exclude</p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">exclude</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2012-07-16 15:12:37 BST
+</div>
+</div>
+</body>
+</html>

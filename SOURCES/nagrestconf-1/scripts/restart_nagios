@@ -1,0 +1,50 @@
+#!/bin/bash
+# Restart nagios and update DCC
+
+PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin
+
+repos=/etc/nagios/repos/
+
+source /etc/nagrestconf/restart_nagios.conf
+
+# Restart nagios straight away.
+nagios -v /etc/nagios/nagios.cfg &> /dev/null && /sbin/service nagios restart
+
+# Get a list of directories to check
+dirs=`find /etc/nagios/objects -mindepth 1 -maxdepth 1 -type d`
+
+CHANGES=0
+for i in $dirs
+do
+    folder=`basename $i`
+    cd $i
+    if [[ -d versions ]]; then
+        [[ -d setup.known_good ]] || exit 0
+        cp setup.known_good/* versions/
+        cd versions
+        while read a b; do
+            [[ $a == "?" && ! $b == *".auto.setup" ]] && {
+                svn add "$b"
+                svn ci -m "Added file $b"
+            }
+            [[ $a == "M" ]] && {
+                 CHANGES=1
+            }
+        done < <( svn st )
+        [[ $CHANGES -eq 1 ]] && {
+            svn ci -m "Changes saved"
+            [[ -n $dcc ]] && {
+                svnsync sync svn+ssh://svnsync@$dcc/etc/nagios/repos/$folder
+                ssh svnsync@$dcc "touch /tmp/nagios_update_$folder"
+            }
+        }
+    else
+        # versions/ does not exist so create it
+        svn co file://$repos/$folder versions
+        [[ -n $dcc ]] && {
+            svnsync sync svn+ssh://svnsync@$dcc/etc/nagios/repos/$folder
+            ssh svnsync@$dcc "touch /tmp/nagios_update_$folder"
+        }
+    fi
+done
+

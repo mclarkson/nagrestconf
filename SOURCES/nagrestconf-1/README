@@ -1,0 +1,571 @@
+Nagrestconf README
+==================
+:toc:
+:icons:
+:numbered:
+
+Screenshot
+----------
+
+++++
+<img src="http://www.smorg.co.uk/images/nagrestconfgui.png"
+alt="Nagrestconf GUI Screenshot" style="float:none" width="800px" />
+++++
+
+What is Nagrestconf?
+--------------------
+
+'Nagrestconf' is a REST interface and configuration GUI for Nagios.
+
+'Nagrestconf' is written in Bash and PHP.
+
+Specifically, 'Nagrestconf':
+
+* allows Nagios configuration files to be written using a REST api.
+* allows the server to be restarted using the REST api.
+* provides a configuration Web GUI built on the REST api.
+
+It can be useful for:
+
+* Bulk loading
+* Bulk editing
+* Automation
+* Catching common configuration mistakes
+* Configuration Delegation (using additional tools)
+* Distributed monitoring (using additional tools)
+
+Not all of the Nagios directives are implemented, refer to the <<X20, Status>> section.
+
+How does it work?
+-----------------
+
+[cols="<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Program | Language | Description 
+| +rest/index.php+ | PHP | Provides the REST interface and calls 'nagctl'.
+| 'nagctl'| Bash | Writes the CSV .setup files and calls 'csv2nag'.
+| 'csv2nag' | Bash | Writes the Nagios .cfg object files
+| 'restart_nagios' | Bash | Called periodically by cron.
+| 'slc_configure' | Bash | For initial configuration.
+| +nagrestconf/index.php+ | PHP | A Configuration GUI that uses the REST api.
+|========================================================
+
+Requirements
+------------
+
+For the Web GUI the following Browsers work: Firefox, Opera, Chrome, Safari -
+including Maemo, IPAD and Android versions.
+
+[cols="<,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Software Requirement | Reason
+| php | for REST interface and Web GUI. v5.3+ only.
+| nagios | for checking the configuration. v3+ only.
+| apache | for serving PHP pages.
+| subversion | for managing configuration versions.
+| mod_ssl | for secure communications.
+| bash | for non-web scripts.
+| grep | used in the bash scripts.
+| sed | used in the bash scripts.
+| gawk | used in the bash scripts.
+| procmail | for locking with 'lockfile'.
+|========================================================
+
+Install
+-------
+
+Prebuilt Packages
+~~~~~~~~~~~~~~~~~
+
+Get the relevant RPM for Centos/Redhat from Sourceforge at:
+
+https://sourceforge.net/projects/nagrestconf/files/
+
+Install Using Prebuilt Packages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Install the prebuilt package downloaded from Sourceforge. For example:
++
+* Centos
++
+----------------------------------------------------------
+yum install nagrestconf-1-1.x.noarch.rpm
+----------------------------------------------------------
++
+* Debian
++
+----------------------------------------------------------
+gdebi nagrestconf-1-1.x.noarch.deb
+----------------------------------------------------------
++
+2. Configure the system:
++
+For testing purposes (or for production use) copy the initial-config directory,
+which contains a minimal nagios configuration directory. For example:
++
+----------------------------------------------------------
+cd /etc
+mv nagios nagios.orig
+cp -a /usr/share/doc/nagrestconf/initial-config nagios
+----------------------------------------------------------
++
+NOTE: If the initial-config directory is not used then ensure that the text
+`<SERVICE_LINE_CFG_ENTRY>' is placed somewhere in the +nagios.cfg+ file on a line
+by itself. This line is replaced with a `cfg_dir=' line by 'slc_configure'.
++
+'slc_configure' will set up a subversion repository and will create a directory
+to hold nagios and CSV data in the nagios configuration directory tree. For example:
++
+----------------------------------------------------------
+slc_configure --folder=local
+htpasswd /etc/nagios/htpasswd.users nagiosadmin
+----------------------------------------------------------
++
+Edit +/etc/nagrestconf/nagrestconf.ini+ and change the `restuser =' and
+`restpass = ' lines.
++
+The system should now be ready to configure using REST and by using the GUI at
+`http://localhost/nagrestconf'.
++
+Test the installation with:
++
+----------------------------------------------------------
+bash /usr/share/doc/nagrestconf-1/bulk-loading/REST_setup_local.sh
+----------------------------------------------------------
++
+Then check that it can be seen and edited in the 'Nagrestconf' GUI.
+
+Install From Source
+~~~~~~~~~~~~~~~~~~~
+
+Copy 'csv2nag', 'nagctl', 'restart_nagios' and 'slc_configure' from scripts
+directory to +/usr/bin+ or +/usr/local/bin+.
+
+Copy +nagrestconf/+ and +rest/+ directories to the web server document root and
+create a webserver configuration for it.
+
+Copy the +etc/nagrestconf/+ directory to +/etc/+ and modify the configuration
+files.
+
+Run the 'slc_configure' script to configure the repository and configuration
+directory. Ensure a `cfg_dir=' entry exists in +nagios.cfg+.
+
+REST Examples
+-------------
+
+Please look at the 'REST_setup_local.sh' script located in the +bulk-loading/+
+document directory. This script gives an example of `Bulk loading'.
+
+Here is an example of showing the configuration of a host:
+
+----
+# curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local","filter":"abcp3v-lin40.company.local"\}'
+
+[[{"name":"abcp3v-lin40.company.local"},{"alias":"abcp3v-lin40.company.local"},
+{"ipaddress":"192.168.1.40"},{"template":"abcprod_htmpl"},
+{"hostgroup":"abcprod"},{"contact":""},{"contactgroups":""},
+{"activechecks":""},{"servicesets":"basic-linux-checks"},{"disable":""}]]
+----
+
+Here is an example of adding a new host:
+
+----
+curl -knX POST -d 'json={"folder":"local", \
+        "name":"abcp3v-lin02.company.local", \
+        "alias":"abcp3v-lin02.company.local", \
+        "ipaddress":"192.168.1.2", \
+        "template":"abcprod_htmpl", \
+        "hostgroup":"abcprod", \
+        "servicesets":"basic-linux-checks"}' https://127.0.0.1/rest/add/hosts
+
+["Success"]
+----
+
+A service set, basic-linux-checks, had previously been added using the REST
+interface as had hostgroups, hosttemplates, servicetemplates and contacts.
+
+The following Nagios `.cfg' file was written for the host:
+
+----
+#################################################################
+#         THIS FILE WAS CREATED BY THE CSV2NAG SCRIPT           #
+#   DON'T MODIFY THIS FILE. ALL CHANGES WILL BE OVERWRITTEN     #
+#################################################################
+
+define host {
+       use             abcprod_htmpl
+       host_name       abcp3v-lin02.company.local
+       alias           abcp3v-lin02.company.local
+       address         192.168.1.2
+       hostgroups      abcprod
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Load
+        check_command                   check_any!check_load -r -w 4,4,4 -c 8,8,8
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Puppet Log
+        check_command                   check_any!check_puppet_wrapper
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Read-write filesystems
+        check_command                   check_any!check_fs_ro.sh
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Puppet Version
+        check_command                   check_any!check_puppet_version.sh -v puppet-2.6.16-1
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             PING
+        check_command                   check_ping!100.0,20%!500.0,60%
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Swap
+        check_command                   check_any!check_swap -w 10% -c 5%
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             DNS
+        check_command                   check_any!check_dns -w 0.5 -c 1 -t 30 -H www.google.com
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_10trytmpl
+        service_description             NTP Time
+        check_command                   check_any!check_ntp -H 0.uk.pool.ntp.org -w 0.5 -c 1.0
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Num Users
+        check_command                   check_any!check_users -w 15 -c 20
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Processes: Zombies
+        check_command                   check_any!check_procs -w 40 -c 80 -s Z
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             CPU
+        check_command                   check_any!check_cpu.sh
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Memory
+        check_command                   check_any!check_mem.pl -w 80 -c 95
+}
+
+define service {
+        host_name                       abcp3v-lin02.company.local
+        use                             abc_stmpl
+        service_description             Disks
+        check_command                   check_any!check_disk -e -w 10% -c 5%
+}
+
+----
+
+[[X20]]
+Status
+------
+Currently implemented directives (57/187) = 30%.
+
+.Currently implemented directives
+[cols="<,^,^,>",frame="topbot",options="header,autowidth"]
+|========================================================
+| Definition | No. in Nagios | No. in Nagrestconf | %
+| Contacts | 17 | 10 | 59%
+| Contact Groups | 3 | 3 | 100%
+| Hosts | 43 | 17 | 40% 
+| Host Groups | 7 | 2 | 28%
+| Services | 39 | 17 | 44%
+| Service Groups | 7 | 2 | 28%
+| Service Sets | N/A | 10 | N/A
+| Time Periods | 5 | 4 | 80%
+| Commands | 2 | 2 | 100%
+| Host Dependency | 8 | 0 | 0%
+| Host Escalation | 9 | 0 | 0%
+| Service Dependency | 10 | 0 | 0%
+| Service Escalation | 10 | 0 | 0%
+| Hostextinfo | 10 | 0 | 0%
+| Serviceextinfo | 7 | 0 | 0%
+|========================================================
+
+REST Commands
+-------------
+The URL is in the form 'https://<HOST>/rest/<COMMAND>/<COMMANDARG>'.
+
+GET requests don't modify the configuration:
+
+* +https://<HOST>/rest/+
+** +check/+
+*** nagiosconfig json={“folder”:”<name>”[,”verbose”:”true”]}
+** +show/+
+*** hosttemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicetemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hosts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** services json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicesets json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicegroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** contacts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** contactgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** timeperiods json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** commands json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+
+POST requests are for modifying the configuration:
+
+* +https://<HOST>/rest/+
+** +add/+
+*** hosttemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicetemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hosts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** services json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicesets json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicegroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** contacts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** contactgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** timeperiods json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** commands json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+** +delete/+
+*** hosttemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicetemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hosts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** services json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicesets json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicegroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** contacts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** contactgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** timeperiods json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** commands json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+** +modify/+
+*** hosttemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicetemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hosts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** services json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicesets json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicegroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** contacts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** contactgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** timeperiods json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** commands json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+** +restart/+
+*** nagios json={“folder”:”<name>”}
+** +apply/+
+*** nagiosconfig json={“folder”:”<name>”[,”verbose”:”true”]}
+*** nagioslastgoodconfig json={“folder”:”<name>”}
+** +pipecmd/+
+*** enablehostsvcchecks json={“folder”:”<name>”,”name”:”<hostname>}
+*** disablehostsvcchecks json={“folder”:”<name>”,”name”:”<hostname>” [,”comment”,”<comment>”]}
+*** enablesvccheck json={“folder”:”<name>”,”name”:”<hostname>, “svcdesc”:”<Service Description>” [,”comment”,”<comment>”]}
+*** disablesvccheck json={“folder”:”<name>”,”name”:”<hostname>” “svcdesc”:”<Service Description>” [,”comment”,”<comment>”]}
+
+
+Currently Implemented Definitions and Directives
+------------------------------------------------
+
+Key for Flags column:
+
+ * \'U' - the option is Unimplemented.
+ * \'R' for a required field.
+ * \'K' to show the fields required to specify a unique key.
+ * \'L' for a list field. Lists consist of zero or more items separated by spaces.
+ * \'C' for a compound field: <name>|<value>[,<name>|<value>]...
+
+.Contacts File
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Contact name | RK | name
+| 2. | Use| R | use
+| 3. | Alias pretty name | R | alias
+| 4. | Email address |  | emailaddr
+| 5. | Service notification period | R | svcnotifperiod
+| 6. | Service notification options | R | svcnotifopts
+| 7. | Service notification commands | R | svcnotifcmds
+| 8. | Host notification period | R | hstnotifperiod
+| 9. | Host notification options | R | hstnotifopts
+| 10. | Host notification commands | R | hstnotifcmds
+| 11. | Can submit commands |  | cansubmitcmds
+| 12. | Disable | U | disable
+|========================================================
+
+.Contactgroups Files
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Contact group name | RK | name
+| 2. | Alias pretty name | R | alias
+| 3. | Members list | RL | members
+| 4. | Disable | U | disable
+|========================================================
+
+.Hosts File
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Host name | RK | name
+| 2. | Alias | R | alias
+| 3. | IP Address	| R | ipaddress
+| 4. | Template | R | template
+| 5. | Shown Hostgroup |  L | hostgroup
+| 6. | Contact |  L | contact
+| 7. | Contact Group | L | contactgroups
+| 8. | Active checks |  | activechecks
+| 9. | Service Set |  | servicesets
+| 10. | Disable |  | disable
+|========================================================
+
+.Hosttemplates File 
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Name | RK | name
+| 2. | Use | R | use
+| 3. | Contacts | L | contacts
+| 4. | Contact groups | L | contactgroups
+| 5. | Normal check interval | U | normchecki
+| 6. | Check interval | R | checkinterval
+| 7. | Retry interval | R | retryinterval
+| 8. | Notification period | R | notifperiod
+| 9. | Notification options|  | notifopts
+| 10. | Disable | U | disable
+| 11. | Check period|  R | checkperiod
+| 12. | Max check attempts|  R | maxcheckattempts
+| 13. | Check command|  | checkcommand
+| 14. | Notification interval|  R | notifinterval
+|========================================================
+
+.Services File 
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Name | RK | name
+| 2. | Service template | R | template
+| 3. | Service command | R | command
+| 4. | Service description | RK | svcdesc
+| 5. | Service groups | L | svcgroup
+| 6. | Contacts | L | contacts
+| 7. | Contact groups | L | contactgroups
+| 8. | Freshness threshold |  | freshnessthresh
+| 9. | Active checks |  | activechecks
+| 10. | Custom variables | C | customvars
+| 11. | Disable |  | disable
+|========================================================
+
+.Servicesets File 
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Name | RK | name
+| 2. | Service template | R | template
+| 3. | Service command | R | command
+| 4. | Service description | RK | svcdesc
+| 5. | Service groups | L | svcgroup
+| 6. | Contacts | L | contacts
+| 7. | Contact groups | L | contactgroups
+| 8. | Freshness threshold |  | freshnessthresh
+| 9. | Active checks |  | activechecks
+| 10. | Custom variables | C | customvars
+| 11. | Disable | U | disable
+|========================================================
+
+.Servicetemplates File 
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Name | RK | name
+| 2. | Use | R | use
+| 3. | Contacts | L | contacts
+| 4. | Contact groups | L | contactgroups
+| 5. | Notification options |  | notifopts
+| 6. | Check interval | R | checkinterval
+| 7. | Normal check interval | U | normchecki
+| 8. | Retry interval | R | retryinterval
+| 9. | Notification interval | R | notifinterval
+| 10. | Notification period | R | notifperiod
+| 11. | Disable | U | disable
+| 12. | Check period | R | checkperiod
+| 13. | Max check attempts | R | maxcheckattempts
+|========================================================
+
+.Commands File
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Command name | RK | name
+| 2. | Command line | R | command
+| 3. | Disable | U | disable
+|========================================================
+
+.Hostgroups File
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Hostgroup name | RK | name
+| 2. | Alias | R | alias
+| 3. | Disable | U | disable
+|========================================================
+
+.Servicegroups File
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Hostgroup name | RK | name
+| 2. | Alias | R | alias
+| 3. | Disable | U | disable
+|========================================================
+
+.Timeperiods File
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Timeperiod name | RK | name
+| 2. | Alias| R | alias
+| 3. | Freestyle time definition | C | definition
+| 4. | Timeperiod to exclude | L | exclude
+| 5. | Disable | U | disable
+|========================================================
+

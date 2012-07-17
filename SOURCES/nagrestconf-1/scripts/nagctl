@@ -1,0 +1,2892 @@
+#!/bin/bash
+#
+# Copyright(C) 2010 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#
+#    This software is provided under the terms of the GNU
+#    General Public License (GPL), as published at: 
+#    http://www.gnu.org/licenses/gpl.html .
+#
+# File:     nagctl
+# Author:   Mark Clarkson
+# Date:     11 Sep 2010
+# Version:  0.11
+# Modified:
+#           2010-09-30 Mark Clarkson
+#           * Added more data cross-checking
+#
+# Purpose:  This a utility to help with creation of Nagios configuration
+#           files. For more information type, 
+#
+#             ./nagctl -h
+#
+# Notes:
+#
+
+# ---------------------------------------------------------------------------
+# SETINGS - MODIFY AS NEEDED
+# ---------------------------------------------------------------------------
+
+#id > /etc/nagios/objects/local/bob
+
+NAG_DIR=/etc/nagios
+NAG_OBJ_DIR=$NAG_DIR/objects
+NAG_CONFIG=$NAG_DIR/nagios.cfg
+COMMANDFILE='/var/log/nagios/rw/nagios.cmd'
+CSV2NAG=/usr/bin/csv2nag
+
+#
+#
+# -------------------- DO NOT MODIFY ANYTHING BELOW -------------------------
+#
+#
+
+# ---------------------------------------------------------------------------
+# GLOBALS
+# ---------------------------------------------------------------------------
+
+# Debugging
+echo "$@" >>/tmp/nagctl_debug.log
+
+RETVAL=0
+
+# -- Constants
+ACT_PROPAGATE=1
+ACT_PIPECMD=2
+ACT_ADD=3
+ACT_DELETE=4
+ACT_MODIFY=5
+ACT_SHOW=6
+ACT_CHECK=7
+ACT_RESTART=8
+ACT_APPLY=9
+
+CHECK_NAGIOSCONFIG=1
+
+RESTART_NAGIOS=1
+
+APPLY_NAGIOSCONFIG=1
+APPLY_NAGIOSLASTGOODCONFIG=2
+
+PIPECMD_ENABLEHOSTSVCCHECKS=1
+PIPECMD_DISABLEHOSTSVCCHECKS=2
+PIPECMD_DISABLESVCCHECK=3
+PIPECMD_ENABLESVCCHECK=4
+
+FILE_HOSTTEMPLATES=1
+FILE_SERVICETEMPLATES=2
+FILE_HOSTS=3
+FILE_HOSTGROUPS=4
+FILE_SERVICES=5
+FILE_CONTACTS=6
+FILE_CONTACTGROUPS=7
+FILE_SERVICESETS=8
+FILE_SERVICEGROUPS=9
+FILE_TIMEPERIODS=10
+FILE_COMMANDS=11
+
+# lockfile settings
+LOCK_SLEEPTIME=1
+LOCK_RETRY=120
+
+# Definitions of required non-null fields for FILE_XXX csv files.
+gfilename[$FILE_HOSTTEMPLATES]="hosttemplates"
+gfilename[$FILE_SERVICETEMPLATES]="servicetemplates"
+gfilename[$FILE_HOSTS]="hosts"
+gfilename[$FILE_HOSTGROUPS]="hostgroups"
+gfilename[$FILE_SERVICES]="services"
+gfilename[$FILE_CONTACTS]="contacts"
+gfilename[$FILE_CONTACTGROUPS]="contactgroups"
+gfilename[$FILE_SERVICESETS]="servicesets"
+gfilename[$FILE_SERVICEGROUPS]="servicegroups"
+gfilename[$FILE_TIMEPERIODS]="timeperiods"
+gfilename[$FILE_COMMANDS]="commands"
+gdelfilereq[$FILE_HOSTTEMPLATES]="1"
+gdelfilereq[$FILE_SERVICETEMPLATES]="1"
+gdelfilereq[$FILE_HOSTS]="1"
+gdelfilereq[$FILE_HOSTGROUPS]="1"
+gdelfilereq[$FILE_SERVICES]="1 4"
+gdelfilereq[$FILE_CONTACTS]="1"
+gdelfilereq[$FILE_CONTACTGROUPS]="1"
+gdelfilereq[$FILE_SERVICESETS]="1 4"
+gdelfilereq[$FILE_SERVICEGROUPS]="1"
+gdelfilereq[$FILE_TIMEPERIODS]="1"
+gdelfilereq[$FILE_COMMANDS]="1"
+#gfilereq[$FILE_HOSTTEMPLATES]="1 2 6 7 8"
+gfilereq[$FILE_HOSTTEMPLATES]="1 6 7 8 11 12 14"
+#gfilereq[$FILE_SERVICETEMPLATES]="1 2 6 8 9 10"
+gfilereq[$FILE_SERVICETEMPLATES]="1 6 8 9 10 12 13"
+gfilereq[$FILE_HOSTS]="1 2 3 4"
+gfilereq[$FILE_HOSTGROUPS]="1 2"
+gfilereq[$FILE_SERVICES]="1 2 3 4"
+# gfilereq[$FILE_CONTACTS]="1 2 3"
+gfilereq[$FILE_CONTACTS]="1 5 6 7 8 9 10"
+gfilereq[$FILE_CONTACTGROUPS]="1 2 3"
+gfilereq[$FILE_SERVICESETS]="1 2 3 4"
+gfilereq[$FILE_SERVICEGROUPS]="1 2"
+gfilereq[$FILE_TIMEPERIODS]="1 2"
+gfilereq[$FILE_COMMANDS]="1 2"
+gfile_ncols[$FILE_HOSTTEMPLATES]="14"
+gfile_ncols[$FILE_SERVICETEMPLATES]="13"
+gfile_ncols[$FILE_HOSTS]="10"
+gfile_ncols[$FILE_HOSTGROUPS]="3"
+gfile_ncols[$FILE_SERVICES]="11"
+gfile_ncols[$FILE_CONTACTS]="12"
+gfile_ncols[$FILE_CONTACTGROUPS]="4"
+gfile_ncols[$FILE_SERVICESETS]="11"
+gfile_ncols[$FILE_SERVICEGROUPS]="3"
+gfile_ncols[$FILE_TIMEPERIODS]="5"
+gfile_ncols[$FILE_COMMANDS]="3"
+
+SETUP_DIR=
+SETUP_FILE=
+
+# Program args
+ME="$0"
+#CMDLINE="$@"
+# Standard
+TRUE=1
+FALSE=0
+# Errors
+ERROR_NONE=0
+ERROR=1
+
+# -- General variables
+# command line vars
+gservice=
+gaction=
+gfile=
+gcsv=
+# command line vars as numbers
+gnservice=
+gnaction=
+gnfile=
+gncsv=
+
+# ----------------------------------------------------------------------------
+lockdir()
+# ----------------------------------------------------------------------------
+# Purpose:      Create the lock file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    if lockfile -! -$LOCK_SLEEPTIME -r $LOCK_RETRY $SERVICE_LOCK; then
+        echo "NAGCTL ERROR: Could not gain directory lock. Aborting."
+        exit 1
+    fi
+}
+
+# ----------------------------------------------------------------------------
+unlockdir()
+# ----------------------------------------------------------------------------
+# Purpose:      Remove the lock file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    rm -f $SERVICE_LOCK
+}
+
+
+# ----------------------------------------------------------------------------
+usage()
+# ----------------------------------------------------------------------------
+# Purpose:      Show program options.
+# Arguments:    None
+# Returns:      Nothing
+{
+    echo
+    echo -n "Usage: `basename $ME` [-h] <SERVICE> <ACTION> <FILE|ITEM>"
+    echo " <CSV_LINE|QUERY>"
+    echo
+    echo " -h       :  Display this help text."
+    echo " ACTION   :  One of four ACTIONS are understood:"
+    echo "             show           -  Query a csv FILE."
+    echo "             add            -  Add a line to a csv FILE"
+    echo "             delete         -  Delete a csv entry from a FILE."
+    echo "             modify         -  Modify an existing csv entry."
+    echo "             check          -  check an ITEM."
+    echo "             pipecmd        -  Send text to the Nagios cmd pipe."
+    echo "             propagate      -  Propagate changes to master."
+    echo "             restart        -  Restart an ITEM."
+    echo " SERVICE  :  The directory holding the configuration."
+    echo " ITEM     :  For things that are not add, delete, show or modify."
+    echo " FILE     :  The file to ACTION. E.g. hosts, services."
+    echo " CSV_LINE :  A line of CSV in the same format as the target FILE."
+    echo " QUERY    :  A query to 'show'."
+    echo
+}
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose:      Parse program options and set globals.
+# Arguments:    None
+# Returns:      Nothing
+{
+    set -- "$@"
+    [[ -z $4 ]] && set -- "$@" "dummy"
+    while true
+    do
+        case $1 in
+            -h) usage; exit 0
+            ;;
+            ?*) gservice="$1"
+                gaction="$2"
+                gfile="$3"
+                gcsv="$4"
+            ;;
+        esac
+        shift 1 || break
+        [[ -n $gcsv ]] && break
+    done
+
+    # Get the rest of the args into gcsv
+    #shift 3
+    #while true;
+    #do
+    #    gcsv="$gcsv $1"
+    #    shift 1 || break
+    #done
+
+    # Strip spaces and urldecode (TODO: more decode)
+    gcsv=`echo "$gcsv" | sed 's/[[:space:]]*$//;s/,[[:space:]]*/,/g;
+        s/[[:space:]]*,/,/g;s/%2a/*/i'`
+
+    [[ -z $gservice || -z $gaction || -z $gfile || -z $gcsv ]] && {
+        echo "NAGCTL ERROR: Syntax error."
+        exit 7
+    }
+
+    # Sanity Checks (and set flags)
+    check_folder
+    check_action
+    case $gnaction in
+        2) check_pipecmditem;;
+        [3456]) check_file;;
+        10) check_file;;
+        7) check_checkitem ;;
+        8) check_restartitem ;;
+        9) check_applyitem ;;
+    esac
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#                                     CHECKS
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# ---------------------------------------------------------------------------
+check_folder()
+# ---------------------------------------------------------------------------
+# Purpose:      Sanity checks.
+# Arguments:    None
+# Returns:      Nothing
+{
+    [[ -e "$NAG_OBJ_DIR/$gservice" ]] || {
+        echo "NAGCTL ERROR: Non-existent folder."
+        exit 8
+    }
+}
+
+# ---------------------------------------------------------------------------
+check_pipecmditem()
+# ---------------------------------------------------------------------------
+# Purpose:      Sanity checks.
+# Arguments:    None
+# Returns:      Nothing
+{
+    case $gfile in
+        enablehostsvcchecks) gnfile=$PIPECMD_ENABLEHOSTSVCCHECKS
+        ;;
+        disablehostsvcchecks) gnfile=$PIPECMD_DISABLEHOSTSVCCHECKS
+        ;;
+        disablesvccheck) gnfile=$PIPECMD_DISABLESVCCHECK
+        ;;
+        enablesvccheck) gnfile=$PIPECMD_ENABLESVCCHECK
+        ;;
+        ?*) echo -e "NAGCTL ERROR: Invalid file."
+            exit 4
+        ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+check_applyitem()
+# ---------------------------------------------------------------------------
+# Purpose:      Sanity checks.
+# Arguments:    None
+# Returns:      Nothing
+{
+    case $gfile in
+        nagiosconfig) gnfile=$APPLY_NAGIOSCONFIG
+        ;;
+        nagioslastgoodconfig) gnfile=$APPLY_NAGIOSLASTGOODCONFIG
+        ;;
+        ?*) echo -e "NAGCTL ERROR: Invalid file."
+            exit 4
+        ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+check_restartitem()
+# ---------------------------------------------------------------------------
+# Purpose:      Sanity checks.
+# Arguments:    None
+# Returns:      Nothing
+{
+    case $gfile in
+        nagios) gnfile=$RESTART_NAGIOS
+        ;;
+        ?*) echo -e "NAGCTL ERROR: Invalid file."
+            exit 4
+        ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+check_checkitem()
+# ---------------------------------------------------------------------------
+# Purpose:      Sanity checks.
+# Arguments:    None
+# Returns:      Nothing
+{
+    case $gfile in
+        nagiosconfig) gnfile=$CHECK_NAGIOSCONFIG
+        ;;
+        ?*) echo -e "NAGCTL ERROR: Invalid file."
+            exit 4
+        ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+check_file()
+# ---------------------------------------------------------------------------
+# Purpose:      Sanity checks.
+# Arguments:    None
+# Returns:      Nothing
+{
+    case $gfile in
+        hosttemplates) gnfile=$FILE_HOSTTEMPLATES
+        ;;
+        servicetemplates) gnfile=$FILE_SERVICETEMPLATES
+        ;;
+        hosts) gnfile=$FILE_HOSTS
+        ;;
+        hostgroups) gnfile=$FILE_HOSTGROUPS
+        ;;
+        servicegroups) gnfile=$FILE_SERVICEGROUPS
+        ;;
+        services) gnfile=$FILE_SERVICES
+        ;;
+        servicesets) gnfile=$FILE_SERVICESETS
+        ;;
+        contacts) gnfile=$FILE_CONTACTS
+        ;;
+        contactgroups) gnfile=$FILE_CONTACTGROUPS
+        ;;
+        timeperiods) gnfile=$FILE_TIMEPERIODS
+        ;;
+        commands) gnfile=$FILE_COMMANDS
+        ;;
+        ?*) echo -e "NAGCTL ERROR: Invalid file."
+            exit 4
+        ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+check_action()
+# ---------------------------------------------------------------------------
+# Purpose:      Sanity checks.
+# Arguments:    None
+# Returns:      Nothing
+{
+    case $gaction in
+        show) gnaction=$ACT_SHOW
+        ;;
+        add) gnaction=$ACT_ADD
+        ;;
+        delete) gnaction=$ACT_DELETE
+        ;;
+        modify) gnaction=$ACT_MODIFY
+        ;;
+        pipecmd) gnaction=$ACT_PIPECMD
+        ;;
+        propagate) gnaction=$ACT_PROPAGATE
+        ;;
+        check) gnaction=$ACT_CHECK
+        ;;
+        restart) gnaction=$ACT_RESTART
+        ;;
+        apply) gnaction=$ACT_APPLY
+        ;;
+        ?*) echo -e "NAGCTL ERROR: Invalid action"
+            exit 4
+        ;;
+    esac
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#                             SUPPORTING FUNCS
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# ---------------------------------------------------------------------------
+init()
+# ---------------------------------------------------------------------------
+# Purpose:      Initialise important vars
+# Arguments:    None
+# Returns:      Nothing
+{
+    SETUP_DIR="$NAG_OBJ_DIR/$gservice/setup"
+    SETUP_FILE="$SETUP_DIR/${gservice}_$gfile.setup"
+    SERVICE_LOCK="$SETUP_DIR/directory.lock"
+}
+
+# ---------------------------------------------------------------------------
+check_setup_dir()
+# ---------------------------------------------------------------------------
+# Purpose:      Check for FILE_XXXs and setup dir. Quits on error.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local sfile sdir
+
+    # Check for setup directory and csv file
+    sdir="$NAG_OBJ_DIR/$gservice/"
+    [[ -w $sdir ]] || {
+        echo "NAGCTL ERROR: Cannot write to $sdir."
+        exit 9
+    }
+    [[ -e "$sdir/setup" ]] || mkdir -p $sdir/setup
+    sfile="$NAG_OBJ_DIR/$gservice/setup/${gservice}_$gfile.setup"
+    touch $sfile 2>/dev/null
+    [[ -w $sfile ]] || {
+        echo "NAGCTL ERROR: Cannot write to $sfile."
+        exit 9
+    }
+}
+
+# ----------------------------------------------------------------------------
+check_num_cols()
+# ----------------------------------------------------------------------------
+# Purpose:      Check number of columns in csv line.
+# Arguments:    $1 - expected number of columns.
+# Returns:      0 - success, 1 - error
+{
+    numcols=`echo "$gcsv" | awk -F, '{ print NF; }'`
+
+    : $((numcols++))
+    : $((numcols--))
+    [[ $numcols -eq "$1" ]] && return 0
+    return 1
+}
+
+# ----------------------------------------------------------------------------
+check_delete_null_cols()
+# ----------------------------------------------------------------------------
+# Purpose:      Check that columns listed in gdelfilereq global are not null.
+# Arguments:    $1 - a FILE_XXX number.
+# Returns:      0 - success, 1 - error
+{
+    local col a
+
+    for col in ${gdelfilereq[$1]}
+    do
+        a=`echo "$gcsv" | cut -d, -f$col`
+        [[ -z $a ]] && return 1
+    done
+
+    return 0
+}
+
+# ----------------------------------------------------------------------------
+check_null_cols()
+# ----------------------------------------------------------------------------
+# Purpose:      Check that columns listed in gfilereq global are not null.
+# Arguments:    $1 - a FILE_XXX number.
+# Returns:      0 - success, 1 - error
+{
+    local col a
+
+    for col in ${gfilereq[$1]}
+    do
+        a=`echo "$gcsv" | cut -d, -f$col`
+        [[ -z $a ]] && return 1
+    done
+
+    return 0
+}
+
+# ----------------------------------------------------------------------------
+item_delete()
+# ----------------------------------------------------------------------------
+# Purpose:      Look for text in a column and delete the row.
+# Arguments:    $1 - column, $2 - FILE_XXX, $3 - text
+# Returns:      0 - found, 1 - not found
+{
+    local query i ncols=${gfile_ncols[$2]}
+
+    [[ $1 -gt $ncols ]] && {
+        echo -n "NAGCTL ERROR: Cannot search for column $1 when "
+        echo "there are only $ncols columns."
+        exit 11
+    }
+
+    # Build a precise query
+    for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
+    query="$query$3"
+    for i in `seq 1 $(($ncols-$1))`; do query="$query,.*"; done
+    sed -i -- "/$query/d" ${gservice}_${gfilename[$2]}.setup
+}
+
+# ----------------------------------------------------------------------------
+item_delete2()
+# ----------------------------------------------------------------------------
+# Purpose:      Look for two items of text respectively in two columns.
+#               and delete the row. column1 must come before column2.
+# Arguments:    $1 - column1, $2 - column2, $3 - FILE_XXX,
+#               $4 - text1, $5 - text2
+# Returns:      0 - found, 1 - not found
+{
+    local query i ncols=${gfile_ncols[$3]}
+
+    [[ $1 -gt $ncols ]] && {
+        echo -n "NAGCTL ERROR: Cannot search for column $1 when "
+        echo "there are only $ncols columns."
+        exit 11
+    }
+
+    # Build a precise query
+    for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
+    query="$query$4"
+    for i in `seq $(($1+1)) $(($2-1))`; do query="$query,.*"; done
+    query="$query,$5"
+    for i in `seq 1 $(($ncols-$2))`; do query="$query,.*"; done
+    sed -i -- "/$query/d" ${gservice}_${gfilename[$3]}.setup
+}
+
+# ----------------------------------------------------------------------------
+item_exists()
+# ----------------------------------------------------------------------------
+# Purpose:      Look for text in a column.
+# Arguments:    $1 - column, $2 - FILE_XXX, $3 - text
+# Returns:      0 - found, 1 - not found
+{
+    local query i ncols=${gfile_ncols[$2]}
+
+    [[ $1 -gt $ncols ]] && {
+        echo -n "NAGCTL ERROR: Cannot search for column $1 when "
+        echo "there are only $ncols columns."
+        exit 11
+    }
+
+    # Build a precise query
+    for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
+    query="$query$3"
+    for i in `seq 1 $(($ncols-$1))`; do query="$query,.*"; done
+    return `grep -qs -- "$query" ${gservice}_${gfilename[$2]}.setup`
+}
+
+# ----------------------------------------------------------------------------
+item_exists2()
+# ----------------------------------------------------------------------------
+# Purpose:      Look for two items of text respectively in two columns.
+#               column1 must come before column2.
+# Arguments:    $1 - column1, $2 - column2, $3 - FILE_XXX,
+#               $4 - text1, $5 - text2
+# Returns:      0 - found, 1 - not found
+{
+    local query i ncols=${gfile_ncols[$3]}
+
+    [[ $1 -gt $ncols ]] && {
+        echo -n "NAGCTL ERROR: Cannot search for column $1 when "
+        echo "there are only $ncols columns."
+        exit 11
+    }
+
+    # Build a precise query
+    for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
+    query="$query$4"
+    for i in `seq $(($1+1)) $(($2-1))`; do query="$query,.*"; done
+    query="$query,$5"
+    for i in `seq 1 $(($ncols-$2))`; do query="$query,.*"; done
+    return `grep -qs -- "$query" ${gservice}_${gfilename[$3]}.setup`
+}
+
+# ----------------------------------------------------------------------------
+item_search()
+# ----------------------------------------------------------------------------
+# Purpose:      Look for text in a column and display it the entire line.
+# Arguments:    $1 - column, $2 - FILE_XXX, $3 - text
+# Returns:      0 - found, 1 - not found
+{
+    local query i ncols=${gfile_ncols[$2]}
+
+    if [[ $1 -gt $ncols ]]; then
+        echo -n "NAGCTL ERROR: Cannot search for column $1 when "
+        echo "there are only $ncols columns."
+        exit 11
+    elif [[ $1 -eq 1 ]]; then
+        query="^"
+    fi
+
+    # Build a precise query
+    for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
+    query="$query$3"
+    for i in `seq 1 $(($ncols-$1))`; do query="$query,.*"; done
+    grep -h -- "$query" ${gservice}_${gfilename[$2]}.setup
+}
+
+# ----------------------------------------------------------------------------
+item_search2()
+# ----------------------------------------------------------------------------
+# Purpose:      Look for text in two columns and display it.
+#               column1 must come before column2.
+# Arguments:    $1 - column1, $2 - column2 ,$3 - FILE_XXX,
+#               $4 - text1, $5 - text2
+# Returns:      0 - found, 1 - not found
+{
+    local query i ncols=${gfile_ncols[$3]}
+
+    [[ $1 -gt $ncols ]] && {
+        echo -n "NAGCTL ERROR: Cannot search for column $1 when "
+        echo "there are only $ncols columns."
+        exit 11
+    }
+
+    # Build a precise query
+    for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
+    query="$query$4"
+    for i in `seq $(($1+1)) $(($2-1))`; do query="$query,.*"; done
+    query="$query,$5"
+    for i in `seq 1 $(($ncols-$2))`; do query="$query,.*"; done
+    grep -h -- "$query" ${gservice}_${gfilename[$3]}.setup
+}
+
+# ----------------------------------------------------------------------------
+item_merge()
+# ----------------------------------------------------------------------------
+# Purpose:      Merge two lines of csv. A '-' in an oldcsv field nullifies it.
+#               NOTE: $gcsv is modified by this function.
+# Arguments:    $1 - numcolumns, $2 - oldcsv, $3 - newcsv
+# Returns:      Nothing
+{
+    local i newcsv= comma=
+
+    for i in `seq 1 "$1"`; do
+        oldcol=`echo "$2" | cut -d, -f$i`
+        newcol=`echo "$3" | cut -d, -f$i`
+        if [[ -n $newcol ]]; then
+            [[ $newcol == "-" ]] && newcol=
+            newcsv="$newcsv$comma$newcol"
+        else
+            newcsv="$newcsv$comma$oldcol"
+        fi
+        comma=","
+    done
+
+    gcsv="$newcsv"
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#                                   ACTIONS
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# ---------------------------------------------------------------------------
+action_show()
+# ---------------------------------------------------------------------------
+# Purpose:      Show csv lines.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local column filter
+
+    check_setup_dir
+
+    cd $SETUP_DIR
+
+    eval "$gcsv" 2>/dev/null
+
+    [[ -z "$column" ]] && column=1
+    [[ -z "$filter" ]] && filter=".*"
+
+    lockdir
+    item_search $column $gnfile "$filter"
+    unlockdir
+}
+
+# ---------------------------------------------------------------------------
+action_add()
+# ---------------------------------------------------------------------------
+# Purpose:      Add new entry.
+# Arguments:    None
+# Returns:      Nothing
+{
+    check_setup_dir
+
+    if ! check_num_cols ${gfile_ncols[$gnfile]}; then
+        echo "NAGCTL ERROR: Invalid data. Number of columns mismatch."
+        exit 10
+    fi
+
+    if ! check_null_cols $gnfile; then
+        echo "NAGCTL ERROR: Invalid data. A required field is empty."
+        exit 10
+    fi
+
+    cd $SETUP_DIR
+
+    case $gnfile in
+        $FILE_HOSTTEMPLATES) add_hosttemplate_line ;;
+        $FILE_SERVICETEMPLATES) add_servicetemplate_line ;;
+        $FILE_HOSTS) add_host_line ;;
+        $FILE_SERVICES) add_service_line ;;
+        $FILE_HOSTGROUPS) add_hostgroups_line ;;
+        $FILE_SERVICEGROUPS) add_servicegroups_line ;;
+        $FILE_CONTACTS) add_contacts_line ;;
+        $FILE_CONTACTGROUPS) add_contactgroups_line ;;
+        $FILE_SERVICESETS) add_servicesets_line ;;
+        $FILE_TIMEPERIODS) add_timeperiods_line ;;
+        $FILE_COMMANDS) add_commands_line ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+action_modify()
+# ---------------------------------------------------------------------------
+# Purpose:      Modify an existing entry.
+# Arguments:    None
+# Returns:      Nothing
+{
+    check_setup_dir
+
+    if ! check_num_cols ${gfile_ncols[$gnfile]}; then
+        echo "NAGCTL ERROR: Invalid data. Number of columns mismatch."
+        exit 10
+    fi
+
+    cd $SETUP_DIR
+
+    case $gnfile in
+        $FILE_HOSTTEMPLATES) modify_hosttemplate_line ;;
+        $FILE_SERVICETEMPLATES) modify_servicetemplate_line ;;
+        $FILE_HOSTS) modify_host_line ;;
+        $FILE_SERVICES) modify_service_line ;;
+        $FILE_HOSTGROUPS) modify_hostgroups_line ;;
+        $FILE_SERVICEGROUPS) modify_servicegroups_line ;;
+        $FILE_CONTACTS) modify_contacts_line ;;
+        $FILE_CONTACTGROUPS) modify_contactgroups_line ;;
+        $FILE_SERVICESETS) modify_servicesets_line ;;
+        $FILE_TIMEPERIODS) modify_timeperiods_line ;;
+        $FILE_COMMANDS) modify_commands_line ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+action_delete()
+# ---------------------------------------------------------------------------
+# Purpose:      Delete an existing entry.
+# Arguments:    None
+# Returns:      Nothing
+{
+    check_setup_dir
+
+    if ! check_num_cols ${gfile_ncols[$gnfile]}; then
+        echo "NAGCTL ERROR: Invalid data. Number of columns mismatch."
+        exit 10
+    fi
+
+    if ! check_delete_null_cols $gnfile; then
+        echo "NAGCTL ERROR: Invalid data. A required field is empty."
+        exit 10
+    fi
+
+    cd $SETUP_DIR
+
+    case $gnfile in
+        $FILE_HOSTTEMPLATES) delete_hosttemplate_line ;;
+        $FILE_SERVICETEMPLATES) delete_servicetemplate_line ;;
+        $FILE_HOSTS) delete_host_line ;;
+        $FILE_SERVICES) delete_service_line ;;
+        $FILE_HOSTGROUPS) delete_hostgroups_line ;;
+        $FILE_SERVICEGROUPS) delete_servicegroups_line ;;
+        $FILE_CONTACTS) delete_contacts_line ;;
+        $FILE_CONTACTGROUPS) delete_contactgroups_line ;;
+        $FILE_SERVICESETS) delete_servicesets_line ;;
+        $FILE_TIMEPERIODS) delete_timeperiods_line ;;
+        $FILE_COMMANDS) delete_commands_line ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+action_pipecmd()
+# ---------------------------------------------------------------------------
+# Purpose:      Send to Nagios cmd file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    cd $SETUP_DIR
+
+    case $gnfile in
+        $PIPECMD_ENABLEHOSTSVCCHECKS) pipecmd_enablehostsvcchecks ;;
+        $PIPECMD_DISABLEHOSTSVCCHECKS) pipecmd_disablehostsvcchecks ;;
+        $PIPECMD_DISABLESVCCHECK) pipecmd_disablesvccheck ;;
+        $PIPECMD_ENABLESVCCHECK) pipecmd_enablesvccheck ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+action_propagate()
+# ---------------------------------------------------------------------------
+# Purpose:      Propagate to master.
+# Arguments:    None
+# Returns:      Nothing
+{
+    :
+}
+
+# ---------------------------------------------------------------------------
+action_check()
+# ---------------------------------------------------------------------------
+# Purpose:      Propagate to master.
+# Arguments:    None
+# Returns:      Nothing
+{
+    case $gnfile in
+        $CHECK_NAGIOSCONFIG) check_nagiosconfig ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+action_restart()
+# ---------------------------------------------------------------------------
+# Purpose:      Restart a system service.
+# Arguments:    None
+# Returns:      Nothing
+{
+    case $gnfile in
+        $RESTART_NAGIOS) restart_nagios ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+action_apply()
+# ---------------------------------------------------------------------------
+# Purpose:      Restart a system service.
+# Arguments:    None
+# Returns:      Nothing
+{
+    case $gnfile in
+        $APPLY_NAGIOSCONFIG) apply_nagiosconfig ;;
+        $APPLY_NAGIOSLASTGOODCONFIG) apply_nagioslastgoodconfig ;;
+    esac
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#                            MODIFY ACTION METHODS
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# ----------------------------------------------------------------------------
+modify_hosttemplate_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hosttemplates file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    contacts=`echo "$gcsv" | cut -d, -f3`
+    contactgroups=`echo "$gcsv" | cut -d, -f4`
+    notifperiod=`echo "$gcsv" | cut -d, -f8`
+    checkperiod=`echo "$gcsv" | cut -d, -f11`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if ! item_exists 1 $FILE_HOSTTEMPLATES $name; then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 14
+    fi
+
+    if ! item_exists 1 $FILE_TIMEPERIODS $notifperiod; then
+        echo -n "NAGCTL ERROR: Notifperiod '$notifperiod' unavailable."
+        echo "Will not modify host template."
+        unlockdir
+        exit 14
+    fi
+
+    if ! item_exists 1 $FILE_TIMEPERIODS $checkperiod; then
+        echo -n "NAGCTL ERROR: Checkperiod '$checkperiod' unavailable."
+        echo "Will not modify host template."
+        unlockdir
+        exit 14
+    fi
+
+    [[ -n $contacts && $contacts != "-" ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Will not modify host template."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $contactgroups && $contactgroups != "-" ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not modify host template."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    olditem=`item_search 1 $FILE_HOSTTEMPLATES "$name"`
+    item_merge ${gfile_ncols[$FILE_HOSTTEMPLATES]} "$olditem" "$gcsv"
+    item_delete 1 $FILE_HOSTTEMPLATES "$name"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_servicetemplate_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    contacts=`echo "$gcsv" | cut -d, -f3`
+    contactgroups=`echo "$gcsv" | cut -d, -f4`
+    notifperiod=`echo "$gcsv" | cut -d, -f10`
+    checkperiod=`echo "$gcsv" | cut -d, -f12`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if ! item_exists 1 $FILE_SERVICETEMPLATES "$name"; then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 14
+    fi
+
+    if ! item_exists 1 $FILE_TIMEPERIODS $notifperiod; then
+        echo -n "NAGCTL ERROR: Notifperiod '$notifperiod' unavailable."
+        echo "Will not modify service template."
+        unlockdir
+        exit 14
+    fi
+
+    if ! item_exists 1 $FILE_TIMEPERIODS $checkperiod; then
+        echo -n "NAGCTL ERROR: Checkperiod '$checkperiod' unavailable."
+        echo "Will not modify service template."
+        unlockdir
+        exit 14
+    fi
+
+    [[ -n $contacts && $contacts != "-" ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Will not modify service template."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $contactgroups && $contactgroups != "-" ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not modify service template."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    olditem=`item_search 1 $FILE_SERVICETEMPLATES "$name"`
+    item_merge ${gfile_ncols[$FILE_SERVICETEMPLATES]} "$olditem" "$gcsv"
+    item_delete 1 $FILE_SERVICETEMPLATES "$name"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_host_line()
+# ----------------------------------------------------------------------------
+{
+    local name disabled a
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    template=`echo "$gcsv" | cut -d, -f4`
+    hostgroups=`echo "$gcsv" | cut -d, -f5`
+    contacts=`echo "$gcsv" | cut -d, -f6`
+    contactgroups=`echo "$gcsv" | cut -d, -f7`
+    disable=`echo "$gcsv" | cut -d, -f10`
+
+    lockdir
+    if ! item_exists 1 $FILE_HOSTS "$name"; then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 14
+    fi
+
+    [[ -n $template ]] && {
+        if ! item_exists 1 $FILE_HOSTTEMPLATES "$template"; then
+            echo -n "NAGCTL ERROR: Template '$template' not found."
+            echo " Will not modify host."
+            unlockdir
+            exit 13
+        fi
+    }
+
+    [[ -n $hostgroups && $hostgroups != "-" ]] && {
+        for i in $hostgroups; do
+            if ! item_exists 1 $FILE_HOSTGROUPS "$i"; then
+                echo -n "NAGCTL ERROR: Hostgroup '$i' not found."
+                echo " Will not modify host."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $contacts && $contacts != "-" ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Will not modify host."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $contactgroups && $contactgroups != "-" ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not modify host."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ $disable == "1" ]] && {
+        while read line; do
+            disabled=`echo $line | cut -d, -f11`
+            if [[ "$disabled" != "1" ]]; then
+                echo -n "NAGCTL ERROR: Host has one or more"
+                echo " enabled services. Will not disable."
+                unlockdir
+                exit 16
+            fi
+        done < <( item_search 1 $FILE_SERVICES "$name" )
+    }
+
+    olditem=`item_search 1 $FILE_HOSTS "$name"`
+    item_merge ${gfile_ncols[$FILE_HOSTS]} "$olditem" "$gcsv"
+    item_delete 1 $FILE_HOSTS "$name"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_service_line()
+# ----------------------------------------------------------------------------
+{
+    local name svcdesc
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    template=`echo "$gcsv" | cut -d, -f2`
+    command=`echo "$gcsv" | cut -d, -f3 | grep -o '[-A-Za-z0-9_+]*'`
+    svcdesc=`echo "$gcsv" | cut -d, -f4`
+    servicegroups=`echo "$gcsv" | cut -d, -f5`
+    contacts=`echo "$gcsv" | cut -d, -f6`
+    contactgroups=`echo "$gcsv" | cut -d, -f7`
+    disable=`echo "$gcsv" | cut -d, -f11`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    [[ $name == *'*'* || $svcdesc == *'*'* ]] && {
+        echo "NAGCTL ERROR: wildcards not allowed"
+        exit 13
+    }
+
+    lockdir
+    if ! item_exists2 1 4 $FILE_SERVICES "$name" "$svcdesc"; then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 0
+    fi
+
+    # command must exist in commands file
+    if ! item_exists 1 $FILE_COMMANDS "$command"; then
+        echo "NAGCTL ERROR: Command '$command' unavailable. Cannot modify item."
+        unlockdir
+        exit 13
+    fi
+    
+    [[ -n $template ]] && {
+        if ! item_exists 1 $FILE_SERVICETEMPLATES "$template"; then
+            echo -n "NAGCTL ERROR: Template '$template' not found."
+            echo " Will not modify service."
+            unlockdir
+            exit 13
+        fi
+    }
+
+    [[ -n $contacts && $contacts != "-" ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Will not modify service."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $contactgroups && $contactgroups != "-" ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not modify service."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $servicegroups && $servicegroups != "-" ]] && {
+        for i in $servicegroups; do
+            if ! item_exists 1 $FILE_SERVICEGROUPS "$i"; then
+                echo -n "NAGCTL ERROR: Servicegroup '$i' not found."
+                echo " Will not modify service."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ $disable == "0" ]] && {
+        a=`item_search 1 $FILE_HOSTS "$name"`
+        a_disabled=`echo $a | cut -d, -f10`
+        if [[ "$a_disabled" == "1" ]]; then
+            echo -n "NAGCTL ERROR: Host is disabled. Will not enable."
+            unlockdir
+            exit 16
+        fi
+    }
+
+    olditem=`item_search2 1 4 $FILE_SERVICES "$name" "$svcdesc"`
+    item_merge ${gfile_ncols[$FILE_SERVICES]} "$olditem" "$gcsv"
+    item_delete2 1 4 $FILE_SERVICES "$name" "$svcdesc"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_hostgroups_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if ! item_exists 1 $FILE_HOSTGROUPS "$name"; then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 14
+    fi
+    olditem=`item_search 1 $FILE_HOSTGROUPS "$name"`
+    item_merge ${gfile_ncols[$FILE_HOSTGROUPS]} "$olditem" "$gcsv"
+    item_delete 1 $FILE_HOSTGROUPS "$name"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_servicegroups_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if ! item_exists 1 $FILE_SERVICEGROUPS "$name"; then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 14
+    fi
+    olditem=`item_search 1 $FILE_SERVICEGROUPS "$name"`
+    item_merge ${gfile_ncols[$FILE_SERVICEGROUPS]} "$olditem" "$gcsv"
+    item_delete 1 $FILE_SERVICEGROUPS "$name"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_contacts_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    svcnp=`echo "$gcsv" | cut -d, -f5`
+    hstnp=`echo "$gcsv" | cut -d, -f8`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if ! item_exists 1 $FILE_CONTACTS "$name"; then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 14
+    fi
+
+    if ! item_exists 1 $FILE_TIMEPERIODS $svcnp; then
+        echo -n "NAGCTL ERROR: Service Notifperiod '$svcnp' unavailable."
+        echo "Will not modify contact."
+        unlockdir
+        exit 14
+    fi
+
+    if ! item_exists 1 $FILE_TIMEPERIODS $hstnp; then
+        echo -n "NAGCTL ERROR: Host Notifperiod '$hstnp' unavailable."
+        echo "Will not modify contact."
+        unlockdir
+        exit 14
+    fi
+
+    olditem=`item_search 1 $FILE_CONTACTS "$name"`
+    item_merge ${gfile_ncols[$FILE_CONTACTS]} "$olditem" "$gcsv"
+    item_delete 1 $FILE_CONTACTS "$name"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_contactgroups_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    memberlist=`echo "$gcsv" | cut -d, -f3`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if ! item_exists 1 $FILE_CONTACTGROUPS "$name"; then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 14
+    fi
+
+    for i in $memberlist; do
+        if ! item_exists 1 $FILE_CONTACTS "$i"; then
+            echo "NAGCTL ERROR: Member '$i' not found. Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    done
+
+    olditem=`item_search 1 $FILE_CONTACTGROUPS "$name"`
+    item_merge ${gfile_ncols[$FILE_CONTACTGROUPS]} "$olditem" "$gcsv"
+    item_delete 1 $FILE_CONTACTGROUPS "$name"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_servicesets_line()
+# ----------------------------------------------------------------------------
+{
+    local name svcdesc
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    template=`echo "$gcsv" | cut -d, -f2`
+    svcdesc=`echo "$gcsv" | cut -d, -f4`
+    servicegroups=`echo "$gcsv" | cut -d, -f5`
+    contacts=`echo "$gcsv" | cut -d, -f6`
+    contactgroups=`echo "$gcsv" | cut -d, -f7`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if ! item_exists2 1 4 $FILE_SERVICESETS "$name" "$svcdesc"; then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 14
+    fi
+
+    [[ -n $template ]] && {
+        if ! item_exists 1 $FILE_SERVICETEMPLATES "$template"; then
+            echo -n "NAGCTL ERROR: Template '$template' not found."
+            echo " Will not modify service set."
+            unlockdir
+            exit 13
+        fi
+    }
+
+    [[ -n $contacts  && $contacts != "-" ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Will not modify service set."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $contactgroups  && $contactgroups != "-" ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not modify service set."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $servicegroups && $servicegroups != "-" ]] && {
+        for i in $servicegroups; do
+            if ! item_exists 1 $FILE_SERVICEGROUPS "$i"; then
+                echo -n "NAGCTL ERROR: Servicegroup '$i' not found."
+                echo " Will not modify service set."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    olditem=`item_search2 1 4 $FILE_SERVICESETS "$name" "$svcdesc"`
+    item_merge ${gfile_ncols[$FILE_SERVICESETS]} "$olditem" "$gcsv"
+    item_delete2 1 4 $FILE_SERVICESETS "$name" "$svcdesc"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_timeperiods_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    exclude=`echo "$gcsv" | cut -d, -f4`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if ! item_exists 1 $FILE_TIMEPERIODS "$name"; then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 14
+    fi
+
+    [[ -n $exclude && $exclude != "-" ]] && {
+        for i in $exclude; do
+            if ! item_exists 1 $FILE_TIMEPERIODS "$i"; then
+                echo -n "NAGCTL ERROR: Excluded timeperiod '$i' not found."
+                echo " Cannot modify item."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    olditem=`item_search 1 $FILE_TIMEPERIODS "$name"`
+    item_merge ${gfile_ncols[$FILE_TIMEPERIODS]} "$olditem" "$gcsv"
+    item_delete 1 $FILE_TIMEPERIODS "$name"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_commands_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if ! item_exists 1 $FILE_COMMANDS "$name"; then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 14
+    fi
+
+    olditem=`item_search 1 $FILE_COMMANDS "$name"`
+    item_merge ${gfile_ncols[$FILE_COMMANDS]} "$olditem" "$gcsv"
+    item_delete 1 $FILE_COMMANDS "$name"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#                             ADD ACTION METHODS
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# ----------------------------------------------------------------------------
+add_hosttemplate_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hosttemplates file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    contacts=`echo "$gcsv" | cut -d, -f3`
+    contactgroups=`echo "$gcsv" | cut -d, -f4`
+    notifperiod=`echo "$gcsv" | cut -d, -f8`
+    checkperiod=`echo "$gcsv" | cut -d, -f11`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 1 $FILE_HOSTTEMPLATES "$name"; then
+        echo "NAGCTL ERROR: Host template name is a duplicate. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+
+    if ! item_exists 1 $FILE_TIMEPERIODS $notifperiod; then
+        echo -n "NAGCTL ERROR: Notifperiod '$notifperiod' unavailable."
+        echo "Will not add host template."
+        unlockdir
+        exit 14
+    fi
+
+    if ! item_exists 1 $FILE_TIMEPERIODS $checkperiod; then
+        echo -n "NAGCTL ERROR: Checkperiod '$checkperiod' unavailable."
+        echo "Will not add host template."
+        unlockdir
+        exit 14
+    fi
+
+    [[ -n $contacts  && $contacts != "-" ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Will not add host template."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $contactgroups  && $contactgroups != "-" ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not add host template."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_servicetemplate_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    contacts=`echo "$gcsv" | cut -d, -f3`
+    contactgroups=`echo "$gcsv" | cut -d, -f4`
+    notifperiod=`echo "$gcsv" | cut -d, -f10`
+    checkperiod=`echo "$gcsv" | cut -d, -f12`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 1 $FILE_SERVICETEMPLATES "$name"; then
+        echo "NAGCTL ERROR: Service template name is a duplicate. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+
+    if ! item_exists 1 $FILE_TIMEPERIODS $notifperiod; then
+        echo -n "NAGCTL ERROR: Notifperiod '$notifperiod' unavailable."
+        echo "Will not add service template."
+        unlockdir
+        exit 14
+    fi
+
+    if ! item_exists 1 $FILE_TIMEPERIODS $checkperiod; then
+        echo -n "NAGCTL ERROR: Checkperiod '$checkperiod' unavailable."
+        echo "Will not add service template."
+        unlockdir
+        exit 14
+    fi
+
+    [[ -n $contacts ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Will not add service template."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $contactgroups ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not add service template."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_host_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    template=`echo "$gcsv" | cut -d, -f4`
+    hostgroups=`echo "$gcsv" | cut -d, -f5`
+    contacts=`echo "$gcsv" | cut -d, -f6`
+    contactgroups=`echo "$gcsv" | cut -d, -f7`
+    servicesets=`echo "$gcsv" | cut -d, -f9`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 1 $FILE_HOSTS "$name"; then
+        echo "NAGCTL ERROR: Host name is a duplicate. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+
+    [[ -n $servicesets ]] && {
+        for i in $servicesets; do
+            if ! item_exists 1 $FILE_SERVICESETS "$i"; then
+                echo -n "NAGCTL ERROR: Service Set '$i' not found."
+                echo " Will not add host."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $template ]] && {
+        if ! item_exists 1 $FILE_HOSTTEMPLATES "$template"; then
+            echo -n "NAGCTL ERROR: Template '$template' not found."
+            echo " Will not add host."
+            unlockdir
+            exit 13
+        fi
+    }
+
+    [[ -n $hostgroups ]] && {
+        for i in $hostgroups; do
+            if ! item_exists 1 $FILE_HOSTGROUPS "$i"; then
+                echo -n "NAGCTL ERROR: Hostgroup '$i' not found."
+                echo " Will not add host."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $contacts ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Will not add host."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $contactgroups ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not add host."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    echo "$gcsv" >>$SETUP_FILE
+
+    [[ -n $servicesets ]] && {
+        item_search 1 $FILE_SERVICESETS "$servicesets"  | \
+            sed -- "s/^.*\(,.*,.*,.*,.*,.*,.*,.*,.*,.*,.*\)/$name\1/" \
+            >>${gservice}_${gfilename[$FILE_SERVICES]}.setup
+    }
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_service_line()
+# ----------------------------------------------------------------------------
+{
+    local name svcdesc
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    template=`echo "$gcsv" | cut -d, -f2`
+    command=`echo "$gcsv" | cut -d, -f3 | grep -o '[-A-Za-z0-9_+]*'`
+    svcdesc=`echo "$gcsv" | cut -d, -f4`
+    servicegroups=`echo "$gcsv" | cut -d, -f5`
+    contacts=`echo "$gcsv" | cut -d, -f6`
+    contactgroups=`echo "$gcsv" | cut -d, -f7`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists2 1 4 $FILE_SERVICES "$name" "$svcdesc"; then
+        echo "NAGCTL ERROR: Service is a duplicate. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+
+    # name must exist in hosts file
+    if ! item_exists 1 $FILE_HOSTS "$name"; then
+        echo "NAGCTL ERROR: No host entry for this service. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+    
+    # command must exist in commands file
+    if ! item_exists 1 $FILE_COMMANDS "$command"; then
+        echo "NAGCTL ERROR: Command '$command' unavailable. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+    
+    [[ -n $template ]] && {
+        if ! item_exists 1 $FILE_SERVICETEMPLATES "$template"; then
+            echo -n "NAGCTL ERROR: Template '$template' not found."
+            echo " Will not add service."
+            unlockdir
+            exit 13
+        fi
+    }
+
+    [[ -n $contacts ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Will not add service."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $contactgroups ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not add service."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $servicegroups ]] && {
+        for i in $servicegroups; do
+            if ! item_exists 1 $FILE_SERVICEGROUPS "$i"; then
+                echo -n "NAGCTL ERROR: Servicegroup '$i' not found."
+                echo " Will not add service."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_hostgroups_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 1 $FILE_HOSTGROUPS "$name"; then
+        echo "NAGCTL ERROR: Hostgroup name is a duplicate. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_servicegroups_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 1 $FILE_SERVICEGROUPS "$name"; then
+        echo "NAGCTL ERROR: Servicegroup name is a duplicate. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_contacts_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    svcnp=`echo "$gcsv" | cut -d, -f5`
+    hstnp=`echo "$gcsv" | cut -d, -f8`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 1 $FILE_CONTACTS "$name"; then
+        echo "NAGCTL ERROR: Contact name is a duplicate. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+
+    if ! item_exists 1 $FILE_TIMEPERIODS $svcnp; then
+        echo -n "NAGCTL ERROR: Service Notifperiod '$svcnp' unavailable."
+        echo "Will not add contact."
+        unlockdir
+        exit 14
+    fi
+
+    if ! item_exists 1 $FILE_TIMEPERIODS $hstnp; then
+        echo -n "NAGCTL ERROR: Host Notifperiod '$hstnp' unavailable."
+        echo "Will not add contact."
+        unlockdir
+        exit 14
+    fi
+
+
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_contactgroups_line()
+# ----------------------------------------------------------------------------
+{
+    local name i
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    memberlist=`echo "$gcsv" | cut -d, -f3`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 1 $FILE_CONTACTGROUPS "$name"; then
+        echo "NAGCTL ERROR: Contactgroup name is a duplicate. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+
+    for i in $memberlist; do
+        if ! item_exists 1 $FILE_CONTACTS "$i"; then
+            echo "NAGCTL ERROR: Member '$i' not found. Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    done
+
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_servicesets_line()
+# ----------------------------------------------------------------------------
+{
+    local name svcdesc
+
+    # Same name and svcdesc is an error (duplicate)
+    name=`echo "$gcsv" | cut -d, -f1`
+    template=`echo "$gcsv" | cut -d, -f2`
+    command=`echo "$gcsv" | cut -d, -f3 | grep -o '[-A-Za-z0-9_+]*'`
+    svcdesc=`echo "$gcsv" | cut -d, -f4`
+    servicegroups=`echo "$gcsv" | cut -d, -f5`
+    contacts=`echo "$gcsv" | cut -d, -f6`
+    contactgroups=`echo "$gcsv" | cut -d, -f7`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists2 1 4 $FILE_SERVICESETS "$name" "$svcdesc"; then
+        echo "NAGCTL ERROR: Serviceset item is a duplicate. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+
+    # command must exist in commands file
+    if ! item_exists 1 $FILE_COMMANDS "$command"; then
+        echo "NAGCTL ERROR: Command '$command' unavailable. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+    
+    [[ -n $template ]] && {
+        if ! item_exists 1 $FILE_SERVICETEMPLATES "$template"; then
+            echo -n "NAGCTL ERROR: Template '$template' not found."
+            echo " Will not add service set."
+            unlockdir
+            exit 13
+        fi
+    }
+
+    [[ -n $contacts ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Will not add service set."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $contactgroups ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not add service set."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $servicegroups ]] && {
+        for i in $servicegroups; do
+            if ! item_exists 1 $FILE_SERVICEGROUPS "$i"; then
+                echo -n "NAGCTL ERROR: Servicegroup '$i' not found."
+                echo " Will not add service set."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_timeperiods_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    exclude=`echo "$gcsv" | cut -d, -f4`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 1 $FILE_TIMEPERIODS "$name"; then
+        echo "NAGCTL ERROR: Timeperiod item is a duplicate. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+
+    for i in $exclude; do
+        if ! item_exists 1 $FILE_TIMEPERIODS "$i"; then
+            echo -n "NAGCTL ERROR: Excluded timeperiod '$i' not found."
+            echo " Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    done
+
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+add_commands_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 1 $FILE_COMMANDS "$name"; then
+        echo "NAGCTL ERROR: Command name is a duplicate. Cannot add item."
+        unlockdir
+        exit 13
+    fi
+
+    echo -E "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#                             APPLY ACTION METHODS
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# ---------------------------------------------------------------------------
+apply_nagiosconfig()
+# ---------------------------------------------------------------------------
+# Purpose:      Apply a nagios configuration.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a b c
+
+    eval "$gcsv" 2>/dev/null
+
+    if [[ $verbose -ne 1 ]]; then
+        cd $NAG_OBJ_DIR/$gservice
+        lockdir
+        sudo $CSV2NAG -y all &>/dev/null
+        if [[ $? -gt 0 ]]; then
+            echo "Fail"
+        else
+            echo "Success"
+        fi
+        unlockdir
+    else
+        cd $NAG_OBJ_DIR/$gservice
+        lockdir
+        sudo $CSV2NAG -y all
+        unlockdir
+    fi
+
+    exit 0
+}
+
+# ---------------------------------------------------------------------------
+apply_nagioslastgoodconfig()
+# ---------------------------------------------------------------------------
+# Purpose:      Request a nagios restart.
+# Arguments:    None
+# Returns:      Nothing
+{
+    rm -f $SETUP_DIR/* 2>/dev/null
+    cp -a $SETUP_DIR.known_good/* $SETUP_DIR/
+
+    apply_nagiosconfig
+
+    exit 0
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#                            RESTART ACTION METHODS
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# ---------------------------------------------------------------------------
+restart_nagios()
+# ---------------------------------------------------------------------------
+# Purpose:      Request a nagios restart.
+# Arguments:    None
+# Returns:      Nothing
+{
+    sudo /usr/sbin/nagios -v $NAG_CONFIG &>/dev/null
+    if [[ $? -eq 0 ]]; then
+        touch /tmp/nagios_restart_request
+        rm -f $SETUP_DIR.known_good/* 2>/dev/null
+        mkdir -p $SETUP_DIR.known_good
+        cp -a $SETUP_DIR/* $SETUP_DIR.known_good 2>/tmp/nagctl_err.$$
+        if [[ $? -ne 0 ]]; then
+            echo -n "NAGCTL ERROR: Config could not be saved. Nagios restart"
+            echo -n " request not sent. Error was "
+            head -1 /tmp/nagctl_err.$$
+            rm -f /tmp/nagctl_err.$$
+            exit 1
+        fi
+        echo -n "Config saved and Nagios restart request sent."
+    else
+        echo "NAGCTL ERROR: Config error. Nagios restart request not sent."
+        exit 1
+    fi
+
+    exit 0
+}
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#                             CHECK ACTION METHODS
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# ---------------------------------------------------------------------------
+check_nagiosconfig()
+# ---------------------------------------------------------------------------
+# Purpose:      Run nagios -v to check it.
+#               Edit sudoers file: Comment out 'Defaults requiretty' line
+#               and add '%nagios ALL = NOPASSWD: /usr/sbin/nagios -v *'
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a b c
+
+    eval "$gcsv" 2>/dev/null
+
+    if [[ $verbose -ne 1 ]]; then
+        while read a; do
+            [[ $a == "Total Warnings"* ]] && b=$a
+            [[ $a == "Total Errors"* ]] && c=$a
+        done < <( sudo /usr/sbin/nagios -v $NAG_CONFIG )
+    else
+        sudo /usr/sbin/nagios -v $NAG_CONFIG
+    fi
+
+    if [[ -n $b && -n $c ]]; then
+        echo "$b, $c" | sed 's/  */ /g'
+    else
+        echo "CONFIG ERROR"
+    fi
+
+    exit 0
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#                            DELETE ACTION METHODS
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# ----------------------------------------------------------------------------
+delete_hosttemplate_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hosttemplates file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 4 $FILE_HOSTS "$name"; then
+        echo -n "NAGCTL ERROR: Hosttemplate is referenced by one or more hosts."
+        echo " Will not delete."
+        RETVAL=15
+    else
+        if item_exists 1 $FILE_HOSTTEMPLATES "$name"; then
+            item_delete 1 $FILE_HOSTTEMPLATES "$name"
+            echo "Success"
+        else
+            echo "NAGCTL ERROR: Hosttemplate not found."
+            RETVAL=15
+        fi
+    fi
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_servicetemplate_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 2 $FILE_SERVICES "$name"; then
+        echo -n "NAGCTL ERROR: Servicetemplate is referenced by one or more services."
+        echo " Will not delete."
+        RETVAL=15
+    else
+        if item_exists 1 $FILE_SERVICETEMPLATES "$name"; then
+            item_delete 1 $FILE_SERVICETEMPLATES "$name"
+            echo "Success"
+        else
+            echo "NAGCTL ERROR: Servicetemplate not found."
+            RETVAL=15
+        fi
+    fi
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_host_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 1 $FILE_SERVICES "$name"; then
+        echo -n "NAGCTL ERROR: Host is referenced by one or more services."
+        echo " Will not delete."
+        RETVAL=15
+    else
+        if item_exists 1 $FILE_HOSTS "$name"; then
+            item_delete 1 $FILE_HOSTS "$name"
+            echo "Success"
+        else
+            echo "NAGCTL ERROR: Host not found."
+            RETVAL=15
+        fi
+    fi
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_service_line()
+# ----------------------------------------------------------------------------
+{
+    local name svcdesc
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    svcdesc=`echo "$gcsv" | cut -d, -f4`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists2 1 4 $FILE_SERVICES "$name" "$svcdesc"; then
+        item_delete2 1 4 $FILE_SERVICES "$name" "$svcdesc"
+        echo "Success"
+    else
+        echo "NAGCTL ERROR: Service not found."
+        RETVAL=15
+    fi
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_hostgroups_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 5 $FILE_HOSTS "$name"; then
+        echo -n "NAGCTL ERROR: Hostgroup is referenced by one or more hosts."
+        echo " Will not delete."
+        RETVAL=15
+    else
+        if item_exists 1 $FILE_HOSTGROUPS "$name"; then
+            item_delete 1 $FILE_HOSTGROUPS "$name"
+            echo "Success"
+        else
+            echo "NAGCTL ERROR: Hostgroup not found."
+            RETVAL=15
+        fi
+    fi
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_servicegroups_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 5 $FILE_SERVICES "$name"; then
+        echo -n "NAGCTL ERROR: Servicegroup is referenced by one or more"
+        echo " hosts. Will not delete."
+        RETVAL=15
+    else
+        if item_exists 1 $FILE_SERVICEGROUPS "$name"; then
+            item_delete 1 $FILE_SERVICEGROUPS "$name"
+            echo "Success"
+        else
+            echo "NAGCTL ERROR: Servicegroup not found."
+            RETVAL=15
+        fi
+    fi
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_contacts_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 3 $FILE_CONTACTGROUPS ".*$name\>"; then
+        echo -n "NAGCTL ERROR: Contact '$name' is referenced by one or more"
+        echo " Contact Groups. Will not delete."
+        RETVAL=15
+    elif item_exists 3 $FILE_SERVICETEMPLATES ".*$name\>"; then
+        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo " or more service templates. Will not delete."
+        RETVAL=15
+    elif item_exists 3 $FILE_HOSTTEMPLATES ".*$name\>"; then
+        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo " or more host templates. Will not delete."
+        RETVAL=15
+    elif item_exists 6 $FILE_HOSTS ".*$name\>"; then
+        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo " or more hosts. Will not delete."
+        RETVAL=15
+    elif item_exists 6 $FILE_SERVICES ".*$name\>"; then
+        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo " or more services. Will not delete."
+        RETVAL=15
+    else
+        if item_exists 1 $FILE_CONTACTS "$name"; then
+            item_delete 1 $FILE_CONTACTS "$name"
+            echo "Success"
+        else
+            echo "NAGCTL ERROR: Contact not found."
+            RETVAL=15
+        fi
+    fi
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_contactgroups_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 4 $FILE_SERVICETEMPLATES ".*$name\>"; then
+        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo " or more service templates. Will not delete."
+        RETVAL=15
+    elif item_exists 4 $FILE_HOSTTEMPLATES ".*$name\>"; then
+        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo " or more host templates. Will not delete."
+        RETVAL=15
+    elif item_exists 7 $FILE_HOSTS ".*$name\>"; then
+        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo " or more hosts. Will not delete."
+        RETVAL=15
+    elif item_exists 7 $FILE_SERVICES ".*$name\>"; then
+        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo " or more services. Will not delete."
+        RETVAL=15
+    else
+        if item_exists 1 $FILE_CONTACTGROUPS "$name"; then
+            item_delete 1 $FILE_CONTACTGROUPS "$name"
+            echo "Success"
+        else
+            echo "NAGCTL ERROR: Contact Group not found."
+            RETVAL=15
+        fi
+    fi
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_servicesets_line()
+# ----------------------------------------------------------------------------
+{
+    local name svcdesc
+
+    name=`echo "$gcsv" | cut -d, -f1`
+    svcdesc=`echo "$gcsv" | cut -d, -f4`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists2 1 4 $FILE_SERVICESETS "$name" "$svcdesc"; then
+        item_delete2 1 4 $FILE_SERVICESETS "$name" "$svcdesc"
+        echo "Success"
+    else
+        echo "NAGCTL ERROR: Serviceset not found."
+        RETVAL=15
+    fi
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_timeperiods_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 8 $FILE_HOSTTEMPLATES "$name\>"; then
+        echo -n "NAGCTL ERROR: Timeperiod '$name' is referenced by"
+        echo " one or more host templates. Will not delete."
+        RETVAL=15
+    elif item_exists 11 $FILE_HOSTTEMPLATES "$name\>"; then
+        echo -n "NAGCTL ERROR: Timeperiod '$name' is referenced by"
+        echo " one or more host templates. Will not delete."
+        RETVAL=15
+    elif item_exists 10 $FILE_SERVICETEMPLATES "$name\>"; then
+        echo -n "NAGCTL ERROR: Timeperiod '$name' is referenced by"
+        echo " one or more service templates. Will not delete."
+        RETVAL=15
+    elif item_exists 12 $FILE_SERVICETEMPLATES "$name\>"; then
+        echo -n "NAGCTL ERROR: Timeperiod '$name' is referenced by"
+        echo " one or more service templates. Will not delete."
+        RETVAL=15
+    elif item_exists 5 $FILE_CONTACTS "$name\>"; then
+        echo -n "NAGCTL ERROR: Timeperiod '$name' is referenced by"
+        echo " one or more contacts. Will not delete."
+        RETVAL=15
+    elif item_exists 8 $FILE_CONTACTS "$name\>"; then
+        echo -n "NAGCTL ERROR: Timeperiod '$name' is referenced by"
+        echo " one or more contacts. Will not delete."
+        RETVAL=15
+    elif item_exists 4 $FILE_TIMEPERIODS "$name\>"; then
+        echo -n "NAGCTL ERROR: Timeperiod '$name' is referenced by one"
+        echo " or more timeperiods. Will not delete."
+        RETVAL=15
+    else
+        if item_exists 1 $FILE_TIMEPERIODS "$name"; then
+            item_delete 1 $FILE_TIMEPERIODS "$name"
+            echo "Success"
+        else
+            echo "NAGCTL ERROR: Timeperiod not found."
+            RETVAL=15
+        fi
+    fi
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_commands_line()
+# ----------------------------------------------------------------------------
+{
+    local name
+
+    name=`echo "$gcsv" | cut -d, -f1`
+
+    [[ $name == *" "* ]] && {
+        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+        exit 13
+    }
+
+    lockdir
+    if item_exists 3 $FILE_SERVICES "$name\>.*"; then
+        echo -n "NAGCTL ERROR: Command '$name' is referenced by one"
+        echo " or more services. Will not delete."
+        RETVAL=15
+    elif item_exists 3 $FILE_SERVICESETS "$name\>.*"; then
+        echo -n "NAGCTL ERROR: Command '$name' is referenced by one"
+        echo " or more servicesets. Will not delete."
+        RETVAL=15
+    elif item_exists 13 $FILE_HOSTTEMPLATES "$name\>.*"; then
+        echo -n "NAGCTL ERROR: Command '$name' is referenced by one"
+        echo " or more host templates. Will not delete."
+        RETVAL=15
+    elif item_exists 7 $FILE_CONTACTS "$name\>.*"; then
+        echo -n "NAGCTL ERROR: Command '$name' is referenced by one"
+        echo " or more contacts. Will not delete."
+        RETVAL=15
+    elif item_exists 10 $FILE_CONTACTS "$name\>.*"; then
+        echo -n "NAGCTL ERROR: Command '$name' is referenced by one"
+        echo " or more contacts. Will not delete."
+        RETVAL=15
+    else
+        if item_exists 1 $FILE_COMMANDS "$name"; then
+            item_delete 1 $FILE_COMMANDS "$name"
+            echo "Success"
+        else
+            echo "NAGCTL ERROR: Command not found."
+            RETVAL=15
+        fi
+    fi
+    unlockdir
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#                            PIPECMD ACTION METHODS
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+#
+# SEE:
+# http://old.nagios.org/developerinfo/externalcommands/commandlist.php
+#
+
+# ----------------------------------------------------------------------------
+pipecmd_enablehostsvcchecks()
+# ----------------------------------------------------------------------------
+{
+    local comment name item freshness
+
+    eval "$gcsv" 2>/dev/null
+
+    [[ -z "$name" ]] && {
+        echo "NAGCTL ERROR: Host 'name' variable not supplied."
+        exit 0
+    }
+
+    lockdir
+    if ! item_exists 1 $FILE_HOSTS "$name"; then
+        echo "NAGCTL ERROR: Host '$name' not found."
+        unlockdir
+        exit 14
+    else
+        now=`date +%s`
+        printf "[%lu] ENABLE_HOST_CHECK;$name\n" $now > $COMMANDFILE
+
+        sleep 1
+
+        now=`date +%s`
+        while read a; do
+            desc=`echo $a | cut -d, -f4`
+            printf "[%lu] ENABLE_PASSIVE_SVC_CHECKS;$name;$desc\n" \
+                $now > $COMMANDFILE
+        done < <( item_search 1 $FILE_SERVICES "$name" )
+
+        sleep 1
+
+        now=`date +%s`
+        while read a; do
+            desc=`echo $a | cut -d, -f4`
+            item=`item_search2 1 4 $FILE_SERVICES "$name" "$desc"`
+            freshness=`echo $item | cut -d, -f8`
+            [[ -z $freshness ]] && {
+                printf "[%lu] ENABLE_SVC_CHECK;$name;$desc\n" $now \
+                    > $COMMANDFILE
+            }
+        done < <( item_search 1 $FILE_SERVICES "$name" )
+    fi
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+pipecmd_disablehostsvcchecks()
+# ----------------------------------------------------------------------------
+{
+    local comment name descr
+
+    eval "$gcsv" 2>/dev/null
+
+    [[ -z "$comment" ]] && comment="Disabled via REST interface."
+    [[ -z "$name" ]] && {
+        echo "NAGCTL ERROR: Host 'name' not supplied."
+        exit 14
+    }
+
+    lockdir
+    if ! item_exists 1 $FILE_HOSTS "$name"; then
+        echo "NAGCTL ERROR: Host '$name' not found."
+        unlockdir
+        exit 14
+    else
+        now=`date +%s`
+        printf "[%lu] DISABLE_HOST_CHECK;$name\n" $now > $COMMANDFILE
+        printf "[%lu] DISABLE_HOST_SVC_CHECKS;$name\n" $now > $COMMANDFILE
+
+        sleep 1
+
+        now=`date +%s`
+        while read a; do
+            desc=`echo $a | cut -d, -f4`
+            printf \
+                "[%lu] PROCESS_SERVICE_CHECK_RESULT;$name;$desc;0;$comment\n" \
+                $now >$COMMANDFILE
+        done < <( item_search 1 $FILE_SERVICES "$name" )
+
+        # TODO: Nagios does not seem to process its external command queue in
+        # the order in which items are queued, hence these silly sleeps.
+        # As load grows will 10 seconds be enough?
+        # For check_multi, passive checks must be disabled otherwise the
+        # freshness check will kick in and alert, which is not desired.
+        # Will need to:
+        #   * check nagios source to see if there's a workaround
+        #   * write a script that checks to see if status is updated. If so,
+        #     /then/ it will disable the service.
+
+        # Let someone else do something while we're sleeping
+        unlockdir
+        sleep 10
+        lockdir
+        
+        now=`date +%s`
+        while read a; do
+            desc=`echo $a | cut -d, -f4`
+            printf "[%lu] DISABLE_PASSIVE_SVC_CHECKS;$name;$desc\n" \
+                $now > $COMMANDFILE
+        done < <( item_search 1 $FILE_SERVICES "$name" )
+    fi
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+pipecmd_enablesvccheck()
+# ----------------------------------------------------------------------------
+{
+    local comment name svcdesc item freshness
+
+    eval "$gcsv" 2>/dev/null
+
+    [[ -z "$svcdesc" ]] && {
+        echo "NAGCTL ERROR: 'name' and 'svcdesc' are required fields."
+        exit 14
+    }
+    [[ -z "$comment" ]] && comment="Un-disabled via REST. Check scheduled."
+    [[ -z "$name" ]] && {
+        echo "NAGCTL ERROR: Host 'name' not supplied."
+        exit 14
+    }
+
+    lockdir
+    if ! item_exists2 1 4 $FILE_SERVICES "$name" "$svcdesc"; then
+        echo "NAGCTL ERROR: Service '$svcdesc' not found."
+        unlockdir
+        exit 14
+    else
+        now=`date +%s`
+        printf "[%lu] ENABLE_PASSIVE_SVC_CHECKS;$name;$svcdesc\n" \
+            $now > $COMMANDFILE
+
+        sleep 1
+
+        now=`date +%s`
+        item=`item_search2 1 4 $FILE_SERVICES "$name" "$svcdesc"`
+        freshness=`echo $item | cut -d, -f8`
+        [[ -z $freshness ]] && {
+            printf "[%lu] ENABLE_SVC_CHECK;$name;$svcdesc\n" $now \
+                > $COMMANDFILE
+        }
+
+        sleep 1
+
+        now=`date +%s`
+        printf \
+            "[%lu] PROCESS_SERVICE_CHECK_RESULT;$name;$svcdesc;0;$comment\n" \
+            $now >$COMMANDFILE
+    fi
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+pipecmd_disablesvccheck()
+# ----------------------------------------------------------------------------
+{
+    local comment name svcdesc
+
+    eval "$gcsv" 2>/dev/null
+
+    [[ -z "$svcdesc" ]] && {
+        echo "NAGCTL ERROR: 'name' and 'svcdesc' are required fields."
+        exit 14
+    }
+    [[ -z "$comment" ]] && comment="Disabled via REST interface."
+    [[ -z "$name" ]] && {
+        echo "NAGCTL ERROR: Host 'name' not supplied."
+        exit 14
+    }
+
+    lockdir
+    if ! item_exists2 1 4 $FILE_SERVICES "$name" "$svcdesc"; then
+        echo "NAGCTL ERROR: Service '$svcdesc' not found."
+        unlockdir
+        exit 14
+    else
+        now=`date +%s`
+        printf "[%lu] DISABLE_SVC_CHECK;$name;$svcdesc\n" $now > $COMMANDFILE
+
+        sleep 1
+
+        printf \
+            "[%lu] PROCESS_SERVICE_CHECK_RESULT;$name;$svcdesc;0;$comment\n" \
+            $now >$COMMANDFILE
+
+        sleep 1
+
+        printf "[%lu] DISABLE_PASSIVE_SVC_CHECKS;$name;$svcdesc\n" \
+            $now > $COMMANDFILE
+    fi
+    unlockdir
+
+    echo "Success"
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#                                    MAIN
+#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# ---------------------------------------------------------------------------
+main()
+# ---------------------------------------------------------------------------
+# Purpose:      Program execution starts here.
+# Arguments:    None
+# Returns:      Nothing
+{
+    parse_options "$@"
+
+    init
+
+    case $gnaction in
+        $ACT_SHOW) action_show
+        ;;
+        $ACT_MODIFY) action_modify
+        ;;
+        $ACT_DELETE) action_delete
+        ;;
+        $ACT_ADD) action_add
+        ;;
+        $ACT_PIPECMD) action_pipecmd
+        ;;
+        $ACT_PROPAGATE) action_propagate
+        ;;
+        $ACT_CHECK) action_check
+        ;;
+        $ACT_RESTART) action_restart
+        ;;
+        $ACT_APPLY) action_apply
+        ;;
+    esac
+
+    exit $RETVAL
+}
+
+# start...
+main "$@"
+
+# vim:ts=4:et:sw=4:tw=76

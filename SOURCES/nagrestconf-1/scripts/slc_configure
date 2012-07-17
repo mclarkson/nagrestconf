@@ -1,0 +1,411 @@
+#!/bin/bash
+# Copyright(C) 2010 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#
+# File:     dcc_configure
+# Author:   Mark Clarkson
+# Date:     15 Dec 2010
+# Version:  0.10
+# Modified:
+#           201X-0X-XX Mark Clarkson
+#           * XXX
+#
+# Purpose:  Set up a dcc container.
+#           Creates directories and repositories. See help.
+#
+# Notes:
+#
+
+# ----------------------------------------------------------------------------
+# SCRIPT CONFIGURATION (CHANGE AS NECESSARY)
+# ----------------------------------------------------------------------------
+
+source /etc/nagrestconf/nagctl.conf
+
+# ------------------ DON'T MODIFY ANYTHING BELOW THIS LINE -------------------
+
+# ----------------------------------------------------------------------------
+# GLOBALS
+# ----------------------------------------------------------------------------
+REPO_LOCATION=$NAG_DIR/repos
+CMDLINE="$@"
+ME="$0"
+G_FOLDER=
+G_DCCIP=
+
+# ----------------------------------------------------------------------------
+usage()
+# ----------------------------------------------------------------------------
+{
+    local me=`basename $ME`
+
+    echo
+    echo "Configure a Data Centre Collector:"
+    echo
+    echo "  $me [-h] [--folder=<folder_name>]"
+    echo
+    echo "  -h            - this help text."
+    echo "  --folder      - the service line folder name to add."
+    echo "  --dccip       - IP address of the DCC."
+    echo
+    echo "Any omitted options will be prompted for."
+    echo
+}
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose:      Parse program options and set globals.
+# Arguments:    None
+# Returns:      Nothing
+{
+    set -- $CMDLINE
+    while true
+    do
+        case $1 in
+            -h) usage; exit 0
+            ;;
+            --folder=*) G_FOLDER="${1##--folder=}"
+            ;;
+            --dccip=*) G_DCCIP="${1##--dccip=}"
+            ;;
+            ?*) usage
+                echo -e "\nInvalid option, $1\n"
+                exit 4
+            ;;
+        esac
+        shift 1 || break
+    done
+}
+
+# ----------------------------------------------------------------------------
+prompt_for_config_var()
+# ----------------------------------------------------------------------------
+# $1 - The text to show
+# $2 - The variable to set
+{
+    local text="$1"
+    local var="$2"
+    local a
+
+    while true; do
+        echo "$text"
+        echo -n "> "
+        read a
+        [[ -n "$a" ]] && break
+    done
+
+    eval $2="$a"
+}
+
+# ----------------------------------------------------------------------------
+configure_ssh()
+# ----------------------------------------------------------------------------
+{
+    [[ -e /root/.ssh/id_rsa ]] || ssh-keygen -N "" -f /root/.ssh/id_rsa
+    ssh-copy-id -i /root/.ssh/id_rsa.pub svnsync@$G_DCCIP
+}
+
+# ----------------------------------------------------------------------------
+configure_restart_nagios_script()
+# ----------------------------------------------------------------------------
+{
+    sed -i "s/^#dcc=.*/dcc=$G_DCCIP/" /usr/bin/restart_nagios
+}
+
+# ----------------------------------------------------------------------------
+configure_mod_gearman()
+# ----------------------------------------------------------------------------
+{
+    cat >/etc/mod_gearman.conf <<EnD
+###############################################################################
+# This file was written by slc_configure
+###############################################################################
+#
+#  mod_gearman - distribute checks with gearman
+#
+#  Copyright (c) 2010 Sven Nierlein
+#
+#  Sample Worker / NEB Module Config
+#
+###############################################################################
+
+# use debug to increase the verbosity of the module.
+# Possible values are:
+#     0 = only errors
+#     1 = debug messages
+#     2 = trace messages
+#     3 = trace and all gearman related logs are going to stdout.
+# Default is 0.
+debug=0
+
+
+# sets the addess of your gearman job server. Can be specified
+# more than once to add more server.
+server=localhost:4730
+
+
+# sets the address of your 2nd (duplicate) gearman job server. Can
+# be specified more than once o add more servers.
+#dupserver=<host>:<port>
+dupserver=${G_DCCIP}:4730
+ 
+# defines if the module should distribute execution of
+# eventhandlers.
+eventhandler=yes
+
+
+# defines if the module should distribute execution of
+# service checks.
+services=yes
+
+
+# defines if the module should distribute execution of
+# host checks.
+hosts=yes
+
+
+# sets a list of hostgroups which will go into seperate
+# queues. Either specify a comma seperated list or use
+# multiple lines.
+#hostgroups=name1
+#hostgroups=name2,name3
+
+
+# sets a list of servicegroups which will go into seperate
+# queues.
+#servicegroups=name1,name2,name3
+
+# Set this to 'no' if you want Mod-Gearman to only take care about
+# servicechecks. No hostchecks will be processed by Mod-Gearman. Use
+# this option to disable hostchecks and still have the possibility to
+# use hostgroups for easy configuration of your services.
+# If set to yes, you still have to define which hostchecks should be
+# processed by either using 'hosts' or the 'hostgroups' option.
+# Default is Yes.
+do_hostchecks=yes
+
+# enables or disables encryption. It is strongly
+# advised to not disable encryption. Anybody will be
+# able to inject packages to your worker.
+# Encryption is enabled by default and you have to
+# explicitly disable it.
+# When using encryption, you will either have to
+# specify a shared password with key=... or a
+# keyfile with keyfile=...
+# Default is On.
+encryption=yes
+
+
+# A shared password which will be used for
+# encryption of data pakets. Should be at least 8
+# bytes long. Maximum length is 32 characters.
+key=key1
+
+
+# The shared password will be read from this file.
+# Use either key or keyfile. Only the first 32
+# characters will be used.
+#keyfile=/path/to/secret.file
+
+
+###############################################################################
+#
+# NEB Module Config
+#
+# the following settings are for the neb module only and
+# will be ignored by the worker.
+#
+###############################################################################
+
+# sets a list of hostgroups which will not be executed
+# by gearman. They are just passed through.
+# Default is none
+localhostgroups=
+
+
+# sets a list of servicegroups which will not be executed
+# by gearman. They are just passed through.
+# Default is none
+localservicegroups=
+
+
+# Number of result worker threads. Usually one is
+# enough. You may increase the value if your
+# result queue is not processed fast enough.
+# Default: 1
+result_workers=1
+
+
+# defines if the module should distribute perfdata
+# to gearman.
+# Note: processing of perfdata is not part of
+# mod_gearman. You will need additional worker for
+# handling performance data. For example: pnp4nagios
+# Performance data is just written to the gearman
+# queue.
+# Default no
+perfdata=no
+
+
+###############################################################################
+#
+# Worker Config
+#
+# the following settings are for the worker only and
+# will be ignored by the neb module.
+#
+###############################################################################
+
+# Path to the pidfile. Usually set by the init script
+#pidfile=/var/mod_gearman/mod_gearman_worker.pid
+
+# Path to the logfile.
+logfile=/var/mod_gearman/mod_gearman_worker.log
+
+# Minimum number of worker processes which should
+# run at any time.
+min-worker=20
+
+# Maximum number of worker processes which should
+# run at any time. You may set this equal to
+# min-worker setting to disable dynamic starting of
+# workers. When setting this to 1, all services from
+# this worker will be executed one after another.
+max-worker=60
+
+# Time after which an idling worker exists
+# This parameter controls how fast your waiting workers will
+# exit if there are no jobs waiting.
+idle-timeout=30
+
+# Controls the amount of jobs a worker will do before he exits
+# Use this to control how fast the amount of workers will go down
+# after high load times
+max-jobs=50
+
+# defined the rate of spawed worker per second as long
+# as there are jobs waiting
+spawn-rate=1
+
+# Use this option to disable an extra fork for each plugin execution. Disabling
+# this option will reduce the load on the worker host but can lead to problems with
+# unclean plugin. Default: yes
+fork_on_exec=yes
+
+# Use this option to show stderr output of plugins too.
+# Default: yes
+show_error_output=yes
+
+# Workarounds
+
+# workaround for rc 25 bug
+# duplicate jobs from gearmand result in exit code 25 of plugins
+# because they are executed twice and get killed because of using
+# the same ressource.
+# Sending results (when exit code is 25 ) will be skipped with this
+# enabled.
+workaround_rc_25=off
+EnD
+}
+
+# ----------------------------------------------------------------------------
+setup_repo()
+# ----------------------------------------------------------------------------
+{
+    echo "Adding repo at '$REPO_LOCATION/$G_FOLDER'"
+
+    local folder="$REPO_LOCATION/$G_FOLDER"
+
+    mkdir -p $REPO_LOCATION
+    cd $REPO_LOCATION/
+    svnadmin create $G_FOLDER
+    # When this node is a satellite and syncing to a central console
+    #svnsync init svn+ssh://svnsync@$G_DCCIP/$folder file://$folder
+
+    # Configure the check result sender (ocsp only)
+    #sed -i "s/\(command_line.*submit_[a-z]*check_result.*\) .*/\1 $G_DCCIP/" \
+    #    $NAG_DIR/objects/shared_commands.cfg
+
+    mkdir -p $NAG_DIR/objects/$G_FOLDER
+    chgrp apache $NAG_DIR/objects/$G_FOLDER
+    cd $NAG_DIR/objects/$G_FOLDER
+    mkdir setup
+    cd setup
+
+    touch ${G_FOLDER}_contactgroups.setup
+    touch ${G_FOLDER}_contacts.setup
+    touch ${G_FOLDER}_hostgroups.auto.setup
+    touch ${G_FOLDER}_hostgroups.setup
+    touch ${G_FOLDER}_hosts.setup
+    touch ${G_FOLDER}_hosttemplates.setup
+    touch ${G_FOLDER}_servicegroups.auto.setup
+    touch ${G_FOLDER}_servicesets.setup
+    touch ${G_FOLDER}_services.setup
+    touch ${G_FOLDER}_servicetemplates.setup
+
+    cd ..
+    chown -R apache: setup
+    cp -r setup setup.known_good
+    chown -R apache: setup.known_good
+
+    # Finally kick off the first full sync.
+    for i in 1 2 3 4; do /usr/bin/restart_nagios; done
+    #svnsync sync svn+ssh://svnsync@$G_DCCIP/$folder
+    #ssh svnsync@$G_DCCIP "touch /tmp/nagios_update_$G_FOLDER"
+}
+
+# ----------------------------------------------------------------------------
+setup_nagios_cfg()
+# ----------------------------------------------------------------------------
+{
+    local folder
+
+    if grep -qs "cfg_dir=$NAG_DIR/objects/$G_FOLDER" $NAG_DIR/nagios.cfg
+    then
+        return
+    fi
+
+    echo "Creating $NAG_DIR/objects/$G_FOLDER"
+
+    folder="$NAG_DIR/objects/$G_FOLDER"
+    mkdir $folder
+    chown nagios:nagios $folder
+    chmod g+w $folder
+
+    echo "Adding 'cfg_dir' entry to nagios.cfg"
+
+    # Add the directory to the Nagios configuration
+    text="<SERVICE_LINE_CFG_ENTRY>"
+    sed -i "s%.*$text.*%cfg_dir=$NAG_DIR/objects/$G_FOLDER \n#$text%" \
+        $NAG_DIR/nagios.cfg
+
+    # Modify etc/nagrestconf/nagrestconf.ini, read by the php web gui.
+    text="folder\[\]"
+    sed -i "s%.*$text.*%$text = \"$G_FOLDER\"%" \
+        /etc/nagrestconf/nagrestconf.ini
+}
+
+# ----------------------------------------------------------------------------
+main()
+# ----------------------------------------------------------------------------
+{
+    parse_options
+
+    [[ -z $G_FOLDER ]] && prompt_for_config_var "Enter 'folder' name" G_FOLDER
+
+    [[ -e $REPO_LOCATION/$G_FOLDER ]] && {
+        echo "Folder '$REPO_LOCATION/$G_FOLDER' exists. Not writing."
+    }
+
+    # Do this yourself
+    #[[ -z $G_DCCIP ]] && prompt_for_config_var "Enter DCC IP address" G_DCCIP
+
+    setup_nagios_cfg
+    #configure_ssh
+    #configure_restart_nagios_script
+    #configure_mod_gearman
+    setup_repo
+}
+
+main
+

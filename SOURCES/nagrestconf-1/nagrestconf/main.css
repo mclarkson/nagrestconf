@@ -1,0 +1,690 @@
+/*
+ * ICONS
+ */
+.icon-delete {
+    background-image: url("images/delete.png");
+}
+.icon-add {
+    background-image: url("images/add.png");
+}
+.icon-edit {
+    background-image: url("images/edit.png");
+}
+.icon-disable {
+    background-image: url("images/disable.png");
+}
+.icon-enable {
+    background-image: url("images/enable.png");
+}
+.icon-clone {
+    background-image: url("images/clone.png");
+}
+.icon:hover {
+    background-position: 50% 0%;
+    background-color: #F6CFA7;
+    background-repeat: no-repeat;
+    padding-bottom: 3px;
+    padding-left: 20px;
+    padding-top: 2px;
+}
+.icon {
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    padding-bottom: 3px;
+    padding-left: 20px;
+    padding-top: 2px;
+}
+/*
+ * DIALOG FORM CONTENT
+ */
+div.flash.error {
+    /* background: url("images/true.png") no-repeat scroll 8px 5px #DFFFDF; */
+    background-image: url("images/false.png");
+    background-color: #E6D8D8;
+    border-color: #C4A3A3;
+    border-style: solid;
+    border-width: 2px;
+    color: #5F0000;
+}
+div.flash.notice {
+    /* background: url("images/true.png") no-repeat scroll 8px 5px #DFFFDF; */
+    background-image: url("images/true.png");
+    background-color: #C5E8CE;
+    border-color: #9FCF9F;
+    border-style: solid;
+    border-width: 2px;
+    color: #005F00;
+}
+.flash {
+    background-position: 0% 50%;
+    background-repeat: no-repeat;
+    padding-bottom: 3px;
+    padding-left: 20px;
+    padding-top: 2px;
+    margin-top: 8px;
+}
+
+form fieldset {
+    border-width: 0px;
+    border-color: gray;
+    padding: 6px 20px 0px;
+}
+form fieldset p {
+    display:block;
+    margin-top: 0;
+    padding-top: 6px;
+}
+form fieldset select {
+    display:block;
+    margin-top: 0;
+    padding-top: 0;
+}
+form fieldset input[type=checkbox] {
+    display:block;
+    margin-top: 8px;
+    padding-top: 0;
+    width: auto;
+}
+form fieldset input {
+    display:block;
+    margin-top: 0;
+    padding-top: 0;
+    width: 230px;
+    height: 1.2em;
+}
+form fieldset label {
+    float:left;
+    display:block;
+    margin-right: 5px;
+    margin-top: 7px;
+    width: 140px;
+    text-align: right;
+    padding-top: 0;
+}
+#delhostform label {
+    font-size: 12px;
+}
+#delhostgroupform h2,
+#delsvcgroupform h2,
+#delhostform h2,
+#deltimeperiodform h2,
+#delcommandform h2,
+#delhosttemplateform h2,
+#delsvctemplateform h2,
+#delsvcform h2,
+#delcontactgroupform h2,
+#delcontactform h2,
+#disablehostform h2,
+#enablehostform h2,
+#clonesvcform h2 {
+    font-weight: normal;
+    font-size: 12px;
+}
+#delhostform input {
+    margin-right: 5px;
+    margin-top: 8px;
+    margin-left: 20px;
+    padding-top: 0px;
+}
+.field {
+    overflow:auto;
+    margin:5px 0px;
+}
+/*
+ * BODY ETC
+ */
+body {
+    background-color: #FFFFFF;
+    background-repeat: repeat-x;
+    color: #000000;
+    /* font-family: verdana,sans-serif; */
+    font-family: "Arial", "Helvetica", "Verdana", "sans-serif";
+    font-size: 10px;
+    margin: 0;
+    top: 0;
+    min-width: 800px;
+}
+
+hr {
+    color: #aaaaaa; 
+    background-color: #aaaaaa;
+    height:1px;
+    border-width:0;
+    margin-top: 12px;
+    margin-bottom: 10px;
+}
+
+input, select {
+    font-size: 12px;
+    margin: 4px 0 0 0;
+}
+
+p {
+    font-size: 12px;
+    margin: 4px 0 0 0;
+}
+
+.black {
+    color: black;
+}
+
+a:link, a:visited {
+    background-color: transparent;
+    color: #2222a0;
+    text-decoration: none;
+}
+
+#logo {
+    /* height: 40px; */
+    padding-left: 14px;
+    padding-top: 7px;
+    vertical-align: middle;
+}
+
+h1.titletext {
+    font-size: 14px;
+    /* float: right; */
+    /* position: relative; */
+    /* color: #C26100; */
+    position: absolute;
+    margin-left: 4px;
+}
+
+h2.pghdr {
+    font-size: 14px;
+    float: right;
+    position: relative;
+    color: #C26100;
+    top: 10px;
+    right: 20px;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+#applyconf {
+    top: 2px;
+    padding: 0 0 0 0;
+    margin: 0 0 0 0;
+   /*  The following is the key to positioning on the bottom of parent.
+     Parent must have 'position: relative', and leaving top and left
+     values off for the parent causes parent to be positioned in its
+     normal place. */
+    right: 20px;
+    position: absolute;
+}
+
+#taboff1 {
+    background-color: #cccccc;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    height: 16px;
+    padding-top: 5px;
+    bottom: 0px;
+    font-weight: bold;
+    font-size: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    color: #444444;
+   /*  The following is the key to positioning on the bottom of parent.
+     Parent must have 'position: relative', and leaving top and left
+     values off for the parent causes parent to be positioned in its
+     normal place. */
+    right: 454px;
+    position: absolute;
+}
+
+#taboff2 {
+    background-color: #cccccc;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    height: 16px;
+    padding-top: 5px;
+    bottom: 0px;
+    right: 476px;
+    font-weight: bold;
+    font-size: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    color: #444444;
+    position: absolute;
+}
+
+#taboff3 {
+    background-color: #cccccc;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    height: 16px;
+    padding-top: 5px;
+    bottom: 0px;
+    font-weight: bold;
+    font-size: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    color: #444444;
+    position: absolute;
+    right: 222px;
+    position: absolute;
+}
+
+#taboff4 {
+    background-color: #cccccc;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    height: 16px;
+    padding-top: 5px;
+    bottom: 0px;
+    /* right: 124px; */
+    font-weight: bold;
+    font-size: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    color: #444444;
+    position: absolute;
+    right: 298px;
+    position: absolute;
+}
+
+#taboff5 {
+    background-color: #cccccc;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    height: 16px;
+    padding-top: 5px;
+    bottom: 0px;
+    /* right: 124px; */
+    font-weight: bold;
+    font-size: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    color: #444444;
+    position: absolute;
+    right: 383px;
+    position: absolute;
+}
+
+#taboff6 {
+    background-color: #cccccc;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    height: 16px;
+    padding-top: 5px;
+    bottom: 0px;
+    /* right: 124px; */
+    font-weight: bold;
+    font-size: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    color: #444444;
+    position: absolute;
+    right: 19px;
+    position: absolute;
+}
+
+#taboff7 {
+    background-color: #cccccc;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    height: 16px;
+    padding-top: 5px;
+    bottom: 0px;
+    /* right: 124px; */
+    font-weight: bold;
+    font-size: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    color: #444444;
+    position: absolute;
+    right: 123px;
+    position: absolute;
+}
+
+#tabon1 {
+    background-color: white;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    bottom: -1px;
+    right: 454px;
+    font-weight: bold;
+    font-size: 12px;
+    height: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 5px;
+    position: absolute;
+}
+
+#tabon2 {
+    background-color: white;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    bottom: -1px;
+    right: 476px;
+    font-weight: bold;
+    font-size: 12px;
+    height: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 5px;
+    position: absolute;
+}
+
+#tabon3 {
+    background-color: white;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    bottom: -1px;
+    right: 222px;
+    font-weight: bold;
+    font-size: 12px;
+    height: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 5px;
+    position: absolute;
+}
+
+#tabon4 {
+    background-color: white;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    bottom: -1px;
+    right: 298px;
+    font-weight: bold;
+    font-size: 12px;
+    height: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 5px;
+    position: absolute;
+}
+
+#tabon5 {
+    background-color: white;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    bottom: -1px;
+    right: 383px;
+    font-weight: bold;
+    font-size: 12px;
+    height: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 5px;
+    position: absolute;
+}
+
+#tabon6 {
+    background-color: white;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    bottom: -1px;
+    right: 19px;
+    font-weight: bold;
+    font-size: 12px;
+    height: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 5px;
+    position: absolute;
+}
+
+#tabon7 {
+    background-color: white;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    bottom: -1px;
+    right: 123px;
+    font-weight: bold;
+    font-size: 12px;
+    height: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 5px;
+    position: absolute;
+}
+
+container {
+    clear: both;
+    float: left;
+    overflow: hidden;
+    position: relative; /* This fixes the IE7 overflow hidden bug */
+    width: 100%; /* width of whole page */
+}
+
+#pageheader {
+    background-color: #A3D1FF;
+    border-bottom-width: 1px;
+    border-bottom: 1px solid black;
+    height: 60px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.btn:hover {
+    background-color: #F6CFA7;
+}
+   
+.btn {
+    background-color: #DBEDFF;
+    margin-left: 4px;
+    padding: 3px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #AAA;
+    color: #222;
+    cursor: pointer;
+}
+   
+h1 {
+    margin-top: 0px;
+    padding-left: 4px;
+    padding-bottom: 2px;
+    padding-top: 8px;
+    background-color: transparent;
+    color: #000000;
+    font-weight: bold;
+    font-size: 16px;
+    display: inline;
+}
+
+.ghost {
+    font-size: 9px;
+    color: #777777; 
+}
+
+h2 {
+    font-size: 12px;
+}
+
+h2, h3, h4 {
+    margin-top: 14px;
+    margin-left: 20px;
+    margin-bottom: 0px;
+    padding-bottom: 2px;
+    padding-top: 8px;
+    background-color: transparent;
+    color: #000000;
+    font-weight: bold;
+}
+
+p.pageheader {
+    margin-left: 0px;
+    margin-bottom: 0;
+    margin-top: 24px;
+    background-color: transparent;
+    color: #000000;
+    font-weight: bold;
+    font-size: smaller;
+    text-align: center;
+}
+
+.navcenter {
+    font-size: smaller;
+    margin-left: 0px;
+    margin-bottom: 0;
+    margin-top: 1px;
+    text-align: center;
+}
+
+.center {
+    text-align: center;
+}
+
+.kpi {
+    color: #000000;
+    font-size: smaller;
+    font-weight: bold;
+    margin-top: 24px;
+}
+
+#graphs {
+   background-color: transparent;
+   color: #000000;
+   font-size: smaller;
+   font-weight: normal;
+   margin-bottom: 0;
+   margin-left: 12px;
+   margin-top: 0;
+   padding-top: 6px;
+   position: relative;
+   width: 100%;
+/*
+   width: 65%;
+   left: 330px;
+   float: left;
+*/
+}
+
+table.results {
+    table-layout: fixed;
+}
+
+img {
+    padding-top: 14px;
+}
+
+.table_data {
+    border-color: white;
+    border-style: solid;
+    border-width: 0px 0px 0 0;
+    /* font-family: verdana,sans-serif; */
+    font-family: "Arial", "Helvetica", "Verdana", "sans-serif";
+    font-size: 10px;
+    margin: 0;
+    padding: 6px;
+    text-align: right;
+}
+
+.green_percentbox {
+    background-color: #00CC00;
+    border-color: black;
+    border-radius: 5px 5px 5px 5px;
+    border-style: solid;
+    border-width: 1px;
+    font-weight: bold;
+    margin: 1px;
+    padding: 2px;
+}
+
+.yellow_percentbox {
+    background-color: #CCCC00;
+    border-color: black;
+    border-radius: 5px 5px 5px 5px;
+    border-style: solid;
+    border-width: 1px;
+    font-weight: bold;
+    margin: 1px;
+    padding: 2px;
+}
+
+.col1 table {
+    border-collapse: collapse;
+    font-size: 12px;
+    width: 98%;
+    margin-bottom: 8px;
+}
+.col1 table thead {
+    font-size: 12px;
+    font-weight: bold;
+}
+.col1 table thead tr {
+    border-bottom: solid 1px black;
+}
+.col1 table thead tr td {
+    padding-bottom: 2px;
+    padding-left: 8px;
+}
+.hidden {
+    display: none;
+}
+.link {
+    cursor: pointer; 
+}
+.linkover {
+    color: blue;
+    cursor: pointer; 
+}
+.col1 table tbody .shaded {
+    background-color: #E6ECFF;
+}
+.col1 table tbody .innershaded {
+    background-color: #EEEEEE;
+}
+.col1 table tbody tr {
+}
+.col1 table tbody tr td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+}
+
+.colmask {
+    clear: both;
+    float: left;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.leftmenu {
+    background: none repeat scroll 0 0 #FFFFFF;
+}
+.leftmenu .colright {
+    background: none repeat scroll 0 0 #FFFFFF;
+    float: left;
+    left: 330px;
+    position: relative;
+    width: 200%;
+}
+.leftmenu .col1wrap {
+    float: right;
+    padding-bottom: 1em;
+    position: relative;
+    right: 320px;
+    width: 50%;
+}
+.leftmenu .col1 {
+    margin: 0 30px 0 160px;
+    overflow: hidden;
+    position: relative;
+    right: 100%;
+}
+.leftmenu .col2 {
+    float: left;
+    position: relative;
+    right: 322px;
+    width: 150px;
+}

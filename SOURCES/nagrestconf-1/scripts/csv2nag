@@ -1,0 +1,1129 @@
+#!/bin/bash
+#
+# Copyright(C) 2010 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#
+#    This software is provided under the terms of the GNU
+#    General Public License (GPL), as published at: 
+#    http://www.gnu.org/licenses/gpl.html .
+#
+# File:     config_create.sh
+# Author:   Mark Clarkson
+# Date:     20 May 2010
+# Version:  0.13
+# Modified:
+#           2010-07-23 Mark Clarkson
+#           * Now writes hosttemplates, servicetemplates and contacts files.
+#           * Now adds contacts and contact_groups fields to config for
+#             hosts.setup and services.setup files.
+#           * New -s command line option.
+#           * New field for contacts, can_submit_commands.
+#           2010-07-30 Mark Clarkson
+#           * Documentation fixes
+#           2010-09-08 Mark Clarkson
+#           * Added active_checks_enabled support to hosts and services.
+#           2011-09-06 Mark Clarkson
+#           * Can be used for both dcc and slc now via DCC variable.
+#
+# Purpose:  This a utility to help with creation of Nagios configuration
+#           files. For more information type, 
+#
+#             csv2nag -h
+#
+# Notes:
+#
+
+# ---------------------------------------------------------------------------
+# SETINGS - MODIFY AS NEEDED
+# ---------------------------------------------------------------------------
+
+# Set DCC=1 if this is a data centre collector
+DCC=0
+
+#
+#
+# -------------------- DO NOT MODIFY ANYTHING BELOW -------------------------
+#
+#
+
+# ---------------------------------------------------------------------------
+# GLOBALS
+# ---------------------------------------------------------------------------
+
+# -- Constants
+
+# Program args
+ME="$0"
+CMDLINE="$@"
+# Standard
+TRUE=1
+FALSE=0
+# Errors
+ERROR_NONE=0
+ERROR=1
+# Types of .setup files
+FT_NONE=0
+FT_HOSTS=1
+FT_SERVICES=2
+FT_HOSTTEMPLATES=3
+FT_SERVICETEMPLATES=4
+FT_CONTACTS=5
+FT_TIMEPERIODS=6
+FT_COMMANDS=7
+FT_ALL=8
+
+# -- General variables
+
+# Suffix array for building file name
+declare -a gftsuffix
+# Command line options
+# The file we read from (initially from spreadsheet)
+gsetupfile=
+gsetupfiletype=
+#gforce=$FALSE       
+# Name of the new config file
+gfnnewconfig=
+# Standard file suffixes/prefixes/extensions
+gconfigsuffix=
+gconfigprefix=
+gsetupprefix=
+gfnhostsetup=
+gfntimeperiodsetup=
+gfntimeperiodcfg=
+gfncommandsetup=
+gfncommandcfg=
+gfnhostgrpsetup=
+gfnhostgrpsetupauto=
+gfnhostgrpcfg=
+gfnhostmplsetup=
+gfnhostmplcfg=
+gfnsvcgrpcfg=
+gfnsvcsetup=
+gfnsvcgrpsetup=
+gfnsvcgrpsetupauto=
+gfnsvctmplsetup=
+gfnsvctmplcfg=
+gfncontactsetup=
+gfncontactgrpsetup=
+gfncontactscfg=
+[[ $DCC -eq 1 ]] && gfnmandatorygroupcfg=
+gconfigext=
+user_is_sure=$FALSE
+
+# ---------------------------------------------------------------------------
+#
+# SUPPORT FUNCTIONS
+#
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+init_data()
+# ---------------------------------------------------------------------------
+# Purpose:      Sets global data structures
+# Arguments:    None
+# Returns:      Nothing
+{
+    # Standard config file suffixes
+    gftsuffix[FT_NONE]="ERROR"
+    gftsuffix[FT_HOSTS]="hosts"
+    gftsuffix[FT_SERVICES]="services"
+    gftsuffix[FT_HOSTTEMPLATES]="hosttemplates"
+    gftsuffix[FT_SERVICETEMPLATES]="servicetemplates"
+    gftsuffix[FT_CONTACTS]="contacts"
+    gftsuffix[FT_TIMEPERIODS]="timeperiods"
+    gftsuffix[FT_COMMANDS]="commands"
+
+    # Set the name of the output file
+    gconfigsuffix="${gftsuffix[gsetupfiletype]}"
+    gfnnewconfig="${gconfigprefix}_${gconfigsuffix}.${gconfigext}"
+
+    # Set all our globals here
+    : ${gconfigprefix:="$(basename `pwd`)"}
+    gsetupprefix="setup/$gconfigprefix"
+    gfnhostsetup=${gsetupprefix}_hosts.setup
+    gfncommandsetup=${gsetupprefix}_commands.setup
+    gfncommandcfg=${gconfigprefix}_commands.cfg
+    gfntimeperiodsetup=${gsetupprefix}_timeperiods.setup
+    gfntimeperiodcfg=${gconfigprefix}_timeperiods.cfg
+    gfnhostgrpsetup=${gsetupprefix}_hostgroups.setup
+    gfnhostgrpsetupauto=${gsetupprefix}_hostgroups.auto.setup
+    gfnhostgrpcfg=${gconfigprefix}_hostgroups.cfg
+    gfnhostmplsetup=${gsetupprefix}_hosttemplates.setup
+    gfnhostmplcfg=${gconfigprefix}_hosttemplates.cfg
+    gfnsvcgrpcfg=${gconfigprefix}_servicegroups.cfg
+    gfnsvcsetup=${gsetupprefix}_services.setup
+    gfnsvcgrpsetup=${gsetupprefix}_servicegroups.setup
+    gfnsvcgrpsetupauto=${gsetupprefix}_servicegroups.auto.setup
+    gfnsvctmplsetup=${gsetupprefix}_servicetemplates.setup
+    gfnsvctmplcfg=${gconfigprefix}_servicetemplates.cfg
+    gfncontactsetup=${gsetupprefix}_contacts.setup
+    gfncontactgrpsetup=${gsetupprefix}_contactgroups.setup
+    gfncontactscfg=${gconfigprefix}_contacts.cfg
+    [[ $DCC -eq 1 ]] && gfnmandatorygroupcfg=${gconfigprefix}_mandatory_group.setup
+    gconfigext="cfg"
+}
+
+# ----------------------------------------------------------------------------
+usage()
+# ----------------------------------------------------------------------------
+# Purpose:      Show program options.
+# Arguments:    None
+# Returns:      Nothing
+{
+    echo
+    echo "Usage: `basename $ME` [-yhs] TYPE"
+    echo
+    echo " -y       :  Answer 'yes' to any questions."
+    echo " -h       :  Display this help text."
+    echo " -s NAME  :  Use NAME for service-line name instead of using the"
+    echo "             parent directory as the service-line name."
+    echo " TYPE     :  One of six TYPES are understood:"
+    echo "             hosts          -  Create hosts files."
+    echo "                               One host file is created per host in"
+    echo "                               the $gconfigprefix-nodes directory."
+    echo "                               The $gconfigprefix-hostgroups.cfg"
+    echo "                               file is also created in the top"
+    echo "                               level directory."
+    echo "             services       -  Add services to hosts files in"
+    echo "                               the $gconfigprefix-nodes directory."
+    echo "                               This script should previously have"
+    echo "                               been run with the 'hosts' TYPE."
+    echo "                               The $gconfigprefix-servicegroups.cfg"
+    echo "                               file will also be created."
+    echo "             hosttemplates  -  Create a hosttemplates file."
+    echo "             svctemplates   -  Create a servicetemplates file."
+    echo "             contacts       -  Create a contacts file."
+    echo "             all            -  Create all TYPEs in one go."
+    echo
+    echo "`basename $ME` should be run from the directory containing the 'setup'"
+    echo "directory and the following files must exist:"
+    echo
+    echo "             $gsetupprefix-hosts.setup"
+    echo "             $gsetupprefix-hostgroups.setup"
+    echo "             $gsetupprefix-hosttemplates.setup"
+    echo "             $gsetupprefix-services.setup"
+    echo "             $gsetupprefix-servicegroups.setup"
+    echo "             $gsetupprefix-servicetemplates.setup"
+    echo "             $gsetupprefix-contacts.setup"
+    echo "             $gsetupprefix-contactgroups.setup"
+    echo "             $gsetupprefix-commands.setup"
+    echo
+    echo "Examples:"
+    echo "  Create the entire config from scratch, wiping out the current one:"
+    echo "    `basename $ME` all"
+    echo
+}
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose:      Parse program options and set globals.
+# Arguments:    None
+# Returns:      Nothing
+{
+    set -- $CMDLINE
+    while true
+    do
+        case $1 in
+            -s) gconfigprefix="$2"; shift
+            ;;
+            -y) user_is_sure=$TRUE
+            ;;
+            -h) init_data; usage; exit 0
+            ;;
+            hosts) gsetupfiletype=$FT_HOSTS
+            ;;
+            services) gsetupfiletype=$FT_SERVICES
+            ;;
+            hosttemplates) gsetupfiletype=$FT_HOSTTEMPLATES
+            ;;
+            servicetemplates) gsetupfiletype=$FT_SERVICETEMPLATES
+            ;;
+            contacts) gsetupfiletype=$FT_CONTACTS
+            ;;
+            all) gsetupfiletype=$FT_ALL
+            ;;
+            ?*) usage
+                echo -e "\nInvalid command\n"
+                exit 4
+            ;;
+        esac
+        shift 1 || break
+    done
+}
+
+# ----------------------------------------------------------------------------
+check_for_setup_file()
+# ----------------------------------------------------------------------------
+# Purpose:      Check that a .setup file exists
+# Arguments:    $1 - the file name
+# Returns:      Nothing
+{
+    # Check for the .setup file, must be readable and end in .setup
+    if [[ -z $1 ]]; then
+        show_usage=0
+        g_error=$ERROR
+        g_errmsg=".setup file name not supplied";
+    else 
+        [[ ( ! -r $1 ) || ( $1 != *.setup ) ]] && {
+            show_usage=0
+            g_error=$ERROR
+            g_errmsg="$1 not found or name does not end in .setup";
+        }
+    fi
+
+    # Quit on error
+    [[ $g_error -gt 0 ]] && {
+        [[ $show_usage -eq 1 ]] && usage
+        echo -e "ERROR: $g_errmsg"
+        exit 4
+    }
+}
+
+# ----------------------------------------------------------------------------
+sanity_check()
+# ----------------------------------------------------------------------------
+# Purpose:      Check program options. Exit (4) on insanity.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local show_usage=0
+    g_error=0
+
+    # Check for the .setup file type
+    [[ -z $gsetupfiletype ]] && {
+        show_usage=1
+        g_error=$ERROR
+        g_errmsg="Setup file type not supplied."
+    }
+    # Don't clobber (unless forced)
+    #if [[ -e $gfnnewconfig && $gforce -eq $FALSE ]]; then
+    #    g_error=$ERROR
+    #    g_errmsg="Config file $gfnnewconfig exists already and will"
+    #    g_errmsg="$g_errmsg not overwrite.";
+    #fi
+
+    # Quit on error
+    [[ $g_error -gt 0 ]] && {
+        [[ $show_usage -eq 1 ]] && usage
+        echo -e "ERROR: $g_errmsg"
+        exit 4
+    }
+
+    ##### TODO ########
+    #
+    #  FT_HOSTS depends on FT_HOSTTEMPLATES
+}
+
+# ---------------------------------------------------------------------------
+echo_warning_header()
+# ---------------------------------------------------------------------------
+# Purpose:      Echo the standard header to stdout
+# Arguments:    None
+# Returns:      Nothing
+{
+    echo "#################################################################"
+    echo "#         THIS FILE WAS CREATED BY THE CSV2NAG SCRIPT           #"
+    echo "#   DON'T MODIFY THIS FILE. ALL CHANGES WILL BE OVERWRITTEN     #"
+    echo "#################################################################"
+    echo
+}
+
+# ---------------------------------------------------------------------------
+add_servicegroup_entries()
+# ---------------------------------------------------------------------------
+# Purpose:      Create servicegroups file. This file simply defines empty
+#               servicegroups. Members are declared in services files.
+# Arguments:    $1 - servicegroup entries
+# Returns:      Nothing
+{
+    local a
+
+    echo "$1 " | while read -d" " a
+    do
+        echo "$a" >>$gfnsvcgrpsetupauto
+    done
+
+    # Remove duplicates
+    sort -u $gfnsvcgrpsetupauto >$gfnsvcgrpsetupauto.tmp
+    mv $gfnsvcgrpsetupauto.tmp $gfnsvcgrpsetupauto
+}
+
+# ---------------------------------------------------------------------------
+add_hostgroup_entries()
+# ---------------------------------------------------------------------------
+# Purpose:      Create hostgroups file. This file simply defines empty
+#               hostgroups. Members are declared in hosts files.
+# Arguments:    $1 - hostgroup entries
+# Returns:      Nothing
+{
+    local a
+
+    echo "$1 " | while read -d" " a
+    do
+        echo "$a" >>$gfnhostgrpsetupauto
+    done
+
+    # Remove duplicates
+    sort -u $gfnhostgrpsetupauto >$gfnhostgrpsetupauto.tmp
+    mv $gfnhostgrpsetupauto.tmp $gfnhostgrpsetupauto
+}
+
+# ---------------------------------------------------------------------------
+lookup_servicegroup_alias()
+# ---------------------------------------------------------------------------
+# Purpose:      Echo the value of the second key (the Nagios alias) in
+#               the $gfnsvcgrpsetup file.
+# Arguments:    $1 - the servicegroup to lookup
+# Returns:      Nothing
+{
+    local a
+    a=`grep $1 $gfnsvcgrpsetup`
+    a=`echo $a | cut -d, -f2`
+    echo $a
+}
+
+# ---------------------------------------------------------------------------
+lookup_hostgroup_alias()
+# ---------------------------------------------------------------------------
+# Purpose:      Echo the value of the second key (the Nagios alias) in
+#               the $gfnhostgrpsetup file.
+# Arguments:    $1 - the hostgroup to lookup
+# Returns:      Nothing
+{
+    local a
+    a=`grep "^$1\>" $gfnhostgrpsetup`
+    a=`echo $a | cut -d, -f2`
+    echo $a
+}
+
+# ---------------------------------------------------------------------------
+are_you_sure()
+# ---------------------------------------------------------------------------
+{
+    [[ $user_is_sure -eq $TRUE ]] && return
+    local a
+    echo "*"
+    echo "* NAGIOS CONFIGURATION FILES WILL BE OVERWRITTEN."
+    echo "*"
+    echo -n "Are you sure you want to continue? (y/[n]) > "
+    read a
+    [[ $a != 'y' ]] && exit 0
+    echo
+}
+
+# ---------------------------------------------------------------------------
+#
+# CREATE FUNCTIONS
+#
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+create_host_files()
+# ---------------------------------------------------------------------------
+# Purpose:      Create hosts file and hostgroups file
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a alias hostname ipaddr hosttempl shostgroups
+    local fnnewconfig disable
+
+    check_for_setup_file "$gfnhostsetup"
+
+    # Need:
+    #   o Template name to use   - From hosttemplates.setup
+    #   o Alias                  - FQDN name from hosts.setup (field 1)
+    #   o Host name              - From FQDN Alias
+    #   o IP Address             - From hosts.setup (field 2)
+
+    # Delete host config directories
+    #find . -depth -type d -name "$gconfigprefix*" -exec rm -rf {} \;
+    rm -rf $gconfigprefix-nodes/*
+    :>$gfnhostgrpsetupauto
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        # Process $gsetupfile line
+
+        IFS=, read hostname alias ipaddr hosttempl shostgroups \
+            contacts contact_groups active_checks servicesets \
+            disable < <(echo "$a")
+
+        [[ "$disable" == "1" ]] && continue
+
+        prihostgroup=`echo $shostgroups | cut -d" " -f1`
+
+        [[ $DCC -eq 1 ]] && {
+            shostgroups=`echo "$shostgroups" \
+                | sed "s/^/${gconfigprefix}-/;s/ / ${gconfigprefix}-/g"`
+        }
+
+        # Create the file. Filename is the hostname.
+
+        [[ -z $prihostgroup ]] && prihostgroup="empty-hostgroup"
+        mkdir -p $gconfigprefix-nodes/$prihostgroup
+        
+        fnnewconfig="$gconfigprefix-nodes/$prihostgroup/$hostname.$gconfigext"
+
+        [[ -e $fnnewconfig ]] && {
+            ## TODO ##
+            ## check for duplicate hostnames in $gfnhostsetup.
+            echo "ERROR: Duplicate host name ($hostname)"
+            exit 4
+        }
+
+        echo "Creating hosts file $fnnewconfig"
+
+        # Write the host stanza
+
+        # Redirect all stdout output to gfnnewconfig
+        exec 3>&1 >$fnnewconfig
+
+        echo_warning_header
+        echo "define host {"
+        echo "       use             $hosttempl"
+        echo "       host_name       $hostname"
+        echo "       alias           $alias"
+        echo "       address         $ipaddr"
+        [[ -n $shostgroups ]] && {
+            exec 1>&3 3>&-
+            add_hostgroup_entries "$shostgroups"
+            exec 3>&1 >>$fnnewconfig
+            echo -n "       hostgroups      "
+            echo "$shostgroups" | tr " " ,
+        }
+        [[ -n $contacts ]] && {
+            ## TODO ## CHECK contact exists in gateway_contacts.setup
+            echo -n "       contacts        +"
+            echo "$contacts" | tr " " ,
+        }
+        [[ $active_checks == 0 ]] && {
+            echo "       active_checks_enabled 0"
+        }
+        [[ -n $contact_groups ]] && {
+            ## TODO ## CHECK contact_group exists in gateway_contacts.setup
+            echo -n "       contact_groups  +"
+            echo "$contact_groups" | tr " " ,
+        }
+        echo "}"
+        echo
+
+        # Un-redirect stdout output
+        exec 1>&3 3>&-
+    done <$gfnhostsetup
+
+    create_hostgroups
+}
+
+# ---------------------------------------------------------------------------
+create_servicegroups()
+# ---------------------------------------------------------------------------
+# Purpose:      Create servicegroup file from $gfnsvcgrpsetupauto, which is
+#               automatically created when create_service_entries is run.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local alias
+
+    echo "Creating servicegroups file $gfnsvcgrpcfg"
+    exec 3>&1 >$gfnsvcgrpcfg
+    echo_warning_header
+    cat $gfnsvcgrpsetupauto | \
+    while read a
+    do
+        echo "define servicegroup {"
+        echo "    servicegroup_name    $a"
+        exec 1>&3 3>&-
+        alias=`lookup_servicegroup_alias "$a"`
+        [[ -z "$alias" ]] && {
+            echo
+            echo "ERROR: Entry for servicegroup, $a, is not defined in the "
+            echo "servicegroups file $gfnsvcgrpsetup. Aborting."
+            exit 5
+        }
+        exec 3>&1 >>$gfnsvcgrpcfg
+        echo "    alias                $alias"  
+        echo "}"
+        echo
+    done
+    exec 1>&3 3>&-
+
+}
+
+# ---------------------------------------------------------------------------
+create_hostgroups()
+# ---------------------------------------------------------------------------
+# Purpose:      Create hostgroups file from $gfnhostgrpsetup, which is
+#               automatically created when create_host_files is run.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local alias prefix=
+
+    echo "Creating hostgroups file $gfnhostgrpcfg"
+
+    exec 3>&1 >$gfnhostgrpcfg
+
+    echo_warning_header
+
+    [[ $DCC -eq 1 ]] && prefix="${gconfigprefix}-"
+
+    while read a
+    do
+        exec 1>&3 3>&-
+        alias=`lookup_hostgroup_alias "$a"`
+        [[ -z "$alias" ]] && {
+            echo "ERROR: Entry for hostgroup, $a, is not defined in the "
+            echo "hostgroups file $gfnhostgrpsetup. Aborting."
+            exit 5
+        }
+        exec 3>&1 >>$gfnhostgrpcfg
+        echo "define hostgroup {"
+        echo "    hostgroup_name    ${prefix}$a"
+        echo "    alias             $alias"  
+        echo "}"
+        echo
+    done < <( cat $gfnhostgrpsetupauto | sed "s/^${prefix}//" )
+    exec 1>&3 3>&-
+
+}
+
+# ---------------------------------------------------------------------------
+create_service_entries()
+# ---------------------------------------------------------------------------
+# Purpose:      Create services in the hosts files from $gfnsvcsetup.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local hfile alias hostname stemplate scommand sdescr cv
+
+    check_for_setup_file "$gfnhostsetup"
+    check_for_setup_file "$gfnsvcsetup"
+    :>$gfnsvcgrpsetupauto
+
+    # Read hosts list from the $gfnhostsetup file
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        disable=`echo $a | cut -d, -f10`
+        
+        [[ "$disable" == "1" ]] && continue
+
+        hostname=`echo $a | cut -d, -f1`
+
+        # Find the hostname.cfg file to append to in xxx-nodes directory
+        hfile=`find $gconfigprefix-nodes -name $hostname.cfg`
+        [[ -w $hfile ]] || {
+            echo
+            echo "ERROR: Couldn't find $hostname.cfg"
+            echo "       Was this script run with hosts TYPE first?"
+            echo " Aborting"
+            echo
+            exit 5
+        }
+
+        echo "Adding services to $hfile"
+
+        exec 3>&1 >>$hfile
+
+        # Now process all the entries in $gfnsvcsetup that match hostname
+        grep "^$hostname," $gfnsvcsetup | while read b; do
+
+            IFS=, read dummy stemplate scommand sdescr svcgroups contacts \
+                cgroups freshness active_checks customvars disable \
+                < <(echo "$b")
+
+            [[ "$disable" == "1" ]] && continue
+
+            scommand=$(echo $scommand | tr '`' ',')
+            [[ -n $customvars ]] && customvars=$(echo "$customvars" | tr '`' ',')
+
+            [[ $DCC -eq 1 && -z $freshness ]] && freshness=600
+
+            echo "define service {"
+            echo "        host_name                       $hostname"
+            echo "        use                             $stemplate"
+            echo "        service_description             $sdescr"
+            [[ -z $freshness ]] && {
+                echo "        check_command                   $scommand"
+            }
+            [[ -n $svcgroups ]] && {
+                exec 1>&3 3>&-
+                add_servicegroup_entries "$svcgroups"
+                exec 3>&1 >>$hfile
+                echo -n "        servicegroups                   "
+                echo "$svcgroups" | tr " " ,
+            }
+            [[ -n $contacts ]] && {
+                echo -n "        contacts                        "
+                echo "$contacts" | tr " " ,
+            }
+            [[ -n $cgroups ]] && {
+                echo -n "        contact_groups                  "
+                echo "$cgroups" | tr " " ,
+            }
+            [[ -n $customvars ]] && {
+                while read -d"," cv
+                do
+                    echo "        ${cv%%|*}                  ${cv##*|}"
+                done < <(echo "$customvars,")
+            }
+            if [[ -n $freshness ]]; then 
+                echo "        check_command                   no-checks-received"
+                [[ $DCC -ne 1 ]] && {
+                    echo "        active_checks_enabled           0"
+                }
+                echo "        passive_checks_enabled          1"
+
+                echo -n "        freshness_threshold             "
+                echo "$freshness"
+                echo "        check_freshness                 1"
+            elif [[ $active_checks == 0 ]]; then
+                echo "        active_checks_enabled           0"
+            fi
+            echo "}"
+            echo
+
+        done # < <( grep "^$hostname," $gfnsvcsetup )
+        # Bash bug? when run in a function file descriptors are left open.
+
+        exec 1>&3 3>&-
+
+    done <$gfnhostsetup
+
+    create_servicegroups
+}
+
+# ---------------------------------------------------------------------------
+create_servicetemplates()
+# ---------------------------------------------------------------------------
+# Purpose:      Create servicetemplates file
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a name use contacts cgroups normchecki retrchecki notifperiod
+    local notifopts notifinter checki disable checkperiod
+    local maxcheckattempts
+
+    check_for_setup_file "$gfnsvctmplsetup"
+
+    echo "Creating servicetemplates file $gfnsvctmplcfg"
+
+    # Redirect all stdout output to gfnnewconfig
+    exec 3>&1 >$gfnsvctmplcfg
+
+    echo_warning_header
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        IFS=, read name use contacts cgroups notifopts checki normchecki \
+            retrchecki notifinter notifperiod disable checkperiod \
+            maxcheckattempts  \
+            < <(echo "$a")
+
+        echo "define service {"
+        echo "       name                         $name"
+        [[ -n $use ]] && {
+            echo "       use                          $use"
+        }
+        echo "       active_checks_enabled        1"
+        echo "       passive_checks_enabled       1"
+        echo "       obsess_over_service          1"
+        echo "       check_freshness              0"
+        echo "       notifications_enabled        1"
+        echo "       event_handler_enabled        1"
+        echo "       flap_detection_enabled       1"
+        echo "       process_perf_data            1"
+        echo "       retain_status_information    1"
+        echo "       retain_nonstatus_information 1"
+        echo "       is_volatile                  0"
+        [[ -n $contacts ]] && {
+            echo -n "       contacts                     "
+            echo "$contacts" | tr " " ,
+        }
+        [[ -n $cgroups ]] && {
+            echo -n "       contact_groups               "
+            echo "$cgroups" | tr " " ,
+        }
+        # Not in V3 -> echo "       normal_check_interval    $normchecki"
+        echo "       check_period                 $checkperiod"
+        echo "       max_check_attempts           $maxcheckattempts"
+        echo "       check_interval               $checki"
+        echo "       retry_interval               $retrchecki"
+        echo "       notification_interval        $notifinter"
+        echo "       notification_period          $notifperiod"
+        [[ -n $notifopts ]] && {
+            echo -n "       notification_options         "
+            echo "$notifopts" | tr " " ,
+        }
+        echo "       register                     0"
+        echo "}"
+        echo
+
+    done <$gfnsvctmplsetup
+
+    # Un-redirect stdout output
+    exec 1>&3 3>&-
+}
+
+# ---------------------------------------------------------------------------
+create_hosttemplates()
+# ---------------------------------------------------------------------------
+# Purpose:      Create hosttemplates file
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a name use contacts cgroups normchecki retrchecki notifperiod
+    local notifopts checki disable checkperiod maxcheckattempts 
+    local checkcommand notifinterval
+
+    check_for_setup_file "$gfnhostmplsetup"
+
+    echo "Creating hosttemplates file $gfnhostmplcfg"
+
+    # Redirect all stdout output to gfnnewconfig
+    exec 3>&1 >$gfnhostmplcfg
+
+    echo_warning_header
+
+    [[ $DCC -eq 1 ]] && {
+        # Read mandatory group
+        read a <$gfnmandatorygroupcfg
+        mandgroup=`echo "$a" | sed 's/^ *//;s/ *$//;s/  / /g' | tr " " ,`
+    }
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        IFS=, read name use contacts cgroups normchecki checki retrchecki \
+            notifperiod notifopts disable checkperiod maxcheckattempts \
+            checkcommand notifinterval \
+            < <(echo "$a")
+
+        echo "define host {"
+        echo "       name                         $name"
+        echo "       notifications_enabled        1"
+        echo "       event_handler_enabled        1"
+        echo "       flap_detection_enabled       1"
+        echo "       failure_prediction_enabled   1"
+        echo "       process_perf_data            1"
+        echo "       retain_status_information    1"
+        echo "       retain_nonstatus_information 1"
+        [[ -n $use ]] && {
+            echo "       use                          $use"
+        }
+        [[ -n $contacts ]] && {
+            echo -n "       contacts                     +"
+            echo "$contacts" | tr " " ,
+        }
+        if [[ $DCC -eq 1 ]]; then
+            [[ -n $cgroups || -n $mandgroup ]] && {
+                echo -n "       contact_groups               +"
+                echo "$mandgroup $cgroups" | tr " " ,
+            }
+        else
+            [[ -n $cgroups ]] && {
+                echo -n "       contact_groups               +"
+                echo "$cgroups" | tr " " ,
+            }
+        fi
+        [[ -n $checkperiod ]] && {
+            echo "       check_period                 $checkperiod"
+        }
+        # not in nagios 3
+        #echo "       normal_check_interval    $normchecki"
+        echo "       check_interval               $checki"
+        echo "       retry_interval               $retrchecki"
+        echo "       check_period                 $checkperiod"
+        echo "       max_check_attempts           $maxcheckattempts"
+        echo "       notification_interval        $notifinterval"
+        echo "       notification_period          $notifperiod"
+        echo "       check_command                $checkcommand"
+        [[ -n $notifopts ]] && {
+            echo -n "       notification_options         "
+            echo "$notifopts" | tr " " ,
+        }
+        echo "       register                     0"
+        echo "}"
+        echo
+
+    done <$gfnhostmplsetup
+
+    # Un-redirect stdout output
+    exec 1>&3 3>&-
+}
+
+# ---------------------------------------------------------------------------
+create_contacts()
+# ---------------------------------------------------------------------------
+# Purpose:      Create contacts file ($gfncontactscfg)
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a cname use alias email srvnotper srvnotopts srvnotcmds
+    local hstnotper hstnotopts hstnotcmds cansubmit members disable
+
+    check_for_setup_file "$gfncontactsetup"
+    check_for_setup_file "$gfncontactgrpsetup"
+
+    # Write contacts
+
+    echo "Creating contacts file $gfncontactscfg"
+
+    # Redirect all stdout output to contacts file
+    exec 3>&1 >$gfncontactscfg
+
+    echo_warning_header
+
+    echo "#"
+    echo "# Contacts"
+    echo "#"
+    echo
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        IFS=, read cname use alias email srvnotper srvnotopts srvnotcmds \
+            hstnotper hstnotopts hstnotcmds cansubmit disable \
+            < <(echo "$a")
+
+        echo "define contact {"
+        echo "       contact_name                  $cname"
+        [[ -n $use ]] && {
+            echo "       use                           $use"
+        }
+        echo "       alias                         $alias"
+        [[ -n $email ]] && {
+            echo "       email                         $email"
+        }
+        [[ -n $srvnotper ]] && {
+            echo "       service_notification_period   $srvnotper"
+        }
+        [[ -n $srvnotopts ]] && {
+            echo -n "       service_notification_options  "
+            echo "$srvnotopts" | tr " " ,
+        }
+        [[ -n $srvnotcmds ]] && {
+            echo -n "       service_notification_commands "
+            echo "$srvnotcmds" | tr " " ,
+        }
+        [[ -n $hstnotper ]] && {
+            echo "       host_notification_period      $hstnotper"
+        }
+        [[ -n $hstnotopts ]] && {
+            echo -n "       host_notification_options     "
+            echo "$hstnotopts" | tr " " ,
+        }
+        [[ -n $hstnotcmds ]] && {
+            echo -n "       host_notification_commands    "
+            echo "$hstnotcmds" | tr " " ,
+        }
+        [[ -n $cansubmit ]] && {
+            echo "       can_submit_commands           $cansubmit"
+        }
+        echo "}"
+        echo
+
+    done <$gfncontactsetup
+
+    # Now append contact groups
+
+    echo "#"
+    echo "# Contact Groups"
+    echo "#"
+    echo
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        cname=`echo $a | cut -d, -f1`
+        use=`echo $a | cut -d, -f2`
+        members=`echo $a | cut -d, -f3`
+
+        echo "define contactgroup {"
+        echo "       contactgroup_name             $cname"
+        echo "       alias                         $use"
+        [[ -n $members ]] && {
+            echo -n "       members                       "
+            echo "$members" | tr " " ,
+        }
+        echo "}"
+        echo
+
+    done <$gfncontactgrpsetup
+
+    # Un-redirect stdout output
+    exec 1>&3 3>&-
+}
+
+# ---------------------------------------------------------------------------
+create_timeperiods()
+# ---------------------------------------------------------------------------
+# Purpose:      Create timeperiods file ($gfntimeperiodcfg)
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a b name alias definition exclude disable
+
+    check_for_setup_file "$gfntimeperiodsetup"
+
+    echo "Creating timeperiods file $gfntimeperiodcfg"
+
+    # Redirect all stdout output to contacts file
+    exec 3>&1 >$gfntimeperiodcfg
+
+    echo_warning_header
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        IFS=, read name alias definition exclude disable \
+            < <(echo "$a")
+
+        [[ -n $definition ]] && definition=$(echo "$definition" | tr '`' ',')
+        alias=$(echo "$alias" | tr '`' ',')
+
+        echo "define timeperiod {"
+        echo "       timeperiod_name   $name"
+        echo "       alias             $alias"
+        [[ -n $definition ]] && {
+            while read -d"," b
+            do
+                printf "       %-17s ${b##*|}\n" "${b%%|*}"
+            done < <(echo "$definition,")
+        }
+        [[ -n $exclude ]] && {
+            echo -n "       exclude                       "
+            echo "$exclude" | tr " " ,
+        }
+        echo "}"
+        echo
+
+    done <$gfntimeperiodsetup
+
+    # Un-redirect stdout output
+    exec 1>&3 3>&-
+}
+
+# ---------------------------------------------------------------------------
+create_commands()
+# ---------------------------------------------------------------------------
+# Purpose:      Create commands file ($gfncommandcfg)
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a name command disable
+
+    check_for_setup_file "$gfncommandsetup"
+
+    echo "Creating commands file $gfncommandcfg"
+
+    # Redirect all stdout output to contacts file
+    exec 3>&1 >$gfncommandcfg
+
+    echo_warning_header
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        IFS=, read name command disable < <(echo "$a")
+
+        [[ -n $command ]] && command=$(echo "$command" | tr '`' ',')
+
+        echo "define command {"
+        echo "       command_name $name"
+        echo "       command_line $command"
+        echo "}"
+        echo
+
+    done <$gfncommandsetup
+
+    # Un-redirect stdout output
+    exec 1>&3 3>&-
+}
+
+# ---------------------------------------------------------------------------
+create_file()
+# ---------------------------------------------------------------------------
+# Purpose:      Create config file(s) based on TYPE.
+# Arguments:    None
+# Returns:      Nothing
+{
+    case $gsetupfiletype in
+        $FT_NONE) echo "ERROR. This can not happen."
+                  exit 6
+        ;;
+        $FT_HOSTS) create_host_files
+        ;;
+        $FT_SERVICES) create_service_entries
+        ;;
+        $FT_HOSTTEMPLATES) create_hosttemplates
+        ;;
+        $FT_SERVICETEMPLATES) create_servicetemplates
+        ;;
+        $FT_CONTACTS) create_contacts
+        ;;
+        $FT_TIMEPERIODS) create_timeperiods
+        ;;
+        $FT_COMMANDS) create_commands
+        ;;
+        $FT_ALL) echo "ERROR: YOU CANNOT BE SEEING THIS!"
+                 exit 6
+        ;;
+    esac
+}
+ 
+# ---------------------------------------------------------------------------
+start_writing_process()
+# ---------------------------------------------------------------------------
+# Purpose:      All config writing is fired off from here
+# Arguments:    None
+# Returns:      Nothing
+{
+    init_data
+
+    sanity_check
+
+    are_you_sure
+
+    create_file
+}
+
+# ---------------------------------------------------------------------------
+main()
+# ---------------------------------------------------------------------------
+# Purpose:      Program execution starts here.
+# Arguments:    None
+# Returns:      Nothing
+{
+    parse_options
+
+    if [[ $gsetupfiletype -eq $FT_ALL ]]; then
+        gsetupfiletype=$FT_HOSTS
+        start_writing_process
+        gsetupfiletype=$FT_SERVICES
+        start_writing_process
+        gsetupfiletype=$FT_HOSTTEMPLATES
+        start_writing_process
+        gsetupfiletype=$FT_SERVICETEMPLATES
+        start_writing_process
+        gsetupfiletype=$FT_TIMEPERIODS
+        start_writing_process
+        gsetupfiletype=$FT_COMMANDS
+        start_writing_process
+        [[ -e $gfncontactsetup ]] && {
+            gsetupfiletype=$FT_CONTACTS
+            start_writing_process
+        }
+    else
+        start_writing_process
+    fi
+
+    exit 0
+}
+
+# start...
+main
+
+# vim:ts=4:et:sw=4:tw=76
