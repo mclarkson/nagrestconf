@@ -1,3 +1,20 @@
+2012-07-20 23:26  mclarkson
+
+	* ChangeLog, debian/changelog, debian/compat, debian/control,
+	  debian/copyright, debian/nagrestconf.manpages, debian/postinst,
+	  debian/postrm, debian/preinst, debian/prerm, debian/rules,
+	  doc/bulk-loading/REST_setup_local.sh, doc/csv2nag.8,
+	  doc/nagctl.8, doc/restart_nagios.8, doc/slc_configure.8,
+	  etc/httpd/conf.d/nagrestconf.conf.debian,
+	  etc/httpd/conf.d/rest.conf.debian, etc/nagrestconf/nagctl.conf,
+	  etc/nagrestconf/nagctl.conf.debian,
+	  etc/nagrestconf/nagrestconf.ini,
+	  etc/nagrestconf/restart_nagios.conf,
+	  etc/nagrestconf/restart_nagios.conf.debian,
+	  nagrestconf/index.php, rest/.htaccess, scripts/csv2nag,
+	  scripts/nagctl, scripts/restart_nagios, scripts/slc_configure:
+	  Debian packaging, tidy-ups and bug fixes
+
 2012-07-17 07:44  mclarkson
 
 	* ., README, debian, doc, doc/README.html, doc/bulk-loading,
