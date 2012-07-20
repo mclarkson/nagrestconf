@@ -1,0 +1,29 @@
+Source: nagrestconf
+Section: net
+Priority: optional
+Maintainer: Mark Clarkson <mark.clarkson@smorg.co.uk>
+Build-Depends: debhelper (>= 8)
+Standards-Version: 3.9.1
+Homepage: http://smorg.co.uk
+Bugs: https://lists.sourceforge.net/lists/listinfo/nagrestconf-users
+
+Package: nagrestconf
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, apache2, cron, nagios3, sed (>=4), gawk, grep (>=2), php5 (>=5.3), subversion, procmail, php5-curl, curl
+Description: REST interface and configuration GUI for Nagios.
+ Nagrestconf:
+ .
+  * allows Nagios configuration files to be written using a REST api.
+  * allows the server to be restarted using the REST api.
+  * provides a Web GUI for configuring nagios that only uses the REST api.
+ .
+ It can be useful for:
+ .
+  * Bulk loading
+  * Bulk editing
+  * Automation
+  * Catching common configuration mistakes
+  * Configuration Delegation (using additional tools)
+  * Distributed monitoring (using additional tools)
+ .
+ Not all of the Nagios directives are implemented.

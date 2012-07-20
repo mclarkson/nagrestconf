@@ -26,13 +26,7 @@
 # SETINGS - MODIFY AS NEEDED
 # ---------------------------------------------------------------------------
 
-#id > /etc/nagios/objects/local/bob
-
-NAG_DIR=/etc/nagios
-NAG_OBJ_DIR=$NAG_DIR/objects
-NAG_CONFIG=$NAG_DIR/nagios.cfg
-COMMANDFILE='/var/log/nagios/rw/nagios.cmd'
-CSV2NAG=/usr/bin/csv2nag
+source /etc/nagrestconf/nagctl.conf
 
 #
 #
@@ -43,6 +37,8 @@ CSV2NAG=/usr/bin/csv2nag
 # ---------------------------------------------------------------------------
 # GLOBALS
 # ---------------------------------------------------------------------------
+
+VERSION="1.0"
 
 # Debugging
 echo "$@" >>/tmp/nagctl_debug.log
@@ -227,7 +223,9 @@ parse_options()
     while true
     do
         case $1 in
-            -h) usage; exit 0
+            -h|--help) usage; exit 0
+            ;;
+            -v|--version) echo "$VERSION"; exit 0
             ;;
             ?*) gservice="$1"
                 gaction="$2"
@@ -283,7 +281,7 @@ check_folder()
 # Returns:      Nothing
 {
     [[ -e "$NAG_OBJ_DIR/$gservice" ]] || {
-        echo "NAGCTL ERROR: Non-existent folder."
+        echo "NAGCTL ERROR: Non-existent folder ($NAG_OBJ_DIR/$gservice)."
         exit 8
     }
 }
@@ -2174,7 +2172,7 @@ restart_nagios()
 # Arguments:    None
 # Returns:      Nothing
 {
-    sudo /usr/sbin/nagios -v $NAG_CONFIG &>/dev/null
+    sudo $NAGIOSBIN -v $NAG_CONFIG &>/dev/null
     if [[ $? -eq 0 ]]; then
         touch /tmp/nagios_restart_request
         rm -f $SETUP_DIR.known_good/* 2>/dev/null
@@ -2220,9 +2218,9 @@ check_nagiosconfig()
         while read a; do
             [[ $a == "Total Warnings"* ]] && b=$a
             [[ $a == "Total Errors"* ]] && c=$a
-        done < <( sudo /usr/sbin/nagios -v $NAG_CONFIG )
+        done < <( sudo $NAGIOSBIN -v $NAG_CONFIG )
     else
-        sudo /usr/sbin/nagios -v $NAG_CONFIG
+        sudo $NAGIOSBIN -v $NAG_CONFIG
     fi
 
     if [[ -n $b && -n $c ]]; then

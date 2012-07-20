@@ -1,0 +1,96 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+DESTDIR=$(CURDIR)/debian/nagrestconf/
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	touch configure-stamp
+
+
+build: build-stamp
+
+build-stamp: configure-stamp
+	dh_testdir
+
+	touch $@
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean
+	dh_installdirs
+
+	# Conf
+	install -D -m 640 etc/httpd/conf.d/nagrestconf.conf.debian $(DESTDIR)/etc/apache2/conf.d/nagrestconf.conf
+	install -D -m 640 etc/httpd/conf.d/rest.conf.debian $(DESTDIR)/etc/apache2/conf.d/rest.conf
+	install -D -m 640 etc/nagrestconf/nagrestconf.ini $(DESTDIR)/etc/nagrestconf/nagrestconf.ini
+	install -D -m 640 etc/nagrestconf/csv2nag.conf $(DESTDIR)/etc/nagrestconf/csv2nag.conf
+	install -D -m 640 etc/nagrestconf/nagctl.conf.debian $(DESTDIR)/etc/nagrestconf/nagctl.conf
+	install -D -m 640 etc/nagrestconf/restart_nagios.conf.debian $(DESTDIR)/etc/nagrestconf/restart_nagios.conf
+
+	# Copyright
+	#install -D -m 640 debian/copyright $(DESTDIR)/usr/share/doc/nagrestconf/copyright
+	install -D -m 640 doc/bulk-loading/REST_setup_local.sh $(DESTDIR)/usr/share/doc/nagrestconf/bulk-loading/REST_setup_local.sh
+
+	# Scripts
+	install -D -m 755 scripts/csv2nag $(DESTDIR)/usr/bin/csv2nag
+	install -D -m 755 scripts/nagctl $(DESTDIR)/usr/bin/nagctl
+	install -D -m 755 scripts/restart_nagios $(DESTDIR)/usr/bin/restart_nagios
+	install -D -m 755 scripts/slc_configure $(DESTDIR)/usr/bin/slc_configure
+
+	# PHP Directories
+	install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/
+	cp -r nagrestconf $(DESTDIR)/usr/share/nagrestconf/htdocs/
+	cp -r rest $(DESTDIR)/usr/share/nagrestconf/htdocs/
+	find $(DESTDIR)/usr/share/nagrestconf -depth -name ".svn" -type d -exec rm -rf {} \;
+
+# Build architecture-independent files here.
+binary-indep: build install
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs ChangeLog
+	dh_installdocs --exclude=.svn
+#	dh_installexamples
+#	dh_install
+#	dh_installmenu
+#	dh_installdebconf
+#	dh_installlogrotate
+#	dh_installemacsen
+#	dh_installpam
+#	dh_installmime
+#	dh_python
+#	dh_installinit
+#	dh_installcron
+#	dh_installinfo
+	dh_installman
+	dh_link
+	dh_strip
+	dh_compress -X.sh
+	dh_fixperms
+	dh_perl
+#	dh_makeshlibs
+	dh_lintian
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+
+.PHONY: build clean binary-indep binary-arch binary install configure
+

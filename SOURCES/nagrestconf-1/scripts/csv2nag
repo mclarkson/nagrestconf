@@ -49,6 +49,8 @@ DCC=0
 # GLOBALS
 # ---------------------------------------------------------------------------
 
+VERSION="1.0"
+
 # -- Constants
 
 # Program args
@@ -228,7 +230,9 @@ parse_options()
             ;;
             -y) user_is_sure=$TRUE
             ;;
-            -h) init_data; usage; exit 0
+            -h|--help) init_data; usage; exit 0
+            ;;
+            -v|--version) echo "$VERSION"; exit 0
             ;;
             hosts) gsetupfiletype=$FT_HOSTS
             ;;
@@ -839,7 +843,9 @@ create_hosttemplates()
         echo "       max_check_attempts           $maxcheckattempts"
         echo "       notification_interval        $notifinterval"
         echo "       notification_period          $notifperiod"
-        echo "       check_command                $checkcommand"
+        [[ -n $checkcommand ]] && {
+            echo "       check_command                $checkcommand"
+        }
         [[ -n $notifopts ]] && {
             echo -n "       notification_options         "
             echo "$notifopts" | tr " " ,

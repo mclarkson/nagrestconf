@@ -1,17 +1,41 @@
 #!/bin/bash
 # Restart nagios and update DCC
 
+VERSION="1.0"
+
 PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin
 
-repos=/etc/nagios/repos/
+[[ $1 == "-v" || $1 == "--version" ]] && {
+    echo "$VERSION"
+    exit 0
+}
 
+[[ $1 == "-h" || $1 == "--help" ]] && {
+    echo "Usage: restart_nagios"
+    echo
+    echo "Restarts the nagios daemon, checks in the changes to"
+    echo "subversion and mirrors the subversion repo."
+    echo
+    echo "This script will usually be run from cron, but it"
+    echo "can be run directly."
+    echo
+    echo "This program uses the configuration files nagctl.conf"
+    echo "and restart_nagios.conf in /etc/nagrestconf/."
+    exit 0
+}
+
+NAG_DIR=/etc/nagios
+
+source /etc/nagrestconf/nagctl.conf
 source /etc/nagrestconf/restart_nagios.conf
 
+repos=$NAG_DIR/repos/
+
 # Restart nagios straight away.
-nagios -v /etc/nagios/nagios.cfg &> /dev/null && /sbin/service nagios restart
+nagios -v $NAG_DIR/nagios.cfg &> /dev/null && /etc/init.d/$NAG_INITD restart
 
 # Get a list of directories to check
-dirs=`find /etc/nagios/objects -mindepth 1 -maxdepth 1 -type d`
+dirs=`find $NAG_DIR/objects -mindepth 1 -maxdepth 1 -type d`
 
 CHANGES=0
 for i in $dirs
@@ -34,7 +58,7 @@ do
         [[ $CHANGES -eq 1 ]] && {
             svn ci -m "Changes saved"
             [[ -n $dcc ]] && {
-                svnsync sync svn+ssh://svnsync@$dcc/etc/nagios/repos/$folder
+                svnsync sync svn+ssh://svnsync@$dcc/$NAG_DIR/repos/$folder
                 ssh svnsync@$dcc "touch /tmp/nagios_update_$folder"
             }
         }
@@ -42,9 +66,11 @@ do
         # versions/ does not exist so create it
         svn co file://$repos/$folder versions
         [[ -n $dcc ]] && {
-            svnsync sync svn+ssh://svnsync@$dcc/etc/nagios/repos/$folder
+            svnsync sync svn+ssh://svnsync@$dcc/$NAG_DIR/repos/$folder
             ssh svnsync@$dcc "touch /tmp/nagios_update_$folder"
         }
     fi
 done
+
+exit 0
 

@@ -146,8 +146,8 @@ echo "- Add Timeperiods"
 echo "-----------------------------------------------------------"
 echo
 
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"none","alias":"No time is a good time"}' https://$IP/rest/add/timeperiods
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"24x7","alias":"24 Hours A Day, 7 Days A Week","definition":"sunday|00:00-24:00,monday|00:00-24:00,tuesday|00:00-24:00,wednesday|00:00-24:00,thursday|00:00-24:00,friday|00:00-24:00,saturday|00:00-24:00"}' https://$IP/rest/add/timeperiods
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"none","alias":"No time is a good time"}' http://$IP/rest/add/timeperiods
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"24x7","alias":"24 Hours A Day, 7 Days A Week","definition":"sunday|00:00-24:00,monday|00:00-24:00,tuesday|00:00-24:00,wednesday|00:00-24:00,thursday|00:00-24:00,friday|00:00-24:00,saturday|00:00-24:00"}' http://$IP/rest/add/timeperiods
 # COMMANDS
 
 echo
@@ -156,29 +156,29 @@ echo "- Add Commands"
 echo "-----------------------------------------------------------"
 echo
 
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_nrpe","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c $ARG1$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_nrpe++","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c $ARG1$ -a \"$ARG2$\""}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_any","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c check_any -a \"$ARG1$\""}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_any2","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c check_any2 -a \"$ARG1$\" \"$ARG2$\" "}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_any3","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c check_any3 -a \"$ARG1$\" \"$ARG2$\" \"$ARG3$\" "}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_any4","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c check_any4 -a \"$ARG1$\" \"$ARG2$\" \"$ARG3$\" \"$ARG4$\" "}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"notify-host-by-email","command":"/usr/bin/printf \"%b\" \"***** Nagios *****\\\\\\\\n\\\\\\\\nNotification Type: $NOTIFICATIONTYPE$\\\\\\\\nHost: $HOSTNAME$\\\\\\\\nState: $HOSTSTATE$\\\\\\\\nAddress: $HOSTADDRESS$\\\\\\\\nInfo: $HOSTOUTPUT$\\\\\\\\n\\\\\\\\nDate/Time: $LONGDATETIME$\\\\\\\\n\" | /bin/mail -s \"** $NOTIFICATIONTYPE$ Host Alert: $HOSTNAME$ is $HOSTSTATE$ **\" $CONTACTEMAIL$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"notify-service-by-email","command":"/usr/bin/printf \"%b\" \"***** Nagios *****\\\\\\\\n\\\\\\\\nNotification Type: $NOTIFICATIONTYPE$\\\\\\\\n\\\\\\\\nService: $SERVICEDESC$\\\\\\\\nHost: $HOSTALIAS$\\\\\\\\nAddress: $HOSTADDRESS$\\\\\\\\nState: $SERVICESTATE$\\\\\\\\n\\\\\\\\nDate/Time: $LONGDATETIME$\\\\\\\\n\\\\\\\\nAdditional Info:\\\\\\\\n\\\\\\\\n$SERVICEOUTPUT$\" | /bin/mail -s \"** $NOTIFICATIONTYPE$ Service Alert: $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **\" $CONTACTEMAIL$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check-host-alive","command":"$USER1$/check_ping -H $HOSTADDRESS$ -w 3000.0,80% -c 5000.0,100% -p 2"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_webinject","command":"$USER1$/check_webinject.pl -c witest/$ARG1$ witest/$ARG2$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_snmp_int","command":"$USER1$/check_snmp_int.pl -H $HOSTADDRESS$ $ARG1$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_netapp","command":"$USER1$/check_netapp3a.pl -H $HOSTADDRESS$ $ARG1$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_ftp","command":"$USER1$/check_ftp -H $HOSTADDRESS$ $ARG1$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_hpjd","command":"$USER1$/check_hpjd -H $HOSTADDRESS$ $ARG1$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_snmp","command":"$USER1$/check_snmp -H $HOSTADDRESS$ $ARG1$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_http","command":"$USER1$/check_http -I $HOSTADDRESS$ $ARG1$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_ping","command":"$USER1$/check_ping -H $HOSTADDRESS$ -w $ARG1$ -c $ARG2$ -p 5"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_pop","command":"$USER1$/check_pop -H $HOSTADDRESS$ $ARG1$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_imap","command":"$USER1$/check_imap -H $HOSTADDRESS$ $ARG1$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_smtp","command":"$USER1$/check_smtp -H $HOSTADDRESS$ $ARG1$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"process-service-perfdata-file","command":"/bin/mv /usr/local/pnp4nagios/var/service-perfdata /usr/local/pnp4nagios/var/spool/service-perfdata.$TIMET$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"process-host-perfdata-file","command":"/bin/mv /usr/local/pnp4nagios/var/host-perfdata /usr/local/pnp4nagios/var/spool/host-perfdata.$TIMET$"}' https://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_nt","command":"$USER1$/check_nt -H $HOSTADDRESS$ -s password -p 12489 -v $ARG1$ $ARG2$"}' https://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_nrpe","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c $ARG1$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_nrpe++","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c $ARG1$ -a \"$ARG2$\""}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_any","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c check_any -a \"$ARG1$\""}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_any2","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c check_any2 -a \"$ARG1$\" \"$ARG2$\" "}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_any3","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c check_any3 -a \"$ARG1$\" \"$ARG2$\" \"$ARG3$\" "}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_any4","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c check_any4 -a \"$ARG1$\" \"$ARG2$\" \"$ARG3$\" \"$ARG4$\" "}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"notify-host-by-email","command":"/usr/bin/printf \"%b\" \"***** Nagios *****\\\\\\\\n\\\\\\\\nNotification Type: $NOTIFICATIONTYPE$\\\\\\\\nHost: $HOSTNAME$\\\\\\\\nState: $HOSTSTATE$\\\\\\\\nAddress: $HOSTADDRESS$\\\\\\\\nInfo: $HOSTOUTPUT$\\\\\\\\n\\\\\\\\nDate/Time: $LONGDATETIME$\\\\\\\\n\" | /bin/mail -s \"** $NOTIFICATIONTYPE$ Host Alert: $HOSTNAME$ is $HOSTSTATE$ **\" $CONTACTEMAIL$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"notify-service-by-email","command":"/usr/bin/printf \"%b\" \"***** Nagios *****\\\\\\\\n\\\\\\\\nNotification Type: $NOTIFICATIONTYPE$\\\\\\\\n\\\\\\\\nService: $SERVICEDESC$\\\\\\\\nHost: $HOSTALIAS$\\\\\\\\nAddress: $HOSTADDRESS$\\\\\\\\nState: $SERVICESTATE$\\\\\\\\n\\\\\\\\nDate/Time: $LONGDATETIME$\\\\\\\\n\\\\\\\\nAdditional Info:\\\\\\\\n\\\\\\\\n$SERVICEOUTPUT$\" | /bin/mail -s \"** $NOTIFICATIONTYPE$ Service Alert: $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **\" $CONTACTEMAIL$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check-host-alive","command":"$USER1$/check_ping -H $HOSTADDRESS$ -w 3000.0,80% -c 5000.0,100% -p 2"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_webinject","command":"$USER1$/check_webinject.pl -c witest/$ARG1$ witest/$ARG2$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_snmp_int","command":"$USER1$/check_snmp_int.pl -H $HOSTADDRESS$ $ARG1$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_netapp","command":"$USER1$/check_netapp3a.pl -H $HOSTADDRESS$ $ARG1$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_ftp","command":"$USER1$/check_ftp -H $HOSTADDRESS$ $ARG1$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_hpjd","command":"$USER1$/check_hpjd -H $HOSTADDRESS$ $ARG1$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_snmp","command":"$USER1$/check_snmp -H $HOSTADDRESS$ $ARG1$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_http","command":"$USER1$/check_http -I $HOSTADDRESS$ $ARG1$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_ping","command":"$USER1$/check_ping -H $HOSTADDRESS$ -w $ARG1$ -c $ARG2$ -p 5"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_pop","command":"$USER1$/check_pop -H $HOSTADDRESS$ $ARG1$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_imap","command":"$USER1$/check_imap -H $HOSTADDRESS$ $ARG1$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_smtp","command":"$USER1$/check_smtp -H $HOSTADDRESS$ $ARG1$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"process-service-perfdata-file","command":"/bin/mv /usr/local/pnp4nagios/var/service-perfdata /usr/local/pnp4nagios/var/spool/service-perfdata.$TIMET$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"process-host-perfdata-file","command":"/bin/mv /usr/local/pnp4nagios/var/host-perfdata /usr/local/pnp4nagios/var/spool/host-perfdata.$TIMET$"}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_nt","command":"$USER1$/check_nt -H $HOSTADDRESS$ -s password -p 12489 -v $ARG1$ $ARG2$"}' http://$IP/rest/add/commands
 }
 
 # ----------------------------------------------------------------------------
@@ -196,105 +196,105 @@ echo
     echo curl -sknX POST \
         -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\",
                   \"svcdesc\":\".*\"}'" \
-        https://${IP}/rest/delete/services
+        http://${IP}/rest/delete/services
     curl -sknX POST \
         -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\",
                   \"svcdesc\":\".*\"}" \
-        https://${IP}/rest/delete/services
+        http://${IP}/rest/delete/services
 
     echo
 
     echo curl -knX POST \
         -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\"}'" \
-        https://${IP}/rest/delete/hosts
+        http://${IP}/rest/delete/hosts
     curl -knX POST \
         -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\"}" \
-        https://${IP}/rest/delete/hosts
+        http://${IP}/rest/delete/hosts
 
     echo
 
     echo curl -knX POST \
         -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\"}'" \
-        https://${IP}/rest/delete/hosttemplates
+        http://${IP}/rest/delete/hosttemplates
     curl -knX POST \
         -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\"}" \
-        https://${IP}/rest/delete/hosttemplates
+        http://${IP}/rest/delete/hosttemplates
 
     echo
 
     echo curl -knX POST \
         -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\"}'" \
-        https://${IP}/rest/delete/servicetemplates
+        http://${IP}/rest/delete/servicetemplates
     curl -knX POST \
         -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\"}" \
-        https://${IP}/rest/delete/servicetemplates
+        http://${IP}/rest/delete/servicetemplates
 
     echo
 
     echo curl -knX POST \
         -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\"}'" \
-        https://${IP}/rest/delete/contactgroups
+        http://${IP}/rest/delete/contactgroups
     curl -knX POST \
         -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\"}" \
-        https://${IP}/rest/delete/contactgroups
+        http://${IP}/rest/delete/contactgroups
 
     echo
 
     echo curl -knX POST \
         -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\"}'" \
-        https://${IP}/rest/delete/contacts
+        http://${IP}/rest/delete/contacts
     curl -knX POST \
         -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\"}" \
-        https://${IP}/rest/delete/contacts
+        http://${IP}/rest/delete/contacts
 
     echo
 
     echo curl -knX POST \
         -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\"}'" \
-        https://${IP}/rest/delete/hostgroups
+        http://${IP}/rest/delete/hostgroups
     curl -knX POST \
         -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\"}" \
-        https://${IP}/rest/delete/hostgroups
+        http://${IP}/rest/delete/hostgroups
 
     echo
 
     echo curl -knX POST \
         -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\",
                   \"svcdesc\":\".*\"}'" \
-        https://${IP}/rest/delete/servicegroups
+        http://${IP}/rest/delete/servicegroups
     curl -knX POST \
         -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\",
                   \"svcdesc\":\".*\"}" \
-        https://${IP}/rest/delete/servicegroups
+        http://${IP}/rest/delete/servicegroups
 
     echo
 
     echo curl -knX POST \
         -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\",
                   \"svcdesc\":\".*\"}'" \
-        https://${IP}/rest/delete/servicesets
+        http://${IP}/rest/delete/servicesets
     curl -knX POST \
         -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\",
                   \"svcdesc\":\".*\"}" \
-        https://${IP}/rest/delete/servicesets
+        http://${IP}/rest/delete/servicesets
 
     echo
 
     echo curl -knX POST \
         -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\"}'" \
-        https://${IP}/rest/delete/timeperiods
+        http://${IP}/rest/delete/timeperiods
     curl -knX POST \
         -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\"}" \
-        https://${IP}/rest/delete/timeperiods
+        http://${IP}/rest/delete/timeperiods
 
     echo
 
     echo curl -knX POST \
         -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\"}'" \
-        https://${IP}/rest/delete/commands
+        http://${IP}/rest/delete/commands
     curl -knX POST \
         -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\"}" \
-        https://${IP}/rest/delete/commands
+        http://${IP}/rest/delete/commands
 fi
 
 add_commands_and_timeperiods
@@ -332,7 +332,7 @@ while read i; do
             \"hstnotifopts\":\"$hstnotifopts\",
             \"hstnotifcmds\":\"$hstnotifcmds\",
             \"cansubmitcmds\":\"$cansubmitcmds\"}'" \
-        https://${IP}/rest/add/contacts
+        http://${IP}/rest/add/contacts
     curl -knX POST \
         -d "json={\"folder\":\"$FOLDER\",
             \"name\":\"$name\", 
@@ -345,7 +345,7 @@ while read i; do
             \"hstnotifopts\":\"$hstnotifopts\",
             \"hstnotifcmds\":\"$hstnotifcmds\",
             \"cansubmitcmds\":\"$cansubmitcmds\"}" \
-        https://${IP}/rest/add/contacts
+        http://${IP}/rest/add/contacts
     echo
 done < <(echo "$contacts")
 
@@ -365,13 +365,13 @@ while read i; do
             \"name\":\"$name\", 
             \"alias\":\"$alias\",
             \"members\":\"$members\"}'" \
-        https://${IP}/rest/add/contacts
+        http://${IP}/rest/add/contacts
     curl -knX POST \
         -d "json={\"folder\":\"$FOLDER\",
             \"name\":\"$name\", 
             \"alias\":\"$alias\",
             \"members\":\"$members\"}" \
-        https://${IP}/rest/add/contactgroups
+        http://${IP}/rest/add/contactgroups
     echo
 done < <(echo "$contactgroups")
 
@@ -387,10 +387,10 @@ while read i; do
     alias=`echo "$alias" | tr _ " "`
     echo curl -knX POST -d "'json={\"folder\":\"$FOLDER\",
         \"name\":\"$name\",
-        \"alias\":\"$alias\"}'" https://${IP}/rest/add/servicegroups 
+        \"alias\":\"$alias\"}'" http://${IP}/rest/add/servicegroups 
     curl -knX POST -d "json={\"folder\":\"$FOLDER\",
         \"name\":\"$name\",
-        \"alias\":\"$alias\"}" https://${IP}/rest/add/servicegroups 
+        \"alias\":\"$alias\"}" http://${IP}/rest/add/servicegroups 
     echo
 done < <(echo "$servicegroups")
 
@@ -419,7 +419,7 @@ while read i; do
         \"notifinterval\":\"60\",
         \"contacts\":\"$contacts\",
         \"contactgroups\":\"$contactgroups\"}'" \
-        https://${IP}/rest/add/hosttemplates 
+        http://${IP}/rest/add/hosttemplates 
     curl -knX POST -d "json={\"folder\":\"$FOLDER\",
         \"name\":\"$name\",
         \"checkinterval\":\"5\",
@@ -430,7 +430,7 @@ while read i; do
         \"notifinterval\":\"60\",
         \"contacts\":\"$contacts\",
         \"contactgroups\":\"$contactgroups\"}" \
-        https://${IP}/rest/add/hosttemplates 
+        http://${IP}/rest/add/hosttemplates 
     echo
 done < <(echo "$hosttemplates")
 
@@ -460,7 +460,7 @@ while read i; do
         \"notifperiod\":\"24x7\",
         \"contacts\":\"$contacts\",
         \"contactgroups\":\"$contactgroups\"}'" \
-        https://${IP}/rest/add/servicetemplates
+        http://${IP}/rest/add/servicetemplates
     curl -knX POST -d "json={\"folder\":\"$FOLDER\",
         \"name\":\"$name\",
         \"checkinterval\":\"$checkinterval\",
@@ -471,7 +471,7 @@ while read i; do
         \"notifperiod\":\"24x7\",
         \"contacts\":\"$contacts\",
         \"contactgroups\":\"$contactgroups\"}" \
-        https://${IP}/rest/add/servicetemplates
+        http://${IP}/rest/add/servicetemplates
     echo
 done < <(echo "$servicetemplates")
 
@@ -489,22 +489,22 @@ for i in `seq 0 $((${#serviceset[*]}-1))`; do
         echo curl -knX POST \
             -d "'json={\"folder\":\"$FOLDER\",
             \"name\":\"${serviceset_name[$i]}\",
-            \"command\":$j}'" https://${IP}/rest/add/servicesets
+            \"command\":$j}'" http://${IP}/rest/add/servicesets
         curl -knX POST \
             -d "json={\"folder\":\"$FOLDER\",
             \"name\":\"${serviceset_name[$i]}\",
-            \"command\":$j}" https://${IP}/rest/add/servicesets
+            \"command\":$j}" http://${IP}/rest/add/servicesets
         else
         echo curl -knX POST \
             -d "'json={\"folder\":\"$FOLDER\",
             \"name\":\"${serviceset_name[$i]}\",
             \"template\":\"${serviceset_svctemplate[$i]}\",
-            \"command\":$j}'" https://${IP}/rest/add/servicesets
+            \"command\":$j}'" http://${IP}/rest/add/servicesets
         curl -knX POST \
             -d "json={\"folder\":\"$FOLDER\",
             \"name\":\"${serviceset_name[$i]}\",
             \"template\":\"${serviceset_svctemplate[$i]}\",
-            \"command\":$j}" https://${IP}/rest/add/servicesets
+            \"command\":$j}" http://${IP}/rest/add/servicesets
         fi
         echo
     done < <( echo "${serviceset[$i]}" | sed "s/qUoTe/'/g" )
@@ -523,10 +523,10 @@ while read i; do
     alias=`echo "$alias" | tr _ " "`
     echo curl -knX POST -d "'json={\"folder\":\"$FOLDER\",
         \"name\":\"$name\",
-        \"alias\":\"$alias\"}'" https://${IP}/rest/add/hostgroups 
+        \"alias\":\"$alias\"}'" http://${IP}/rest/add/hostgroups 
     curl -knX POST -d "json={\"folder\":\"$FOLDER\",
         \"name\":\"$name\",
-        \"alias\":\"$alias\"}" https://${IP}/rest/add/hostgroups 
+        \"alias\":\"$alias\"}" http://${IP}/rest/add/hostgroups 
     echo
 done < <(echo "$hostgroups")
 
@@ -550,14 +550,14 @@ while read name ipaddr hostgroup template svcset; do
         \"ipaddress\":\"$ipaddr\",
         \"template\":\"$template\",
         \"hostgroup\":\"$hostgroup\",
-        \"servicesets\":\"$svcset\"}'" https://${IP}/rest/add/hosts 
+        \"servicesets\":\"$svcset\"}'" http://${IP}/rest/add/hosts 
     curl -knX POST -d "json={\"folder\":\"$FOLDER\",
         \"name\":\"$name\",
         \"alias\":\"$name\",
         \"ipaddress\":\"$ipaddr\",
         \"template\":\"$template\",
         \"hostgroup\":\"$hostgroup\",
-        \"servicesets\":\"$svcset\"}" https://${IP}/rest/add/hosts 
+        \"servicesets\":\"$svcset\"}" http://${IP}/rest/add/hosts 
     echo
 done < <(echo "$hosts")
 
@@ -568,8 +568,8 @@ done < <(echo "$hosts")
     echo "-----------------------------------------------------------"
     echo
 
-    echo curl -knX POST -d "'json={\"folder\":\"$FOLDER\"}'" https://${IP}/rest/apply/nagiosconfig
-    curl -knX POST -d "json={\"folder\":\"$FOLDER\"}" https://${IP}/rest/apply/nagiosconfig
+    echo curl -knX POST -d "'json={\"folder\":\"$FOLDER\"}'" http://${IP}/rest/apply/nagiosconfig
+    curl -knX POST -d "json={\"folder\":\"$FOLDER\"}" http://${IP}/rest/apply/nagiosconfig
     echo
 
     # Everything is setup, now do modifications
@@ -587,7 +587,7 @@ done < <(echo "$hosts")
 	[[ $contactgroups = '-' ]] && unset contactgroups
 	contacts=`echo "$contacts" | tr , " "`
 	contactgroups=`echo "$contactgroups" | tr , " "`
-	/usr/bin/curl -sknX GET "https://${IP}/rest/show/services?json=\{\"folder\":\"$FOLDER\"\}" \
+	/usr/bin/curl -sknX GET "http://${IP}/rest/show/services?json=\{\"folder\":\"$FOLDER\"\}" \
           | sed 's/,/\n/g;s/\[{/\n/g;s/{/    /g;s/\]\]/\n/g;s/[}\[\]]*//g;s/"//g' \
           | sed -n "/name:$regex1/,/^$/ { /name:$regex1/ {H;}; /svcdesc:$regex2/ {H;x;s/name://;s/svcdesc://;s/\n//g;p}; /^$/ {x;d;}; }" \
 	  | while read a b
@@ -598,13 +598,13 @@ done < <(echo "$hosts")
 	    \"svcdesc\":\"$b\",
 	    \"contacts\":\"$contacts\",
 	    \"contactgroups\":\"$contactgroups\"}'" \
-	    https://${IP}/rest/modify/services
+	    http://${IP}/rest/modify/services
 	curl -knX POST -d "json={\"folder\":\"$FOLDER\",
 	    \"name\":\"$a\",
 	    \"svcdesc\":\"$b\",
 	    \"contacts\":\"$contacts\",
 	    \"contactgroups\":\"$contactgroups\"}" \
-	    https://${IP}/rest/modify/services
+	    http://${IP}/rest/modify/services
 	 echo
 	done
     done < <(echo "$alerting")
@@ -616,17 +616,17 @@ echo "- Apply, Check and Restart"
 echo "-----------------------------------------------------------"
 echo
 
-echo curl -knX POST -d "'json={\"folder\":\"$FOLDER\"}'" https://${IP}/rest/apply/nagiosconfig
-curl -knX POST -d "json={\"folder\":\"$FOLDER\"}" https://${IP}/rest/apply/nagiosconfig
+echo curl -knX POST -d "'json={\"folder\":\"$FOLDER\"}'" http://${IP}/rest/apply/nagiosconfig
+curl -knX POST -d "json={\"folder\":\"$FOLDER\"}" http://${IP}/rest/apply/nagiosconfig
 echo
 
-#curl -knX GET "https://${IP}/rest/check/nagiosconfig?json=\{\"folder\":\"$FOLDER\",\"verbose\":\"true\"\}" | sed 's/","/\n/g;s/\\t/\t/g;s%\\/%/%g;s/\["//;s/"\]//'
+#curl -knX GET "http://${IP}/rest/check/nagiosconfig?json=\{\"folder\":\"$FOLDER\",\"verbose\":\"true\"\}" | sed 's/","/\n/g;s/\\t/\t/g;s%\\/%/%g;s/\["//;s/"\]//'
 
-echo curl -knX GET "'https://${IP}/rest/check/nagiosconfig?json=\{\"folder\":\"$FOLDER\",\"verbose\":\"false\"\}'"
-curl -knX GET "https://${IP}/rest/check/nagiosconfig?json=\{\"folder\":\"$FOLDER\",\"verbose\":\"false\"\}"
+echo curl -knX GET "'http://${IP}/rest/check/nagiosconfig?json=\{\"folder\":\"$FOLDER\",\"verbose\":\"false\"\}'"
+curl -knX GET "http://${IP}/rest/check/nagiosconfig?json=\{\"folder\":\"$FOLDER\",\"verbose\":\"false\"\}"
 echo
 
-echo curl -knX POST -d "'json={\"folder\":\"$FOLDER\"}'" https://${IP}/rest/restart/nagios
-curl -knX POST -d "json={\"folder\":\"$FOLDER\"}" https://${IP}/rest/restart/nagios
+echo curl -knX POST -d "'json={\"folder\":\"$FOLDER\"}'" http://${IP}/rest/restart/nagios
+curl -knX POST -d "json={\"folder\":\"$FOLDER\"}" http://${IP}/rest/restart/nagios
 echo
 

@@ -1,0 +1,21 @@
+Alias /nagrestconf "/usr/share/nagrestconf/htdocs/nagrestconf"
+
+<Directory /usr/share/nagrestconf/htdocs/nagrestconf/>
+
+  #SSLRequireSSL
+
+  # Only allow from the local host
+  Order deny,allow
+  Deny from all
+  Allow from 127.0.0.1
+
+  AllowOverride All 
+
+  # Require authentication
+  #AuthName "REST Access" 
+  #AuthType Basic 
+  #AuthUserFile /etc/nagios/htpasswd.users 
+  #Require valid-user 
+
+</Directory>
+

@@ -1,5 +1,5 @@
 # Config file for restart_nagios script
-NAG_INITD=nagios
+NAG_INITD=nagios3
 
 # Address of the collector nagios
 # Leave unset if there is no dcc.

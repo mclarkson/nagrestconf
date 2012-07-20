@@ -7,11 +7,6 @@
     # USER MODIFIABLE GLOBALS
     # ------------------------------------------------------------------------
 
-    # These are now stored in /etc/nagrestconf/nagrestconf.ini
-    #define( "FOLDER", "local" );
-    #define( "RESTUSER", "nagiosadmin" );
-    #define( "RESTPASS", "Nagios1" );
-
     define( "SCRIPTNAME", "index.php" );
 
     # ------------------------------------------------------------------------
@@ -369,7 +364,7 @@
     # ------------------------------------------------------------------------
 
         $request = new RestRequest(
-          'https://127.0.0.1/rest/show/servicesets?json='.
+          RESTURL.'/show/servicesets?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
         $request->setUsername(RESTUSER);
@@ -398,7 +393,7 @@
     # ------------------------------------------------------------------------
 
         $request2 = new RestRequest(
-          'https://127.0.0.1/rest/show/contactgroups?json='.
+          RESTURL.'/show/contactgroups?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
         $request2->setUsername(RESTUSER);
@@ -430,7 +425,7 @@
     # ------------------------------------------------------------------------
 
         $request2 = new RestRequest(
-          'https://127.0.0.1/rest/show/contacts?json='.
+          RESTURL.'/show/contacts?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
         $request2->setUsername(RESTUSER);
@@ -470,7 +465,7 @@
     # ------------------------------------------------------------------------
 
         $request2 = new RestRequest(
-          'https://127.0.0.1/rest/show/hostgroups?json='.
+          RESTURL.'/show/hostgroups?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
         $request2->setUsername(RESTUSER);
@@ -501,7 +496,7 @@
     # ------------------------------------------------------------------------
 
         $request2 = new RestRequest(
-          'https://127.0.0.1/rest/show/hosttemplates?json='.
+          RESTURL.'/show/hosttemplates?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
         $request2->setUsername(RESTUSER);
@@ -543,7 +538,7 @@
     # ------------------------------------------------------------------------
 
         $request2 = new RestRequest(
-          'https://127.0.0.1/rest/show/servicetemplates?json='.
+          RESTURL.'/show/servicetemplates?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
         $request2->setUsername(RESTUSER);
@@ -584,7 +579,7 @@
     # ------------------------------------------------------------------------
 
         $request2 = new RestRequest(
-          'https://127.0.0.1/rest/show/services?json='.
+          RESTURL.'/show/services?json='.
           '{"folder":"'.FOLDER.'","filter":"'.urlencode($name).'"}', 'GET');
         $request2->setUsername(RESTUSER);
         $request2->setPassword(RESTPASS);
@@ -615,7 +610,7 @@
     # ------------------------------------------------------------------------
 
         $request2 = new RestRequest(
-        'https://127.0.0.1/rest/show/hosts?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
         '"column":"'.$column.'","filter":"'.urlencode($filter).'"}', 'GET');
         $request2->setUsername(RESTUSER);
         $request2->setPassword(RESTPASS);
@@ -668,7 +663,7 @@
     # ------------------------------------------------------------------------
 
         $request2 = new RestRequest(
-          'https://127.0.0.1/rest/show/servicegroups?json='.
+          RESTURL.'/show/servicegroups?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
         $request2->setUsername(RESTUSER);
@@ -699,7 +694,7 @@
     # ------------------------------------------------------------------------
 
         $request2 = new RestRequest(
-          'https://127.0.0.1/rest/show/timeperiods?json='.
+          RESTURL.'/show/timeperiods?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
         $request2->setUsername(RESTUSER);
@@ -731,7 +726,7 @@
     # ------------------------------------------------------------------------
 
         $request2 = new RestRequest(
-          'https://127.0.0.1/rest/show/commands?json='.
+          RESTURL.'/show/commands?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
         $request2->setUsername(RESTUSER);
@@ -1190,7 +1185,7 @@
 
         # Get form details from REST
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/servicegroups?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/servicegroups?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -1281,7 +1276,7 @@
 
         # Do the REST edit svcgroup request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/modify/servicegroups',
+          RESTURL.'/modify/servicegroups',
           'POST',
           'json='.$json
         );
@@ -1390,7 +1385,7 @@
 
         # Do the REST add svcgroup request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/add/servicegroups',
+          RESTURL.'/add/servicegroups',
           'POST',
           'json='.$json
         );
@@ -1498,7 +1493,7 @@
 
         # Do the REST add svc request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/delete/servicegroups',
+          RESTURL.'/delete/servicegroups',
           'POST',
           'json='.$json
         );
@@ -1531,7 +1526,7 @@
 
         # Get form details from REST
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/hostgroups?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/hostgroups?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -1622,7 +1617,7 @@
 
         # Do the REST edit hostgroup request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/modify/hostgroups',
+          RESTURL.'/modify/hostgroups',
           'POST',
           'json='.$json
         );
@@ -1731,7 +1726,7 @@
 
         # Do the REST add hostgroup request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/add/hostgroups',
+          RESTURL.'/add/hostgroups',
           'POST',
           'json='.$json
         );
@@ -1839,7 +1834,7 @@
 
         # Do the REST add host request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/delete/hostgroups',
+          RESTURL.'/delete/hostgroups',
           'POST',
           'json='.$json
         );
@@ -2119,7 +2114,7 @@
 
         # Do the REST new command request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/add/commands',
+          RESTURL.'/add/commands',
           'POST',
           'json='.$json
         );
@@ -2230,7 +2225,7 @@
 
         # Do the REST add command request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/delete/commands',
+          RESTURL.'/delete/commands',
           'POST',
           'json='.$json
         );
@@ -2263,7 +2258,7 @@
 
         # Get form details from REST
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/commands?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/commands?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -2364,7 +2359,7 @@
 
         # Do the REST edit command request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/modify/commands',
+          RESTURL.'/modify/commands',
           'POST',
           'json='.$json
         );
@@ -2663,7 +2658,7 @@
 
         # Do the REST new timeperiod request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/add/timeperiods',
+          RESTURL.'/add/timeperiods',
           'POST',
           'json='.$json
         );
@@ -2774,7 +2769,7 @@
 
         # Do the REST add timeperiod request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/delete/timeperiods',
+          RESTURL.'/delete/timeperiods',
           'POST',
           'json='.$json
         );
@@ -2807,7 +2802,7 @@
 
         # Get form details from REST
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/timeperiods?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/timeperiods?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -2916,7 +2911,7 @@
 
         # Do the REST edit timeperiod request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/modify/timeperiods',
+          RESTURL.'/modify/timeperiods',
           'POST',
           'json='.$json
         );
@@ -3418,7 +3413,7 @@
 
         # Do the REST new hosttemplate request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/add/hosttemplates',
+          RESTURL.'/add/hosttemplates',
           'POST',
           'json='.$json
         );
@@ -3529,7 +3524,7 @@
 
         # Do the REST add hosttemplate request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/delete/hosttemplates',
+          RESTURL.'/delete/hosttemplates',
           'POST',
           'json='.$json
         );
@@ -3562,7 +3557,7 @@
 
         # Get form details from REST
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/hosttemplates?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/hosttemplates?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -3723,7 +3718,7 @@
 
         # Do the REST edit hosttemplate request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/modify/hosttemplates',
+          RESTURL.'/modify/hosttemplates',
           'POST',
           'json='.$json
         );
@@ -3890,7 +3885,7 @@
 
         # Do the REST new svctemplate request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/add/servicetemplates',
+          RESTURL.'/add/servicetemplates',
           'POST',
           'json='.$json
         );
@@ -4001,7 +3996,7 @@
 
         # Do the REST add svctemplate request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/delete/servicetemplates',
+          RESTURL.'/delete/servicetemplates',
           'POST',
           'json='.$json
         );
@@ -4034,7 +4029,7 @@
 
         # Get form details from REST
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/servicetemplates?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/servicetemplates?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -4188,7 +4183,7 @@
 
         # Do the REST edit svctemplate request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/modify/servicetemplates',
+          RESTURL.'/modify/servicetemplates',
           'POST',
           'json='.$json
         );
@@ -4632,7 +4627,7 @@
 
         # Do the REST new contact request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/add/contacts',
+          RESTURL.'/add/contacts',
           'POST',
           'json='.$json
         );
@@ -4743,7 +4738,7 @@
 
         # Do the REST add contact request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/delete/contacts',
+          RESTURL.'/delete/contacts',
           'POST',
           'json='.$json
         );
@@ -4776,7 +4771,7 @@
 
         # Get form details from REST
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/contacts?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/contacts?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -4949,7 +4944,7 @@
 
         # Do the REST edit contact request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/modify/contacts',
+          RESTURL.'/modify/contacts',
           'POST',
           'json='.$json
         );
@@ -5069,7 +5064,7 @@
 
         # Do the REST new contactgroup request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/add/contactgroups',
+          RESTURL.'/add/contactgroups',
           'POST',
           'json='.$json
         );
@@ -5180,7 +5175,7 @@
 
         # Do the REST add contact request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/delete/contactgroups',
+          RESTURL.'/delete/contactgroups',
           'POST',
           'json='.$json
         );
@@ -5213,7 +5208,7 @@
 
         # Get form details from REST
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/contactgroups?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/contactgroups?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -5310,7 +5305,7 @@
 
         # Do the REST edit contactgroup request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/modify/contactgroups',
+          RESTURL.'/modify/contactgroups',
           'POST',
           'json='.$json
         );
@@ -5413,7 +5408,7 @@
         }
 
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/hostgroups?json={"folder":"'.FOLDER.'"'.
+        RESTURL.'/show/hostgroups?json={"folder":"'.FOLDER.'"'.
         '}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -5711,7 +5706,7 @@
 
         # Do the REST add host request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/modify/hosts',
+          RESTURL.'/modify/hosts',
           'POST',
           'json='.$json
         );
@@ -5739,7 +5734,7 @@
                 $a["svcdesc"] = $item['svcdesc'];
                 $json = json_encode( $a );
                 $request2 = new RestRequest(
-                  'https://127.0.0.1/rest/modify/services',
+                  RESTURL.'/modify/services',
                   'POST',
                   'json='.$json
                 );
@@ -5862,7 +5857,7 @@
                 $a["svcdesc"] = $item['svcdesc'];
                 $json = json_encode( $a );
                 $request2 = new RestRequest(
-                  'https://127.0.0.1/rest/modify/services',
+                  RESTURL.'/modify/services',
                   'POST',
                   'json='.$json
                 );
@@ -5884,7 +5879,7 @@
 
         # Do the REST add host request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/modify/hosts',
+          RESTURL.'/modify/hosts',
           'POST',
           'json='.$json
         );
@@ -6002,7 +5997,7 @@
                 $a["folder"] = FOLDER;
                 $json = json_encode( $a );
                 $request2 = new RestRequest(
-                  'https://127.0.0.1/rest/delete/services',
+                  RESTURL.'/delete/services',
                   'POST',
                   'json='.$json
                 );
@@ -6022,7 +6017,7 @@
 
         # Do the REST add host request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/delete/hosts',
+          RESTURL.'/delete/hosts',
           'POST',
           'json='.$json
         );
@@ -6093,7 +6088,7 @@
 
         # Get form details from REST
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/hosts?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -6227,7 +6222,7 @@
 
         # Do the REST add host request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/modify/hosts',
+          RESTURL.'/modify/hosts',
           'POST',
           'json='.$json
         );
@@ -6309,7 +6304,7 @@
 
         # Do the REST add host request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/add/hosts',
+          RESTURL.'/add/hosts',
           'POST',
           'json='.$json
         );
@@ -6521,7 +6516,7 @@
         # Clone the host
 
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/hosts?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($fromhost).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -6541,7 +6536,7 @@
         $newhost["activechecks"] = $activechecks;
         $json = json_encode( $newhost );
         $request = new RestRequest(
-          'https://127.0.0.1/rest/add/hosts',
+          RESTURL.'/add/hosts',
           'POST',
           'json='.$json
         );
@@ -6565,7 +6560,7 @@
         # Get service details from original host from REST
         unset( $request );
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/services?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/services?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($fromhost).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -6588,7 +6583,7 @@
             $newservice["customvars"] = $customvars;
             $json = json_encode( $newservice );
             $request = new RestRequest(
-              'https://127.0.0.1/rest/add/services',
+              RESTURL.'/add/services',
               'POST',
               'json='.$json
             );
@@ -6723,7 +6718,7 @@
         
         # Does the copyto host exist?
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/hosts?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.$query_str["copyto"].'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -6751,7 +6746,7 @@
         # Get service details from REST
         unset( $request );
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/services?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/services?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($fromhost).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -6778,7 +6773,7 @@
         $newservice["customvars"] = $customvars;
         $json = json_encode( $newservice );
         $request = new RestRequest(
-          'https://127.0.0.1/rest/add/services',
+          RESTURL.'/add/services',
           'POST',
           'json='.$json
         );
@@ -6895,7 +6890,7 @@
         $a["folder"] = FOLDER;
         $json = json_encode( $a );
         $request = new RestRequest(
-          'https://127.0.0.1/rest/delete/services',
+          RESTURL.'/delete/services',
           'POST',
           'json='.$json
         );
@@ -6992,7 +6987,7 @@
 
         # Do the REST add host request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/modify/services',
+          RESTURL.'/modify/services',
           'POST',
           'json='.$json
         );
@@ -7020,7 +7015,7 @@
 
         # Get form details from REST
         $request = new RestRequest(
-        'https://127.0.0.1/rest/show/services?json={"folder":"'.FOLDER.'",'.
+        RESTURL.'/show/services?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
         $request->setUsername(RESTUSER);
         $request->setPassword(RESTPASS);
@@ -7197,7 +7192,7 @@
 
         # Do the REST add service request
         $request = new RestRequest(
-          'https://127.0.0.1/rest/add/services',
+          RESTURL.'/add/services',
           'POST',
           'json='.$json
         );
@@ -7330,7 +7325,7 @@
         #print '<input type="button" value="Continue" />';
 
         $request = new RestRequest(
-          'https://127.0.0.1/rest/apply/nagiosconfig',
+          RESTURL.'/apply/nagiosconfig',
           'POST',
           'json={"folder":"'.FOLDER.'","verbose":"false"}'
         );
@@ -7370,7 +7365,7 @@
         #print '<input type="button" value="Continue" />';
 
         $request = new RestRequest(
-          'https://127.0.0.1/rest/restart/nagios',
+          RESTURL.'/restart/nagios',
           'POST',
           'json={"folder":"'.FOLDER.'","verbose":"false"}'
         );
@@ -7410,7 +7405,7 @@
         #print '<input type="button" value="Continue" />';
 
         $request = new RestRequest(
-          'https://127.0.0.1/rest/apply/nagioslastgoodconfig',
+          RESTURL.'/apply/nagioslastgoodconfig',
           'POST',
           'json={"folder":"'.FOLDER.'"}'
         );
@@ -8051,6 +8046,7 @@
         define( "FOLDER", $ini_array["folder"][0] );
         define( "RESTUSER", $ini_array["restuser"] );
         define( "RESTPASS", $ini_array["restpass"] );
+        define( "RESTURL", $ini_array["resturl"] );
     }
 
     # ------------------------------------------------------------------------
