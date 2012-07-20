@@ -8,8 +8,8 @@ Homepage: http://smorg.co.uk
 Bugs: https://lists.sourceforge.net/lists/listinfo/nagrestconf-users
 
 Package: nagrestconf
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, apache2, cron, nagios3, sed (>=4), gawk, grep (>=2), php5 (>=5.3), subversion, procmail, php5-curl, curl
+Architecture: all
+Depends: ${misc:Depends}, apache2, cron, nagios3, sed (>=4), gawk, grep (>=2), php5 (>=5.3), subversion, procmail, php5-curl, curl
 Description: REST interface and configuration GUI for Nagios.
  Nagrestconf:
  .
