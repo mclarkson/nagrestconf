@@ -32,7 +32,7 @@ source /etc/nagrestconf/restart_nagios.conf
 repos=$NAG_DIR/repos/
 
 # Restart nagios straight away.
-nagios -v $NAG_DIR/nagios.cfg &> /dev/null && /etc/init.d/$NAG_INITD restart
+$NAGIOSBIN -v $NAG_DIR/nagios.cfg &> /dev/null && /etc/init.d/$NAG_INITD restart
 
 # Get a list of directories to check
 dirs=`find $NAG_DIR/objects -mindepth 1 -maxdepth 1 -type d`
