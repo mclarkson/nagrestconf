@@ -418,6 +418,7 @@ while read i; do
         \"notifperiod\":\"24x7\",
         \"notifinterval\":\"60\",
         \"contacts\":\"$contacts\",
+        \"checkcommand\":\"check-host-alive\",
         \"contactgroups\":\"$contactgroups\"}'" \
         http://${IP}/rest/add/hosttemplates 
     curl -knX POST -d "json={\"folder\":\"$FOLDER\",
@@ -429,6 +430,7 @@ while read i; do
         \"notifperiod\":\"24x7\",
         \"notifinterval\":\"60\",
         \"contacts\":\"$contacts\",
+        \"checkcommand\":\"check-host-alive\",
         \"contactgroups\":\"$contactgroups\"}" \
         http://${IP}/rest/add/hosttemplates 
     echo
