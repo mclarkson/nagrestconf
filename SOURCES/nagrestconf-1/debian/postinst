@@ -38,14 +38,12 @@ case "$1" in
 
         # Add crontab
 
-        if test -w /var/spool/cron/root; then
+        if test -w /var/spool/cron/crontab/root; then
             # Delete crontab first
-            sed -i '/nagios_restart_request/d' /var/spool/cron/root
+            crontab -l | sed '/nagios_restart_request/d' \
+              | crontab -
         fi
-        cat >>/var/spool/cron/root <<EnD
-* * * * * /usr/bin/test -e /tmp/nagios_restart_request && ( /bin/rm /tmp/nagios_restart_request; /usr/bin/restart_nagios; )
-EnD
-        touch /var/spool/cron/
+        echo "* * * * * /usr/bin/test -e /tmp/nagios_restart_request && ( /bin/rm /tmp/nagios_restart_request; /usr/bin/restart_nagios; )" | crontab -
 
         # Add sudoers entry
 
