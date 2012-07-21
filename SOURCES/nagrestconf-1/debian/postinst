@@ -56,15 +56,19 @@ EnD
 
         # Add the line slc_configure wants
 
-        sed -i '/SERVICE_LINE_CFG_ENTRY/d' /etc/nagios3/nagios.cfg
-        echo "## Next line added by nagrestconf"  >>/etc/nagios3/nagios.cfg
-        echo "<SERVICE_LINE_CFG_ENTRY>" >>/etc/nagios3/nagios.cfg
+        if ! grep -qs "<SERVICE_LINE_CFG_ENTRY>" /etc/nagios3/nagios.cfg; then
+            sed -i '/SERVICE_LINE_CFG_ENTRY/d' /etc/nagios3/nagios.cfg
+            echo "## Next line added by nagrestconf"  >>/etc/nagios3/nagios.cfg
+            echo "<SERVICE_LINE_CFG_ENTRY>" >>/etc/nagios3/nagios.cfg
 
-        # Comment out cfg_ lines in nagios.cfg
+            # Comment out cfg_ lines in nagios.cfg
 
-        sed -i 's/^[[:space:]]*cfg_/# commented out by nagrestconf -- cfg_/' /etc/nagios3/nagios.cfg
+            sed -i \
+                's/^[[:space:]]*cfg_/# - commented out by nagrestconf - cfg_/' \
+                /etc/nagios3/nagios.cfg
 
-        slc_configure --folder=local
+            slc_configure --folder=local
+        fi
 
         echo "Nagrestconf has been configured for http://127.0.0.1/nagrestconf/."
     ;;

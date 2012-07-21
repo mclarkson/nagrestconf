@@ -1,5 +1,16 @@
-2012-07-20 23:26  mclarkson
+2012-07-21  mclarkson
 
+	* scripts/restart_nagios: Use NAGIOSBIN variable rather than
+	  'nagios' directly
+	* doc/bulk-loading/REST_setup_local.sh: Add check-host-alive as
+	  default command to hosttemplate
+	* debian/postinst: Use crontab to install crontabs
+	* README, doc/README.html: Added debian install text
+
+2012-07-20  mclarkson
+
+	* debian/control: Arch independent
+	* ChangeLog: Updated changelog
 	* ChangeLog, debian/changelog, debian/compat, debian/control,
 	  debian/copyright, debian/nagrestconf.manpages, debian/postinst,
 	  debian/postrm, debian/preinst, debian/prerm, debian/rules,
@@ -15,7 +26,7 @@
 	  scripts/nagctl, scripts/restart_nagios, scripts/slc_configure:
 	  Debian packaging, tidy-ups and bug fixes
 
-2012-07-17 07:44  mclarkson
+2012-07-17  mclarkson
 
 	* ., README, debian, doc, doc/README.html, doc/bulk-loading,
 	  doc/bulk-loading/REST_setup_local.sh, doc/initial-config,
