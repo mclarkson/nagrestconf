@@ -81,21 +81,40 @@ Get the relevant RPM for Centos/Redhat from Sourceforge at:
 
 https://sourceforge.net/projects/nagrestconf/files/
 
+Debian install packages are also available.
+
 Install Using Prebuilt Packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.*DEBIAN*
+
+1. Install the prebuilt package downloaded from Sourceforge. For example:
++
+----------------------------------------------------------
+gdebi nagrestconf_1.0_all.deb
+----------------------------------------------------------
++
+2. Configure the system:
++
+The system should now be ready to configure using REST and by using the GUI at
+`http://localhost/nagrestconf'.
++
+Test the installation with:
++
+----------------------------------------------------------
+bash /usr/share/doc/nagrestconf/bulk-loading/REST_setup_local.sh
+----------------------------------------------------------
++
+Then check that it can be seen and edited in the 'Nagrestconf' GUI.
+
+.*CENTOS / REDHAT*
 
 1. Install the prebuilt package downloaded from Sourceforge. For example:
 +
 * Centos
 +
 ----------------------------------------------------------
-yum install nagrestconf-1-1.x.noarch.rpm
-----------------------------------------------------------
-+
-* Debian
-+
-----------------------------------------------------------
-gdebi nagrestconf-1-1.x.noarch.deb
+yum install nagrestconf-1-1.8.noarch.rpm
 ----------------------------------------------------------
 +
 2. Configure the system:
