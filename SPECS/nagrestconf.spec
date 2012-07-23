@@ -76,8 +76,8 @@ fi
 # Config
 install -d -m 755 ${RPM_BUILD_ROOT}/%_sysconfdir/
 #cp -r etc/httpd ${RPM_BUILD_ROOT}/%_sysconfdir/
-install -D -m 640 etc/httpd/nagrestconf.conf ${RPM_BUILD_ROOT}/%_sysconfdir/httpd/nagrestconf.conf
-install -D -m 640 etc/httpd/rest.conf ${RPM_BUILD_ROOT}/%_sysconfdir/httpd/rest.conf
+install -D -m 640 etc/httpd/conf.d/nagrestconf.conf ${RPM_BUILD_ROOT}/%_sysconfdir/httpd/conf.d/nagrestconf.conf
+install -D -m 640 etc/httpd/conf.d/rest.conf ${RPM_BUILD_ROOT}/%_sysconfdir/httpd/conf.d/rest.conf
 #cp -r etc/nagrestconf ${RPM_BUILD_ROOT}%_sysconfdir/
 install -D -m 640 etc/nagrestconf/csv2nag.conf ${RPM_BUILD_ROOT}/%_sysconfdir/nagrestconf/csv2nag.conf
 install -D -m 640 etc/nagrestconf/nagctl.conf ${RPM_BUILD_ROOT}/%_sysconfdir/nagrestconf/nagctl.conf
