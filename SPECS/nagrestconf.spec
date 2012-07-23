@@ -74,9 +74,15 @@ fi
 [ "$RPM_BUILD_ROOT" != "/" ] && %{__rm} -rf %{buildroot}
 
 # Config
-install -d -m 755 ${RPM_BUILD_ROOT}%_sysconfdir/
-cp -r etc/httpd ${RPM_BUILD_ROOT}%_sysconfdir/
-cp -r etc/nagrestconf ${RPM_BUILD_ROOT}%_sysconfdir/
+install -d -m 755 ${RPM_BUILD_ROOT}/%_sysconfdir/
+#cp -r etc/httpd ${RPM_BUILD_ROOT}/%_sysconfdir/
+install -D -m 640 etc/httpd/nagrestconf.conf ${RPM_BUILD_ROOT}/%_sysconfdir/httpd/nagrestconf.conf
+install -D -m 640 etc/httpd/rest.conf ${RPM_BUILD_ROOT}/%_sysconfdir/httpd/rest.conf
+#cp -r etc/nagrestconf ${RPM_BUILD_ROOT}%_sysconfdir/
+install -D -m 640 etc/nagrestconf/csv2nag.conf ${RPM_BUILD_ROOT}/%_sysconfdir/nagrestconf/csv2nag.conf
+install -D -m 640 etc/nagrestconf/nagctl.conf ${RPM_BUILD_ROOT}/%_sysconfdir/nagrestconf/nagctl.conf
+install -D -m 640 etc/nagrestconf/nagrestconf.ini ${RPM_BUILD_ROOT}/%_sysconfdir/nagrestconf/nagrestconf.ini
+install -D -m 640 etc/nagrestconf/restart_nagios.conf ${RPM_BUILD_ROOT}/%_sysconfdir/nagrestconf/restart_nagios.conf
 
 # Scripts
 install -D -m 755 scripts/csv2nag ${RPM_BUILD_ROOT}%_bindir/csv2nag
