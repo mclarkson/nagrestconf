@@ -11,6 +11,22 @@ News
 
 20 Jul 2012 - https://sourceforge.net/projects/nagrestconf/files/Debian/[Debian package released to sourceforge]
 
+License
+-------
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 Screenshot
 ----------
 
@@ -132,7 +148,7 @@ which contains a minimal nagios configuration directory. For example:
 ----------------------------------------------------------
 cd /etc
 mv nagios nagios.orig
-cp -a /usr/share/doc/nagrestconf/initial-config nagios
+cp -a /usr/share/doc/nagrestconf-1/initial-config nagios
 ----------------------------------------------------------
 +
 NOTE: If the initial-config directory is not used then ensure that the text
@@ -147,19 +163,31 @@ slc_configure --folder=local
 htpasswd /etc/nagios/htpasswd.users nagiosadmin
 ----------------------------------------------------------
 +
-Edit +/etc/nagrestconf/nagrestconf.ini+ and change the `restuser =' and
-`restpass = ' lines.
+Edit +/etc/nagrestconf/nagrestconf.ini+ and change the `resturl =',
+`restuser =' and `restpass = ' lines. For example:
++
+----------------------------------------------------------
+resturl  = "https://127.0.0.1/rest"
+folder[] = "local"
+restuser = "nagiosadmin"
+restpass = "the-password-you-entered-earlier"
+----------------------------------------------------------
 +
 The system should now be ready to configure using REST and by using the GUI at
 `http://localhost/nagrestconf'.
 +
-Test the installation with:
+Test the REST interface with:
 +
 ----------------------------------------------------------
-bash /usr/share/doc/nagrestconf-1/bulk-loading/REST_setup_local.sh
+cd
+sed 's/http:/https:/g' \
+    /usr/share/doc/nagrestconf-1/bulk-loading/REST_setup_local.sh \
+    > REST_setup_local.sh
+./REST_setup_local.sh
 ----------------------------------------------------------
 +
-Then check that it can be seen and edited in the 'Nagrestconf' GUI.
+Then check that it can be seen and edited in the 'Nagrestconf' GUI by connecting
+to 'http://localhost/nagrestconf'.
 
 Install From Source
 ~~~~~~~~~~~~~~~~~~~
