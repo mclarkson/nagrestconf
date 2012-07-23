@@ -464,12 +464,17 @@ function generateToc(toclevels) {
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
 </div>
 </div>
-<h2 id="_screenshot">1. Screenshot</h2>
+<h2 id="_news">1. News</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>21 Jul 2012 - <a href="http://blogger.smorg.co.uk/2012/07/nagrestconf-on-raspberry-pi.html">Nagrestconf on Raspberry PI</a></p></div>
+<div class="paragraph"><p>20 Jul 2012 - <a href="https://sourceforge.net/projects/nagrestconf/files/Debian/">Debian package released to sourceforge</a></p></div>
+</div>
+<h2 id="_screenshot">2. Screenshot</h2>
 <div class="sectionbody">
 <img src="http://www.smorg.co.uk/images/nagrestconfgui.png"
-alt="Nagrestconf GUI Screenshot" style="float:none" width="800px" />
+alt="Nagrestconf GUI Screenshot" style="float:none" width="500px" />
 </div>
-<h2 id="_what_is_nagrestconf">2. What is Nagrestconf?</h2>
+<h2 id="_what_is_nagrestconf">3. What is Nagrestconf?</h2>
 <div class="sectionbody">
 <div class="paragraph"><p><em>Nagrestconf</em> is a REST interface and configuration GUI for Nagios.</p></div>
 <div class="paragraph"><p><em>Nagrestconf</em> is written in Bash and PHP.</p></div>
@@ -526,7 +531,7 @@ Distributed monitoring (using additional tools)
 </ul></div>
 <div class="paragraph"><p>Not all of the Nagios directives are implemented, refer to the <a href="#X20">Status</a> section.</p></div>
 </div>
-<h2 id="_how_does_it_work">3. How does it work?</h2>
+<h2 id="_how_does_it_work">4. How does it work?</h2>
 <div class="sectionbody">
 <div class="tableblock">
 <table rules="all"
@@ -577,7 +582,7 @@ cellspacing="0" cellpadding="4">
 </table>
 </div>
 </div>
-<h2 id="_requirements">4. Requirements</h2>
+<h2 id="_requirements">5. Requirements</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>For the Web GUI the following Browsers work: Firefox, Opera, Chrome, Safari -
 including Maemo, IPAD and Android versions.</p></div>
@@ -638,13 +643,13 @@ cellspacing="0" cellpadding="4">
 </table>
 </div>
 </div>
-<h2 id="_install">5. Install</h2>
+<h2 id="_install">6. Install</h2>
 <div class="sectionbody">
-<h3 id="_prebuilt_packages">5.1. Prebuilt Packages</h3><div style="clear:left"></div>
+<h3 id="_prebuilt_packages">6.1. Prebuilt Packages</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Get the relevant RPM for Centos/Redhat from Sourceforge at:</p></div>
 <div class="paragraph"><p><a href="https://sourceforge.net/projects/nagrestconf/files/">https://sourceforge.net/projects/nagrestconf/files/</a></p></div>
 <div class="paragraph"><p>Debian install packages are also available.</p></div>
-<h3 id="_install_using_prebuilt_packages">5.2. Install Using Prebuilt Packages</h3><div style="clear:left"></div>
+<h3 id="_install_using_prebuilt_packages">6.2. Install Using Prebuilt Packages</h3><div style="clear:left"></div>
 <div class="olist arabic"><div class="title"><strong>DEBIAN</strong></div><ol class="arabic">
 <li>
 <p>
@@ -727,7 +732,7 @@ htpasswd /etc/nagios/htpasswd.users nagiosadmin</tt></pre>
 <div class="paragraph"><p>Then check that it can be seen and edited in the <em>Nagrestconf</em> GUI.</p></div>
 </li>
 </ol></div>
-<h3 id="_install_from_source">5.3. Install From Source</h3><div style="clear:left"></div>
+<h3 id="_install_from_source">6.3. Install From Source</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Copy <em>csv2nag</em>, <em>nagctl</em>, <em>restart_nagios</em> and <em>slc_configure</em> from scripts
 directory to <tt>/usr/bin</tt> or <tt>/usr/local/bin</tt>.</p></div>
 <div class="paragraph"><p>Copy <tt>nagrestconf/</tt> and <tt>rest/</tt> directories to the web server document root and
@@ -737,7 +742,7 @@ files.</p></div>
 <div class="paragraph"><p>Run the <em>slc_configure</em> script to configure the repository and configuration
 directory. Ensure a &#8216;cfg_dir=&#8217; entry exists in <tt>nagios.cfg</tt>.</p></div>
 </div>
-<h2 id="_rest_examples">6. REST Examples</h2>
+<h2 id="_rest_examples">7. REST Examples</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Please look at the <em>REST_setup_local.sh</em> script located in the <tt>bulk-loading/</tt>
 document directory. This script gives an example of &#8216;Bulk loading&#8217;.</p></div>
@@ -874,7 +879,7 @@ define service {
 }</tt></pre>
 </div></div>
 </div>
-<h2 id="X20">7. Status</h2>
+<h2 id="X20">8. Status</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Currently implemented directives (57/187) = 30%.</p></div>
 <div class="tableblock">
@@ -989,7 +994,7 @@ cellspacing="0" cellpadding="4">
 </table>
 </div>
 </div>
-<h2 id="_rest_commands">8. REST Commands</h2>
+<h2 id="_rest_commands">9. REST Commands</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>The URL is in the form <em>https://&lt;HOST&gt;/rest/&lt;COMMAND&gt;/&lt;COMMANDARG&gt;</em>.</p></div>
 <div class="paragraph"><p>GET requests don&#8217;t modify the configuration:</p></div>
@@ -1329,7 +1334,7 @@ disablesvccheck json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname
 </li>
 </ul></div>
 </div>
-<h2 id="_currently_implemented_definitions_and_directives">9. Currently Implemented Definitions and Directives</h2>
+<h2 id="_currently_implemented_definitions_and_directives">10. Currently Implemented Definitions and Directives</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Key for Flags column:</p></div>
 <div class="ulist"><ul>
@@ -2127,7 +2132,7 @@ cellspacing="0" cellpadding="4">
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-07-21 00:59:54 BST
+Last updated 2012-07-22 11:59:24 BST
 </div>
 </div>
 </body>

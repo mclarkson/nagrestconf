@@ -4,12 +4,19 @@ Nagrestconf README
 :icons:
 :numbered:
 
+News
+----
+
+21 Jul 2012 - http://blogger.smorg.co.uk/2012/07/nagrestconf-on-raspberry-pi.html[Nagrestconf on Raspberry PI]
+
+20 Jul 2012 - https://sourceforge.net/projects/nagrestconf/files/Debian/[Debian package released to sourceforge]
+
 Screenshot
 ----------
 
 ++++
 <img src="http://www.smorg.co.uk/images/nagrestconfgui.png"
-alt="Nagrestconf GUI Screenshot" style="float:none" width="800px" />
+alt="Nagrestconf GUI Screenshot" style="float:none" width="500px" />
 ++++
 
 What is Nagrestconf?
