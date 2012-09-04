@@ -7,7 +7,7 @@ Nagrestconf README
 News
 ----
 
-4 Sep 2012 - Added more nagios directives to the REST api. 
+4 Sep 2012 - Added more Nagios directives to the REST api. See the <<X10, Upgrade>> section below. 
 
 21 Jul 2012 - http://blogger.smorg.co.uk/2012/07/nagrestconf-on-raspberry-pi.html[Nagrestconf on Raspberry PI]
 
@@ -95,6 +95,12 @@ including Maemo, IPAD and Android versions.
 | gawk | used in the bash scripts.
 | procmail | for locking with 'lockfile'.
 |========================================================
+
+[[X10]]
+Upgrade
+---------
+
+After the upgrade run `/usr/bin/upgrade_setup_files.sh'.
 
 Install
 -------

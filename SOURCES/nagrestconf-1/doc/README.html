@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.4.5" />
+<meta name="generator" content="AsciiDoc 8.5.2" />
 <title>Nagrestconf README</title>
 <style type="text/css">
 /* Debug borders */
@@ -118,12 +118,14 @@ div#preamble {
 div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
 div.admonitionblock {
-  margin-top: 1.5em;
+  margin-top: 1.0em;
   margin-bottom: 1.5em;
 }
 div.admonitionblock {
-  margin-top: 2.5em;
-  margin-bottom: 2.5em;
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
 }
 
 div.content { /* Block element content. */
@@ -165,19 +167,19 @@ div.listingblock > div.content {
   padding: 0.5em;
 }
 
-div.quoteblock {
-  padding-left: 2.0em;
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
   margin-right: 10%;
+  border-left: 5px solid #dddddd;
+  color: #777777;
 }
+
 div.quoteblock > div.attribution {
   padding-top: 0.5em;
   text-align: right;
 }
 
-div.verseblock {
-  padding-left: 2.0em;
-  margin-right: 10%;
-}
 div.verseblock > div.content {
   white-space: pre;
 }
@@ -200,12 +202,12 @@ div.admonitionblock .icon {
 }
 div.admonitionblock td.content {
   padding-left: 0.5em;
-  border-left: 2px solid silver;
+  border-left: 3px solid #dddddd;
 }
 
 div.exampleblock > div.content {
-  border-left: 2px solid silver;
-  padding: 0.5em;
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
 }
 
 div.imageblock div.content { padding-left: 0; }
@@ -255,7 +257,7 @@ div.compact div, div.compact div {
 div.tableblock > table {
   border: 3px solid #527bbd;
 }
-thead {
+thead, p.table.header {
   font-family: sans-serif;
   font-weight: bold;
 }
@@ -310,8 +312,40 @@ div.hdlist.compact tr {
   background: yellow;
 }
 
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+
 @media print {
   div#footer-badges { display: none; }
+}
+
+div#toc {
+  margin-bottom: 2.5em;
 }
 
 div#toctitle {
@@ -374,7 +408,7 @@ div.verseblock-attribution {
 }
 
 div.exampleblock-content {
-  border-left: 2px solid silver;
+  border-left: 3px solid #dddddd;
   padding-left: 0.5em;
 }
 
@@ -383,7 +417,13 @@ div#toc a:visited { color: blue; }
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
-window.onload = function(){generateToc(2)}
+window.onload = function(){asciidoc.footnotes(); asciidoc.toc(2);}
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
 /* Author: Mihai Bazon, September 2002
  * http://students.infoiasi.ro/~mishoo
  *
@@ -395,53 +435,55 @@ window.onload = function(){generateToc(2)}
  */
 
  /* modified by Troy D. Hanson, September 2006. License: GPL */
- /* modified by Stuart Rackham, October 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
 
-function getText(el) {
-  var text = "";
-  for (var i = el.firstChild; i != null; i = i.nextSibling) {
-    if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
-      text += i.data;
-    else if (i.firstChild != null)
-      text += getText(i);
-  }
-  return text;
-}
+// toclevels = 1..4.
+toc: function (toclevels) {
 
-function TocEntry(el, text, toclevel) {
-  this.element = el;
-  this.text = text;
-  this.toclevel = toclevel;
-}
-
-function tocEntries(el, toclevels) {
-  var result = new Array;
-  var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
-  // Function that scans the DOM tree for header elements (the DOM2
-  // nodeIterator API would be a better technique but not supported by all
-  // browsers).
-  var iterate = function (el) {
+  function getText(el) {
+    var text = "";
     for (var i = el.firstChild; i != null; i = i.nextSibling) {
-      if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
-        var mo = re.exec(i.tagName)
-        if (mo)
-          result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
-        iterate(i);
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
       }
     }
+    iterate(el);
+    return result;
   }
-  iterate(el);
-  return result;
-}
 
-// This function does the work. toclevels = 1..4.
-function generateToc(toclevels) {
   var toc = document.getElementById("toc");
-  var entries = tocEntries(document.getElementsByTagName("body")[0], toclevels);
+  var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
     if (entry.element.id == "")
-      entry.element.id = "toc" + i;
+      entry.element.id = "_toc_" + i;
     var a = document.createElement("a");
     a.href = "#" + entry.element.id;
     a.appendChild(document.createTextNode(entry.text));
@@ -451,7 +493,58 @@ function generateToc(toclevels) {
     toc.appendChild(div);
   }
   if (entries.length == 0)
-    document.getElementById("header").removeChild(toc);
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  var cont = document.getElementById("content");
+  var noteholder = document.getElementById("footnotes");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      // Use [\s\S] in place of . so multi-line matches work.
+      // Because JavaScript has no s (dotall) regex flag.
+      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      spans[i].innerHTML =
+        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+        "' title='View footnote' class='footnote'>" + n + "</a>]";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+}
+
 }
 /*]]>*/
 </script>
@@ -464,8 +557,10 @@ function generateToc(toclevels) {
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
 </div>
 </div>
+<div id="content">
 <h2 id="_news">1. News</h2>
 <div class="sectionbody">
+<div class="paragraph"><p>4 Sep 2012 - Added more Nagios directives to the REST api. See the <a href="#X10">Upgrade</a> section below.</p></div>
 <div class="paragraph"><p>21 Jul 2012 - <a href="http://blogger.smorg.co.uk/2012/07/nagrestconf-on-raspberry-pi.html">Nagrestconf on Raspberry PI</a></p></div>
 <div class="paragraph"><p>20 Jul 2012 - <a href="https://sourceforge.net/projects/nagrestconf/files/Debian/">Debian package released to sourceforge</a></p></div>
 </div>
@@ -665,13 +760,17 @@ cellspacing="0" cellpadding="4">
 </table>
 </div>
 </div>
-<h2 id="_install">7. Install</h2>
+<h2 id="X10">7. Upgrade</h2>
 <div class="sectionbody">
-<h3 id="_prebuilt_packages">7.1. Prebuilt Packages</h3><div style="clear:left"></div>
+<div class="paragraph"><p>After the upgrade run &#8216;/usr/bin/upgrade_setup_files.sh&#8217;.</p></div>
+</div>
+<h2 id="_install">8. Install</h2>
+<div class="sectionbody">
+<h3 id="_prebuilt_packages">8.1. Prebuilt Packages</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Get the relevant RPM for Centos/Redhat from Sourceforge at:</p></div>
 <div class="paragraph"><p><a href="https://sourceforge.net/projects/nagrestconf/files/">https://sourceforge.net/projects/nagrestconf/files/</a></p></div>
 <div class="paragraph"><p>Debian install packages are also available.</p></div>
-<h3 id="_install_using_prebuilt_packages">7.2. Install Using Prebuilt Packages</h3><div style="clear:left"></div>
+<h3 id="_install_using_prebuilt_packages">8.2. Install Using Prebuilt Packages</h3><div style="clear:left"></div>
 <div class="olist arabic"><div class="title"><strong>DEBIAN</strong></div><ol class="arabic">
 <li>
 <p>
@@ -766,7 +865,7 @@ sed 's/http:/https:/g' \
 to <em>http://localhost/nagrestconf</em>.</p></div>
 </li>
 </ol></div>
-<h3 id="_install_from_source">7.3. Install From Source</h3><div style="clear:left"></div>
+<h3 id="_install_from_source">8.3. Install From Source</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Copy <em>csv2nag</em>, <em>nagctl</em>, <em>restart_nagios</em> and <em>slc_configure</em> from scripts
 directory to <tt>/usr/bin</tt> or <tt>/usr/local/bin</tt>.</p></div>
 <div class="paragraph"><p>Copy <tt>nagrestconf/</tt> and <tt>rest/</tt> directories to the web server document root and
@@ -776,7 +875,7 @@ files.</p></div>
 <div class="paragraph"><p>Run the <em>slc_configure</em> script to configure the repository and configuration
 directory. Ensure a &#8216;cfg_dir=&#8217; entry exists in <tt>nagios.cfg</tt>.</p></div>
 </div>
-<h2 id="_rest_examples">8. REST Examples</h2>
+<h2 id="_rest_examples">9. REST Examples</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Please look at the <em>REST_setup_local.sh</em> script located in the <tt>bulk-loading/</tt>
 document directory. This script gives an example of &#8216;Bulk loading&#8217;.</p></div>
@@ -913,14 +1012,14 @@ define service {
 }</tt></pre>
 </div></div>
 </div>
-<h2 id="X20">9. Status</h2>
+<h2 id="X20">10. Status</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Currently implemented directives (57/187) = 30%.</p></div>
+<div class="paragraph"><p>Currently implemented directives (64/187) = 34%.</p></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Currently implemented directives</caption>
+<caption class="title">Table 1. Currently implemented directives</caption>
 <col />
 <col />
 <col />
@@ -937,8 +1036,8 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="left" valign="top"><p class="table">Contacts</p></td>
 <td align="center" valign="top"><p class="table">17</p></td>
-<td align="center" valign="top"><p class="table">10</p></td>
-<td align="right" valign="top"><p class="table">59%</p></td>
+<td align="center" valign="top"><p class="table">17</p></td>
+<td align="right" valign="top"><p class="table">100%</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table">Contact Groups</p></td>
@@ -1028,7 +1127,7 @@ cellspacing="0" cellpadding="4">
 </table>
 </div>
 </div>
-<h2 id="_rest_commands">10. REST Commands</h2>
+<h2 id="_rest_commands">11. REST Commands</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>The URL is in the form <em>https://&lt;HOST&gt;/rest/&lt;COMMAND&gt;/&lt;COMMANDARG&gt;</em>.</p></div>
 <div class="paragraph"><p>GET requests don&#8217;t modify the configuration:</p></div>
@@ -1368,7 +1467,7 @@ disablesvccheck json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname
 </li>
 </ul></div>
 </div>
-<h2 id="_currently_implemented_definitions_and_directives">11. Currently Implemented Definitions and Directives</h2>
+<h2 id="_currently_implemented_definitions_and_directives">12. Currently Implemented Definitions and Directives</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Key for Flags column:</p></div>
 <div class="ulist"><ul>
@@ -1397,12 +1496,17 @@ disablesvccheck json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname
 'C' for a compound field: &lt;name&gt;|&lt;value&gt;[,&lt;name&gt;|&lt;value&gt;]&#8230;
 </p>
 </li>
+<li>
+<p>
+'X' implemented in REST but not in the Web front-end.
+</p>
+</li>
 </ul></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Contacts File</caption>
+<caption class="title">Table 2. Contacts File</caption>
 <col />
 <col />
 <col />
@@ -1488,6 +1592,78 @@ cellspacing="0" cellpadding="4">
 <td align="center" valign="top"><p class="table">U</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
 </tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>13.</em></p></td>
+<td align="left" valign="top"><p class="table">Service notification enabled</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">svcnotifenabled</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>14.</em></p></td>
+<td align="left" valign="top"><p class="table">Host notification enabled</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">hstnotifenabled</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>15.</em></p></td>
+<td align="left" valign="top"><p class="table">Pager</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">pager</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>16.</em></p></td>
+<td align="left" valign="top"><p class="table">Address1</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">address1</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>17.</em></p></td>
+<td align="left" valign="top"><p class="table">Address2</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">address2</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>18.</em></p></td>
+<td align="left" valign="top"><p class="table">Address3</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">address3</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>19.</em></p></td>
+<td align="left" valign="top"><p class="table">Address4</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">address4</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>20.</em></p></td>
+<td align="left" valign="top"><p class="table">Address5</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">address5</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>21.</em></p></td>
+<td align="left" valign="top"><p class="table">Address6</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">address6</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>22.</em></p></td>
+<td align="left" valign="top"><p class="table">Retain status info</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">retainstatusinfo</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>23.</em></p></td>
+<td align="left" valign="top"><p class="table">Retain non-status info</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">retainnonstatusinfo</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>24.</em></p></td>
+<td align="left" valign="top"><p class="table">Contact groups</p></td>
+<td align="center" valign="top"><p class="table">XL</p></td>
+<td align="left" valign="top"><p class="table">contactgroups</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1495,7 +1671,7 @@ cellspacing="0" cellpadding="4">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Contactgroups Files</caption>
+<caption class="title">Table 3. Contactgroups Files</caption>
 <col />
 <col />
 <col />
@@ -1540,7 +1716,7 @@ cellspacing="0" cellpadding="4">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Hosts File</caption>
+<caption class="title">Table 4. Hosts File</caption>
 <col />
 <col />
 <col />
@@ -1621,7 +1797,7 @@ cellspacing="0" cellpadding="4">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Hosttemplates File</caption>
+<caption class="title">Table 5. Hosttemplates File</caption>
 <col />
 <col />
 <col />
@@ -1726,7 +1902,7 @@ cellspacing="0" cellpadding="4">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Services File</caption>
+<caption class="title">Table 6. Services File</caption>
 <col />
 <col />
 <col />
@@ -1813,7 +1989,7 @@ cellspacing="0" cellpadding="4">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Servicesets File</caption>
+<caption class="title">Table 7. Servicesets File</caption>
 <col />
 <col />
 <col />
@@ -1900,7 +2076,7 @@ cellspacing="0" cellpadding="4">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Servicetemplates File</caption>
+<caption class="title">Table 8. Servicetemplates File</caption>
 <col />
 <col />
 <col />
@@ -1999,7 +2175,7 @@ cellspacing="0" cellpadding="4">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Commands File</caption>
+<caption class="title">Table 9. Commands File</caption>
 <col />
 <col />
 <col />
@@ -2038,7 +2214,7 @@ cellspacing="0" cellpadding="4">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Hostgroups File</caption>
+<caption class="title">Table 10. Hostgroups File</caption>
 <col />
 <col />
 <col />
@@ -2077,7 +2253,7 @@ cellspacing="0" cellpadding="4">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Servicegroups File</caption>
+<caption class="title">Table 11. Servicegroups File</caption>
 <col />
 <col />
 <col />
@@ -2116,7 +2292,7 @@ cellspacing="0" cellpadding="4">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Timeperiods File</caption>
+<caption class="title">Table 12. Timeperiods File</caption>
 <col />
 <col />
 <col />
@@ -2164,9 +2340,11 @@ cellspacing="0" cellpadding="4">
 </table>
 </div>
 </div>
+</div>
+<div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-07-23 12:28:38 BST
+Last updated 2012-09-04 19:57:41 BST
 </div>
 </div>
 </body>
