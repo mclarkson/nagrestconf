@@ -7,6 +7,8 @@ Nagrestconf README
 News
 ----
 
+4 Sep 2012 - Added more nagios directives to the REST api. 
+
 21 Jul 2012 - http://blogger.smorg.co.uk/2012/07/nagrestconf-on-raspberry-pi.html[Nagrestconf on Raspberry PI]
 
 20 Jul 2012 - https://sourceforge.net/projects/nagrestconf/files/Debian/[Debian package released to sourceforge]
@@ -350,13 +352,13 @@ define service {
 [[X20]]
 Status
 ------
-Currently implemented directives (57/187) = 30%.
+Currently implemented directives (64/187) = 34%.
 
 .Currently implemented directives
 [cols="<,^,^,>",frame="topbot",options="header,autowidth"]
 |========================================================
 | Definition | No. in Nagios | No. in Nagrestconf | %
-| Contacts | 17 | 10 | 59%
+| Contacts | 17 | 17 | 100%
 | Contact Groups | 3 | 3 | 100%
 | Hosts | 43 | 17 | 40% 
 | Host Groups | 7 | 2 | 28%
@@ -456,6 +458,7 @@ Key for Flags column:
  * \'K' to show the fields required to specify a unique key.
  * \'L' for a list field. Lists consist of zero or more items separated by spaces.
  * \'C' for a compound field: <name>|<value>[,<name>|<value>]...
+ * \'X' implemented in REST but not in the Web front-end.
 
 .Contacts File
 
@@ -474,6 +477,18 @@ Key for Flags column:
 | 10. | Host notification commands | R | hstnotifcmds
 | 11. | Can submit commands |  | cansubmitcmds
 | 12. | Disable | U | disable
+| 13. | Service notification enabled | X | svcnotifenabled
+| 14. | Host notification enabled | X | hstnotifenabled
+| 15. | Pager | X | pager
+| 16. | Address1 | X | address1
+| 17. | Address2 | X | address2
+| 18. | Address3 | X | address3
+| 19. | Address4 | X | address4
+| 20. | Address5 | X | address5
+| 21. | Address6 | X | address6
+| 22. | Retain status info | X | retainstatusinfo
+| 23. | Retain non-status info | X | retainnonstatusinfo
+| 24. | Contact groups | XL | contactgroups
 |========================================================
 
 .Contactgroups Files

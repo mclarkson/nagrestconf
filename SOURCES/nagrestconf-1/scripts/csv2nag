@@ -892,6 +892,9 @@ create_contacts()
 
         IFS=, read cname use alias email srvnotper srvnotopts srvnotcmds \
             hstnotper hstnotopts hstnotcmds cansubmit disable \
+            svcnotifenabled hstnotifenabled pager address1 address2 \
+            address3 address4 address5 address6 retainstatusinfo \
+            retainnonstatusinfo contactgroups \
             < <(echo "$a")
 
         echo "define contact {"
@@ -927,6 +930,43 @@ create_contacts()
         }
         [[ -n $cansubmit ]] && {
             echo "       can_submit_commands           $cansubmit"
+        }
+        [[ -n $svcnotifenabled ]] && {
+            echo "       service_notifications_enabled $svcnotifenabled"
+        }
+        [[ -n $hstnotifenabled ]] && {
+            echo "       host_notifications_enabled    $hstnotifenabled"
+        }
+        [[ -n $pager ]] && {
+            echo "       pager                         $pager"
+        }
+        [[ -n $address1 ]] && {
+            echo "       address1                      $address1"
+        }
+        [[ -n $address2 ]] && {
+            echo "       address2                      $address2"
+        }
+        [[ -n $address3 ]] && {
+            echo "       address3                      $address3"
+        }
+        [[ -n $address4 ]] && {
+            echo "       address4                      $address4"
+        }
+        [[ -n $address5 ]] && {
+            echo "       address5                      $address5"
+        }
+        [[ -n $address6 ]] && {
+            echo "       address6                      $address6"
+        }
+        [[ -n $retainstatusinfo ]] && {
+            echo "       retain_status_information     $retainstatusinfo"
+        }
+        [[ -n $retainnonstatusinfo ]] && {
+            echo "       retain_nonstatus_information  $retainnonstatusinfo"
+        }
+        [[ -n $contactgroups ]] && {
+            echo -n "       contactgroups                 "
+            echo "$contactgroups" | tr " " ,
         }
         echo "}"
         echo
