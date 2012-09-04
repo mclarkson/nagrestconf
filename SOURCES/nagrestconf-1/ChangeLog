@@ -1,5 +1,16 @@
+2012-09-04  mclarkson
+
+	* README, rest/index.php, scripts/csv2nag, scripts/nagctl: Added
+	  more nagios directives to the REST api.
+
+2012-07-23  mclarkson
+
+	* README, doc/README.html: Updated Centos install notes
+	* README, doc/README.html: Minor doc update
+
 2012-07-21  mclarkson
 
+	* ChangeLog, debian/postinst: Debian postinst fixes
 	* scripts/restart_nagios: Use NAGIOSBIN variable rather than
 	  'nagios' directly
 	* doc/bulk-loading/REST_setup_local.sh: Add check-host-alive as
