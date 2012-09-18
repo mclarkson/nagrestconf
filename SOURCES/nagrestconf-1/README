@@ -1,5 +1,207 @@
 Nagrestconf README
 ==================
+
+++++
+<link rel="shortcut icon" href="http://www.smorg.co.uk/favicon.ico?v=2" />
+<style type="text/css">
+body {
+    margin-top: 50px;
+}
+.navbar {
+    box-shadow: 0 3px 3px rgba(46, 46, 46, 0.7);
+    opacity: 0.95;
+}
+.navbar-fixed-top {
+    top: 0;
+}
+.navbar-fixed-top, .navbar-fixed-bottom {
+    left: 0;
+    margin-bottom: 0;
+    position: fixed;
+    right: 0;
+    z-index: 1030;
+}
+.navbar {
+    color: #999999;
+}
+.navbar {
+    margin-bottom: 18px;
+    overflow: visible;
+}
+
+.navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {
+    border-radius: 0 0 0 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+.navbar-inner {
+    background-color: #2C2C2C;
+    background-image: -moz-linear-gradient(center top , #333333, #222222);
+    background-repeat: repeat-x;
+    border-radius: 4px 4px 4px 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 -1px 0 rgba(0, 0, 0, 0.1) inset;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.container:after {
+    clear: both;
+}
+.container:before, .container:after {
+    content: "";
+    display: table;
+}
+.container:before, .container:after {
+    content: "";
+    display: table;
+}
+.navbar .container {
+    width: auto;
+}
+.container {
+    margin-left: auto;
+    margin-right: auto;
+}
+.navbar .brand {
+    color: #FFFFFF;
+    display: block;
+    float: left;
+    font-size: 20px;
+    font-weight: 200;
+    line-height: 1;
+    /* margin-left: -20px; */
+    padding: 8px 20px 12px;
+}
+a {
+    color: #0088CC;
+    text-decoration: none;
+}
+.pull-right {
+    float: right;
+}
+.navbar-search {
+    float: left;
+    margin-bottom: 0;
+    margin-top: 6px;
+    position: relative;
+}
+form {
+    margin: 0 0 18px;
+}
+.navbar .nav {
+    display: block;
+    float: left;
+    left: 0;
+    margin: 0 10px 0 0;
+    position: relative;
+}
+.nav {
+    list-style: none outside none;
+    margin-bottom: 18px;
+    margin-left: 0;
+}
+ul {
+    list-style: disc outside none;
+}
+ul, ol {
+    margin: 0 0 9px 25px;
+    padding: 0;
+}
+.navbar .nav > li {
+    display: block;
+    float: left;
+}
+li {
+    line-height: 18px;
+}
+.navbar li.navbar-search-link {
+    display: none;
+}
+
+.navbar .nav {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 13px;
+}
+.navbar .nav > li > p {
+    color: #999999;
+    float: none;
+    font-weight: bold;
+    line-height: 19px;
+    margin-bottom: 0px;
+    padding: 10px 10px 11px;
+    text-decoration: none;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.navbar .nav > li > a {
+    color: #999999;
+    float: none;
+    line-height: 19px;
+    padding: 10px 10px 11px;
+    text-decoration: none;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.navbar .nav > li > a:hover {
+    background-color: transparent;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+.navbar .nav .active > a, .navbar .nav .active > a:hover {
+    background-color: #222222;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+.nav > li > a {
+    display: block;
+}
+.navbar-search .search-query {
+    -moz-transition: none 0s ease 0s;
+    background-color: #626262;
+    border: 1px solid #151515;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset, 0 1px 0 rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 1;
+    padding: 4px 9px;
+}
+.navbar-search .search-query:-moz-placeholder {
+    color: #CCCCCC;
+}
+.navbar-search .search-query:focus, .navbar-search .search-query.focused {
+    background-color: #FFFFFF;
+    border: 0 none;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
+    color: #333333;
+    outline: 0 none;
+    padding: 5px 10px;
+    text-shadow: 0 1px 0 #FFFFFF;
+}
+</style>
+<div class="navbar navbar-fixed-top" style="">
+    <div class="navbar-inner">
+        <div class="container">
+            <a href="/" class="brand"><span class="logo-text">Smorg.co.uk</span></a>
+<!--
+            <form class="navbar-search pull-right" action="/search">
+                <input type="text" placeholder="Search" class="search-query" name="q">
+            </form>
+-->
+            <div class="pull-right">
+                <ul class="nav">
+                    <li><p>See Nagrestconf on:</p></li>
+                    <li><a href="http://blogger.smorg.co.uk/2012/07/nagrestconf-on-raspberry-pi.html">Blog</a></li>
+                    <li><a href="http://sourceforge.net/projects/nagrestconf/">Sourceforge</a></li>
+                    <li><a href="http://exchange.nagios.org/directory/Addons/APIs/Nagrestconf/details">Nagios Exchange</a></li>
+<!--
+                    <li class="navbar-search-link"><a href="/search">Search</a></li>
+-->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+++++
+
 :toc:
 :icons:
 :numbered:
