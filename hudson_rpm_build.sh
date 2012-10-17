@@ -165,9 +165,6 @@ if [ ${GRV} -ne 0 ]; then
         exit ${GRV} 
 fi
 
-#hudson_publish_rpm_to_svn.sh "$WORKSPACE" || { echo "unable to publish rpms"; exit 1; } 
-
-#scp -i /var/lib/hudson/TEMPSSHCRED_BYMC $BASE/RPMS/noarch/*.rpm mclarkson@10.11.12.168:Downloads/
 #scp -i /var/lib/hudson/TEMPSSHCRED_BYMC $BASE/RPMS/noarch/*.rpm mclarkson@frs.sourceforge.net:/home/frs/project/nagrestconf/Centos_5/
 
 exit 0
