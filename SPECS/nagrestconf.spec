@@ -92,9 +92,9 @@ install -D -m 755 scripts/slc_configure ${RPM_BUILD_ROOT}%_bindir/slc_configure
 install -D -m 755 scripts/upgrade_setup_files.sh ${RPM_BUILD_ROOT}%_bindir/upgrade_setup_files.sh
 
 # PHP Directories
-install -d -m 755 ${RPM_BUILD_ROOT}/var/www/html/
-cp -r nagrestconf ${RPM_BUILD_ROOT}/var/www/html/
-cp -r rest ${RPM_BUILD_ROOT}/var/www/html/
+install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
+cp -r nagrestconf ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
+cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 
 %files
 %defattr(755,root,root,755)
