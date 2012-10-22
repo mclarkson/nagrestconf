@@ -1,3 +1,9 @@
+nagrestconf (1.0.3) UNRELEASED; urgency=low
+
+  * Fixes (to Contacts) from upstream.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Tue, 22 Oct 2012 19:31:32 +0100
+
 nagrestconf (1.0.2) UNRELEASED; urgency=low
 
   * Added upgrade script.

@@ -1,5 +1,26 @@
+2012-10-22  mclarkson
+
+	* README: Doc updates
+	* debian/postinst, etc/httpd/conf.d/nagrestconf.conf,
+	  etc/httpd/conf.d/rest.conf, rest/index.php: Merged from dev
+	  branch
+
+2012-09-18  mclarkson
+
+	* README, doc/README.html: Added navbar
+
+2012-09-05  mclarkson
+
+	* doc/README.html, images, images/icons, images/icons/note.png: Doc
+	  tidy ups.
+
 2012-09-04  mclarkson
 
+	* README, doc/README.html: Updated README
+	* debian/changelog: Debian packaging update
+	* debian/changelog, debian/rules, packaging/nagrestconf.spec,
+	  scripts/upgrade_setup_files.sh: Added upgrade script
+	* ChangeLog: Updated changelog
 	* README, rest/index.php, scripts/csv2nag, scripts/nagctl: Added
 	  more nagios directives to the REST api.
 
