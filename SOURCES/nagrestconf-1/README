@@ -209,6 +209,8 @@ li {
 News
 ----
 
+22 Oct 2012 - Fixes made for Centos 5 and Debian packages. Centos 6 fixes to follow.
+
 4 Sep 2012 - Added more Nagios directives to the REST api. See the <<X10, Upgrade>> section below. 
 
 21 Jul 2012 - http://blogger.smorg.co.uk/2012/07/nagrestconf-on-raspberry-pi.html[Nagrestconf on Raspberry PI]
@@ -319,7 +321,7 @@ Debian install packages are also available.
 Install Using Prebuilt Packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.*DEBIAN*
+.*DEBIAN, CENTOS & REDHAT*
 
 1. Install the prebuilt package downloaded from Sourceforge. For example:
 +
@@ -329,75 +331,21 @@ gdebi nagrestconf_1.0_all.deb
 +
 2. Configure the system:
 +
-The system should now be ready to configure using REST and by using the GUI at
+The system should now be ready to configure using REST or by using the GUI at
 `http://localhost/nagrestconf'.
 +
 Test the installation with:
 +
 ----------------------------------------------------------
+# On Debian:
 bash /usr/share/doc/nagrestconf/bulk-loading/REST_setup_local.sh
+
+# On Centos/Redhat:
+bash /usr/share/doc/nagrestconf-1/bulk-loading/REST_setup_local.sh
 ----------------------------------------------------------
 +
 Then check that it can be seen and edited in the 'Nagrestconf' GUI.
 
-.*CENTOS / REDHAT*
-
-1. Install the prebuilt package downloaded from Sourceforge. For example:
-+
-* Centos
-+
-----------------------------------------------------------
-yum install nagrestconf-1-1.8.noarch.rpm
-----------------------------------------------------------
-+
-2. Configure the system:
-+
-For testing purposes (or for production use) copy the initial-config directory,
-which contains a minimal nagios configuration directory. For example:
-+
-----------------------------------------------------------
-cd /etc
-mv nagios nagios.orig
-cp -a /usr/share/doc/nagrestconf-1/initial-config nagios
-----------------------------------------------------------
-+
-NOTE: If the initial-config directory is not used then ensure that the text
-`<SERVICE_LINE_CFG_ENTRY>' is placed somewhere in the +nagios.cfg+ file on a line
-by itself. This line is replaced with a `cfg_dir=' line by 'slc_configure'.
-+
-'slc_configure' will set up a subversion repository and will create a directory
-to hold nagios and CSV data in the nagios configuration directory tree. For example:
-+
-----------------------------------------------------------
-slc_configure --folder=local
-htpasswd /etc/nagios/htpasswd.users nagiosadmin
-----------------------------------------------------------
-+
-Edit +/etc/nagrestconf/nagrestconf.ini+ and change the `resturl =',
-`restuser =' and `restpass = ' lines. For example:
-+
-----------------------------------------------------------
-resturl  = "https://127.0.0.1/rest"
-folder[] = "local"
-restuser = "nagiosadmin"
-restpass = "the-password-you-entered-earlier"
-----------------------------------------------------------
-+
-The system should now be ready to configure using REST and by using the GUI at
-`http://localhost/nagrestconf'.
-+
-Test the REST interface with:
-+
-----------------------------------------------------------
-cd
-sed 's/http:/https:/g' \
-    /usr/share/doc/nagrestconf-1/bulk-loading/REST_setup_local.sh \
-    > REST_setup_local.sh
-./REST_setup_local.sh
-----------------------------------------------------------
-+
-Then check that it can be seen and edited in the 'Nagrestconf' GUI by connecting
-to 'http://localhost/nagrestconf'.
 
 Install From Source
 ~~~~~~~~~~~~~~~~~~~
