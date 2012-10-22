@@ -73,6 +73,10 @@ fi
         slc_configure --folder=local
     fi
 
+    # Restart the webserver so the new configs are picked up
+
+    /sbin/service httpd restart
+
     echo "Nagrestconf has been configured for http://127.0.0.1/nagrestconf/."
 
 # Pre Uninstall
