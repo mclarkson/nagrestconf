@@ -1261,6 +1261,18 @@ class WriteCmd
         $this->newcmdline .= $hstnotifcmds . ",";
         $this->newcmdline .= $cansubmitcmds;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$svcnotifenabled;
+        $this->newcmdline .= ",".$hstnotifenabled;
+        $this->newcmdline .= ",".$pager;
+        $this->newcmdline .= ",".$address1;
+        $this->newcmdline .= ",".$address2;
+        $this->newcmdline .= ",".$address3;
+        $this->newcmdline .= ",".$address4;
+        $this->newcmdline .= ",".$address5;
+        $this->newcmdline .= ",".$address6;
+        $this->newcmdline .= ",".$retainstatusinfo;
+        $this->newcmdline .= ",".$retainnonstatusinfo;
+        $this->newcmdline .= ",".$contactgroups;
 
         $this->newcmdline .= "'";
 
@@ -1533,6 +1545,18 @@ class WriteCmd
         $this->newcmdline .= $hstnotifcmds . ",";
         $this->newcmdline .= $cansubmitcmds;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$svcnotifenabled;
+        $this->newcmdline .= ",".$hstnotifenabled;
+        $this->newcmdline .= ",".$pager;
+        $this->newcmdline .= ",".$address1;
+        $this->newcmdline .= ",".$address2;
+        $this->newcmdline .= ",".$address3;
+        $this->newcmdline .= ",".$address4;
+        $this->newcmdline .= ",".$address5;
+        $this->newcmdline .= ",".$address6;
+        $this->newcmdline .= ",".$retainstatusinfo;
+        $this->newcmdline .= ",".$retainnonstatusinfo;
+        $this->newcmdline .= ",".$contactgroups;
 
         $this->newcmdline .= "'";
 
@@ -1805,6 +1829,18 @@ class WriteCmd
         $this->newcmdline .= $hstnotifcmds . ",";
         $this->newcmdline .= $cansubmitcmds;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$svcnotifenabled;
+        $this->newcmdline .= ",".$hstnotifenabled;
+        $this->newcmdline .= ",".$pager;
+        $this->newcmdline .= ",".$address1;
+        $this->newcmdline .= ",".$address2;
+        $this->newcmdline .= ",".$address3;
+        $this->newcmdline .= ",".$address4;
+        $this->newcmdline .= ",".$address5;
+        $this->newcmdline .= ",".$address6;
+        $this->newcmdline .= ",".$retainstatusinfo;
+        $this->newcmdline .= ",".$retainnonstatusinfo;
+        $this->newcmdline .= ",".$contactgroups;
 
         $this->newcmdline .= "'";
 
