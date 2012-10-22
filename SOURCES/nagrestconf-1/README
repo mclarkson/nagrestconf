@@ -209,7 +209,7 @@ li {
 News
 ----
 
-22 Oct 2012 - Fixes made for Centos 5 and Debian packages. Centos 6 fixes to follow.
+22 Oct 2012 - Fixes made for Centos 5/6 and Debian packages.
 
 4 Sep 2012 - Added more Nagios directives to the REST api. See the <<X10, Upgrade>> section below. 
 
