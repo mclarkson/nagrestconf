@@ -100,7 +100,7 @@ cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 %defattr(755,root,root,755)
 %_bindir
 %defattr(644,root,root,755)
-/var/
+/usr/share/nagrestconf/htdocs/
 %doc doc/initial-config doc/bulk-loading README doc/README.html
 %config /etc/httpd/conf.d/rest.conf
 %config /etc/httpd/conf.d/nagrestconf.conf
