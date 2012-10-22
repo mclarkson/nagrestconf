@@ -55,6 +55,26 @@ fi
 # Post Install
 %post
 
+    # Add the line slc_configure wants
+
+    if ! grep -qs "<SERVICE_LINE_CFG_ENTRY>" /etc/nagios3/nagios.cfg; then
+        %{__sed} -i '/SERVICE_LINE_CFG_ENTRY/d' /etc/nagios3/nagios.cfg
+        echo "## Next line added by nagrestconf"  >>/etc/nagios3/nagios.cfg
+        echo "<SERVICE_LINE_CFG_ENTRY>" >>/etc/nagios3/nagios.cfg
+
+        # Comment out cfg_ lines in nagios.cfg
+
+        cp /etc/nagios3/nagios.cfg /etc/nagios3/nagios.cfg.rpmsave
+
+        %{__sed} -i \
+            's/^[[:space:]]*cfg_/# - commented out by nagrestconf - cfg_/' \
+            /etc/nagios3/nagios.cfg
+
+        slc_configure --folder=local
+    fi
+
+    echo "Nagrestconf has been configured for http://127.0.0.1/nagrestconf/."
+
 # Pre Uninstall
 %preun
 

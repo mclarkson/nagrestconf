@@ -63,6 +63,8 @@ EnD
 
             # Comment out cfg_ lines in nagios.cfg
 
+            cp /etc/nagios3/nagios.cfg /etc/nagios3/nagios.cfg.rpmsave
+
             sed -i \
                 's/^[[:space:]]*cfg_/# - commented out by nagrestconf - cfg_/' \
                 /etc/nagios3/nagios.cfg
