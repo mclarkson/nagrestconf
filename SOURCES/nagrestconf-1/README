@@ -326,7 +326,11 @@ Install Using Prebuilt Packages
 1. Install the prebuilt package downloaded from Sourceforge. For example:
 +
 ----------------------------------------------------------
+# On Debian:
 gdebi nagrestconf_1.0_all.deb
+
+# On Centos/Redhat:
+yum install nagrestconf-1-1.20.noarch.rpm
 ----------------------------------------------------------
 +
 2. Configure the system:
