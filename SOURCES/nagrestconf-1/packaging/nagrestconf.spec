@@ -38,9 +38,10 @@ EnD
     touch /var/spool/cron/
 
     # Add sudoers entry
-    %{__sed} -i 's/^\(Defaults[[:space:]]*requiretty\)/#\1/' /etc/sudoers
     %{__sed} -i '/\/usr\/bin\/csv2nag -y all/d' /etc/sudoers
+    %{__sed} -i '/nagios.*requiretty/d' /etc/sudoers
     %{__cat} >>/etc/sudoers <<EnD
+Defaults:%nagios !requiretty
 %nagios ALL = NOPASSWD: /usr/sbin/nagios -v *, /usr/bin/csv2nag -y all
 
 EnD
@@ -54,6 +55,30 @@ fi
 
 # Post Install
 %post
+
+    # Add the line slc_configure wants
+
+    if ! grep -qs "<SERVICE_LINE_CFG_ENTRY>" /etc/nagios/nagios.cfg; then
+        %{__sed} -i '/SERVICE_LINE_CFG_ENTRY/d' /etc/nagios/nagios.cfg
+        echo "## Next line added by nagrestconf"  >>/etc/nagios/nagios.cfg
+        echo "<SERVICE_LINE_CFG_ENTRY>" >>/etc/nagios/nagios.cfg
+
+        # Comment out cfg_ lines in nagios.cfg
+
+        cp /etc/nagios/nagios.cfg /etc/nagios/nagios.cfg.rpmsave
+
+        %{__sed} -i \
+            's/^[[:space:]]*cfg_/# - commented out by nagrestconf - cfg_/' \
+            /etc/nagios/nagios.cfg
+
+        slc_configure --folder=local
+    fi
+
+    # Restart the webserver so the new configs are picked up
+
+    /sbin/service httpd restart
+
+    echo "Nagrestconf has been configured for http://127.0.0.1/nagrestconf/."
 
 # Pre Uninstall
 %preun
@@ -74,9 +99,15 @@ fi
 [ "$RPM_BUILD_ROOT" != "/" ] && %{__rm} -rf %{buildroot}
 
 # Config
-install -d -m 755 ${RPM_BUILD_ROOT}%_sysconfdir/
-cp -r etc/httpd ${RPM_BUILD_ROOT}%_sysconfdir/
-cp -r etc/nagrestconf ${RPM_BUILD_ROOT}%_sysconfdir/
+install -d -m 755 ${RPM_BUILD_ROOT}/%_sysconfdir/
+#cp -r etc/httpd ${RPM_BUILD_ROOT}/%_sysconfdir/
+install -D -m 640 etc/httpd/conf.d/nagrestconf.conf ${RPM_BUILD_ROOT}/%_sysconfdir/httpd/conf.d/nagrestconf.conf
+install -D -m 640 etc/httpd/conf.d/rest.conf ${RPM_BUILD_ROOT}/%_sysconfdir/httpd/conf.d/rest.conf
+#cp -r etc/nagrestconf ${RPM_BUILD_ROOT}%_sysconfdir/
+install -D -m 640 etc/nagrestconf/csv2nag.conf ${RPM_BUILD_ROOT}/%_sysconfdir/nagrestconf/csv2nag.conf
+install -D -m 640 etc/nagrestconf/nagctl.conf ${RPM_BUILD_ROOT}/%_sysconfdir/nagrestconf/nagctl.conf
+install -D -m 640 etc/nagrestconf/nagrestconf.ini ${RPM_BUILD_ROOT}/%_sysconfdir/nagrestconf/nagrestconf.ini
+install -D -m 640 etc/nagrestconf/restart_nagios.conf ${RPM_BUILD_ROOT}/%_sysconfdir/nagrestconf/restart_nagios.conf
 
 # Scripts
 install -D -m 755 scripts/csv2nag ${RPM_BUILD_ROOT}%_bindir/csv2nag
@@ -86,15 +117,15 @@ install -D -m 755 scripts/slc_configure ${RPM_BUILD_ROOT}%_bindir/slc_configure
 install -D -m 755 scripts/upgrade_setup_files.sh ${RPM_BUILD_ROOT}%_bindir/upgrade_setup_files.sh
 
 # PHP Directories
-install -d -m 755 ${RPM_BUILD_ROOT}/var/www/html/
-cp -r nagrestconf ${RPM_BUILD_ROOT}/var/www/html/
-cp -r rest ${RPM_BUILD_ROOT}/var/www/html/
+install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
+cp -r nagrestconf ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
+cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 
 %files
 %defattr(755,root,root,755)
 %_bindir
 %defattr(644,root,root,755)
-/var/
+/usr/share/nagrestconf/htdocs/
 %doc doc/initial-config doc/bulk-loading README doc/README.html
 %config /etc/httpd/conf.d/rest.conf
 %config /etc/httpd/conf.d/nagrestconf.conf
