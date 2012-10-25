@@ -38,9 +38,10 @@ EnD
     touch /var/spool/cron/
 
     # Add sudoers entry
-    %{__sed} -i 's/^\(Defaults[[:space:]]*requiretty\)/#\1/' /etc/sudoers
     %{__sed} -i '/\/usr\/bin\/csv2nag -y all/d' /etc/sudoers
+    %{__sed} -i '/nagios.*requiretty/d' /etc/sudoers
     %{__cat} >>/etc/sudoers <<EnD
+Defaults:%nagios !requiretty
 %nagios ALL = NOPASSWD: /usr/sbin/nagios -v *, /usr/bin/csv2nag -y all
 
 EnD
