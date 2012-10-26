@@ -41,6 +41,8 @@
         protected $acceptType;
         protected $responseBody;
         protected $responseInfo;
+        protected $sslkey;
+        protected $sslcert;
         
         public function __construct ($url = null, $verb = 'GET', $requestBody = null)
         {
@@ -218,6 +220,13 @@
                 curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
                 curl_setopt($curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
                 curl_setopt($curlHandle, CURLOPT_USERPWD, $this->username . ':' . $this->password);
+                # SSL key and cert
+                if( ! empty( $this->sslkey ) ) {
+                    curl_setopt($curlHandle, CURLOPT_SSLKEY, $this->sslkey);
+                }
+                if( ! empty( $this->sslcert ) ) {
+                    curl_setopt($curlHandle, CURLOPT_SSLCERT, $this->sslcert);
+                }
             }
         }
         
@@ -247,6 +256,20 @@
         # --------------------------------------------------------------------
         {
             $this->password = $password;
+        } 
+        
+        # --------------------------------------------------------------------
+        public function setSSLKey ($key)
+        # --------------------------------------------------------------------
+        {
+            $this->sslkey = $key;
+        } 
+        
+        # --------------------------------------------------------------------
+        public function setSSLCert ($cert)
+        # --------------------------------------------------------------------
+        {
+            $this->sslcert = $cert;
         } 
         
         # --------------------------------------------------------------------
@@ -367,8 +390,7 @@
           RESTURL.'/show/servicesets?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -396,8 +418,7 @@
           RESTURL.'/show/contactgroups?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
-        $request2->setUsername(RESTUSER);
-        $request2->setPassword(RESTPASS);
+        set_request_options( $request2 );
         $request2->execute();
         $slist = json_decode( $request2->getResponseBody(), true );
 
@@ -428,8 +449,7 @@
           RESTURL.'/show/contacts?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
-        $request2->setUsername(RESTUSER);
-        $request2->setPassword(RESTPASS);
+        set_request_options( $request2 );
         $request2->execute();
         $slist = json_decode( $request2->getResponseBody(), true );
 
@@ -468,8 +488,7 @@
           RESTURL.'/show/hostgroups?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
-        $request2->setUsername(RESTUSER);
-        $request2->setPassword(RESTPASS);
+        set_request_options( $request2 );
         $request2->execute();
         $slist = json_decode( $request2->getResponseBody(), true );
 
@@ -499,8 +518,7 @@
           RESTURL.'/show/hosttemplates?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
-        $request2->setUsername(RESTUSER);
-        $request2->setPassword(RESTPASS);
+        set_request_options( $request2 );
         $request2->execute();
         $slist = json_decode( $request2->getResponseBody(), true );
 
@@ -541,8 +559,7 @@
           RESTURL.'/show/servicetemplates?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
-        $request2->setUsername(RESTUSER);
-        $request2->setPassword(RESTPASS);
+        set_request_options( $request2 );
         $request2->execute();
         $slist = json_decode( $request2->getResponseBody(), true );
 
@@ -581,8 +598,7 @@
         $request2 = new RestRequest(
           RESTURL.'/show/services?json='.
           '{"folder":"'.FOLDER.'","filter":"'.urlencode($name).'"}', 'GET');
-        $request2->setUsername(RESTUSER);
-        $request2->setPassword(RESTPASS);
+        set_request_options( $request2 );
         $request2->execute();
         $slist = json_decode( $request2->getResponseBody(), true );
 
@@ -612,8 +628,7 @@
         $request2 = new RestRequest(
         RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
         '"column":"'.$column.'","filter":"'.urlencode($filter).'"}', 'GET');
-        $request2->setUsername(RESTUSER);
-        $request2->setPassword(RESTPASS);
+        set_request_options( $request2 );
         $request2->execute();
         $hlist = json_decode( $request2->getResponseBody(), true );
 
@@ -666,8 +681,7 @@
           RESTURL.'/show/servicegroups?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
-        $request2->setUsername(RESTUSER);
-        $request2->setPassword(RESTPASS);
+        set_request_options( $request2 );
         $request2->execute();
         $slist = json_decode( $request2->getResponseBody(), true );
 
@@ -697,8 +711,7 @@
           RESTURL.'/show/timeperiods?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
-        $request2->setUsername(RESTUSER);
-        $request2->setPassword(RESTPASS);
+        set_request_options( $request2 );
         $request2->execute();
         $slist = json_decode( $request2->getResponseBody(), true );
 
@@ -729,8 +742,7 @@
           RESTURL.'/show/commands?json='.
           '{"folder":"'.FOLDER.'"}',
           'GET');
-        $request2->setUsername(RESTUSER);
-        $request2->setPassword(RESTPASS);
+        set_request_options( $request2 );
         $request2->execute();
         $slist = json_decode( $request2->getResponseBody(), true );
 
@@ -1187,8 +1199,7 @@
         $request = new RestRequest(
         RESTURL.'/show/servicegroups?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -1280,8 +1291,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -1389,8 +1399,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -1497,8 +1506,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -1528,8 +1536,7 @@
         $request = new RestRequest(
         RESTURL.'/show/hostgroups?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -1621,8 +1628,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -1730,8 +1736,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -1838,8 +1843,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -2118,8 +2122,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -2229,8 +2232,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -2260,8 +2262,7 @@
         $request = new RestRequest(
         RESTURL.'/show/commands?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -2363,8 +2364,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -2662,8 +2662,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -2773,8 +2772,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -2804,8 +2802,7 @@
         $request = new RestRequest(
         RESTURL.'/show/timeperiods?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -2915,8 +2912,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -3417,8 +3413,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -3528,8 +3523,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -3559,8 +3553,7 @@
         $request = new RestRequest(
         RESTURL.'/show/hosttemplates?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -3722,8 +3715,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -3889,8 +3881,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -4000,8 +3991,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -4031,8 +4021,7 @@
         $request = new RestRequest(
         RESTURL.'/show/servicetemplates?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -4187,8 +4176,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -4631,8 +4619,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -4742,8 +4729,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -4773,8 +4759,7 @@
         $request = new RestRequest(
         RESTURL.'/show/contacts?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -4948,8 +4933,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -5068,8 +5052,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -5179,8 +5162,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -5210,8 +5192,7 @@
         $request = new RestRequest(
         RESTURL.'/show/contactgroups?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -5309,8 +5290,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -5410,8 +5390,7 @@
         $request = new RestRequest(
         RESTURL.'/show/hostgroups?json={"folder":"'.FOLDER.'"'.
         '}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -5710,8 +5689,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -5738,8 +5716,7 @@
                   'POST',
                   'json='.$json
                 );
-                $request2->setUsername(RESTUSER);
-                $request2->setPassword(RESTPASS);
+                set_request_options( $request2 );
                 $request2->execute();
                 $slist = json_decode( $request2->getResponseBody(), true );
                 ### Check $slist->http_code ###
@@ -5861,8 +5838,7 @@
                   'POST',
                   'json='.$json
                 );
-                $request2->setUsername(RESTUSER);
-                $request2->setPassword(RESTPASS);
+                set_request_options( $request2 );
                 $request2->execute();
                 $slist = json_decode( $request2->getResponseBody(), true );
                 ### Check $slist->http_code ###
@@ -5883,8 +5859,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -6001,8 +5976,7 @@
                   'POST',
                   'json='.$json
                 );
-                $request2->setUsername(RESTUSER);
-                $request2->setPassword(RESTPASS);
+                set_request_options( $request2 );
                 $request2->execute();
                 $slist = json_decode( $request2->getResponseBody(), true );
                 ### Check $slist->http_code ###
@@ -6021,8 +5995,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -6090,8 +6063,7 @@
         $request = new RestRequest(
         RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -6226,8 +6198,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -6308,8 +6279,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -6518,8 +6488,7 @@
         $request = new RestRequest(
         RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($fromhost).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -6540,8 +6509,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -6562,8 +6530,7 @@
         $request = new RestRequest(
         RESTURL.'/show/services?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($fromhost).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -6587,8 +6554,7 @@
               'POST',
               'json='.$json
             );
-            $request->setUsername(RESTUSER);
-            $request->setPassword(RESTPASS);
+            set_request_options( $request );
             $request->execute();
             $slist = json_decode( $request->getResponseBody(), true );
 
@@ -6720,8 +6686,7 @@
         $request = new RestRequest(
         RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.$query_str["copyto"].'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
         if( ! isset( $slist[0] ) ) {
@@ -6748,8 +6713,7 @@
         $request = new RestRequest(
         RESTURL.'/show/services?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($fromhost).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -6777,8 +6741,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -6894,8 +6857,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -6991,8 +6953,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -7017,8 +6978,7 @@
         $request = new RestRequest(
         RESTURL.'/show/services?json={"folder":"'.FOLDER.'",'.
         '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
@@ -7196,8 +7156,7 @@
           'POST',
           'json='.$json
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -7329,8 +7288,7 @@
           'POST',
           'json={"folder":"'.FOLDER.'","verbose":"false"}'
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -7369,8 +7327,7 @@
           'POST',
           'json={"folder":"'.FOLDER.'","verbose":"false"}'
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -7409,8 +7366,7 @@
           'POST',
           'json={"folder":"'.FOLDER.'"}'
         );
-        $request->setUsername(RESTUSER);
-        $request->setPassword(RESTPASS);
+        set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
 
@@ -8039,6 +7995,15 @@
     }
 
     # ------------------------------------------------------------------------
+    function set_request_options( $request ) {
+    # ------------------------------------------------------------------------
+        $request->setUsername(RESTUSER);
+        $request->setPassword(RESTPASS);
+        if( defined('SSLKEY') ) $request->setSSLKey(SSLKEY);
+        if( defined('SSLCERT') ) $request->setSSLCert(SSLCERT);
+    }
+
+    # ------------------------------------------------------------------------
     function read_config_file( ) {
     # ------------------------------------------------------------------------
         $ini_array = parse_ini_file( 
@@ -8047,6 +8012,10 @@
         define( "RESTUSER", $ini_array["restuser"] );
         define( "RESTPASS", $ini_array["restpass"] );
         define( "RESTURL", $ini_array["resturl"] );
+        if( !empty($ini_array["sslkey"]) )
+            define( "SSLKEY", $ini_array["sslkey"] );
+        if( !empty($ini_array["sslcert"]) )
+            define( "SSLCERT", $ini_array["sslcert"] );
     }
 
     # ------------------------------------------------------------------------
@@ -8066,7 +8035,8 @@
             $g_tab = (int) $query_str['tab'];
         }
 
-        $query_str['name'] = urlencode( $query_str['name'] );
+        if( ! empty($query_str['name']) ) 
+		$query_str['name'] = urlencode( $query_str['name'] );
 
         switch( $g_tab ) {
             # ---------------------------------------------------------------
