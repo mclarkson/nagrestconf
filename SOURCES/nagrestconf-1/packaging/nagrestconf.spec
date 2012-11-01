@@ -127,12 +127,12 @@ cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 %defattr(644,root,root,755)
 /usr/share/nagrestconf/htdocs/
 %doc doc/initial-config doc/bulk-loading README doc/README.html
-%config /etc/httpd/conf.d/rest.conf
-%config /etc/httpd/conf.d/nagrestconf.conf
-%config /etc/nagrestconf/nagrestconf.ini
-%config /etc/nagrestconf/restart_nagios.conf
-%config /etc/nagrestconf/csv2nag.conf
-%config /etc/nagrestconf/nagctl.conf
+%config(noreplace) /etc/httpd/conf.d/rest.conf
+%config(noreplace) /etc/httpd/conf.d/nagrestconf.conf
+%config(noreplace) /etc/nagrestconf/nagrestconf.ini
+%config(noreplace) /etc/nagrestconf/restart_nagios.conf
+%config(noreplace) /etc/nagrestconf/csv2nag.conf
+%config(noreplace) /etc/nagrestconf/nagctl.conf
 
 %clean
 %{__rm} -rf %{buildroot}
