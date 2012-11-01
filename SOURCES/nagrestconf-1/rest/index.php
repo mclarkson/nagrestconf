@@ -1196,6 +1196,7 @@ class WriteCmd
         $this->newcmdline .= ",".$notifinterval;
         $this->newcmdline .= ",".$firstnotifdelay;
         $this->newcmdline .= ",".$notifperiod;
+        $this->newcmdline .= ",".$notifopts;
         $this->newcmdline .= ",".$notifications_enabled;
         $this->newcmdline .= ",".$stalkingoptions;
         $this->newcmdline .= ",".$notes;
@@ -1514,6 +1515,7 @@ class WriteCmd
         $this->newcmdline .= ",".$notifinterval;
         $this->newcmdline .= ",".$firstnotifdelay;
         $this->newcmdline .= ",".$notifperiod;
+        $this->newcmdline .= ",".$notifopts;
         $this->newcmdline .= ",".$notifications_enabled;
         $this->newcmdline .= ",".$stalkingoptions;
         $this->newcmdline .= ",".$notes;
@@ -2394,12 +2396,12 @@ function csv2array( $output, $subcmd )
             37 => "stalkingoptions",
             38 => "notes",
             39 => "notes_url",
-            41 => "icon_image",
-            42 => "icon_image_alt",
-            43 => "vrml_image",
-            44 => "statusmap_image",
-            45 => "coords2d",
-            46 => "coords3d",
+            40 => "icon_image",
+            41 => "icon_image_alt",
+            42 => "vrml_image",
+            43 => "statusmap_image",
+            44 => "coords2d",
+            45 => "coords3d",
         ),
         'services' => array(
             1 => "name",

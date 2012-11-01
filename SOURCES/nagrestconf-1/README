@@ -703,7 +703,7 @@ Key for Flags column:
 | 34. | Notification period | X | notifperiod
 | 35. | Notification opts | LX | notifopts
 | 36. | Notifications_enabled | X | notifications_enabled
-| 37. | Stalking options | X | stalkingoptions
+| 37. | Stalking options | LX | stalkingoptions
 | 38. | Notes | X | notes
 | 39. | Notes url | X | notes_url
 | 40. | Icon image | X | icon_image
