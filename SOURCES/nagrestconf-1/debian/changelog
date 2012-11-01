@@ -1,6 +1,6 @@
-nagrestconf (1.0.3) UNRELEASED; urgency=low
+nagrestconf (1.0.4) UNRELEASED; urgency=low
 
-  * Added more nagios directives to the REST api. Hosts now at 100%.
+  * Added more nagios directives to the REST api. Hosts now complete.
 
  -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Tue, 01 Nov 2012 15:31:32 +0100
 
@@ -18,7 +18,7 @@ nagrestconf (1.0.2) UNRELEASED; urgency=low
 
 nagrestconf (1.0.1) UNRELEASED; urgency=low
 
-  * Added more nagios directives to the REST api. Contacts now at 100%.
+  * Added more nagios directives to the REST api. Contacts now complete.
 
  -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Tue, 04 Sep 2012 16:51:32 +0100
 

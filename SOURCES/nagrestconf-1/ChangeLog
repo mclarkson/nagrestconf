@@ -1,5 +1,36 @@
+2012-11-01  mclarkson
+
+	* scripts/nagctl: Added more nagios directives to the REST api
+	  (Hosts). (Fixes)
+	* README, rest/index.php, scripts/nagctl: Added more nagios
+	  directives to the REST api (Hosts). (Fixes)
+	* README, rest/index.php, scripts/csv2nag: Added more nagios
+	  directives to the REST api (Hosts). (Fixes)
+	* scripts/csv2nag: Added more nagios directives to the REST api
+	  (Hosts). (Fixes)
+	* scripts/csv2nag: Added more nagios directives to the REST api
+	  (Hosts). (Fixes)
+	* README, debian/changelog, doc/README.html,
+	  packaging/nagrestconf.spec, rest/index.php, scripts/csv2nag,
+	  scripts/nagctl, scripts/upgrade_setup_files.sh: Added more nagios
+	  directives to the REST api (Hosts).
+
+2012-10-26  mclarkson
+
+	* etc/nagrestconf/nagrestconf.ini, nagrestconf/index.php: Added
+	  support for querying a REST server requiring an SSL key and cert
+
+2012-10-25  mclarkson
+
+	* packaging/nagrestconf.spec: Imported from main spec file
+	* doc/initial-config/cgi.cfg, doc/initial-config/nagios.cfg:
+	  Updated config for nagios 3.4.1
+
 2012-10-22  mclarkson
 
+	* README, doc/README.html: Doc updates
+	* README, doc/README.html: Doc updates
+	* ChangeLog, debian/changelog, doc/README.html: Doc updates
 	* README: Doc updates
 	* debian/postinst, etc/httpd/conf.d/nagrestconf.conf,
 	  etc/httpd/conf.d/rest.conf, rest/index.php: Merged from dev
