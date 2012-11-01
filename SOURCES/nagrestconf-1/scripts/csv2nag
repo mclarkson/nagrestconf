@@ -589,6 +589,7 @@ create_host_files()
             else
                 echo "       flap_detection_enabled 1"
             fi
+        }
         [[ -n $flapdetectionoptions ]] && {
             echo "       flap_detection_options $flapdetectionoptions"
         }
@@ -598,18 +599,21 @@ create_host_files()
             else
                 echo "       process_perf_data 1"
             fi
+        }
         [[ -n $retainstatusinfo ]] && {
             if [[ $retainstatusinfo == 0 ]]; then
                 echo "       retain_status_information 0"
             else
                 echo "       retain_status_information 1"
             fi
+        }
         [[ -n $retainnonstatusinfo ]] && {
             if [[ $retainnonstatusinfo == 0 ]]; then
                 echo "       retain_nonstatus_information 0"
             else
                 echo "       retain_nonstatus_information 0"
             fi
+        }
         [[ -n $notifinterval ]] && {
             echo "       notification_interval $notifinterval"
         }
@@ -661,6 +665,7 @@ create_host_files()
 
         # Un-redirect stdout output
         exec 1>&3 3>&-
+
     done <$gfnhostsetup
 
     create_hostgroups
@@ -819,7 +824,7 @@ create_service_entries()
                     echo "        ${cv%%|*}                  ${cv##*|}"
                 done < <(echo "$customvars,")
             }
-            if [[ $freshness ]]; then 
+            if [[ -n $freshness ]]; then 
                 echo "        check_command                   no-checks-received"
                 [[ $DCC -ne 1 ]] && {
                     echo "        active_checks_enabled           0"
