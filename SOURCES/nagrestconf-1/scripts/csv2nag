@@ -819,7 +819,7 @@ create_service_entries()
                     echo "        ${cv%%|*}                  ${cv##*|}"
                 done < <(echo "$customvars,")
             }
-            if [[ -n $freshness ]]; then 
+            if [[ $freshness ]]; then 
                 echo "        check_command                   no-checks-received"
                 [[ $DCC -ne 1 ]] && {
                     echo "        active_checks_enabled           0"
