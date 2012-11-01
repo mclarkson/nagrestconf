@@ -591,7 +591,8 @@ create_host_files()
             fi
         }
         [[ -n $flapdetectionoptions ]] && {
-            echo "       flap_detection_options $flapdetectionoptions"
+            echo -n "       flap_detection_options "
+            echo "$flapdetectionoptions" | tr " " ,
         }
         [[ -n $processperfdata ]] && {
             if [[ $processperfdata == 0 ]]; then
@@ -624,7 +625,8 @@ create_host_files()
             echo "       notifperiod $notifperiod"
         }
         [[ -n $notifopts ]] && {
-            echo "       notification_options $notifopts"
+            echo -n "       notification_options "
+            echo "$notifopts" | tr " " ,
         }
         [[ -n $notifications_enabled ]] && {
             if [[ $notifications_enabled == 0 ]]; then
@@ -634,7 +636,8 @@ create_host_files()
             fi
         }
         [[ -n $stalkingoptions ]] && {
-            echo "       stalking_options $stalkingoptions"
+            echo -n "       stalking_options "
+            echo "$stalkingoptions" | tr " " ,
         }
         [[ -n $notes ]] && {
             echo "       notes $notes"

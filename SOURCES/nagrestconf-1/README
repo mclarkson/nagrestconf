@@ -694,14 +694,14 @@ Key for Flags column:
 | 25. | Low flap threshold | X | lowflapthresh
 | 26. | High flap threshold | X | highflapthresh
 | 27. | Flap detection enabled | X | flapdetectionenabled
-| 28. | Flap detection options | X | flapdetectionoptions
+| 28. | Flap detection options | LX | flapdetectionoptions
 | 29. | Process perf data | X | processperfdata
 | 30. | Retain status information | X | retainstatusinfo
 | 31. | Retain nonstatus information | X | retainnonstatusinfo
 | 32. | Notification interval | X | notifinterval
 | 33. | First notification delay | X | firstnotifdelay
 | 34. | Notification period | X | notifperiod
-| 35. | Notification opts | X | notifopts
+| 35. | Notification opts | LX | notifopts
 | 36. | Notifications_enabled | X | notifications_enabled
 | 37. | Stalking options | X | stalkingoptions
 | 38. | Notes | X | notes
