@@ -105,7 +105,8 @@ for PKG in `( cd SPECS; ls *.spec )`; do
 
 	if [[ -d SOURCES/${NAME}-${VERSION} ]]; then
 		echo "Tarring existing source directory."
-		tar cvzf SOURCES/${NAME}-${VERSION}.tar.gz -C SOURCES ${NAME}-${VERSION} --exclude=.svn 
+		tar cvzf SOURCES/${NAME}-${VERSION}-${POINTRELEASE}.tar.gz \
+            -C SOURCES ${NAME}-${VERSION} --exclude=.svn 
 	else
 		echo "Unpacking source tarball."
 		tar -C TMP/ -xvzf SOURCES/${NAME}-${VERSION}.tar.gz
