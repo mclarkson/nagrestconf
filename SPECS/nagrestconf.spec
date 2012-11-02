@@ -5,7 +5,7 @@
 
 Summary: Nagios REST configuration tools.
 Name: nagrestconf
-Version: 1
+Version: %{version}
 Release: 1
 License: GPL
 Group: Applications/System
