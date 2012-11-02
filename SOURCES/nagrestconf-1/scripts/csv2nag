@@ -622,7 +622,7 @@ create_host_files()
             echo "       first_notifdelay $firstnotifdelay"
         }
         [[ -n $notifperiod ]] && {
-            echo "       notifperiod $notifperiod"
+            echo "       notification_period $notifperiod"
         }
         [[ -n $notifopts ]] && {
             echo -n "       notification_options "
@@ -958,17 +958,57 @@ create_hosttemplates()
         IFS=, read name use contacts cgroups normchecki checki retrchecki \
             notifperiod notifopts disable checkperiod maxcheckattempts \
             checkcommand notifinterval \
+            passivechecks obsessoverhost checkfreshness \
+            freshnessthresh eventhandler eventhandlerenabled \
+            lowflapthresh highflapthresh flapdetectionenabled \
+            flapdetectionoptions processperfdata \
+            retainstatusinfo retainnonstatusinfo \
+            firstnotifdelay notifications_enabled \
+            stalkingoptions notes notes_url icon_image \
+            icon_image_alt vrml_image statusmap_image coords2d \
+            coords3d \
             < <(echo "$a")
 
         echo "define host {"
+        # not in nagios 3
+        #echo "       normal_check_interval        $normchecki"
+        #echo "       failure_prediction_enabled   1"
         echo "       name                         $name"
-        echo "       notifications_enabled        1"
-        echo "       event_handler_enabled        1"
-        echo "       flap_detection_enabled       1"
-        echo "       failure_prediction_enabled   1"
-        echo "       process_perf_data            1"
-        echo "       retain_status_information    1"
-        echo "       retain_nonstatus_information 1"
+        echo "       check_interval               $checki"
+        echo "       retry_interval               $retrchecki"
+        echo "       max_check_attempts           $maxcheckattempts"
+        echo "       notification_interval        $notifinterval"
+        echo "       register                     0"
+        if [[ $notifications_enabled == 0 ]]; then
+            echo "       notifications_enabled 0"
+        else
+            echo "       notifications_enabled 1"
+        fi
+        if [[ $eventhandlerenabled == 0 ]]; then
+            echo "       event_handler_enabled        0"
+        else
+            echo "       event_handler_enabled        1"
+        fi
+        if [[ $flapdetectionenabled == 0 ]]; then
+            echo "       flap_detection_enabled       0"
+        else
+            echo "       flap_detection_enabled       1"
+        fi
+        if [[ $processperfdata == 0 ]]; then
+            echo "       process_perf_data            0"
+        else
+            echo "       process_perf_data            1"
+        fi
+        if [[ $retainstatusinfo == 0 ]]; then
+            echo "       retain_status_information    0"
+        else
+            echo "       retain_status_information    1"
+        fi
+        if [[ $retainnonstatusinfo == 0 ]]; then
+            echo "       retain_nonstatus_information 0"
+        else
+            echo "       retain_nonstatus_information 0"
+        fi
         [[ -n $use ]] && {
             echo "       use                          $use"
         }
@@ -990,14 +1030,6 @@ create_hosttemplates()
         [[ -n $checkperiod ]] && {
             echo "       check_period                 $checkperiod"
         }
-        # not in nagios 3
-        #echo "       normal_check_interval    $normchecki"
-        echo "       check_interval               $checki"
-        echo "       retry_interval               $retrchecki"
-        echo "       check_period                 $checkperiod"
-        echo "       max_check_attempts           $maxcheckattempts"
-        echo "       notification_interval        $notifinterval"
-        echo "       notification_period          $notifperiod"
         [[ -n $checkcommand ]] && {
             echo "       check_command                $checkcommand"
         }
@@ -1005,7 +1037,81 @@ create_hosttemplates()
             echo -n "       notification_options         "
             echo "$notifopts" | tr " " ,
         }
-        echo "       register                     0"
+        [[ -n $passivechecks ]] && {
+            if [[ $passivechecks == 0 ]]; then
+                echo "       passive_checks_enabled       0"
+            else
+                echo "       passive_checks_enabled       1"
+            fi
+        }
+        [[ -n $obsessoverhost ]] && {
+            if [[ $obsessoverhost == 1 ]]; then
+                echo "       obsess_over_host             1"
+            else
+                echo "       obsess_over_host             0"
+            fi
+        }
+        [[ -n $checkfreshness ]] && {
+            if [[ $checkfreshness == 0 ]]; then
+                echo "       check_freshness              0"
+            else
+                echo "       check_freshness              1"
+            fi
+        }
+        [[ -n $freshnessthresh ]] && {
+            echo "       freshness_threshold          $freshnessthresh"
+        }
+        [[ -n $eventhandler ]] && {
+            echo "       event_handler                $eventhandler"
+        }
+        [[ -n $lowflapthresh ]] && {
+            echo "       low_flap_threshold           $lowflapthresh"
+        }
+        [[ -n $highflapthresh ]] && {
+            echo "       high_flap_threshold          $highflapthresh"
+        }
+        [[ -n $flapdetectionoptions ]] && {
+            echo -n "       flap_detection_options        "
+            echo "$flapdetectionoptions" | tr " " ,
+        }
+        [[ -n $firstnotifdelay ]] && {
+            echo "       first_notifdelay             $firstnotifdelay"
+        }
+        [[ -n $notifperiod ]] && {
+            echo "       notification_period          $notifperiod"
+        }
+        [[ -n $notifopts ]] && {
+            echo -n "       notification_options        "
+            echo "$notifopts" | tr " " ,
+        }
+        [[ -n $stalkingoptions ]] && {
+            echo -n "       stalking_options            "
+            echo "$stalkingoptions" | tr " " ,
+        }
+        [[ -n $notes ]] && {
+            echo "       notes                        $notes"
+        }
+        [[ -n $notes_url ]] && {
+            echo "       notes_url                    $notes_url"
+        }
+        [[ -n $icon_image ]] && {
+            echo "       icon_image                   $icon_image"
+        }
+        [[ -n $icon_image_alt ]] && {
+            echo "       icon_image_alt               $icon_image_alt"
+        }
+        [[ -n $vrml_image ]] && {
+            echo "       vrml_image                   $vrml_image"
+        }
+        [[ -n $statusmap_image ]] && {
+            echo "       statusmap_image              $statusmap_image"
+        }
+        [[ -n $coords2d ]] && {
+            echo "       2d_coords                    $coords2d"
+        }
+        [[ -n $coords3d ]] && {
+            echo "       3d_coords                    $coords3d"
+        }
         echo "}"
         echo
 

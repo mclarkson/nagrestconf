@@ -669,8 +669,8 @@ Key for Flags column:
 | Column | Description | Flags | REST variable name
 | 1. | Host name | RK | name
 | 2. | Alias | R | alias
-| 3. | IP Address	| R | ipaddress
-| 4. | Template | R | template
+| 3. | IP Address (address) | R | ipaddress
+| 4. | Template (use) | R | template
 | 5. | Shown Hostgroup |  L | hostgroup
 | 6. | Contact |  L | contact
 | 7. | Contact Group | L | contactgroups
@@ -702,7 +702,7 @@ Key for Flags column:
 | 33. | First notification delay | X | firstnotifdelay
 | 34. | Notification period | X | notifperiod
 | 35. | Notification opts | LX | notifopts
-| 36. | Notifications_enabled | X | notifications_enabled
+| 36. | Notifications enabled | X | notifications_enabled
 | 37. | Stalking options | LX | stalkingoptions
 | 38. | Notes | X | notes
 | 39. | Notes url | X | notes_url
@@ -729,10 +729,34 @@ Key for Flags column:
 | 8. | Notification period | R | notifperiod
 | 9. | Notification options|  | notifopts
 | 10. | Disable | U | disable
-| 11. | Check period|  R | checkperiod
-| 12. | Max check attempts|  R | maxcheckattempts
-| 13. | Check command|  | checkcommand
-| 14. | Notification interval|  R | notifinterval
+| 11. | Check period |  R | checkperiod
+| 12. | Max check attempts |  R | maxcheckattempts
+| 13. | Check command |  | checkcommand
+| 14. | Notification interval |  R | notifinterval
+| 15. | Passive checks enabled | X | passivechecks
+| 16. | Obsess over host | X | obsessoverhost
+| 17. | Check freshness | X | checkfreshness
+| 18. | Freshness threshold | X | freshnessthresh
+| 19. | Event handler | X | eventhandler
+| 20. | Event handler enabled | X | eventhandlerenabled
+| 21. | Low flap threshold | X | lowflapthresh
+| 22. | High flap threshold | X | highflapthresh
+| 23. | Flap detection enabled | X | flapdetectionenabled
+| 24. | Flap detection options | LX | flapdetectionoptions
+| 25. | Process perf data | X | processperfdata
+| 26. | Retain status information | X | retainstatusinfo
+| 27. | Retain nonstatus information | X | retainnonstatusinfo
+| 28. | First notification delay | X | firstnotifdelay
+| 29. | Notifications enabled | X | notifications_enabled
+| 30. | Stalking options | LX | stalkingoptions
+| 31. | Notes | X | notes
+| 32. | Notes url | X | notes_url
+| 33. | Icon image | X | icon_image
+| 34. | Icon image alt | X | icon_image_alt
+| 35. | Vrml image | X | vrml_image
+| 36. | Statusmap image | X | statusmap_image
+| 37. | 2d coords | X | coords2d
+| 38. | 3d coords | X | coords3d
 |========================================================
 
 .Services File 

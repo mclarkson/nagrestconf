@@ -41,3 +41,21 @@ for FILE in `ls $NAG_OBJ_DIR/*/setup/*_hosts.setup`; do
 
 done
 
+for FILE in `ls $NAG_OBJ_DIR/*/setup/*_hosttemplates.setup`; do 
+
+    OLDFILE="$FILE.old"
+    mv $FILE $OLDFILE
+    :>$FILE
+    while read line; do
+        numcommas=`echo "$line" | sed "s/[^,]//g" | wc -c`
+        if [[ $numcommas != 37 ]]; then
+            a=$((38-$numcommas))
+            echo "$line`printf %${a}s | tr " " ,`" >>$FILE
+        else
+            echo "$line" >>$FILE
+        fi
+    done <$OLDFILE
+    chown $WWWUSER: $FILE
+
+done
+
