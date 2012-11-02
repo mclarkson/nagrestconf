@@ -96,17 +96,17 @@ for PKG in `( cd SPECS; ls *.spec )`; do
 	}
 
 	echo "Package Release: $RELEASE"
-	echo "New Release No.: $RELEASE.${POINTRELEASE}"
+	echo "Package Version: $VERSION"
+	echo "New Version No.: $VERSION.${POINTRELEASE}"
 
-        sed "s/\(^Release:\).*\$/\1 ${RELEASE}.${POINTRELEASE}/g" \
-		${BASE}/SPECS/${PKG} > ${BASE}/TMP/${PKG}
+    sed "s/\(^Version:\).*\$/\1 ${VERSION}.${POINTRELEASE}/g" \
+    ${BASE}/SPECS/${PKG} > ${BASE}/TMP/${PKG}
 
-        echo "Preparing sources for '${NAME}-${VERSION}'..."
+    echo "Preparing sources for '${NAME}-${VERSION}'..."
 
 	if [[ -d SOURCES/${NAME}-${VERSION} ]]; then
-		# Do nothing!
-		echo "Tarring existing source directory."
-		tar cvzf SOURCES/${NAME}-${VERSION}.tar.gz -C SOURCES ${NAME}-${VERSION} --exclude=.svn 
+		echo "Tarring existing source directory. Err, scratch that, I'm not."
+		# tar cvzf SOURCES/${NAME}-${VERSION}.tar.gz -C SOURCES ${NAME}-${VERSION} --exclude=.svn 
 	else
 		echo "Unpacking source tarball."
 		tar -C TMP/ -xvzf SOURCES/${NAME}-${VERSION}.tar.gz
@@ -153,8 +153,9 @@ for PKG in `( cd SPECS; ls *.spec )`; do
                 echo 1>&2 
         else 
                 echo 
-        echo "${VERSION}-${RELEASE}" > ${BASE}/TMP/version-release.txt
-                echo "Package '${NAME}-${VERSION}-${RELEASE}.${POINTRELEASE}' was built successfully!" 
+        echo "${VERSION}.${POINTRELEASE}-${RELEASE}" \
+            > ${BASE}/TMP/version-release.txt
+            echo "Package '${NAME}-${VERSION}-${RELEASE}.${POINTRELEASE}' was built successfully!" 
         fi
 
         #rm -rf BUILD/${NAME}-${VERSION} SOURCES/${NAME}-${VERSION}.tar.gz 
