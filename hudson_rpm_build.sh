@@ -105,8 +105,10 @@ for PKG in `( cd SPECS; ls *.spec )`; do
 
 	if [[ -d SOURCES/${NAME}-${VERSION} ]]; then
 		echo "Tarring existing source directory."
-		tar cvzf SOURCES/${NAME}-${VERSION}-${POINTRELEASE}.tar.gz \
-            -C SOURCES ${NAME}-${VERSION} --exclude=.svn 
+        N="${NAME}-${VERSION}.${POINTRELEASE}"
+		tar cvzf SOURCES/${N}.tar.gz \
+            -C SOURCES ${NAME}-${VERSION} --exclude=.svn \
+            --xform='s/^${NAME}-${VERSION}/$N/'
 	else
 		echo "Unpacking source tarball."
 		tar -C TMP/ -xvzf SOURCES/${NAME}-${VERSION}.tar.gz
@@ -133,32 +135,32 @@ for PKG in `( cd SPECS; ls *.spec )`; do
 #
 #        rm -rf TMP/${NAME}-${VERSION}
 
-        if [ -x "`which gpg 2> /dev/null`" -a ! -z "`gpg --list-keys \"${GPG_KEYNAME}\"`" ]; then 
-                echo "Building signed package for '${NAME}-${VERSION}'..." 
-                echo 
-                echo "Using key '${GPG_KEYNAME}' to sign packages..." 
-                rpmbuild -ba --sign --rcfile ${BASE}/TMP/rpmrc ${BASE}/TMP/${PKG} 
-        else 
-                echo "Building un-signed package for '${NAME}-${VERSION}'..." 
-                echo 
-                rpmbuild -ba --rcfile ${BASE}/TMP/rpmrc ${BASE}/TMP/${PKG} 
-        fi
+    if [ -x "`which gpg 2> /dev/null`" -a ! -z "`gpg --list-keys \"${GPG_KEYNAME}\"`" ]; then 
+        echo "Building signed package for '${NAME}-${VERSION}'..." 
+        echo 
+        echo "Using key '${GPG_KEYNAME}' to sign packages..." 
+        rpmbuild -ba --sign --rcfile ${BASE}/TMP/rpmrc ${BASE}/TMP/${PKG} 
+    else 
+        echo "Building un-signed package for '${NAME}-${VERSION}'..." 
+        echo 
+        rpmbuild -ba --rcfile ${BASE}/TMP/rpmrc ${BASE}/TMP/${PKG} 
+    fi
 
-        RV=$?
+    RV=$?
 
-        if [ ${RV} -ne 0 ]; then 
-                GRV=$(expr ${GRV} + 1) 
-                echo 1>&2 
-                echo "Package '${NAME}-${VERSION}' failed to build!" 1>&2 
-                echo 1>&2 
-        else 
-                echo 
+    if [ ${RV} -ne 0 ]; then 
+        GRV=$(expr ${GRV} + 1) 
+        echo 1>&2 
+        echo "Package '${NAME}-${VERSION}' failed to build!" 1>&2 
+        echo 1>&2 
+    else 
+        echo 
         echo "${VERSION}.${POINTRELEASE}-${RELEASE}" \
             > ${BASE}/TMP/version-release.txt
-            echo "Package '${NAME}-${VERSION}-${RELEASE}.${POINTRELEASE}' was built successfully!" 
-        fi
+        echo "Package '${NAME}-${VERSION}.${POINTRELEASE}' was built successfully!" 
+    fi
 
-        #rm -rf BUILD/${NAME}-${VERSION} SOURCES/${NAME}-${VERSION}.tar.gz 
+    #rm -rf BUILD/${NAME}-${VERSION} SOURCES/${NAME}-${VERSION}.tar.gz 
 done
 
 if [ ${GRV} -ne 0 ]; then 
