@@ -891,7 +891,7 @@ Install the prebuilt package downloaded from Sourceforge. For example:
 gdebi nagrestconf_1.0_all.deb
 
 # On Centos/Redhat:
-yum install nagrestconf-1-1.20.noarch.rpm</tt></pre>
+yum install nagrestconf-1.71-1.noarch.rpm</tt></pre>
 </div></div>
 </li>
 <li>
@@ -903,24 +903,14 @@ Configure the system:
 <div class="paragraph"><p>Test the installation with:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt># On Debian:
-bash /usr/share/doc/nagrestconf/bulk-loading/REST_setup_local.sh
-
-# On Centos/Redhat:
-bash /usr/share/doc/nagrestconf-1/bulk-loading/REST_setup_local.sh</tt></pre>
+<pre><tt># On Debian, Centos or Redhat:
+bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh</tt></pre>
 </div></div>
 <div class="paragraph"><p>Then check that it can be seen and edited in the <em>Nagrestconf</em> GUI.</p></div>
 </li>
 </ol></div>
 <h3 id="_install_from_source">8.3. Install From Source</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Copy <em>csv2nag</em>, <em>nagctl</em>, <em>restart_nagios</em> and <em>slc_configure</em> from scripts
-directory to <tt>/usr/bin</tt> or <tt>/usr/local/bin</tt>.</p></div>
-<div class="paragraph"><p>Copy <tt>nagrestconf/</tt> and <tt>rest/</tt> directories to the web server document root and
-create a webserver configuration for it.</p></div>
-<div class="paragraph"><p>Copy the <tt>etc/nagrestconf/</tt> directory to <tt>/etc/</tt> and modify the configuration
-files.</p></div>
-<div class="paragraph"><p>Run the <em>slc_configure</em> script to configure the repository and configuration
-directory. Ensure a &#8216;cfg_dir=&#8217; entry exists in <tt>nagios.cfg</tt>.</p></div>
+<div class="paragraph"><p>Refer to the debian or redhat packaging files.</p></div>
 </div>
 <h2 id="_rest_examples">9. REST Examples</h2>
 <div class="sectionbody">
@@ -2743,7 +2733,7 @@ cellspacing="0" cellpadding="4">
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-11-02 13:17:35 BST
+Last updated 2012-11-02 14:09:56 BST
 </div>
 </div>
 </body>

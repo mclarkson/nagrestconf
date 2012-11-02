@@ -1,5 +1,6 @@
 nagrestconf (1.0.5) UNRELEASED; urgency=low
 
+  * Added more nagios directives to the REST api. Services now complete.
   * Added more nagios directives to the REST api. Host templates now complete.
 
  -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Tue, 01 Nov 2012 15:31:32 +0100

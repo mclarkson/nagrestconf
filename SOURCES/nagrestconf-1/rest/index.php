@@ -1171,6 +1171,7 @@ class WriteCmd
         $this->newcmdline .= ",".$statusmap_image;
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
+        $this->newcmdline .= ",".$action_url;
 
         $this->newcmdline .= "'";
 
@@ -1231,6 +1232,7 @@ class WriteCmd
         $this->newcmdline .= ",".$statusmap_image;
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
+        $this->newcmdline .= ",".$action_url;
 
         $this->newcmdline .= "'";
 
@@ -1257,6 +1259,41 @@ class WriteCmd
         $this->newcmdline .= $activechecks . ",";
         $this->newcmdline .= $customvars;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$displayname;
+        $this->newcmdline .= ",".$isvolatile;
+        $this->newcmdline .= ",".$initialstate;
+        $this->newcmdline .= ",".$maxcheckattempts;
+        $this->newcmdline .= ",".$checkinterval;
+        $this->newcmdline .= ",".$retryinterval;
+        $this->newcmdline .= ",".$passivechecks;
+        $this->newcmdline .= ",".$checkperiod;
+        $this->newcmdline .= ",".$obsessoverservice;
+        $this->newcmdline .= ",".$manfreshnessthresh;
+        $this->newcmdline .= ",".$checkfreshness;
+        $this->newcmdline .= ",".$eventhandler;
+        $this->newcmdline .= ",".$eventhandlerenabled;
+        $this->newcmdline .= ",".$lowflapthresh;
+        $this->newcmdline .= ",".$highflapthresh;
+        $this->newcmdline .= ",".$flapdetectionenabled;
+        $this->newcmdline .= ",".$flapdetectionoptions;
+        $this->newcmdline .= ",".$processperfdata;
+        $this->newcmdline .= ",".$retainstatusinfo;
+        $this->newcmdline .= ",".$retainnonstatusinfo;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$firstnotifdelay;
+        $this->newcmdline .= ",".$notifperiod;
+        $this->newcmdline .= ",".$notifopts;
+        $this->newcmdline .= ",".$notifications_enabled;
+        $this->newcmdline .= ",".$stalkingoptions;
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$icon_image;
+        $this->newcmdline .= ",".$icon_image_alt;
+        $this->newcmdline .= ",".$vrml_image;
+        $this->newcmdline .= ",".$statusmap_image;
+        $this->newcmdline .= ",".$coords2d;
+        $this->newcmdline .= ",".$coords3d;
 
         $this->newcmdline .= "'";
 
@@ -1377,6 +1414,41 @@ class WriteCmd
         $this->newcmdline .= $activechecks . ",";
         $this->newcmdline .= $customvars;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$displayname;
+        $this->newcmdline .= ",".$isvolatile;
+        $this->newcmdline .= ",".$initialstate;
+        $this->newcmdline .= ",".$maxcheckattempts;
+        $this->newcmdline .= ",".$checkinterval;
+        $this->newcmdline .= ",".$retryinterval;
+        $this->newcmdline .= ",".$passivechecks;
+        $this->newcmdline .= ",".$checkperiod;
+        $this->newcmdline .= ",".$obsessoverservice;
+        $this->newcmdline .= ",".$manfreshnessthresh;
+        $this->newcmdline .= ",".$checkfreshness;
+        $this->newcmdline .= ",".$eventhandler;
+        $this->newcmdline .= ",".$eventhandlerenabled;
+        $this->newcmdline .= ",".$lowflapthresh;
+        $this->newcmdline .= ",".$highflapthresh;
+        $this->newcmdline .= ",".$flapdetectionenabled;
+        $this->newcmdline .= ",".$flapdetectionoptions;
+        $this->newcmdline .= ",".$processperfdata;
+        $this->newcmdline .= ",".$retainstatusinfo;
+        $this->newcmdline .= ",".$retainnonstatusinfo;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$firstnotifdelay;
+        $this->newcmdline .= ",".$notifperiod;
+        $this->newcmdline .= ",".$notifopts;
+        $this->newcmdline .= ",".$notifications_enabled;
+        $this->newcmdline .= ",".$stalkingoptions;
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$icon_image;
+        $this->newcmdline .= ",".$icon_image_alt;
+        $this->newcmdline .= ",".$vrml_image;
+        $this->newcmdline .= ",".$statusmap_image;
+        $this->newcmdline .= ",".$coords2d;
+        $this->newcmdline .= ",".$coords3d;
 
         $this->newcmdline .= "'";
 
@@ -1514,6 +1586,7 @@ class WriteCmd
         $this->newcmdline .= ",".$statusmap_image;
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
+        $this->newcmdline .= ",".$action_url;
 
         $this->newcmdline .= "'";
 
@@ -1574,6 +1647,7 @@ class WriteCmd
         $this->newcmdline .= ",".$statusmap_image;
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
+        $this->newcmdline .= ",".$action_url;
 
         $this->newcmdline .= "'";
 
@@ -1600,6 +1674,41 @@ class WriteCmd
         $this->newcmdline .= $activechecks . ",";
         $this->newcmdline .= $customvars;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$displayname;
+        $this->newcmdline .= ",".$isvolatile;
+        $this->newcmdline .= ",".$initialstate;
+        $this->newcmdline .= ",".$maxcheckattempts;
+        $this->newcmdline .= ",".$checkinterval;
+        $this->newcmdline .= ",".$retryinterval;
+        $this->newcmdline .= ",".$passivechecks;
+        $this->newcmdline .= ",".$checkperiod;
+        $this->newcmdline .= ",".$obsessoverservice;
+        $this->newcmdline .= ",".$manfreshnessthresh;
+        $this->newcmdline .= ",".$checkfreshness;
+        $this->newcmdline .= ",".$eventhandler;
+        $this->newcmdline .= ",".$eventhandlerenabled;
+        $this->newcmdline .= ",".$lowflapthresh;
+        $this->newcmdline .= ",".$highflapthresh;
+        $this->newcmdline .= ",".$flapdetectionenabled;
+        $this->newcmdline .= ",".$flapdetectionoptions;
+        $this->newcmdline .= ",".$processperfdata;
+        $this->newcmdline .= ",".$retainstatusinfo;
+        $this->newcmdline .= ",".$retainnonstatusinfo;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$firstnotifdelay;
+        $this->newcmdline .= ",".$notifperiod;
+        $this->newcmdline .= ",".$notifopts;
+        $this->newcmdline .= ",".$notifications_enabled;
+        $this->newcmdline .= ",".$stalkingoptions;
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$icon_image;
+        $this->newcmdline .= ",".$icon_image_alt;
+        $this->newcmdline .= ",".$vrml_image;
+        $this->newcmdline .= ",".$statusmap_image;
+        $this->newcmdline .= ",".$coords2d;
+        $this->newcmdline .= ",".$coords3d;
 
         $this->newcmdline .= "'";
 
@@ -1720,6 +1829,41 @@ class WriteCmd
         $this->newcmdline .= $activechecks . ",";
         $this->newcmdline .= $customvars;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$displayname;
+        $this->newcmdline .= ",".$isvolatile;
+        $this->newcmdline .= ",".$initialstate;
+        $this->newcmdline .= ",".$maxcheckattempts;
+        $this->newcmdline .= ",".$checkinterval;
+        $this->newcmdline .= ",".$retryinterval;
+        $this->newcmdline .= ",".$passivechecks;
+        $this->newcmdline .= ",".$checkperiod;
+        $this->newcmdline .= ",".$obsessoverservice;
+        $this->newcmdline .= ",".$manfreshnessthresh;
+        $this->newcmdline .= ",".$checkfreshness;
+        $this->newcmdline .= ",".$eventhandler;
+        $this->newcmdline .= ",".$eventhandlerenabled;
+        $this->newcmdline .= ",".$lowflapthresh;
+        $this->newcmdline .= ",".$highflapthresh;
+        $this->newcmdline .= ",".$flapdetectionenabled;
+        $this->newcmdline .= ",".$flapdetectionoptions;
+        $this->newcmdline .= ",".$processperfdata;
+        $this->newcmdline .= ",".$retainstatusinfo;
+        $this->newcmdline .= ",".$retainnonstatusinfo;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$firstnotifdelay;
+        $this->newcmdline .= ",".$notifperiod;
+        $this->newcmdline .= ",".$notifopts;
+        $this->newcmdline .= ",".$notifications_enabled;
+        $this->newcmdline .= ",".$stalkingoptions;
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$icon_image;
+        $this->newcmdline .= ",".$icon_image_alt;
+        $this->newcmdline .= ",".$vrml_image;
+        $this->newcmdline .= ",".$statusmap_image;
+        $this->newcmdline .= ",".$coords2d;
+        $this->newcmdline .= ",".$coords3d;
 
         $this->newcmdline .= "'";
 
@@ -1829,6 +1973,7 @@ class WriteCmd
         $this->newcmdline .= ",".$statusmap_image;
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
+        $this->newcmdline .= ",".$action_url;
 
         $this->newcmdline .= "'";
 
@@ -1917,6 +2062,7 @@ class WriteCmd
         $this->newcmdline .= ",".$statusmap_image;
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
+        $this->newcmdline .= ",".$action_url;
 
         $this->newcmdline .= "'";
 
@@ -1943,6 +2089,41 @@ class WriteCmd
         $this->newcmdline .= $activechecks . ",";
         $this->newcmdline .= $customvars;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$displayname;
+        $this->newcmdline .= ",".$isvolatile;
+        $this->newcmdline .= ",".$initialstate;
+        $this->newcmdline .= ",".$maxcheckattempts;
+        $this->newcmdline .= ",".$checkinterval;
+        $this->newcmdline .= ",".$retryinterval;
+        $this->newcmdline .= ",".$passivechecks;
+        $this->newcmdline .= ",".$checkperiod;
+        $this->newcmdline .= ",".$obsessoverservice;
+        $this->newcmdline .= ",".$manfreshnessthresh;
+        $this->newcmdline .= ",".$checkfreshness;
+        $this->newcmdline .= ",".$eventhandler;
+        $this->newcmdline .= ",".$eventhandlerenabled;
+        $this->newcmdline .= ",".$lowflapthresh;
+        $this->newcmdline .= ",".$highflapthresh;
+        $this->newcmdline .= ",".$flapdetectionenabled;
+        $this->newcmdline .= ",".$flapdetectionoptions;
+        $this->newcmdline .= ",".$processperfdata;
+        $this->newcmdline .= ",".$retainstatusinfo;
+        $this->newcmdline .= ",".$retainnonstatusinfo;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$firstnotifdelay;
+        $this->newcmdline .= ",".$notifperiod;
+        $this->newcmdline .= ",".$notifopts;
+        $this->newcmdline .= ",".$notifications_enabled;
+        $this->newcmdline .= ",".$stalkingoptions;
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$icon_image;
+        $this->newcmdline .= ",".$icon_image_alt;
+        $this->newcmdline .= ",".$vrml_image;
+        $this->newcmdline .= ",".$statusmap_image;
+        $this->newcmdline .= ",".$coords2d;
+        $this->newcmdline .= ",".$coords3d;
 
         $this->newcmdline .= "'";
 
@@ -2063,6 +2244,41 @@ class WriteCmd
         $this->newcmdline .= $activechecks . ",";
         $this->newcmdline .= $customvars;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$displayname;
+        $this->newcmdline .= ",".$isvolatile;
+        $this->newcmdline .= ",".$initialstate;
+        $this->newcmdline .= ",".$maxcheckattempts;
+        $this->newcmdline .= ",".$checkinterval;
+        $this->newcmdline .= ",".$retryinterval;
+        $this->newcmdline .= ",".$passivechecks;
+        $this->newcmdline .= ",".$checkperiod;
+        $this->newcmdline .= ",".$obsessoverservice;
+        $this->newcmdline .= ",".$manfreshnessthresh;
+        $this->newcmdline .= ",".$checkfreshness;
+        $this->newcmdline .= ",".$eventhandler;
+        $this->newcmdline .= ",".$eventhandlerenabled;
+        $this->newcmdline .= ",".$lowflapthresh;
+        $this->newcmdline .= ",".$highflapthresh;
+        $this->newcmdline .= ",".$flapdetectionenabled;
+        $this->newcmdline .= ",".$flapdetectionoptions;
+        $this->newcmdline .= ",".$processperfdata;
+        $this->newcmdline .= ",".$retainstatusinfo;
+        $this->newcmdline .= ",".$retainnonstatusinfo;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$firstnotifdelay;
+        $this->newcmdline .= ",".$notifperiod;
+        $this->newcmdline .= ",".$notifopts;
+        $this->newcmdline .= ",".$notifications_enabled;
+        $this->newcmdline .= ",".$stalkingoptions;
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$icon_image;
+        $this->newcmdline .= ",".$icon_image_alt;
+        $this->newcmdline .= ",".$vrml_image;
+        $this->newcmdline .= ",".$statusmap_image;
+        $this->newcmdline .= ",".$coords2d;
+        $this->newcmdline .= ",".$coords3d;
 
         $this->newcmdline .= "'";
 
@@ -2474,6 +2690,7 @@ function csv2array( $output, $subcmd )
             43 => "statusmap_image",
             44 => "coords2d",
             45 => "coords3d",
+            46 => "action_url",
         ),
         'services' => array(
             1 => "name",
@@ -2487,6 +2704,41 @@ function csv2array( $output, $subcmd )
             9 => "activechecks",
             10 => "customvars",
             11 => "disable",
+            12 => "displayname",
+            13 => "isvolatile",
+            14 => "initialstate",
+            15 => "maxcheckattempts",
+            16 => "checkinterval",
+            17 => "retryinterval",
+            18 => "passivechecks",
+            19 => "checkperiod",
+            20 => "obsessoverservice",
+            21 => "manfreshnessthresh",
+            22 => "checkfreshness",
+            23 => "eventhandler",
+            24 => "eventhandlerenabled",
+            25 => "lowflapthresh",
+            26 => "highflapthresh",
+            27 => "flapdetectionenabled",
+            28 => "flapdetectionoptions",
+            29 => "processperfdata",
+            30 => "retainstatusinfo",
+            31 => "retainnonstatusinfo",
+            32 => "notifinterval",
+            33 => "firstnotifdelay",
+            34 => "notifperiod",
+            35 => "notifopts",
+            36 => "notifications_enabled",
+            37 => "stalkingoptions",
+            38 => "notes",
+            39 => "notes_url",
+            40 => "action_url",
+            41 => "icon_image",
+            42 => "icon_image_alt",
+            43 => "vrml_image",
+            44 => "statusmap_image",
+            45 => "coords2d",
+            46 => "coords3d",
         ),
         'servicesets' => array(
             1 => "name",
@@ -2500,6 +2752,41 @@ function csv2array( $output, $subcmd )
             9 => "activechecks",
             10 => "customvars",
             11 => "disable",
+            12 => "displayname",
+            13 => "isvolatile",
+            14 => "initialstate",
+            15 => "maxcheckattempts",
+            16 => "checkinterval",
+            17 => "retryinterval",
+            18 => "passivechecks",
+            19 => "checkperiod",
+            20 => "obsessoverservice",
+            21 => "manfreshnessthresh",
+            22 => "checkfreshness",
+            23 => "eventhandler",
+            24 => "eventhandlerenabled",
+            25 => "lowflapthresh",
+            26 => "highflapthresh",
+            27 => "flapdetectionenabled",
+            28 => "flapdetectionoptions",
+            29 => "processperfdata",
+            30 => "retainstatusinfo",
+            31 => "retainnonstatusinfo",
+            32 => "notifinterval",
+            33 => "firstnotifdelay",
+            34 => "notifperiod",
+            35 => "notifopts",
+            36 => "notifications_enabled",
+            37 => "stalkingoptions",
+            38 => "notes",
+            39 => "notes_url",
+            40 => "action_url",
+            41 => "icon_image",
+            42 => "icon_image_alt",
+            43 => "vrml_image",
+            44 => "statusmap_image",
+            45 => "coords2d",
+            46 => "coords3d",
         ),
         'hosttemplates' => array(
             1 => "name",
@@ -2540,6 +2827,7 @@ function csv2array( $output, $subcmd )
             36 => "statusmap_image",
             37 => "coords2d",
             38 => "coords3d",
+            39 => "action_url",
         ),
         'servicetemplates' => array(
             1 => "name",

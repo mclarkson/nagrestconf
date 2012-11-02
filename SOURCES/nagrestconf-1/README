@@ -330,7 +330,7 @@ Install Using Prebuilt Packages
 gdebi nagrestconf_1.0_all.deb
 
 # On Centos/Redhat:
-yum install nagrestconf-1-1.20.noarch.rpm
+yum install nagrestconf-1.71-1.noarch.rpm
 ----------------------------------------------------------
 +
 2. Configure the system:
@@ -341,11 +341,8 @@ The system should now be ready to configure using REST or by using the GUI at
 Test the installation with:
 +
 ----------------------------------------------------------
-# On Debian:
-bash /usr/share/doc/nagrestconf/bulk-loading/REST_setup_local.sh
-
-# On Centos/Redhat:
-bash /usr/share/doc/nagrestconf-1/bulk-loading/REST_setup_local.sh
+# On Debian, Centos or Redhat:
+bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh
 ----------------------------------------------------------
 +
 Then check that it can be seen and edited in the 'Nagrestconf' GUI.
@@ -354,17 +351,7 @@ Then check that it can be seen and edited in the 'Nagrestconf' GUI.
 Install From Source
 ~~~~~~~~~~~~~~~~~~~
 
-Copy 'csv2nag', 'nagctl', 'restart_nagios' and 'slc_configure' from scripts
-directory to +/usr/bin+ or +/usr/local/bin+.
-
-Copy +nagrestconf/+ and +rest/+ directories to the web server document root and
-create a webserver configuration for it.
-
-Copy the +etc/nagrestconf/+ directory to +/etc/+ and modify the configuration
-files.
-
-Run the 'slc_configure' script to configure the repository and configuration
-directory. Ensure a `cfg_dir=' entry exists in +nagios.cfg+.
+Refer to the debian or redhat packaging files.
 
 REST Examples
 -------------
@@ -512,7 +499,7 @@ define service {
 [[X20]]
 Status
 ------
-Currently implemented directives (98/187) = 52%.
+Currently implemented directives (133/187) = 71%.
 
 .Currently implemented directives
 [cols="<,^,^,>",frame="topbot",options="header,autowidth"]
@@ -522,7 +509,7 @@ Currently implemented directives (98/187) = 52%.
 | Contact Groups | 3 | 3 | 100%
 | Hosts | 43 | 43 | 100% 
 | Host Groups | 7 | 2 | 28%
-| Services | 39 | 17 | 44%
+| Services | 39 | 39 | 100%
 | Service Groups | 7 | 2 | 28%
 | Service Sets | N/A | 10 | N/A
 | Time Periods | 5 | 4 | 80%
@@ -712,6 +699,7 @@ Key for Flags column:
 | 43. | Statusmap image | X | statusmap_image
 | 44. | 2d coords | X | coords2d
 | 45. | 3d coords | X | coords3d
+| 46. | Action url | X | action_url
 |========================================================
 
 .Hosttemplates File 
@@ -757,6 +745,7 @@ Key for Flags column:
 | 36. | Statusmap image | X | statusmap_image
 | 37. | 2d coords | X | coords2d
 | 38. | 3d coords | X | coords3d
+| 39. | Action url | X | action_url
 |========================================================
 
 .Services File 
@@ -764,36 +753,116 @@ Key for Flags column:
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
 | Column | Description | Flags | REST variable name
-| 1. | Name | RK | name
-| 2. | Service template | R | template
-| 3. | Service command | R | command
+| 1. | Name (host_name) | RK | name
+| 2. | Service template (use) | R | template
+| 3. | Service command (check_command) | R | command
 | 4. | Service description | RK | svcdesc
 | 5. | Service groups | L | svcgroup
 | 6. | Contacts | L | contacts
 | 7. | Contact groups | L | contactgroups
-| 8. | Freshness threshold |  | freshnessthresh
-| 9. | Active checks |  | activechecks
+| 8. | Freshness threshold (auto)\* |  | freshnessthresh
+| 9. | Active checks enabled |  | activechecks
 | 10. | Custom variables | C | customvars
 | 11. | Disable |  | disable
+| 12. | Display name | X | displayname
+| 13. | Is volatile | X | isvolatile
+| 14. | Initial state | X | initialstate
+| 15. | Max check attempts | X | maxcheckattempts
+| 16. | Check interval | X | checkinterval
+| 17. | Retry interval | X | retryinterval
+| 18. | Passive checks enabled | X | passivechecks
+| 19. | Check period | X | checkperiod
+| 20. | Obsess over service | X | obsessoverservice
+| 21. | Freshness threshold (manual) | X | manfreshnessthresh
+| 22. | Check Freshness | X | checkfreshness
+| 23. | Event handler | X | eventhandler
+| 24. | Event handler enabled | X | eventhandlerenabled
+| 25. | Low flap threshold | X | lowflapthresh
+| 26. | High flap threshold | X | highflapthresh
+| 27. | Flap detection enabled | X | flapdetectionenabled
+| 28. | Flap detection options | LX | flapdetectionoptions
+| 29. | Process perf data | X | processperfdata
+| 30. | Retain status information | X | retainstatusinfo
+| 31. | Retain nonstatus information | X | retainnonstatusinfo
+| 32. | Notification interval | X | notifinterval
+| 33. | First notification delay | X | firstnotifdelay
+| 34. | Notification period | X | notifperiod
+| 35. | Notification opts | LX | notifopts
+| 36. | Notifications enabled | X | notifications_enabled
+| 37. | Stalking options | LX | stalkingoptions
+| 38. | Notes | X | notes
+| 39. | Notes url | X | notes_url
+| 40. | Action url | X | action_url
+| 41. | Icon image | X | icon_image
+| 42. | Icon image alt | X | icon_image_alt
+| 43. | Vrml image | X | vrml_image
+| 44. | Statusmap image | X | statusmap_image
+| 45. | 2d coords | X | coords2d
+| 46. | 3d coords | X | coords3d
 |========================================================
+
+\* Freshness thresh (auto) also sets check_command to no-checks-received,
+active_checks_enabled to 0 (depending on whether the host is a dcc or not),
+passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
+to restrict to only setting the freshness_threshold.
 
 .Servicesets File 
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
 | Column | Description | Flags | REST variable name
-| 1. | Name | RK | name
-| 2. | Service template | R | template
-| 3. | Service command | R | command
+| 1. | Name (host_name) | RK | name
+| 2. | Service template (use) | R | template
+| 3. | Service command (check_command) | R | command
 | 4. | Service description | RK | svcdesc
 | 5. | Service groups | L | svcgroup
 | 6. | Contacts | L | contacts
 | 7. | Contact groups | L | contactgroups
-| 8. | Freshness threshold |  | freshnessthresh
+| 8. | Freshness threshold (auto)\* |  | freshnessthresh
 | 9. | Active checks |  | activechecks
 | 10. | Custom variables | C | customvars
 | 11. | Disable | U | disable
+| 12. | Display name | X | displayname
+| 13. | Is volatile | X | isvolatile
+| 14. | Initial state | X | initialstate
+| 15. | Max check attempts | X | maxcheckattempts
+| 16. | Check interval | X | checkinterval
+| 17. | Retry interval | X | retryinterval
+| 18. | Passive checks enabled | X | passivechecks
+| 19. | Check period | X | checkperiod
+| 20. | Obsess over service | X | obsessoverservice
+| 21. | Freshness threshold (manual) | X | manfreshnessthresh
+| 22. | Check Freshness | X | checkfreshness
+| 23. | Event handler | X | eventhandler
+| 24. | Event handler enabled | X | eventhandlerenabled
+| 25. | Low flap threshold | X | lowflapthresh
+| 26. | High flap threshold | X | highflapthresh
+| 27. | Flap detection enabled | X | flapdetectionenabled
+| 28. | Flap detection options | LX | flapdetectionoptions
+| 29. | Process perf data | X | processperfdata
+| 30. | Retain status information | X | retainstatusinfo
+| 31. | Retain nonstatus information | X | retainnonstatusinfo
+| 32. | Notification interval | X | notifinterval
+| 33. | First notification delay | X | firstnotifdelay
+| 34. | Notification period | X | notifperiod
+| 35. | Notification opts | LX | notifopts
+| 36. | Notifications enabled | X | notifications_enabled
+| 37. | Stalking options | LX | stalkingoptions
+| 38. | Notes | X | notes
+| 39. | Notes url | X | notes_url
+| 40. | Action url | X | action_url
+| 41. | Icon image | X | icon_image
+| 42. | Icon image alt | X | icon_image_alt
+| 43. | Vrml image | X | vrml_image
+| 44. | Statusmap image | X | statusmap_image
+| 45. | 2d coords | X | coords2d
+| 46. | 3d coords | X | coords3d
 |========================================================
+
+\* Freshness thresh (auto) also sets check_command to no-checks-received,
+active_checks_enabled to 0 (depending on whether the host is a dcc or not),
+passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
+to restrict to only setting the freshness_threshold.
 
 .Servicetemplates File 
 

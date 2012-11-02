@@ -30,8 +30,8 @@ for FILE in `ls $NAG_OBJ_DIR/*/setup/*_hosts.setup`; do
     :>$FILE
     while read line; do
         numcommas=`echo "$line" | sed "s/[^,]//g" | wc -c`
-        if [[ $numcommas != 44 ]]; then
-            a=$((45-$numcommas))
+        if [[ $numcommas != 45 ]]; then
+            a=$((46-$numcommas))
             echo "$line`printf %${a}s | tr " " ,`" >>$FILE
         else
             echo "$line" >>$FILE
@@ -48,8 +48,26 @@ for FILE in `ls $NAG_OBJ_DIR/*/setup/*_hosttemplates.setup`; do
     :>$FILE
     while read line; do
         numcommas=`echo "$line" | sed "s/[^,]//g" | wc -c`
-        if [[ $numcommas != 37 ]]; then
-            a=$((38-$numcommas))
+        if [[ $numcommas != 38 ]]; then
+            a=$((39-$numcommas))
+            echo "$line`printf %${a}s | tr " " ,`" >>$FILE
+        else
+            echo "$line" >>$FILE
+        fi
+    done <$OLDFILE
+    chown $WWWUSER: $FILE
+
+done
+
+for FILE in `ls $NAG_OBJ_DIR/*/setup/*_services*.setup`; do 
+
+    OLDFILE="$FILE.old"
+    mv $FILE $OLDFILE
+    :>$FILE
+    while read line; do
+        numcommas=`echo "$line" | sed "s/[^,]//g" | wc -c`
+        if [[ $numcommas != 45 ]]; then
+            a=$((46-$numcommas))
             echo "$line`printf %${a}s | tr " " ,`" >>$FILE
         else
             echo "$line" >>$FILE
