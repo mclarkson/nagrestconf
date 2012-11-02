@@ -98,6 +98,7 @@ for PKG in `( cd SPECS; ls *.spec )`; do
 	echo "Package Release: $RELEASE"
 	echo "New Version No.: $VERSION.${POINTRELEASE}"
 
+    sed "s/^%define *version/%define version ${VERSION}.${POINTRELEASE}/g" \
     sed "s/\(^Version:\).*\$/\1 ${VERSION}.${POINTRELEASE}/g" \
     ${BASE}/SPECS/${PKG} > ${BASE}/TMP/${PKG}
 
