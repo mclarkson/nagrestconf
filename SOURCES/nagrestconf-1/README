@@ -330,7 +330,7 @@ Install Using Prebuilt Packages
 gdebi nagrestconf_1.0_all.deb
 
 # On Centos/Redhat:
-yum install nagrestconf-1.71-1.noarch.rpm
+yum install nagrestconf-1.73-1.noarch.rpm
 ----------------------------------------------------------
 +
 2. Configure the system:
@@ -760,7 +760,7 @@ Key for Flags column:
 | 5. | Service groups | L | svcgroup
 | 6. | Contacts | L | contacts
 | 7. | Contact groups | L | contactgroups
-| 8. | Freshness threshold (auto)\* |  | freshnessthresh
+| 8. | Freshness threshold (auto)* |  | freshnessthresh
 | 9. | Active checks enabled |  | activechecks
 | 10. | Custom variables | C | customvars
 | 11. | Disable |  | disable
@@ -801,7 +801,7 @@ Key for Flags column:
 | 46. | 3d coords | X | coords3d
 |========================================================
 
-\* Freshness thresh (auto) also sets check_command to no-checks-received,
+* Freshness thresh (auto) also sets check_command to no-checks-received,
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.
@@ -818,7 +818,7 @@ to restrict to only setting the freshness_threshold.
 | 5. | Service groups | L | svcgroup
 | 6. | Contacts | L | contacts
 | 7. | Contact groups | L | contactgroups
-| 8. | Freshness threshold (auto)\* |  | freshnessthresh
+| 8. | Freshness threshold (auto)* |  | freshnessthresh
 | 9. | Active checks |  | activechecks
 | 10. | Custom variables | C | customvars
 | 11. | Disable | U | disable
@@ -859,7 +859,7 @@ to restrict to only setting the freshness_threshold.
 | 46. | 3d coords | X | coords3d
 |========================================================
 
-\* Freshness thresh (auto) also sets check_command to no-checks-received,
+* Freshness thresh (auto) also sets check_command to no-checks-received,
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.
