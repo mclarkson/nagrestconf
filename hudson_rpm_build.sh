@@ -99,7 +99,6 @@ for PKG in `( cd SPECS; ls *.spec )`; do
 	echo "New Version No.: $VERSION.${POINTRELEASE}"
 
     sed "s/^%define *version/%define version ${VERSION}.${POINTRELEASE}/g" \
-    sed "s/\(^Version:\).*\$/\1 ${VERSION}.${POINTRELEASE}/g" \
     ${BASE}/SPECS/${PKG} > ${BASE}/TMP/${PKG}
 
     echo "Preparing sources for '${NAME}-${VERSION}'..."
