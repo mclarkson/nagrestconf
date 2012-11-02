@@ -101,12 +101,15 @@ for PKG in `( cd SPECS; ls *.spec )`; do
     sed "s/^%define *version.*/%define version ${VERSION}.${POINTRELEASE}/g" \
     ${BASE}/SPECS/${PKG} > ${BASE}/TMP/${PKG}
 
+    echo "Cleaning SOURCES directory..."
+    rm -rf SOURCES/$NAME.*
+
     echo "Preparing sources for '${NAME}-${VERSION}'..."
 
 	if [[ -d SOURCES/${NAME}-${VERSION} ]]; then
 		echo "Tarring existing source directory."
         N="${NAME}-${VERSION}.${POINTRELEASE}"
-        cp -av SOURCES/${NAME}-${VERSION} SOURCES/$N
+        cp -a SOURCES/${NAME}-${VERSION} SOURCES/$N
 		tar cvzf SOURCES/${N}.tar.gz -C SOURCES ${N} --exclude=.svn
 	else
 		echo "Unpacking source tarball."

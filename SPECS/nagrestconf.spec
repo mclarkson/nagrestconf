@@ -4,6 +4,7 @@
 #%define debug_package %{nil}
 
 Summary: Nagios REST configuration tools.
+# Don't replace the next line with %{name}, hudson build script needs it
 Name: nagrestconf
 Version: %{version}
 Release: 1
