@@ -96,7 +96,6 @@ for PKG in `( cd SPECS; ls *.spec )`; do
 	}
 
 	echo "Package Release: $RELEASE"
-	echo "Package Version: $VERSION"
 	echo "New Version No.: $VERSION.${POINTRELEASE}"
 
     sed "s/\(^Version:\).*\$/\1 ${VERSION}.${POINTRELEASE}/g" \
@@ -105,8 +104,8 @@ for PKG in `( cd SPECS; ls *.spec )`; do
     echo "Preparing sources for '${NAME}-${VERSION}'..."
 
 	if [[ -d SOURCES/${NAME}-${VERSION} ]]; then
-		echo "Tarring existing source directory. Err, scratch that, I'm not."
-		# tar cvzf SOURCES/${NAME}-${VERSION}.tar.gz -C SOURCES ${NAME}-${VERSION} --exclude=.svn 
+		echo "Tarring existing source directory."
+		tar cvzf SOURCES/${NAME}-${VERSION}.tar.gz -C SOURCES ${NAME}-${VERSION} --exclude=.svn 
 	else
 		echo "Unpacking source tarball."
 		tar -C TMP/ -xvzf SOURCES/${NAME}-${VERSION}.tar.gz
