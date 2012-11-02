@@ -95,6 +95,9 @@ for PKG in `( cd SPECS; ls *.spec )`; do
 		exit 2
 	}
 
+    SVN_REV=`svn info SOURCES | sed -n '/Revision:/ { s/Revision: //p }'`
+
+	echo "Subversion Revision: $SVN_REV"
 	echo "Package Release: $RELEASE"
 	echo "New Version No.: $VERSION.${POINTRELEASE}"
 
@@ -102,7 +105,7 @@ for PKG in `( cd SPECS; ls *.spec )`; do
     ${BASE}/SPECS/${PKG} > ${BASE}/TMP/${PKG}
 
     echo "Cleaning SOURCES directory..."
-    rm -rf SOURCES/$NAME.*
+    rm -rf SOURCES/$NAME-$VERSION.*
 
     echo "Preparing sources for '${NAME}-${VERSION}'..."
 
