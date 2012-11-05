@@ -1478,6 +1478,7 @@ class WriteCmd
         $this->newcmdline .= $definition . ",";
         $this->newcmdline .= $exclude;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$exception;
 
         $this->newcmdline .= "'";
 
@@ -1902,6 +1903,7 @@ class WriteCmd
         $this->newcmdline .= $definition . ",";
         $this->newcmdline .= $exclude;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$exception;
 
         $this->newcmdline .= "'";
 
@@ -2326,6 +2328,7 @@ class WriteCmd
         $this->newcmdline .= $definition . ",";
         $this->newcmdline .= $exclude;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$exception;
 
         $this->newcmdline .= "'";
 
@@ -2929,6 +2932,7 @@ function csv2array( $output, $subcmd )
             3 => "definition",
             4 => "exclude",
             5 => "disable",
+            6 => "exception",
         ),
         'commands' => array(
             1 => "name",
