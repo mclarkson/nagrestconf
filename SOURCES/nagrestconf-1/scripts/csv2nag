@@ -387,7 +387,7 @@ lookup_servicegroup_alias()
 }
 
 # ---------------------------------------------------------------------------
-lookup_hostgroup_alias()
+get_hostgroup_line()
 # ---------------------------------------------------------------------------
 # Purpose:      Echo the value of the second key (the Nagios alias) in
 #               the $gfnhostgrpsetup file.
@@ -396,7 +396,6 @@ lookup_hostgroup_alias()
 {
     local a
     a=`grep "^$1\>" $gfnhostgrpsetup`
-    a=`echo $a | cut -d, -f2`
     echo $a
 }
 
@@ -720,7 +719,7 @@ create_hostgroups()
 # Arguments:    None
 # Returns:      Nothing
 {
-    local alias prefix=
+    local alias line prefix=
 
     echo "Creating hostgroups file $gfnhostgrpcfg"
 
@@ -733,7 +732,10 @@ create_hostgroups()
     while read a
     do
         exec 1>&3 3>&-
-        alias=`lookup_hostgroup_alias "$a"`
+        line=`get_hostgroup_line "$a"`
+        IFS=, read dummy alias disable members hostgroupmembers \
+            notes notes_url action_url < <( echo "$line")
+        [[ "$disable" == "1" ]] && continue
         [[ -z "$alias" ]] && {
             echo "ERROR: Entry for hostgroup, $a, is not defined in the "
             echo "hostgroups file $gfnhostgrpsetup. Aborting."
@@ -743,6 +745,23 @@ create_hostgroups()
         echo "define hostgroup {"
         echo "    hostgroup_name    ${prefix}$a"
         echo "    alias             $alias"  
+        [[ -n $members ]] && {
+            echo -n "    members           "
+            echo "$members" | tr " " ,
+        }
+        [[ -n $hostgroupmembers ]] && {
+            echo -n "    hostgroup_members "
+            echo "$hostgroupmembers" | tr " " ,
+        }
+        [[ -n $notes ]] && {
+            echo "    notes             $notes"
+        }
+        [[ -n $notes_url ]] && {
+            echo "    notes_url         $notes_url"
+        }
+        [[ -n $action_url ]] && {
+            echo "    action_url        $action_url"
+        }
         echo "}"
         echo
     done < <( cat $gfnhostgrpsetupauto | sed "s/^${prefix}//" )

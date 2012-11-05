@@ -499,7 +499,7 @@ define service {
 [[X20]]
 Status
 ------
-Currently implemented directives (133/187) = 71%.
+Currently implemented directives (117/177) = 66%.
 
 .Currently implemented directives
 [cols="<,^,^,>",frame="topbot",options="header,autowidth"]
@@ -508,7 +508,7 @@ Currently implemented directives (133/187) = 71%.
 | Contacts | 17 | 17 | 100%
 | Contact Groups | 3 | 3 | 100%
 | Hosts | 43 | 43 | 100% 
-| Host Groups | 7 | 2 | 28%
+| Host Groups | 7 | 7 | 100%
 | Services | 39 | 39 | 100%
 | Service Groups | 7 | 2 | 28%
 | Service Sets | N/A | 10 | N/A
@@ -901,7 +901,12 @@ to restrict to only setting the freshness_threshold.
 | Column | Description | Flags | REST variable name
 | 1. | Hostgroup name | RK | name
 | 2. | Alias | R | alias
-| 3. | Disable | U | disable
+| 3. | Disable |   | disable
+| 4. | Members | LX | members
+| 5. | Hostgroup members | LX | hostgroupmembers
+| 6. | Notes | X | notes
+| 7. | Notes url | X | notes_url
+| 8. | Action url | X | action_url
 |========================================================
 
 .Servicegroups File
