@@ -113,3 +113,21 @@ for FILE in `ls $NAG_OBJ_DIR/*/setup/*_servicegroups.setup`; do
 
 done
 
+for FILE in `ls $NAG_OBJ_DIR/*/setup/*_timeperiods.setup`; do 
+
+    OLDFILE="$FILE.old"
+    mv $FILE $OLDFILE
+    :>$FILE
+    while read line; do
+        numcommas=`echo "$line" | sed "s/[^,]//g" | wc -c`
+        if [[ $numcommas != 5 ]]; then
+            a=$((6-$numcommas))
+            echo "$line`printf %${a}s | tr " " ,`" >>$FILE
+        else
+            echo "$line" >>$FILE
+        fi
+    done <$OLDFILE
+    chown $WWWUSER: $FILE
+
+done
+

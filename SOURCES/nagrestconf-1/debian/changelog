@@ -1,6 +1,7 @@
 nagrestconf (1.0.6) UNRELEASED; urgency=low
 
-  * Added more nagios directives to the REST api. Host/Service groups now complete.
+  * Added more nagios directives to the REST api. Host/Service groups and
+    timeperiods now complete.
 
  -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Tue, 05 Nov 2012 12:21:22 +0000
 

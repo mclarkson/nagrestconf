@@ -1487,10 +1487,11 @@ create_timeperiods()
     while read a; do 
         [[ -z $a || $a == "#"* ]] && continue
 
-        IFS=, read name alias definition exclude disable \
+        IFS=, read name alias definition exclude disable exception \
             < <(echo "$a")
 
         [[ -n $definition ]] && definition=$(echo "$definition" | tr '`' ',')
+        [[ -n $exception ]] && exception=$(echo "$exception" | tr '`' ',')
         alias=$(echo "$alias" | tr '`' ',')
 
         echo "define timeperiod {"
@@ -1501,6 +1502,12 @@ create_timeperiods()
             do
                 printf "       %-17s ${b##*|}\n" "${b%%|*}"
             done < <(echo "$definition,")
+        }
+        [[ -n $exception ]] && {
+            while read -d"," b
+            do
+                printf "       %-17s ${b##*|}\n" "${b%%|*}"
+            done < <(echo "$exception,")
         }
         [[ -n $exclude ]] && {
             echo -n "       exclude                       "

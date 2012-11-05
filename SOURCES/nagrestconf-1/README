@@ -499,7 +499,7 @@ define service {
 [[X20]]
 Status
 ------
-Currently implemented directives (122/177) = 69%.
+Currently implemented directives (123/177) = 69%.
 
 .Currently implemented directives
 [cols="<,^,^,>",frame="topbot",options="header,autowidth"]
@@ -510,9 +510,9 @@ Currently implemented directives (122/177) = 69%.
 | Hosts | 43 | 43 | 100% 
 | Host Groups | 7 | 7 | 100%
 | Services | 39 | 39 | 100%
-| Service Groups | 7 | 5 | 28%
+| Service Groups | 7 | 7 | 100%
 | Service Sets | N/A | 10 | N/A
-| Time Periods | 5 | 4 | 80%
+| Time Periods | 5 | 5 | 100%
 | Commands | 2 | 2 | 100%
 | Host Dependency | 8 | 0 | 0%
 | Host Escalation | 9 | 0 | 0%
@@ -934,5 +934,6 @@ to restrict to only setting the freshness_threshold.
 | 3. | Freestyle time definition | C | definition
 | 4. | Timeperiod to exclude | L | exclude
 | 5. | Disable | U | disable
+| 6. | Freestyle time exception | CX | exception
 |========================================================
 
