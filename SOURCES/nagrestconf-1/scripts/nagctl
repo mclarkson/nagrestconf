@@ -902,7 +902,7 @@ modify_hosttemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups x x x notifperiod \
-        x x checkperiod < <( echo "$gcsv" )
+        x x checkperiod x x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -975,7 +975,7 @@ modify_servicetemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups x x x x x notifperiod \
-        x checkperiod < <( echo "$gcsv" )
+        x checkperiod x x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -1048,7 +1048,7 @@ modify_host_line()
     local name disabled a
 
     IFS=, read name x x template hostgroups contacts contactgroups \
-        x x disable < <( echo "$gcsv" )
+        x x disable x x < <( echo "$gcsv" )
     #name=`echo "$gcsv" | cut -d, -f1`
     #template=`echo "$gcsv" | cut -d, -f4`
     #hostgroups=`echo "$gcsv" | cut -d, -f5`
@@ -1134,7 +1134,7 @@ modify_service_line()
     local name svcdesc
 
     IFS=, read name template command svcdesc servicegroups \
-        contacts contactgroups x x x disable < <( echo "$gcsv" )
+        contacts contactgroups x x x disable x x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #template=`echo "$gcsv" | cut -d, -f2`
@@ -1240,7 +1240,7 @@ modify_hostgroups_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -1271,7 +1271,7 @@ modify_servicegroups_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -1302,7 +1302,7 @@ modify_contacts_line()
 {
     local name
 
-    IFS=, read name x x x svcnp x x hstnp < <( echo "$gcsv" )
+    IFS=, read name x x x svcnp x x hstnp x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #svcnp=`echo "$gcsv" | cut -d, -f5`
@@ -1350,7 +1350,7 @@ modify_contactgroups_line()
 {
     local name
 
-    IFS=, read name x memberlist < <( echo "$gcsv" )
+    IFS=, read name x memberlist x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #memberlist=`echo "$gcsv" | cut -d, -f3`
@@ -1392,7 +1392,7 @@ modify_servicesets_line()
     local name svcdesc
 
     IFS=, read name template x svcdesc servicegroups contacts \
-        contactgroups < <( echo "$gcsv" )
+        contactgroups x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #template=`echo "$gcsv" | cut -d, -f2`
@@ -1471,7 +1471,7 @@ modify_timeperiods_line()
 {
     local name
 
-    IFS=, read name x x exclude < <( echo "$gcsv" )
+    IFS=, read name x x exclude x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #exclude=`echo "$gcsv" | cut -d, -f4`
@@ -1515,7 +1515,7 @@ modify_commands_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -1557,7 +1557,7 @@ add_hosttemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups x x x notifperiod \
-        x x checkperiod < <( echo "$gcsv" )
+        x x checkperiod x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -1626,7 +1626,7 @@ add_servicetemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups x x x x x notifperiod \
-        x checkperiod < <( echo "$gcsv" )
+        x checkperiod x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -1695,7 +1695,7 @@ add_host_line()
     local name
 
     IFS=, read name x x template hostgroups contacts contactgroups \
-        x servicesets < <( echo "$gcsv" )
+        x servicesets x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #template=`echo "$gcsv" | cut -d, -f4`
@@ -1788,7 +1788,7 @@ add_service_line()
     local name svcdesc
 
     IFS=, read name template command svcdesc servicegroups \
-        contacts contactgroups < <( echo "$gcsv" )
+        contacts contactgroups x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #template=`echo "$gcsv" | cut -d, -f2`
@@ -1881,7 +1881,7 @@ add_hostgroups_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -1909,7 +1909,7 @@ add_servicegroups_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -1937,7 +1937,7 @@ add_contacts_line()
 {
     local name
 
-    IFS=, read name x x x svcnp x x hstnp < <( echo "$gcsv" )
+    IFS=, read name x x x svcnp x x hstnp x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #svcnp=`echo "$gcsv" | cut -d, -f5`
@@ -1982,7 +1982,7 @@ add_contactgroups_line()
 {
     local name i
 
-    IFS=, read name x memberlist < <( echo "$gcsv" )
+    IFS=, read name x memberlist x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #memberlist=`echo "$gcsv" | cut -d, -f3`
@@ -2020,7 +2020,7 @@ add_servicesets_line()
     local name svcdesc
 
     IFS=, read name template command svcdesc servicegroups contacts \
-        contactgroups < <( echo "$gcsv" )
+        contactgroups x < <( echo "$gcsv" )
 
     # Same name and svcdesc is an error (duplicate)
     #name=`echo "$gcsv" | cut -d, -f1`
@@ -2107,7 +2107,7 @@ add_timeperiods_line()
 {
     local name
 
-    IFS=, read name x x exclude < <( echo "$gcsv" )
+    IFS=, read name x x exclude x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #exclude=`echo "$gcsv" | cut -d, -f4`
@@ -2146,7 +2146,7 @@ add_commands_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -2179,7 +2179,7 @@ add_hosttemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups x x x notifperiod \
-        x x checkperiod < <( echo "$gcsv" )
+        x x checkperiod x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -2381,7 +2381,7 @@ delete_hosttemplate_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -2413,7 +2413,7 @@ delete_servicetemplate_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -2445,7 +2445,7 @@ delete_host_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -2477,7 +2477,7 @@ delete_service_line()
 {
     local name svcdesc
 
-    IFS=, read name x x svcdesc < <( echo "$gcsv" )
+    IFS=, read name x x svcdesc x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #svcdesc=`echo "$gcsv" | cut -d, -f4`
@@ -2504,7 +2504,7 @@ delete_hostgroups_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -2536,7 +2536,7 @@ delete_servicegroups_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -2568,7 +2568,7 @@ delete_contacts_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -2616,7 +2616,7 @@ delete_contactgroups_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -2660,7 +2660,7 @@ delete_servicesets_line()
 {
     local name svcdesc
 
-    IFS=, read name x x svcdesc < <( echo "$gcsv" )
+    IFS=, read name x x svcdesc x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #svcdesc=`echo "$gcsv" | cut -d, -f4`
@@ -2687,7 +2687,7 @@ delete_timeperiods_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -2743,7 +2743,7 @@ delete_commands_line()
 {
     local name
 
-    IFS=, read name < <( echo "$gcsv" )
+    IFS=, read name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
