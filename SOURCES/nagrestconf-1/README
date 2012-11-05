@@ -937,3 +937,56 @@ to restrict to only setting the freshness_threshold.
 | 6. | Freestyle time exception | CX | exception
 |========================================================
 
+.Servicedependency File
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Dependent host name | LRK | dephostname
+| 2. | Dependent hostgroup name | LK | dephostgroupname
+| 3. | Dependent service description | LRK | depsvcdesc
+| 4. | Host name | LRK | hostname
+| 5. | Hostgroup name | LK  | hostgroupname
+| 6. | Service description | LRK | svcdesc
+| 7. | Inherits parent |   | inheritsparent
+| 8. | Execution failure criteria |   | execfailcriteria
+| 9. | Notification failure criteria |   | notiffailcriteria
+| 10. | Dependency period |   | depperiod
+| 11. | Disable |   | disable
+|========================================================
+
+.Hostdependency File
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| 1. | Dependent host name | RK | dephostname
+| 2. | Dependent hostgroup name | R | dephostgroupname
+| 3. | Host name | R | hostname
+| 4. | Hostgroup name | R | hostgroupname
+| 5. | Inherits parent | R | inheritsparent
+| 6. | Execution failure criteria | R | execfailcriteria
+| 7. | Notification failure criteria | R | notiffailcriteria
+| 8. | Dependency period | R | depperiod
+| 9. | Disable | U | disable
+|========================================================
+
+.Serviceescalation File
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| 1. | Host name | R | hostname
+| 2. | Hostgroup name | R | hostgroupname
+| 3. | Service description | R | svcdesc
+| 4. | Contacts | L | contacts
+| 5. | Contact groups | L | contactgroups
+| 6. | First notification | X | firstnotif
+| 7. | Last notification | X | lastnotif
+| 8. | Notification interval | R | notifinterval
+
+.Hostescalation File
+
+.Hostextinfo File
+
+.Serviceextinfo File
+
