@@ -120,8 +120,8 @@ for FILE in `ls $NAG_OBJ_DIR/*/setup/*_timeperiods.setup`; do
     :>$FILE
     while read line; do
         numcommas=`echo "$line" | sed "s/[^,]//g" | wc -c`
-        if [[ $numcommas != 5 ]]; then
-            a=$((6-$numcommas))
+        if [[ $numcommas != 6 ]]; then
+            a=$((7-$numcommas))
             echo "$line`printf %${a}s | tr " " ,`" >>$FILE
         else
             echo "$line" >>$FILE
