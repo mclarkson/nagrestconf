@@ -1773,7 +1773,7 @@ add_host_line()
 
     [[ -n $servicesets ]] && {
         item_search 1 $FILE_SERVICESETS "$servicesets"  | \
-            sed -- "s/^.*\(,.*,.*,.*,.*,.*,.*,.*,.*,.*,.*\)/$name\1/" \
+            sed -- "s/^[^,]*\(,.*\)/$name\1/" \
             >>${gservice}_${gfilename[$FILE_SERVICES]}.setup
     }
     unlockdir
