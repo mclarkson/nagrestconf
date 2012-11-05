@@ -1335,6 +1335,7 @@ class WriteCmd
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $alias;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$members;
         $this->newcmdline .= ",".$servicegroupmembers;
         $this->newcmdline .= ",".$notes;
         $this->newcmdline .= ",".$notes_url;
@@ -1760,6 +1761,7 @@ class WriteCmd
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $alias;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$members;
         $this->newcmdline .= ",".$servicegroupmembers;
         $this->newcmdline .= ",".$notes;
         $this->newcmdline .= ",".$notes_url;
@@ -2185,6 +2187,7 @@ class WriteCmd
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $alias;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$members;
         $this->newcmdline .= ",".$servicegroupmembers;
         $this->newcmdline .= ",".$notes;
         $this->newcmdline .= ",".$notes_url;
