@@ -139,6 +139,9 @@ cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 %{__rm} -rf %{buildroot}
 
 %changelog
+* Mon Nov 5 2012 Mark Clarkson <mark.clarkson@smorg.co.uk>
+- Added more nagios directives to the REST api. Host/Service groups now complete.
+
 * Fri Nov 2 2012 Mark Clarkson <mark.clarkson@smorg.co.uk>
 - Added more nagios directives to the REST api. Host templates, services and servicesets now complete.
 

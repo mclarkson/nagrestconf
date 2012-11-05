@@ -1335,6 +1335,10 @@ class WriteCmd
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $alias;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$servicegroupmembers;
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
 
         $this->newcmdline .= "'";
 
@@ -1755,6 +1759,10 @@ class WriteCmd
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $alias;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$servicegroupmembers;
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
 
         $this->newcmdline .= "'";
 
@@ -2175,6 +2183,10 @@ class WriteCmd
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $alias;
         $this->newcmdline .= ",".$disable;
+        $this->newcmdline .= ",".$servicegroupmembers;
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
 
         $this->newcmdline .= "'";
 
@@ -2873,6 +2885,11 @@ function csv2array( $output, $subcmd )
             1 => "name",
             2 => "alias",
             3 => "disable",
+            4 => "members",
+            5 => "servicegroupmembers",
+            6 => "notes",
+            7 => "notes_url",
+            8 => "action_url",
         ),
         'contacts' => array(
             1 => "name",

@@ -129,7 +129,7 @@ gfile_ncols[$FILE_SERVICES]="46"
 gfile_ncols[$FILE_CONTACTS]="24"
 gfile_ncols[$FILE_CONTACTGROUPS]="4"
 gfile_ncols[$FILE_SERVICESETS]="46"
-gfile_ncols[$FILE_SERVICEGROUPS]="3"
+gfile_ncols[$FILE_SERVICEGROUPS]="8"
 gfile_ncols[$FILE_TIMEPERIODS]="5"
 gfile_ncols[$FILE_COMMANDS]="3"
 

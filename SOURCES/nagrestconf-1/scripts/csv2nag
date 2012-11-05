@@ -373,7 +373,7 @@ add_hostgroup_entries()
 }
 
 # ---------------------------------------------------------------------------
-lookup_servicegroup_alias()
+get_servicegroup_line()
 # ---------------------------------------------------------------------------
 # Purpose:      Echo the value of the second key (the Nagios alias) in
 #               the $gfnsvcgrpsetup file.
@@ -381,8 +381,7 @@ lookup_servicegroup_alias()
 # Returns:      Nothing
 {
     local a
-    a=`grep $1 $gfnsvcgrpsetup`
-    a=`echo $a | cut -d, -f2`
+    a=`grep "^$1\>" $gfnsvcgrpsetup`
     echo $a
 }
 
@@ -695,7 +694,10 @@ create_servicegroups()
         echo "define servicegroup {"
         echo "    servicegroup_name    $a"
         exec 1>&3 3>&-
-        alias=`lookup_servicegroup_alias "$a"`
+        line=`get_servicegroup_line "$a"`
+        IFS=, read dummy alias disable members servicegroupmembers \
+            notes notes_url action_url < <( echo "$line")
+        [[ "$disable" == "1" ]] && continue
         [[ -z "$alias" ]] && {
             echo
             echo "ERROR: Entry for servicegroup, $a, is not defined in the "
@@ -704,6 +706,23 @@ create_servicegroups()
         }
         exec 3>&1 >>$gfnsvcgrpcfg
         echo "    alias                $alias"  
+        [[ -n $members ]] && {
+            echo -n "    members           "
+            echo "$members" | tr " " ,
+        }
+        [[ -n $hostgroupmembers ]] && {
+            echo -n "    servicegroup_members "
+            echo "$hostgroupmembers" | tr " " ,
+        }
+        [[ -n $notes ]] && {
+            echo "    notes             $notes"
+        }
+        [[ -n $notes_url ]] && {
+            echo "    notes_url         $notes_url"
+        }
+        [[ -n $action_url ]] && {
+            echo "    action_url        $action_url"
+        }
         echo "}"
         echo
     done
