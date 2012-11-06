@@ -458,7 +458,7 @@ create_host_files()
             retainstatusinfo retainnonstatusinfo notifinterval \
             firstnotifdelay notifperiod notifopts notifications_enabled \
             stalkingoptions notes notes_url icon_image icon_image_alt \
-            vrml_image statusmap_image 2d_coords 3d_coords action_url \
+            vrml_image statusmap_image coords2d coords3d action_url x \
             < <(echo "$a")
 
         [[ "$disable" == "1" ]] && continue
@@ -696,7 +696,7 @@ create_servicegroups()
         exec 1>&3 3>&-
         line=`get_servicegroup_line "$a"`
         IFS=, read dummy alias disable members servicegroupmembers \
-            notes notes_url action_url < <( echo "$line")
+            notes notes_url action_url x < <( echo "$line")
         [[ "$disable" == "1" ]] && continue
         [[ -z "$alias" ]] && {
             echo
@@ -753,7 +753,7 @@ create_hostgroups()
         exec 1>&3 3>&-
         line=`get_hostgroup_line "$a"`
         IFS=, read dummy alias disable members hostgroupmembers \
-            notes notes_url action_url < <( echo "$line")
+            notes notes_url action_url x < <( echo "$line")
         [[ "$disable" == "1" ]] && continue
         [[ -z "$alias" ]] && {
             echo "ERROR: Entry for hostgroup, $a, is not defined in the "
@@ -840,7 +840,7 @@ create_service_entries()
                 retainnonstatusinfo notifinterval firstnotifdelay \
                 notifperiod notifopts notifications_enabled stalkingoptions \
                 notes notes_url action_url icon_image icon_image_alt \
-                vrml_image statusmap_image coords2d coords3d \
+                vrml_image statusmap_image coords2d coords3d x \
                 < <(echo "$b")
 
             [[ "$disable" == "1" ]] && continue
@@ -1077,7 +1077,7 @@ create_servicetemplates()
 
         IFS=, read name use contacts cgroups notifopts checki normchecki \
             retrchecki notifinter notifperiod disable checkperiod \
-            maxcheckattempts  \
+            maxcheckattempts x \
             < <(echo "$a")
 
         echo "define service {"
@@ -1165,7 +1165,7 @@ create_hosttemplates()
             firstnotifdelay notifications_enabled \
             stalkingoptions notes notes_url icon_image \
             icon_image_alt vrml_image statusmap_image coords2d \
-            coords3d action_url \
+            coords3d action_url x \
             < <(echo "$a")
 
         echo "define host {"
@@ -1357,7 +1357,7 @@ create_contacts()
             hstnotper hstnotopts hstnotcmds cansubmit disable \
             svcnotifenabled hstnotifenabled pager address1 address2 \
             address3 address4 address5 address6 retainstatusinfo \
-            retainnonstatusinfo contactgroups \
+            retainnonstatusinfo contactgroups x \
             < <(echo "$a")
 
         echo "define contact {"
@@ -1487,7 +1487,7 @@ create_timeperiods()
     while read a; do 
         [[ -z $a || $a == "#"* ]] && continue
 
-        IFS=, read name alias definition exclude disable exception \
+        IFS=, read name alias definition exclude disable exception x \
             < <(echo "$a")
 
         [[ -n $definition ]] && definition=$(echo "$definition" | tr '`' ',')
@@ -1543,7 +1543,7 @@ create_commands()
     while read a; do 
         [[ -z $a || $a == "#"* ]] && continue
 
-        IFS=, read name command disable < <(echo "$a")
+        IFS=, read name command disable x < <(echo "$a")
 
         [[ -n $command ]] && command=$(echo "$command" | tr '`' ',')
 
