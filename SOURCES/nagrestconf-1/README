@@ -625,7 +625,8 @@ Currently Implemented Definitions and Directives
 ------------------------------------------------
 
 Nagios object definitions are here:
-http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html#servicedependency
+
+http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html
 
 Key for Flags column:
 
