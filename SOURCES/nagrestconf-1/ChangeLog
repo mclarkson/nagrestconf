@@ -1,5 +1,62 @@
+2012-11-07  mclarkson
+
+	* scripts/nagctl: All nagios object definitions now supported
+	  (Fixes)
+	* README, debian/changelog, doc/README.html,
+	  packaging/nagrestconf.spec, rest/index.php, scripts/csv2nag,
+	  scripts/nagctl, scripts/slc_configure, scripts/tests,
+	  scripts/tests/t001.sh, scripts/tests/t002.sh,
+	  scripts/tests/t003.sh, scripts/tests/tall.sh: All nagios object
+	  definitions now supported
+
+2012-11-06  mclarkson
+
+	* scripts/csv2nag: Column choosing fixes
+
+2012-11-05  mclarkson
+
+	* scripts/nagctl: Performance enhancement (Fixes)
+	* rest/index.php: Performance enhancement (Fixes)
+	* scripts/nagctl: Performance enhancement (Fixes)
+	* README, scripts/nagctl: Performance enhancement
+	* scripts/upgrade_setup_files.sh: Added more nagios directives to
+	  the REST api. Timeperiods now complete (Fixes).
+	* rest/index.php: Added more nagios directives to the REST api.
+	  Timeperiods now complete (Fixes).
+	* scripts/upgrade_setup_files.sh: Added more nagios directives to
+	  the REST api. Timeperiods now complete (Fixes).
+	* README, debian/changelog, doc/README.html,
+	  packaging/nagrestconf.spec, scripts/csv2nag, scripts/nagctl,
+	  scripts/upgrade_setup_files.sh: Added more nagios directives to
+	  the REST api. Timeperiods now complete.
+	* README, debian/changelog, doc/README.html,
+	  packaging/nagrestconf.spec, rest/index.php, scripts/csv2nag,
+	  scripts/nagctl, scripts/upgrade_setup_files.sh: Added more nagios
+	  directives to the REST api. Servicegroups now complete.
+	* README, debian/changelog, doc/README.html,
+	  packaging/nagrestconf.spec, rest/index.php, scripts/csv2nag,
+	  scripts/nagctl, scripts/upgrade_setup_files.sh: Added more nagios
+	  directives to the REST api. Hostgroups now complete.
+
+2012-11-02  mclarkson
+
+	* README, doc/README.html, scripts/upgrade_setup_files.sh: Added
+	  more nagios directives to the REST api. Services and servicesets
+	  now complete (Fixes).
+	* README, debian/changelog, doc/README.html, rest/index.php,
+	  scripts/csv2nag, scripts/nagctl, scripts/upgrade_setup_files.sh:
+	  Added more nagios directives to the REST api. Services and
+	  servicesets now complete.
+	* README, debian/changelog, doc/README.html,
+	  packaging/nagrestconf.spec, rest/index.php, scripts/csv2nag,
+	  scripts/nagctl, scripts/upgrade_setup_files.sh: Added more nagios
+	  directives to the REST api. Host templates now complete.
+
 2012-11-01  mclarkson
 
+	* packaging/nagrestconf.spec: Stop rpm from clobbering config
+	  files. Added %config(noreplace) to spec.
+	* ChangeLog, debian/changelog, doc/README.html: Packaging edits
 	* scripts/nagctl: Added more nagios directives to the REST api
 	  (Hosts). (Fixes)
 	* README, rest/index.php, scripts/nagctl: Added more nagios
