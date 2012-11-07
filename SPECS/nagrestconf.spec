@@ -139,6 +139,11 @@ cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 %{__rm} -rf %{buildroot}
 
 %changelog
+* Wed Nov 7 2012 Mark Clarkson <mark.clarkson@smorg.co.uk>
+- Added nagios objects: service dependencies, host dependencies,
+  service escalations, host escalations, extra service info and
+  extra host info.
+
 * Mon Nov 5 2012 Mark Clarkson <mark.clarkson@smorg.co.uk>
 - Added more nagios directives to the REST api. Host/Service groups and timeperiods now complete.
 

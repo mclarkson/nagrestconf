@@ -1350,7 +1350,7 @@ modify_service_line()
     #name=`echo "$gcsv" | cut -d, -f1`
     #template=`echo "$gcsv" | cut -d, -f2`
 
-    command=`echo "$command" | grep -o '[-A-Za-z0-9_+]*'`
+    [[ -n $command ]] && command=`echo "$command" | grep -o '[-A-Za-z0-9_+]*'`
 
     #command=`echo "$gcsv" | cut -d, -f3 | grep -o '[-A-Za-z0-9_+]*'`
     #svcdesc=`echo "$gcsv" | cut -d, -f4`
@@ -1377,11 +1377,14 @@ modify_service_line()
     fi
 
     # command must exist in commands file
-    if ! item_exists 1 $FILE_COMMANDS "$command"; then
-        echo "NAGCTL ERROR: Command '$command' unavailable. Cannot modify item."
-        unlockdir
-        exit 13
-    fi
+    [[ -n $command ]] && {
+        if ! item_exists 1 $FILE_COMMANDS "$command"; then
+            echo -n "NAGCTL ERROR: Command '$command' not found. "
+            echo "Cannot modify item."
+            unlockdir
+            exit 13
+        fi
+    }
     
     [[ -n $template ]] && {
         if ! item_exists 1 $FILE_SERVICETEMPLATES "$template"; then
@@ -2540,7 +2543,7 @@ add_servicesets_line()
     #name=`echo "$gcsv" | cut -d, -f1`
     #template=`echo "$gcsv" | cut -d, -f2`
 
-    command=`echo "$gcsv" | cut -d, -f3 | grep -o '[-A-Za-z0-9_+]*'`
+    command=`echo "$command" | grep -o '[-A-Za-z0-9_+]*'`
 
     #command=`echo "$gcsv" | cut -d, -f3 | grep -o '[-A-Za-z0-9_+]*'`
     #svcdesc=`echo "$gcsv" | cut -d, -f4`
