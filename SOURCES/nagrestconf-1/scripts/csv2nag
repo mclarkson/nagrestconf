@@ -62,6 +62,7 @@ FALSE=0
 # Errors
 ERROR_NONE=0
 ERROR=1
+WARN=2
 # Types of .setup files
 FT_NONE=0
 FT_HOSTS=1
@@ -71,9 +72,17 @@ FT_SERVICETEMPLATES=4
 FT_CONTACTS=5
 FT_TIMEPERIODS=6
 FT_COMMANDS=7
-FT_ALL=8
+FT_SERVICEDEPS=8
+FT_HOSTDEPS=9
+FT_SERVICEESC=10
+FT_HOSTESC=11
+FT_SERVICEEXTINFO=12
+FT_HOSTEXTINFO=13
+FT_ALL=14
 
 # -- General variables
+
+G_BREAKOUT=0
 
 # Suffix array for building file name
 declare -a gftsuffix
@@ -160,6 +169,19 @@ init_data()
     gfncontactsetup=${gsetupprefix}_contacts.setup
     gfncontactgrpsetup=${gsetupprefix}_contactgroups.setup
     gfncontactscfg=${gconfigprefix}_contacts.cfg
+    gfnsvcdepsetup=${gsetupprefix}_servicedeps.setup
+    gfnsvcdepcfg=${gconfigprefix}_servicedeps.cfg
+    gfnhostdepsetup=${gsetupprefix}_hostdeps.setup
+    gfnhostdepcfg=${gconfigprefix}_hostdeps.cfg
+    gfnsvcescsetup=${gsetupprefix}_serviceesc.setup
+    gfnsvcesccfg=${gconfigprefix}_serviceesc.cfg
+    gfnhostescsetup=${gsetupprefix}_hostesc.setup
+    gfnhostesccfg=${gconfigprefix}_hostesc.cfg
+    gfnsvcextsetup=${gsetupprefix}_serviceextinfo.setup
+    gfnsvcextcfg=${gconfigprefix}_serviceextinfo.cfg
+    gfnhostextsetup=${gsetupprefix}_hostextinfo.setup
+    gfnhostextcfg=${gconfigprefix}_hostextinfo.cfg
+
     [[ $DCC -eq 1 ]] && gfnmandatorygroupcfg=${gconfigprefix}_mandatory_group.setup
     gconfigext="cfg"
 }
@@ -194,6 +216,14 @@ usage()
     echo "             hosttemplates  -  Create a hosttemplates file."
     echo "             svctemplates   -  Create a servicetemplates file."
     echo "             contacts       -  Create a contacts file."
+    echo "             commands       -  Create a commands file."
+    echo "             timeperiods    -  Create a timeperiods file."
+    echo "             servicedeps    -  Create a servicedeps file."
+    echo "             hostdeps       -  Create a hostdeps file."
+    echo "             serviceesc     -  Create a serviceesc file."
+    echo "             hostesc        -  Create a hostesc file."
+    echo "             serviceext     -  Create a serviceext file."
+    echo "             hostext        -  Create a hostext file."
     echo "             all            -  Create all TYPEs in one go."
     echo
     echo "`basename $ME` should be run from the directory containing the 'setup'"
@@ -244,6 +274,22 @@ parse_options()
             ;;
             contacts) gsetupfiletype=$FT_CONTACTS
             ;;
+            commands) gsetupfiletype=$FT_COMMANDS
+            ;;
+            timeperiods) gsetupfiletype=$FT_TIMEPERIODS
+            ;;
+            servicedeps) gsetupfiletype=$FT_SERVICEDEPS
+            ;;
+            hostdeps) gsetupfiletype=$FT_HOSTDEPS
+            ;;
+            serviceesc) gsetupfiletype=$FT_SERVICEESC
+            ;;
+            hostesc) gsetupfiletype=$FT_HOSTESC
+            ;;
+            serviceext) gsetupfiletype=$FT_SERVICEEXTINFO
+            ;;
+            hostext) gsetupfiletype=$FT_HOSTEXTINFO
+            ;;
             all) gsetupfiletype=$FT_ALL
             ;;
             ?*) usage
@@ -262,24 +308,40 @@ check_for_setup_file()
 # Arguments:    $1 - the file name
 # Returns:      Nothing
 {
+    G_BREAKOUT=0
+
     # Check for the .setup file, must be readable and end in .setup
     if [[ -z $1 ]]; then
         show_usage=0
         g_error=$ERROR
         g_errmsg=".setup file name not supplied";
     else 
-        [[ ( ! -r $1 ) || ( $1 != *.setup ) ]] && {
+        if [[ ! -e $1 ]]; then
+            # The file simply does not exist. Report but don't quit.
+            show_usage=0
+            g_error=$WARN
+            g_errmsg="$1 not found. Skipping...";
+        elif [[ ( ! -r $1 ) ]]; then
             show_usage=0
             g_error=$ERROR
             g_errmsg="$1 not found or name does not end in .setup";
-        }
+        elif [[ ( $1 != *.setup ) ]]; then
+                show_usage=0
+                g_error=$ERROR
+                g_errmsg="$1 not found or name does not end in .setup";
+        fi
     fi
 
     # Quit on error
-    [[ $g_error -gt 0 ]] && {
+    [[ $g_error -eq $ERROR ]] && {
         [[ $show_usage -eq 1 ]] && usage
         echo -e "ERROR: $g_errmsg"
         exit 4
+    }
+    [[ $g_error -eq $WARN ]] && {
+        [[ $show_usage -eq 1 ]] && usage
+        G_BREAKOUT=1
+        echo -e "WARNING: $g_errmsg"
     }
 }
 
@@ -430,6 +492,7 @@ create_host_files()
     local fnnewconfig disable
 
     check_for_setup_file "$gfnhostsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
 
     # Need:
     #   o Template name to use   - From hosttemplates.setup
@@ -798,7 +861,9 @@ create_service_entries()
     local hfile alias hostname stemplate scommand sdescr cv
 
     check_for_setup_file "$gfnhostsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
     check_for_setup_file "$gfnsvcsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
     :>$gfnsvcgrpsetupauto
 
     # Read hosts list from the $gfnhostsetup file
@@ -1064,6 +1129,7 @@ create_servicetemplates()
     local maxcheckattempts
 
     check_for_setup_file "$gfnsvctmplsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
 
     echo "Creating servicetemplates file $gfnsvctmplcfg"
 
@@ -1137,6 +1203,7 @@ create_hosttemplates()
     local checkcommand notifinterval
 
     check_for_setup_file "$gfnhostmplsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
 
     echo "Creating hosttemplates file $gfnhostmplcfg"
 
@@ -1334,7 +1401,9 @@ create_contacts()
     local hstnotper hstnotopts hstnotcmds cansubmit members disable
 
     check_for_setup_file "$gfncontactsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
     check_for_setup_file "$gfncontactgrpsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
 
     # Write contacts
 
@@ -1476,6 +1545,7 @@ create_timeperiods()
     local a b name alias definition exclude disable
 
     check_for_setup_file "$gfntimeperiodsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
 
     echo "Creating timeperiods file $gfntimeperiodcfg"
 
@@ -1532,6 +1602,7 @@ create_commands()
     local a name command disable
 
     check_for_setup_file "$gfncommandsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
 
     echo "Creating commands file $gfncommandcfg"
 
@@ -1554,6 +1625,411 @@ create_commands()
         echo
 
     done <$gfncommandsetup
+
+    # Un-redirect stdout output
+    exec 1>&3 3>&-
+}
+
+# ---------------------------------------------------------------------------
+create_servicedeps()
+# ---------------------------------------------------------------------------
+# Purpose:      Create servicedeps file ($gfnsvcdepcfg)
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a name command disable
+
+    check_for_setup_file "$gfnsvcdepsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
+
+    echo "Creating servicedeps file $gfnsvcdepcfg"
+
+    # Redirect all stdout output to contacts file
+    exec 3>&1 >$gfnsvcdepcfg
+
+    echo_warning_header
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        IFS=, read dephostname dephostgroupname depsvcdesc \
+            hostname hostgroupname svcdesc inheritsparent \
+            execfailcriteria notiffailcriteria period disable x \
+            < <( echo "$a" )
+
+        [[ "$disable" == "1" ]] && continue
+
+        echo "define servicedependency {"
+        if [[ -n $dephostname ]]; then
+            echo "       dependent_host_name           $dephostname"
+        else
+            echo "       dependent_hostgroup_name      $dephostgroupname"
+        fi
+        echo "       dependent_service_description $depsvcdesc"
+        if [[ -n $hostname ]]; then
+            echo "       host_name                     $hostname"
+        else
+            echo "       hostgroup_name                $hostgroupname"
+        fi
+        echo "       service_description           $svcdesc"
+        [[ -n $inheritsparent ]] && {
+            if [[ $inheritsparent == 1 ]]; then
+                echo "       inherits_parent               1"
+            else
+                echo "       inherits_parent               0"
+            fi
+        }
+        [[ -n $execfailcriteria ]] && {
+            echo -n "       execution_failure_criteria    "
+            echo "$execfailcriteria" | tr " " ,
+        }
+        [[ -n $notiffailcriteria ]] && {
+            echo -n "       notification_failure_criteria "
+            echo "$notiffailcriteria" | tr " " ,
+        }
+        [[ -n $period ]] && {
+            echo "       dependency_period             $period"
+        }
+        echo "}"
+        echo
+
+    done <$gfnsvcdepsetup
+
+    # Un-redirect stdout output
+    exec 1>&3 3>&-
+}
+
+# ---------------------------------------------------------------------------
+create_hostdeps()
+# ---------------------------------------------------------------------------
+# Purpose:      Create servicedeps file ($gfnsvcdepcfg)
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a name command disable
+
+    check_for_setup_file "$gfnhostdepsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
+
+    echo "Creating hostdeps file $gfnhostdepcfg"
+
+    # Redirect all stdout output to contacts file
+    exec 3>&1 >$gfnhostdepcfg
+
+    echo_warning_header
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        IFS=, read dephostname dephostgroupname \
+            hostname hostgroupname inheritsparent \
+            execfailcriteria notiffailcriteria period disable x \
+            < <( echo "$a" )
+
+        [[ "$disable" == "1" ]] && continue
+
+        echo "define servicedependency {"
+        if [[ -n $dephostname ]]; then
+            echo "       dependent_host_name           $dephostname"
+        else
+            echo "       dependent_hostgroup_name      $dephostgroupname"
+        fi
+        if [[ -n $hostname ]]; then
+            echo "       host_name                     $hostname"
+        else
+            echo "       hostgroup_name                $hostgroupname"
+        fi
+        [[ -n $inheritsparent ]] && {
+            if [[ $inheritsparent == 1 ]]; then
+                echo "       inherits_parent               1"
+            else
+                echo "       inherits_parent               0"
+            fi
+        }
+        [[ -n $execfailcriteria ]] && {
+            echo -n "       execution_failure_criteria    "
+            echo "$execfailcriteria" | tr " " ,
+        }
+        [[ -n $notiffailcriteria ]] && {
+            echo -n "       notification_failure_criteria "
+            echo "$notiffailcriteria" | tr " " ,
+        }
+        [[ -n $period ]] && {
+            echo "       dependency_period             $period"
+        }
+        echo "}"
+        echo
+
+    done <$gfnhostdepsetup
+
+    # Un-redirect stdout output
+    exec 1>&3 3>&-
+}
+
+# ---------------------------------------------------------------------------
+create_serviceesc()
+# ---------------------------------------------------------------------------
+# Purpose:      Create serviceesc file ($gfnsvcesccfg)
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a name command disable
+
+    check_for_setup_file "$gfnsvcescsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
+
+    echo "Creating serviceescalation file $gfnsvcesccfg"
+
+    # Redirect all stdout output to contacts file
+    exec 3>&1 >$gfnsvcesccfg
+
+    echo_warning_header
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        IFS=, read hostname hostgroupname svcdesc contacts contactgroups \
+            firstnotif lastnotif notifinterval period escopts disable x \
+            < <( echo "$a" )
+
+        [[ "$disable" == "1" ]] && continue
+
+        echo "define serviceescalation {"
+        if [[ -n $hostname ]]; then
+            echo "       host_name            $hostname"
+        else
+            echo "       hostgroup_name       $hostgroupname"
+        fi
+        echo "       service_description  $svcdesc"
+        [[ -n $contacts ]] && {
+            echo -n "       contacts             "
+            echo "$contacts" | tr " " ,
+        }
+        [[ -n $contactgroups ]] && {
+            echo -n "       contact_groups       "
+            echo "$contactgroups" | tr " " ,
+        }
+        [[ -n $escopts ]] && {
+            echo -n "       escalation_options   "
+            echo "$escopts" | tr " " ,
+        }
+        [[ -n $firstnotif ]] && {
+            echo "       first_notification   $firstnotif"
+        }
+        [[ -n $lastnotif ]] && {
+            echo "       last_notification    $lastnotif"
+        }
+        [[ -n $lastnotif ]] && {
+            echo "       notification_interval $notifinterval"
+        }
+        [[ -n $period ]] && {
+            echo "       escalation_period     $period"
+        }
+        [[ -n $options ]] && {
+            echo "       escalation_options    $escopts"
+        }
+        echo "}"
+        echo
+
+    done <$gfnsvcescsetup
+
+    # Un-redirect stdout output
+    exec 1>&3 3>&-
+}
+
+# ---------------------------------------------------------------------------
+create_hostesc()
+# ---------------------------------------------------------------------------
+# Purpose:      Create servicedeps file ($gfnsvcdepcfg)
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a name command disable
+
+    check_for_setup_file "$gfnhostescsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
+
+    echo "Creating hostescalation file $gfnhostesccfg"
+
+    # Redirect all stdout output to contacts file
+    exec 3>&1 >$gfnhostesccfg
+
+    echo_warning_header
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        IFS=, read hostname hostgroupname contacts contactgroups \
+            firstnotif lastnotif notifinterval period escopts disable x \
+            < <( echo "$a" )
+
+        [[ "$disable" == "1" ]] && continue
+
+        echo "define serviceescalation {"
+        if [[ -n $hostname ]]; then
+            echo "       host_name            $hostname"
+        else
+            echo "       hostgroup_name       $hostgroupname"
+        fi
+        [[ -n $contacts ]] && {
+            echo -n "       contacts             "
+            echo "$contacts" | tr " " ,
+        }
+        [[ -n $contactgroups ]] && {
+            echo -n "       contact_groups       "
+            echo "$contactgroups" | tr " " ,
+        }
+        [[ -n $escopts ]] && {
+            echo -n "       escalation_options   "
+            echo "$escopts" | tr " " ,
+        }
+        [[ -n $firstnotif ]] && {
+            echo "       first_notification   $firstnotif"
+        }
+        [[ -n $lastnotif ]] && {
+            echo "       last_notification    $lastnotif"
+        }
+        [[ -n $lastnotif ]] && {
+            echo "       notification_interval $notifinterval"
+        }
+        [[ -n $period ]] && {
+            echo "       escalation_period     $period"
+        }
+        [[ -n $options ]] && {
+            echo "       escalation_options    $escopts"
+        }
+        echo "}"
+        echo
+
+    done <$gfnhostescsetup
+
+    # Un-redirect stdout output
+    exec 1>&3 3>&-
+}
+
+# ---------------------------------------------------------------------------
+create_serviceext()
+# ---------------------------------------------------------------------------
+# Purpose:      Create servicedeps file ($gfnsvcdepcfg)
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a name command disable
+
+    check_for_setup_file "$gfnsvcextsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
+
+    echo "Creating serviceextinfo file $gfnsvcextcfg"
+
+    # Redirect all stdout output to contacts file
+    exec 3>&1 >$gfnsvcextcfg
+
+    echo_warning_header
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        IFS=, read hostname svcdesc notes notes_url action_url \
+            icon_image icon_image_alt disable x \
+            < <( echo "$a" )
+
+        [[ "$disable" == "1" ]] && continue
+
+        echo "define serviceextinfo {"
+        [[ -n $hostname ]] && {
+            echo "       host_name            $hostname"
+        }
+        [[ -n $svcdesc ]] && {
+            echo "       service_description  $svcdesc"
+        }
+        [[ -n $notes ]] && {
+            echo "       notes                $notes"
+        }
+        [[ -n $notes_url ]] && {
+            echo "       notes_url            $notes_url"
+        }
+        [[ -n $action_url ]] && {
+            echo "       action_url           $action_url"
+        }
+        [[ -n $icon_image ]] && {
+            echo "       icon_image           $icon_image"
+        }
+        [[ -n $icon_image_alt ]] && {
+            echo "       icon_image_alt       $icon_image_alt"
+        }
+        echo "}"
+        echo
+
+    done <$gfnsvcextsetup
+
+    # Un-redirect stdout output
+    exec 1>&3 3>&-
+}
+
+# ---------------------------------------------------------------------------
+create_hostext()
+# ---------------------------------------------------------------------------
+# Purpose:      Create servicedeps file ($gfnsvcdepcfg)
+# Arguments:    None
+# Returns:      Nothing
+{
+    local a name command disable
+
+    check_for_setup_file "$gfnhostextsetup"
+    [[ $G_BREAKOUT -eq 1 ]] && return
+
+    echo "Creating hostextinfo file $gfnhostextcfg"
+
+    # Redirect all stdout output to contacts file
+    exec 3>&1 >$gfnhostextcfg
+
+    echo_warning_header
+
+    while read a; do 
+        [[ -z $a || $a == "#"* ]] && continue
+
+        IFS=, read hostname notes notes_url action_url \
+            icon_image icon_image_alt vrml_image statusmap_image \
+            coords2d coords3d disable x \
+            < <( echo "$a" )
+
+        [[ "$disable" == "1" ]] && continue
+
+        echo "define hostextinfo {"
+        [[ -n $hostname ]] && {
+            echo "       host_name            $hostname"
+        }
+        [[ -n $notes ]] && {
+            echo "       notes                $notes"
+        }
+        [[ -n $notes_url ]] && {
+            echo "       notes_url            $notes_url"
+        }
+        [[ -n $action_url ]] && {
+            echo "       action_url           $action_url"
+        }
+        [[ -n $icon_image ]] && {
+            echo "       icon_image           $icon_image"
+        }
+        [[ -n $icon_image_alt ]] && {
+            echo "       icon_image_alt       $icon_image_alt"
+        }
+        [[ -n $vrml_image ]] && {
+            echo "       vrml_image           $vrml_image"
+        }
+        [[ -n $statusmap_image ]] && {
+            echo "       statusmap_image      $statusmap_image"
+        }
+        [[ -n $coords2d ]] && {
+            echo "       2d_coords            $coords2d"
+        }
+        [[ -n $coords3d ]] && {
+            echo "       3d_coords            $coords3d"
+        }
+        echo "}"
+        echo
+
+    done <$gfnhostextsetup
 
     # Un-redirect stdout output
     exec 1>&3 3>&-
@@ -1583,6 +2059,18 @@ create_file()
         $FT_TIMEPERIODS) create_timeperiods
         ;;
         $FT_COMMANDS) create_commands
+        ;;
+        $FT_SERVICEDEPS) create_servicedeps
+        ;;
+        $FT_HOSTDEPS) create_hostdeps
+        ;;
+        $FT_SERVICEESC) create_serviceesc
+        ;;
+        $FT_HOSTESC) create_hostesc
+        ;;
+        $FT_SERVICEEXTINFO) create_serviceext
+        ;;
+        $FT_HOSTEXTINFO) create_hostext
         ;;
         $FT_ALL) echo "ERROR: YOU CANNOT BE SEEING THIS!"
                  exit 6
@@ -1632,6 +2120,18 @@ main()
             gsetupfiletype=$FT_CONTACTS
             start_writing_process
         }
+        gsetupfiletype=$FT_SERVICEDEPS
+        start_writing_process
+        gsetupfiletype=$FT_HOSTDEPS
+        start_writing_process
+        gsetupfiletype=$FT_SERVICEESC
+        start_writing_process
+        gsetupfiletype=$FT_HOSTESC
+        start_writing_process
+        gsetupfiletype=$FT_SERVICEEXTINFO
+        start_writing_process
+        gsetupfiletype=$FT_HOSTEXTINFO
+        start_writing_process
     else
         start_writing_process
     fi

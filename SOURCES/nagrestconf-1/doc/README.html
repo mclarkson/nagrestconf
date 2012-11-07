@@ -668,6 +668,7 @@ li {
 </div>
 <h2 id="_news">1. News</h2>
 <div class="sectionbody">
+<div class="paragraph"><p>7 Nov 2012 - All nagios object definitions are now supported in the REST api.</p></div>
 <div class="paragraph"><p>22 Oct 2012 - Fixes made for Centos 5/6 and Debian packages.</p></div>
 <div class="paragraph"><p>4 Sep 2012 - Added more Nagios directives to the REST api. See the <a href="#X10">Upgrade</a> section below.</p></div>
 <div class="paragraph"><p>21 Jul 2012 - <a href="http://blogger.smorg.co.uk/2012/07/nagrestconf-on-raspberry-pi.html">Nagrestconf on Raspberry PI</a></p></div>
@@ -1051,7 +1052,7 @@ define service {
 </div>
 <h2 id="X20">10. Status</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Currently implemented directives (123/177) = 69%.</p></div>
+<div class="paragraph"><p>Currently implemented directives (177/177) = 100%.</p></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -1127,38 +1128,38 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="left" valign="top"><p class="table">Host Dependency</p></td>
 <td align="center" valign="top"><p class="table">8</p></td>
-<td align="center" valign="top"><p class="table">0</p></td>
-<td align="right" valign="top"><p class="table">0%</p></td>
+<td align="center" valign="top"><p class="table">8</p></td>
+<td align="right" valign="top"><p class="table">100%</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table">Host Escalation</p></td>
 <td align="center" valign="top"><p class="table">9</p></td>
-<td align="center" valign="top"><p class="table">0</p></td>
-<td align="right" valign="top"><p class="table">0%</p></td>
+<td align="center" valign="top"><p class="table">9</p></td>
+<td align="right" valign="top"><p class="table">100%</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table">Service Dependency</p></td>
 <td align="center" valign="top"><p class="table">10</p></td>
-<td align="center" valign="top"><p class="table">0</p></td>
-<td align="right" valign="top"><p class="table">0%</p></td>
+<td align="center" valign="top"><p class="table">10</p></td>
+<td align="right" valign="top"><p class="table">100%</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table">Service Escalation</p></td>
 <td align="center" valign="top"><p class="table">10</p></td>
-<td align="center" valign="top"><p class="table">0</p></td>
-<td align="right" valign="top"><p class="table">0%</p></td>
+<td align="center" valign="top"><p class="table">10</p></td>
+<td align="right" valign="top"><p class="table">100%</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table">Hostextinfo</p></td>
 <td align="center" valign="top"><p class="table">10</p></td>
-<td align="center" valign="top"><p class="table">0</p></td>
-<td align="right" valign="top"><p class="table">0%</p></td>
+<td align="center" valign="top"><p class="table">10</p></td>
+<td align="right" valign="top"><p class="table">100%</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table">Serviceextinfo</p></td>
 <td align="center" valign="top"><p class="table">7</p></td>
-<td align="center" valign="top"><p class="table">0</p></td>
-<td align="right" valign="top"><p class="table">0%</p></td>
+<td align="center" valign="top"><p class="table">7</p></td>
+<td align="right" valign="top"><p class="table">100%</p></td>
 </tr>
 </tbody>
 </table>
@@ -1246,6 +1247,36 @@ timeperiods json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;v
 commands json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
 </p>
 </li>
+<li>
+<p>
+servicedeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostdeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+serviceesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+serviceextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
 </ul></div>
 </li>
 </ul></div>
@@ -1318,6 +1349,36 @@ timeperiods json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;v
 commands json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
 </p>
 </li>
+<li>
+<p>
+servicedeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostdeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+serviceesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+serviceextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
 </ul></div>
 </li>
 <li>
@@ -1380,6 +1441,36 @@ timeperiods json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;v
 commands json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
 </p>
 </li>
+<li>
+<p>
+servicedeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostdeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+serviceesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+serviceextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
 </ul></div>
 </li>
 <li>
@@ -1440,6 +1531,36 @@ timeperiods json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;v
 <li>
 <p>
 commands json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+servicedeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostdeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+serviceesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+serviceextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+</p>
+</li>
+<li>
+<p>
+hostextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
 </p>
 </li>
 </ul></div>
@@ -1506,6 +1627,8 @@ disablesvccheck json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname
 </div>
 <h2 id="_currently_implemented_definitions_and_directives">12. Currently Implemented Definitions and Directives</h2>
 <div class="sectionbody">
+<div class="paragraph"><p>Nagios object definitions are here:
+<a href="http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html#servicedependency">http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html#servicedependency</a></p></div>
 <div class="paragraph"><p>Key for Flags column:</p></div>
 <div class="ulist"><ul>
 <li>
@@ -1590,13 +1713,13 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Service notification options</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="center" valign="top"><p class="table">LR</p></td>
 <td align="left" valign="top"><p class="table">svcnotifopts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Service notification commands</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="center" valign="top"><p class="table">LR</p></td>
 <td align="left" valign="top"><p class="table">svcnotifcmds</p></td>
 </tr>
 <tr>
@@ -1608,13 +1731,13 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
 <td align="left" valign="top"><p class="table">Host notification options</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="center" valign="top"><p class="table">LR</p></td>
 <td align="left" valign="top"><p class="table">hstnotifopts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Host notification commands</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="center" valign="top"><p class="table">LR</p></td>
 <td align="left" valign="top"><p class="table">hstnotifcmds</p></td>
 </tr>
 <tr>
@@ -2115,7 +2238,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification options</p></td>
-<td align="center" valign="top"><p class="table"></p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">notifopts</p></td>
 </tr>
 <tr>
@@ -2598,7 +2721,7 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<div class="paragraph"><p>\* Freshness thresh (auto) also sets check_command to no-checks-received,
+<div class="paragraph"><p>* Freshness thresh (auto) also sets check_command to no-checks-received,
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.</p></div>
@@ -2899,7 +3022,7 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<div class="paragraph"><p>\* Freshness thresh (auto) also sets check_command to no-checks-received,
+<div class="paragraph"><p>* Freshness thresh (auto) also sets check_command to no-checks-received,
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.</p></div>
@@ -2948,7 +3071,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification options</p></td>
-<td align="center" valign="top"><p class="table"></p></td>
+<td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">notifopts</p></td>
 </tr>
 <tr>
@@ -3236,10 +3359,476 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Servicedeps File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Dependent host name</p></td>
+<td align="center" valign="top"><p class="table">RKX</p></td>
+<td align="left" valign="top"><p class="table">dephostname</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Dependent hostgroup name</p></td>
+<td align="center" valign="top"><p class="table">KX</p></td>
+<td align="left" valign="top"><p class="table">dephostgroupname</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Dependent service description</p></td>
+<td align="center" valign="top"><p class="table">RKX</p></td>
+<td align="left" valign="top"><p class="table">depsvcdesc</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Host name</p></td>
+<td align="center" valign="top"><p class="table">RKX</p></td>
+<td align="left" valign="top"><p class="table">hostname</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">Hostgroup name</p></td>
+<td align="center" valign="top"><p class="table">KX</p></td>
+<td align="left" valign="top"><p class="table">hostgroupname</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>6.</em></p></td>
+<td align="left" valign="top"><p class="table">Service description</p></td>
+<td align="center" valign="top"><p class="table">RKX</p></td>
+<td align="left" valign="top"><p class="table">svcdesc</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>7.</em></p></td>
+<td align="left" valign="top"><p class="table">Inherits parent</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">inheritsparent</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>8.</em></p></td>
+<td align="left" valign="top"><p class="table">Execution failure criteria</p></td>
+<td align="center" valign="top"><p class="table">LX</p></td>
+<td align="left" valign="top"><p class="table">execfailcriteria</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>9.</em></p></td>
+<td align="left" valign="top"><p class="table">Notification failure criteria</p></td>
+<td align="center" valign="top"><p class="table">LX</p></td>
+<td align="left" valign="top"><p class="table">notiffailcriteria</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>10.</em></p></td>
+<td align="left" valign="top"><p class="table">Dependency period</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">period</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>11.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>Note: Columns 1,2,4 and 5 are not lists in REST as they are in a
+Nagios configuration file.</p></div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Hostdeps File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>1.</em></p></td>
+<td align="left" valign="top"><p class="table">Dependent host name</p></td>
+<td align="center" valign="top"><p class="table">LRKX</p></td>
+<td align="left" valign="top"><p class="table">dephostname</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Dependent hostgroup name</p></td>
+<td align="center" valign="top"><p class="table">LKX</p></td>
+<td align="left" valign="top"><p class="table">dephostgroupname</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Host name</p></td>
+<td align="center" valign="top"><p class="table">LRKX</p></td>
+<td align="left" valign="top"><p class="table">hostname</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Hostgroup name</p></td>
+<td align="center" valign="top"><p class="table">LKX</p></td>
+<td align="left" valign="top"><p class="table">hostgroupname</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">Inherits parent</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">inheritsparent</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>6.</em></p></td>
+<td align="left" valign="top"><p class="table">Execution failure criteria</p></td>
+<td align="center" valign="top"><p class="table">LRX</p></td>
+<td align="left" valign="top"><p class="table">execfailcriteria</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>7.</em></p></td>
+<td align="left" valign="top"><p class="table">Notification failure criteria</p></td>
+<td align="center" valign="top"><p class="table">LRX</p></td>
+<td align="left" valign="top"><p class="table">notiffailcriteria</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>8.</em></p></td>
+<td align="left" valign="top"><p class="table">Dependency period</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">period</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>9.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">UX</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>Note: Columns 1 and 2 are not lists in REST as they are in a
+Nagios configuration file.</p></div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Serviceescalation File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> 1. </th>
+<th align="left" valign="top"> Host name </th>
+<th align="center" valign="top"> KRX </th>
+<th align="left" valign="top"> hostname</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Hostgroup name</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">hostgroupname</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Service description</p></td>
+<td align="center" valign="top"><p class="table">KRX</p></td>
+<td align="left" valign="top"><p class="table">svcdesc</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Contacts</p></td>
+<td align="center" valign="top"><p class="table">LRX</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">Contact groups</p></td>
+<td align="center" valign="top"><p class="table">LR</p></td>
+<td align="left" valign="top"><p class="table">contactgroups</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>6.</em></p></td>
+<td align="left" valign="top"><p class="table">First notification</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">firstnotif</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>7.</em></p></td>
+<td align="left" valign="top"><p class="table">Last notification</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">lastnotif</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>8.</em></p></td>
+<td align="left" valign="top"><p class="table">Notification interval</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">notifinterval</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>9.</em></p></td>
+<td align="left" valign="top"><p class="table">Escalation period</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">period</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>10.</em></p></td>
+<td align="left" valign="top"><p class="table">Escalation options</p></td>
+<td align="center" valign="top"><p class="table">LX</p></td>
+<td align="left" valign="top"><p class="table">escopts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>11.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Hostescalation File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> 1. </th>
+<th align="left" valign="top"> Host name </th>
+<th align="center" valign="top"> KRX </th>
+<th align="left" valign="top"> hostname</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Hostgroup name</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">hostgroupname</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Contacts</p></td>
+<td align="center" valign="top"><p class="table">LRX</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Contact groups</p></td>
+<td align="center" valign="top"><p class="table">LR</p></td>
+<td align="left" valign="top"><p class="table">contactgroups</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">First notification</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">firstnotif</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>6.</em></p></td>
+<td align="left" valign="top"><p class="table">Last notification</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">lastnotif</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>7.</em></p></td>
+<td align="left" valign="top"><p class="table">Notification interval</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">notifinterval</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>8.</em></p></td>
+<td align="left" valign="top"><p class="table">Escalation period</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">period</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>9.</em></p></td>
+<td align="left" valign="top"><p class="table">Escalation options</p></td>
+<td align="center" valign="top"><p class="table">LX</p></td>
+<td align="left" valign="top"><p class="table">escopts</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>10.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Serviceextinfo File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> 1. </th>
+<th align="left" valign="top"> Host name </th>
+<th align="center" valign="top"> RX </th>
+<th align="left" valign="top"> hostname</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Service description</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">svcdesc</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Notes</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Notes url</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes_url</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">Action url</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">action_url</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>6.</em></p></td>
+<td align="left" valign="top"><p class="table">Icon image</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">icon_image</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>7.</em></p></td>
+<td align="left" valign="top"><p class="table">Icon image alt</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">icon_image_alt</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>8.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Hostextinfo File</caption>
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> 1. </th>
+<th align="left" valign="top"> Host name </th>
+<th align="center" valign="top"> RX </th>
+<th align="left" valign="top"> hostname</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>2.</em></p></td>
+<td align="left" valign="top"><p class="table">Notes</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>3.</em></p></td>
+<td align="left" valign="top"><p class="table">Notes url</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes_url</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>4.</em></p></td>
+<td align="left" valign="top"><p class="table">Action url</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">action_url</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>5.</em></p></td>
+<td align="left" valign="top"><p class="table">Icon image</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">icon_image</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>6.</em></p></td>
+<td align="left" valign="top"><p class="table">Icon image alt</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">icon_image_alt</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>7.</em></p></td>
+<td align="left" valign="top"><p class="table">Vrml image</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">vrml_image</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>8.</em></p></td>
+<td align="left" valign="top"><p class="table">Statusmap image</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">statusmap_image</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>9.</em></p></td>
+<td align="left" valign="top"><p class="table">2d coords</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">coords2d</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>10.</em></p></td>
+<td align="left" valign="top"><p class="table">3d coords</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">coords3d</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>11.</em></p></td>
+<td align="left" valign="top"><p class="table">Disable</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">disable</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-11-05 11:37:07 BST
+Last updated 2012-11-07 21:48:27 BST
 </div>
 </div>
 </body>

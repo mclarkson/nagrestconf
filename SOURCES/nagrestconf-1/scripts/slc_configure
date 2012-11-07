@@ -347,6 +347,12 @@ setup_repo()
     touch ${G_FOLDER}_servicesets.setup
     touch ${G_FOLDER}_services.setup
     touch ${G_FOLDER}_servicetemplates.setup
+    touch ${G_FOLDER}_servicedeps.setup
+    touch ${G_FOLDER}_hostdeps.setup
+    touch ${G_FOLDER}_serviceesc.setup
+    touch ${G_FOLDER}_hostesc.setup
+    touch ${G_FOLDER}_serviceextinfo.setup
+    touch ${G_FOLDER}_hostextinfo.setup
 
     cd ..
     chown -R $WWWUSER: setup

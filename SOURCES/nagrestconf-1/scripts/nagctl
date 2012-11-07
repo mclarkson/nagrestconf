@@ -79,6 +79,12 @@ FILE_SERVICESETS=8
 FILE_SERVICEGROUPS=9
 FILE_TIMEPERIODS=10
 FILE_COMMANDS=11
+FILE_SERVICEDEPS=12
+FILE_HOSTDEPS=13
+FILE_SERVICEESC=14
+FILE_HOSTESC=15
+FILE_HOSTEXTINFO=16
+FILE_SERVICEEXTINFO=17
 
 # lockfile settings
 LOCK_SLEEPTIME=1
@@ -96,6 +102,12 @@ gfilename[$FILE_SERVICESETS]="servicesets"
 gfilename[$FILE_SERVICEGROUPS]="servicegroups"
 gfilename[$FILE_TIMEPERIODS]="timeperiods"
 gfilename[$FILE_COMMANDS]="commands"
+gfilename[$FILE_SERVICEDEPS]="servicedeps"
+gfilename[$FILE_HOSTDEPS]="hostdeps"
+gfilename[$FILE_SERVICEESC]="serviceesc"
+gfilename[$FILE_HOSTESC]="hostesc"
+gfilename[$FILE_SERVICEEXTINFO]="serviceextinfo"
+gfilename[$FILE_HOSTEXTINFO]="hostextinfo"
 gdelfilereq[$FILE_HOSTTEMPLATES]="1"
 gdelfilereq[$FILE_SERVICETEMPLATES]="1"
 gdelfilereq[$FILE_HOSTS]="1"
@@ -107,6 +119,12 @@ gdelfilereq[$FILE_SERVICESETS]="1 4"
 gdelfilereq[$FILE_SERVICEGROUPS]="1"
 gdelfilereq[$FILE_TIMEPERIODS]="1"
 gdelfilereq[$FILE_COMMANDS]="1"
+gdelfilereq[$FILE_SERVICEDEPS]="1|2 3 4|5 6"
+gdelfilereq[$FILE_HOSTDEPS]="1|2 3|4"
+gdelfilereq[$FILE_SERVICEESC]="1|2 3"
+gdelfilereq[$FILE_HOSTESC]="1|2"
+gdelfilereq[$FILE_SERVICEEXTINFO]=""
+gdelfilereq[$FILE_HOSTEXTINFO]=""
 #gfilereq[$FILE_HOSTTEMPLATES]="1 2 6 7 8"
 gfilereq[$FILE_HOSTTEMPLATES]="1 6 7 8 11 12 14"
 #gfilereq[$FILE_SERVICETEMPLATES]="1 2 6 8 9 10"
@@ -121,6 +139,12 @@ gfilereq[$FILE_SERVICESETS]="1 2 3 4"
 gfilereq[$FILE_SERVICEGROUPS]="1 2"
 gfilereq[$FILE_TIMEPERIODS]="1 2"
 gfilereq[$FILE_COMMANDS]="1 2"
+gfilereq[$FILE_SERVICEDEPS]="1|2 3 4|5 6"
+gfilereq[$FILE_HOSTDEPS]="1|2 3|4"
+gfilereq[$FILE_SERVICEESC]="1|2 3 4|5 6 7 8"
+gfilereq[$FILE_HOSTESC]="1|2 3|4 5 6 7"
+gfilereq[$FILE_SERVICEEXTINFO]=""
+gfilereq[$FILE_HOSTEXTINFO]=""
 gfile_ncols[$FILE_HOSTTEMPLATES]="39"
 gfile_ncols[$FILE_SERVICETEMPLATES]="13"
 gfile_ncols[$FILE_HOSTS]="46"
@@ -132,6 +156,12 @@ gfile_ncols[$FILE_SERVICESETS]="46"
 gfile_ncols[$FILE_SERVICEGROUPS]="8"
 gfile_ncols[$FILE_TIMEPERIODS]="6"
 gfile_ncols[$FILE_COMMANDS]="3"
+gfile_ncols[$FILE_SERVICEDEPS]="11"
+gfile_ncols[$FILE_HOSTDEPS]="9"
+gfile_ncols[$FILE_SERVICEESC]="11"
+gfile_ncols[$FILE_HOSTESC]="10"
+gfile_ncols[$FILE_SERVICEEXTINFO]="8"
+gfile_ncols[$FILE_HOSTEXTINFO]="11"
 
 SETUP_DIR=
 SETUP_FILE=
@@ -388,6 +418,18 @@ check_file()
         ;;
         commands) gnfile=$FILE_COMMANDS
         ;;
+        servicedeps) gnfile=$FILE_SERVICEDEPS
+        ;;
+        hostdeps) gnfile=$FILE_HOSTDEPS
+        ;;
+        serviceesc) gnfile=$FILE_SERVICEESC
+        ;;
+        hostesc) gnfile=$FILE_HOSTESC
+        ;;
+        serviceextinfo) gnfile=$FILE_SERVICEEXTINFO
+        ;;
+        hostextinfo) gnfile=$FILE_HOSTEXTINFO
+        ;;
         ?*) echo -e "NAGCTL ERROR: Invalid file."
             exit 4
         ;;
@@ -490,12 +532,31 @@ check_delete_null_cols()
 # Arguments:    $1 - a FILE_XXX number.
 # Returns:      0 - success, 1 - error
 {
-    local col a
+    local col a b
+    declare -i n1 n2
 
     for col in ${gdelfilereq[$1]}
     do
-        a=`echo "$gcsv" | cut -d, -f$col`
-        [[ -z $a ]] && return 1
+        n1=${col%%|*}
+        n2=${col##*|}
+
+        # If $a has no bar (|) - that is, it holds only one number - then
+        # n1 and n2 will be equal. Otherwise a bar is present and is
+        # interpreted here as an OR.
+        if [[ $n1 -eq 0 || $n2 -eq 0 ]]; then
+            # This is an internal out-of-bounds programming error.
+            echo "NAGCTL ERROR: Internal error - Null gfilereq."
+            exit 99
+        elif [[ $n1 -eq $n2 ]]; then
+            # Original behaviour - check for single value
+            a=`echo "$gcsv" | cut -d, -f$col`
+            [[ -z $a ]] && return 1
+        else
+            # Either/OR
+            a=`echo "$gcsv" | cut -d, -f$n1`
+            b=`echo "$gcsv" | cut -d, -f$n2`
+            [[ -z $a && -z $b ]] && return 1
+        fi
     done
 
     return 0
@@ -508,12 +569,31 @@ check_null_cols()
 # Arguments:    $1 - a FILE_XXX number.
 # Returns:      0 - success, 1 - error
 {
-    local col a
+    local col a b
+    declare -i n1 n2
 
     for col in ${gfilereq[$1]}
     do
-        a=`echo "$gcsv" | cut -d, -f$col`
-        [[ -z $a ]] && return 1
+        n1=${col%%|*}
+        n2=${col##*|}
+
+        # If $a has no bar (|) - that is, it holds only one number - then
+        # n1 and n2 will be equal. Otherwise a bar is present and is
+        # interpreted here as an OR.
+        if [[ $n1 -eq 0 || $n2 -eq 0 ]]; then
+            # This is an internal out-of-bounds programming error.
+            echo "NAGCTL ERROR: Internal error - Null gfilereq."
+            exit 99
+        elif [[ $n1 -eq $n2 ]]; then
+            # Original behaviour - check for single value
+            a=`echo "$gcsv" | cut -d, -f$col`
+            [[ -z $a ]] && return 1
+        else
+            # Either/OR
+            a=`echo "$gcsv" | cut -d, -f$n1`
+            b=`echo "$gcsv" | cut -d, -f$n2`
+            [[ -z $a && -z $b ]] && return 1
+        fi
     done
 
     return 0
@@ -533,6 +613,8 @@ item_delete()
         echo "there are only $ncols columns."
         exit 11
     }
+
+    [[ $1 -eq 1 ]] && { query="^"; }
 
     # Build a precise query
     for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
@@ -568,6 +650,41 @@ item_delete2()
 }
 
 # ----------------------------------------------------------------------------
+item_deleteN()
+# ----------------------------------------------------------------------------
+# Purpose:      Look for text in N columns and delete the row(s).
+#               columns must be in numeric sort order.
+# Arguments:    $1 - space separated columns, $2 - FILE_XXX,
+#               $3 - comma separated text, $4 - optional prefix (for
+#               matching empty fields)
+# Returns:      Nothing
+{
+    local query i ncols=${gfile_ncols[$2]}
+
+    declare -a colnos=($1)
+    IFS=, read -a txt < <( echo "$3" )
+
+    [[ ${colnos[0]} -eq 1 ]] && {
+        query="^"
+    }
+
+    # Build a precise query
+    for i in `seq 1 $((${colnos[0]}-1))`; do query="$query.*,"; done
+    query="$query${txt[0]}"
+    for j in `seq 2 ${#colnos[*]}`; do
+        for i in `seq $((${colnos[$j-2]}+1)) $((${colnos[$j-1]}-1))`; do
+            query="$query,.*"
+        done
+        query="$query,${txt[$j-1]}"
+    done
+    for i in `seq ${colnos[${#colnos[*]}-1]} $(($ncols-1))`; do
+        query="$query,.*"
+    done
+    #TeSt: echo "delete query is '$query'"
+    sed -i -- "/$query/d" ${gservice}_${gfilename[$2]}.setup
+}
+
+# ----------------------------------------------------------------------------
 item_exists()
 # ----------------------------------------------------------------------------
 # Purpose:      Look for text in a column.
@@ -581,6 +698,8 @@ item_exists()
         echo "there are only $ncols columns."
         exit 11
     }
+
+    [[ $1 -eq 1 ]] && { query="^"; }
 
     # Build a precise query
     for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
@@ -606,6 +725,8 @@ item_exists2()
         exit 11
     }
 
+    [[ $1 -eq 1 ]] && { query="^"; }
+
     # Build a precise query
     for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
     query="$query$4"
@@ -613,6 +734,41 @@ item_exists2()
     query="$query,$5"
     for i in `seq 1 $(($ncols-$2))`; do query="$query,.*"; done
     return `grep -qs -- "$query" ${gservice}_${gfilename[$3]}.setup`
+}
+
+# ----------------------------------------------------------------------------
+item_existsN()
+# ----------------------------------------------------------------------------
+# Purpose:      Look for two items of text respectively in N columns.
+#               columns must be in numeric sort order.
+# Arguments:    $1 - space separated columns, $2 - FILE_XXX,
+#               $3 - comma separated text, $4 - optional prefix (for
+#               matching empty fields)
+# Returns:      0 - found, 1 - not found
+{
+    local query i ncols=${gfile_ncols[$2]}
+
+    declare -a colnos=($1)
+    IFS=, read -a txt < <( echo "$3" )
+
+    [[ ${colnos[0]} -eq 1 ]] && {
+        query="^"
+    }
+
+    # Build a precise query
+    for i in `seq 1 $((${colnos[0]}-1))`; do query="$query.*,"; done
+    query="$query${txt[0]}"
+    for j in `seq 2 ${#colnos[*]}`; do
+        for i in `seq $((${colnos[$j-2]}+1)) $((${colnos[$j-1]}-1))`; do
+            query="$query,.*"
+        done
+        query="$query,${txt[$j-1]}"
+    done
+    for i in `seq ${colnos[${#colnos[*]}-1]} $(($ncols-1))`; do
+        query="$query,.*"
+    done
+    #TeSt: echo "query is '$query'"
+    return `grep -qs -- "$query" ${gservice}_${gfilename[$2]}.setup`
 }
 
 # ----------------------------------------------------------------------------
@@ -650,11 +806,13 @@ item_search2()
 {
     local query i ncols=${gfile_ncols[$3]}
 
-    [[ $1 -gt $ncols ]] && {
+    if [[ $1 -gt $ncols ]]; then
         echo -n "NAGCTL ERROR: Cannot search for column $1 when "
         echo "there are only $ncols columns."
         exit 11
-    }
+    elif [[ $1 -eq 1 ]]; then
+        query="^"
+    fi
 
     # Build a precise query
     for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
@@ -663,6 +821,41 @@ item_search2()
     query="$query,$5"
     for i in `seq 1 $(($ncols-$2))`; do query="$query,.*"; done
     grep -h -- "$query" ${gservice}_${gfilename[$3]}.setup
+}
+
+# ----------------------------------------------------------------------------
+item_searchN()
+# ----------------------------------------------------------------------------
+# Purpose:      Look for text in N columns and display the result.
+#               columns must be in numeric sort order.
+# Arguments:    $1 - space separated columns, $2 - FILE_XXX,
+#               $3 - comma separated text, $4 - optional prefix (for
+#               matching empty fields)
+# Returns:      Outputs text
+{
+    local query i ncols=${gfile_ncols[$2]}
+
+    declare -a colnos=($1)
+    IFS=, read -a txt < <( echo "$3" )
+
+    [[ ${colnos[0]} -eq 1 ]] && {
+        query="^"
+    }
+
+    # Build a precise query
+    for i in `seq 1 $((${colnos[0]}-1))`; do query="$query.*,"; done
+    query="$query${txt[0]}"
+    for j in `seq 2 ${#colnos[*]}`; do
+        for i in `seq $((${colnos[$j-2]}+1)) $((${colnos[$j-1]}-1))`; do
+            query="$query,.*"
+        done
+        query="$query,${txt[$j-1]}"
+    done
+    for i in `seq ${colnos[${#colnos[*]}-1]} $(($ncols-1))`; do
+        query="$query,.*"
+    done
+    #TeSt: echo "search query is '$query'"
+    grep -h -- "$query" ${gservice}_${gfilename[$2]}.setup
 }
 
 # ----------------------------------------------------------------------------
@@ -752,6 +945,12 @@ action_add()
         $FILE_SERVICESETS) add_servicesets_line ;;
         $FILE_TIMEPERIODS) add_timeperiods_line ;;
         $FILE_COMMANDS) add_commands_line ;;
+        $FILE_SERVICEDEPS) add_servicedeps_line ;;
+        $FILE_HOSTDEPS) add_hostdeps_line ;;
+        $FILE_SERVICEESC) add_serviceesc_line ;;
+        $FILE_HOSTESC) add_hostesc_line ;;
+        $FILE_SERVICEEXTINFO) add_serviceextinfo_line ;;
+        $FILE_HOSTEXTINFO) add_hostextinfo_line ;;
     esac
 }
 
@@ -783,6 +982,12 @@ action_modify()
         $FILE_SERVICESETS) modify_servicesets_line ;;
         $FILE_TIMEPERIODS) modify_timeperiods_line ;;
         $FILE_COMMANDS) modify_commands_line ;;
+        $FILE_SERVICEDEPS) modify_servicedeps_line ;;
+        $FILE_HOSTDEPS) modify_hostdeps_line ;;
+        $FILE_SERVICEESC) modify_serviceesc_line ;;
+        $FILE_HOSTESC) modify_hostesc_line ;;
+        $FILE_SERVICEEXTINFO) modify_serviceextinfo_line ;;
+        $FILE_HOSTEXTINFO) modify_hostextinfo_line ;;
     esac
 }
 
@@ -819,6 +1024,12 @@ action_delete()
         $FILE_SERVICESETS) delete_servicesets_line ;;
         $FILE_TIMEPERIODS) delete_timeperiods_line ;;
         $FILE_COMMANDS) delete_commands_line ;;
+        $FILE_SERVICEDEPS) delete_servicedeps_line ;;
+        $FILE_HOSTDEPS) delete_hostdeps_line ;;
+        $FILE_SERVICEESC) delete_serviceesc_line ;;
+        $FILE_HOSTESC) delete_hostesc_line ;;
+        $FILE_SERVICEEXTINFO) delete_serviceextinfo_line ;;
+        $FILE_HOSTEXTINFO) delete_hostextinfo_line ;;
     esac
 }
 
@@ -950,7 +1161,7 @@ modify_hosttemplate_line()
     [[ -n $contactgroups && $contactgroups != "-" ]] && {
         for i in $contactgroups; do
             if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
-                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo -n "NAGCTL ERROR: Contact Group '$i' not found."
                 echo " Will not modify host template."
                 unlockdir
                 exit 13
@@ -1023,7 +1234,7 @@ modify_servicetemplate_line()
     [[ -n $contactgroups && $contactgroups != "-" ]] && {
         for i in $contactgroups; do
             if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
-                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo -n "NAGCTL ERROR: Contact Group '$i' not found."
                 echo " Will not modify service template."
                 unlockdir
                 exit 13
@@ -1097,7 +1308,7 @@ modify_host_line()
     [[ -n $contactgroups && $contactgroups != "-" ]] && {
         for i in $contactgroups; do
             if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
-                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo -n "NAGCTL ERROR: Contact Group '$i' not found."
                 echo " Will not modify host."
                 unlockdir
                 exit 13
@@ -1195,7 +1406,7 @@ modify_service_line()
     [[ -n $contactgroups && $contactgroups != "-" ]] && {
         for i in $contactgroups; do
             if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
-                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo -n "NAGCTL ERROR: Contact Group '$i' not found."
                 echo " Will not modify service."
                 unlockdir
                 exit 13
@@ -1436,7 +1647,7 @@ modify_servicesets_line()
     [[ -n $contactgroups  && $contactgroups != "-" ]] && {
         for i in $contactgroups; do
             if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
-                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo -n "NAGCTL ERROR: Contact Group '$i' not found."
                 echo " Will not modify service set."
                 unlockdir
                 exit 13
@@ -1541,6 +1752,309 @@ modify_commands_line()
     exit 0
 }
 
+# ----------------------------------------------------------------------------
+modify_servicedeps_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the servicedeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    IFS=, read dephostname dephostgroupname depsvcdesc \
+        hostname hostgroupname svcdesc inheritsparent \
+        execfailcriteria notiffailcriteria period disable x \
+        < <( echo "$gcsv" )
+
+    [[ $dephostname == *" "* || $dephostgroupname == *" "* || \
+       $hostname == *" "* || $hostgroupname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    lockdir
+
+    longline="$dephostname,$dephostgroupname,$depsvcdesc"
+    longline="$longline,$hostname,$hostgroupname,$svcdesc"
+
+    if ! item_existsN "1 2 3 4 5 6" $FILE_SERVICEDEPS "$longline"
+    then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 13
+    fi
+
+    olditem=`item_searchN "1 2 3 4 5 6" $FILE_SERVICEDEPS "$longline"`
+    item_merge ${gfile_ncols[$FILE_SERVICEDEPS]} "$olditem" "$gcsv"
+    item_deleteN "1 2 3 4 5 6" $FILE_SERVICEDEPS "$longline"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_hostdeps_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    IFS=, read dephostname dephostgroupname \
+        hostname hostgroupname inheritsparent \
+        execfailcriteria notiffailcriteria period disable x \
+        < <( echo "$gcsv" )
+
+    [[ $dephostname == *" "* || $dephostgroupname == *" "* || \
+       $hostname == *" "* || $hostgroupname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    lockdir
+
+    longline="$dephostname,$dephostgroupname"
+    longline="$longline,$hostname,$hostgroupname"
+
+    if ! item_existsN "1 2 3 4" $FILE_HOSTDEPS "$longline"
+    then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 13
+    fi
+
+    olditem=`item_searchN "1 2 3 4" $FILE_HOSTDEPS "$longline"`
+    item_merge ${gfile_ncols[$FILE_HOSTDEPS]} "$olditem" "$gcsv"
+    item_deleteN "1 2 3 4" $FILE_HOSTDEPS "$longline"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_serviceesc_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    IFS=, read hostname hostgroupname svcdesc contacts contactgroups \
+        firstnotif lastnotif notifinterval period escopts disable x \
+        < <( echo "$gcsv" )
+
+    [[ $hostname == *" "* || $hostgroupname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    longline="$hostname,$hostgroupname,$svcdesc"
+
+    lockdir
+
+    if ! item_existsN "1 2 3" $FILE_SERVICEESC "$longline"
+    then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 13
+    fi
+
+    [[ -n $contacts && $contacts != "-" ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Will not modify item."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+    [[ -n $contactgroups && $contactgroups != "-" ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo -n "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not modify item."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+    [[ -n $period && $period != "-" ]] && {
+        if ! item_exists 1 $FILE_TIMEPERIODS "$period"; then
+            echo -n "NAGCTL ERROR: Escalation period not found."
+            echo " Will not modify item."
+            unlockdir
+            exit 14
+        fi
+    }
+
+    olditem=`item_searchN "1 2 3" $FILE_SERVICEESC "$longline"`
+    item_merge ${gfile_ncols[$FILE_SERVICEESC]} "$olditem" "$gcsv"
+
+    # Check for contact[group]s
+    IFS=, read x x x contacts contactgroups x < <( echo "$gcsv" )
+    [[ -z $contacts && -z $contactgroups ]] && {
+        echo -n "NAGCTL ERROR: Must have a contact or contactgroup."
+        echo " Will not modify item."
+        unlockdir
+        exit 13
+    }
+
+    item_deleteN "1 2 3" $FILE_SERVICEESC "$longline"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_hostesc_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    IFS=, read hostname hostgroupname contacts contactgroups \
+        firstnotif lastnotif notifinterval period escopts disable x \
+        < <( echo "$gcsv" )
+
+    [[ $hostname == *" "* || $hostgroupname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    longline="$hostname,$hostgroupname"
+
+    lockdir
+
+    if ! item_existsN "1 2" $FILE_HOSTESC "$longline"
+    then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 13
+    fi
+
+    [[ -n $contacts && $contacts != "-" ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Will not modify item."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+    [[ -n $contactgroups && $contactgroups != "-" ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo -n "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not modify item."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+    [[ -n $period && $period != "-" ]] && {
+        if ! item_exists 1 $FILE_TIMEPERIODS "$period"; then
+            echo -n "NAGCTL ERROR: Escalation period not found."
+            echo " Will not modify item."
+            unlockdir
+            exit 14
+        fi
+    }
+
+    olditem=`item_searchN "1 2" $FILE_HOSTESC "$longline"`
+    item_merge ${gfile_ncols[$FILE_HOSTESC]} "$olditem" "$gcsv"
+
+    # Check for contact[group]s
+    IFS=, read x x contacts contactgroups x < <( echo "$gcsv" )
+    [[ -z $contacts && -z $contactgroups ]] && {
+        echo -n "NAGCTL ERROR: Must have a contact or contactgroup."
+        echo " Will not modify item."
+        unlockdir
+        exit 13
+    }
+
+    item_deleteN "1 2" $FILE_HOSTESC "$longline"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_serviceextinfo_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    IFS=, read hostname svcdesc notes notes_url action_url \
+        icon_image icon_image_alt disable x \
+        < <( echo "$gcsv" )
+
+    [[ $hostname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    lockdir
+
+    if ! item_existsN "1 2" $FILE_SERVICEEXTINFO "$hostname,$svcdesc"
+    then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 13
+    fi
+
+    olditem=`item_searchN "1 2" $FILE_SERVICEEXTINFO "$hostname,$svcdesc"`
+    item_merge ${gfile_ncols[$FILE_SERVICEEXTINFO]} "$olditem" "$gcsv"
+    item_deleteN "1 2" $FILE_SERVICEEXTINFO "$hostname,$svcdesc"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
+# ----------------------------------------------------------------------------
+modify_hostextinfo_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    IFS=, read hostname notes notes_url action_url \
+        icon_image icon_image_alt vrml_image statusmap_image \
+        coords2d coords3d disable x \
+        < <( echo "$gcsv" )
+
+    [[ $hostname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    lockdir
+
+    if ! item_existsN "1" $FILE_HOSTEXTINFO "$hostname"
+    then
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 13
+    fi
+
+    olditem=`item_searchN "1" $FILE_HOSTEXTINFO "$hostname"`
+    item_merge ${gfile_ncols[$FILE_HOSTEXTINFO]} "$olditem" "$gcsv"
+    item_deleteN "1" $FILE_HOSTEXTINFO "$hostname"
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+    exit 0
+}
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 #                             ADD ACTION METHODS
@@ -1605,7 +2119,7 @@ add_hosttemplate_line()
     [[ -n $contactgroups  && $contactgroups != "-" ]] && {
         for i in $contactgroups; do
             if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
-                echo "NAGCTL ERROR: Contact Group '$i' not found."
+                echo -n "NAGCTL ERROR: Contact Group '$i' not found."
                 echo " Will not add host template."
                 unlockdir
                 exit 13
@@ -2170,70 +2684,392 @@ add_commands_line()
 }
 
 # ----------------------------------------------------------------------------
-add_hosttemplate_line()
+add_servicedeps_line()
 # ----------------------------------------------------------------------------
-# Purpose:      Add a line to the hosttemplates file.
+# Purpose:      Add a line to the servicedeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local name longline
+
+    IFS=, read dephostname dephostgroupname depsvcdesc \
+        hostname hostgroupname svcdesc inheritsparent \
+        execfailcriteria notiffailcriteria period disable x \
+        < <( echo "$gcsv" )
+
+    [[ $dephostname == *" "* || $dephostgroupname == *" "* || \
+       $hostname == *" "* || $hostgroupname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    lockdir
+
+    longline="$dephostname,$dephostgroupname,$depsvcdesc"
+    longline="$longline,$hostname,$hostgroupname,$svcdesc"
+    if item_existsN "1 2 3 4 5 6" $FILE_SERVICEDEPS "$longline"
+    then
+        echo -n "NAGCTL ERROR: Service dependency is a duplicate. "
+        echo "Cannot add item."
+        unlockdir
+        exit 13
+    fi
+    [[ -n $dephostname ]] && {
+        if ! item_exists2 1 4 $FILE_SERVICES "$dephostname" "$depsvcdesc"; then
+            echo "NAGCTL ERROR: Dependent service not found. Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    }
+    [[ -n $dephostgroupname ]] && {
+        # Too heavy to check for a valid service, maybe... TODO
+        if ! item_exists 1 $FILE_HOSTGROUPS "$dephostgroupname"; then
+            echo -n "NAGCTL ERROR: Dependent hostgroup name not found. "
+            echo "Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    }
+    [[ -n $hostname ]] && {
+        if ! item_exists2 1 4 $FILE_SERVICES "$hostname" "$svcdesc"; then
+            echo "NAGCTL ERROR: Dependent service not found. Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    }
+    [[ -n $hostgroupname ]] && {
+        # Too heavy to check for a valid service, maybe... TODO
+        if ! item_exists 1 $FILE_HOSTGROUPS "$hostgroupname"; then
+            echo -n "NAGCTL ERROR: Dependent hostgroup name not found. "
+            echo "Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    }
+    
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_hostdeps_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local name longline
+
+    IFS=, read dephostname dephostgroupname \
+        hostname hostgroupname inheritsparent \
+        execfailcriteria notiffailcriteria period disable x \
+        < <( echo "$gcsv" )
+
+    [[ $dephostname == *" "* || $dephostgroupname == *" "* || \
+       $hostname == *" "* || $hostgroupname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    lockdir
+
+    longline="$dephostname,$dephostgroupname"
+    longline="$longline,$hostname,$hostgroupname"
+    if item_existsN "1 2 3 4" $FILE_HOSTDEPS "$longline"
+    then
+        echo -n "NAGCTL ERROR: Host dependency is a duplicate. "
+        echo "Cannot add item."
+        unlockdir
+        exit 13
+    fi
+    [[ -n $dephostname ]] && {
+        if ! item_exists 1 $FILE_HOSTS "$dephostname"; then
+            echo "NAGCTL ERROR: Dependent hostname not found. Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    }
+    [[ -n $dephostgroupname ]] && {
+        # Too heavy to check for a valid service, maybe... TODO
+        if ! item_exists 1 $FILE_HOSTGROUPS "$dephostgroupname"; then
+            echo -n "NAGCTL ERROR: Dependent hostgroup name not found. "
+            echo "Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    }
+    [[ -n $hostname ]] && {
+        if ! item_exists 1 $FILE_HOSTS "$hostname"; then
+            echo "NAGCTL ERROR: Host name not found. Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    }
+    [[ -n $hostgroupname ]] && {
+        # Too heavy to check for a valid service, maybe... TODO
+        if ! item_exists 1 $FILE_HOSTGROUPS "$hostgroupname"; then
+            echo -n "NAGCTL ERROR: Hostgroup name not found. "
+            echo "Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    }
+    [[ -n $period ]] && {
+        if ! item_exists 1 $FILE_TIMEPERIODS "$period"; then
+            echo -n "NAGCTL ERROR: Period not found."
+            echo " Cannot add item."
+            unlockdir
+            exit 14
+        fi
+    }
+
+    
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_serviceesc_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
 # Arguments:    None
 # Returns:      Nothing
 {
     local name
 
-    IFS=, read name x contacts contactgroups x x x notifperiod \
-        x x checkperiod x < <( echo "$gcsv" )
+    IFS=, read hostname hostgroupname svcdesc contacts contactgroups \
+        firstnotif lastnotif notifinterval period escopts disable x \
+        < <( echo "$gcsv" )
 
-    #name=`echo "$gcsv" | cut -d, -f1`
-    #contacts=`echo "$gcsv" | cut -d, -f3`
-    #contactgroups=`echo "$gcsv" | cut -d, -f4`
-    #notifperiod=`echo "$gcsv" | cut -d, -f8`
-    #checkperiod=`echo "$gcsv" | cut -d, -f11`
-
-    [[ $name == *" "* ]] && {
-        echo "NAGCTL ERROR: 'name' field cannot contain spaces"
+    [[ $hostname == *" "* || $hostgroupname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
         exit 13
     }
 
     lockdir
-    if item_exists 1 $FILE_HOSTTEMPLATES "$name"; then
-        echo "NAGCTL ERROR: Host template name is a duplicate. Cannot add item."
+
+    if item_existsN "1 2 3" $FILE_SERVICEESC \
+                    "$hostname,$hostgroupname,$svcdesc"
+    then
+        echo -n "NAGCTL ERROR: Service escalation is a duplicate. "
+        echo "Cannot add item."
+        unlockdir
+        exit 13
+    fi
+    [[ -n $hostname ]] && {
+        if ! item_existsN "1 4" $FILE_SERVICES "$hostname,$svcdesc"
+        then
+            echo -n "NAGCTL ERROR: Service not found for hostname. "
+            echo "Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    }
+    [[ -n $hostgroupname ]] && {
+        # Too heavy to check for a valid service, maybe... TODO
+        if ! item_exists 1 $FILE_HOSTGROUPS "$hostgroupname"; then
+            echo -n "NAGCTL ERROR: Hostgroup not found. "
+            echo "Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    }
+    [[ -n $contacts ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Cannot add item."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+    [[ -n $contactgroups ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo -n "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Cannot add item."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+    [[ -n $period ]] && {
+        if ! item_exists 1 $FILE_TIMEPERIODS "$period"; then
+            echo -n "NAGCTL ERROR: Escalation period not found."
+            echo " Cannot add item."
+            unlockdir
+            exit 14
+        fi
+    }
+
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_hostesc_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local name
+
+    IFS=, read hostname hostgroupname contacts contactgroups \
+        firstnotif lastnotif notifinterval period escopts disable x \
+        < <( echo "$gcsv" )
+
+    [[ $hostname == *" "* || $hostgroupname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    lockdir
+
+    if item_existsN "1 2" $FILE_HOSTESC \
+                    "$hostname,$hostgroupname"
+    then
+        echo -n "NAGCTL ERROR: Host escalation is a duplicate. "
+        echo "Cannot add item."
+        unlockdir
+        exit 13
+    fi
+    [[ -n $hostname ]] && {
+        if ! item_existsN "1" $FILE_HOSTS "$hostname"
+        then
+            echo -n "NAGCTL ERROR: Hostname not found. "
+            echo "Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    }
+    [[ -n $hostgroupname ]] && {
+        # Too heavy to check for a valid service, maybe... TODO
+        if ! item_exists 1 $FILE_HOSTGROUPS "$hostgroupname"; then
+            echo -n "NAGCTL ERROR: Hostgroup not found. "
+            echo "Cannot add item."
+            unlockdir
+            exit 13
+        fi
+    }
+    [[ -n $contacts ]] && {
+        for i in $contacts; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo -n "NAGCTL ERROR: Contact '$i' not found."
+                echo " Cannot add item."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+    [[ -n $contactgroups ]] && {
+        for i in $contactgroups; do
+            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
+                echo -n "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Cannot add item."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+    [[ -n $period ]] && {
+        if ! item_exists 1 $FILE_TIMEPERIODS "$period"; then
+            echo -n "NAGCTL ERROR: Escalation period not found."
+            echo " Cannot add item."
+            unlockdir
+            exit 14
+        fi
+    }
+
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+add_serviceextinfo_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local name
+
+    IFS=, read hostname svcdesc notes notes_url action_url \
+        icon_image icon_image_alt disable x \
+        < <( echo "$gcsv" )
+
+    [[ $hostname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    lockdir
+
+    if item_existsN "1 2" $FILE_SERVICEEXTINFO "$hostname,$svcdesc"
+    then
+        echo -n "NAGCTL ERROR: Service extinfo is a duplicate. "
+        echo "Cannot add item."
+        unlockdir
+        exit 13
+    fi
+    if ! item_existsN "1 4" $FILE_SERVICES "$hostname,$svcdesc"
+    then
+        echo -n "NAGCTL ERROR: Service not found. "
+        echo "Cannot add item."
         unlockdir
         exit 13
     fi
 
-    if ! item_exists 1 $FILE_TIMEPERIODS $notifperiod; then
-        echo -n "NAGCTL ERROR: Notifperiod '$notifperiod' unavailable."
-        echo "Will not add host template."
-        unlockdir
-        exit 14
-    fi
+    echo "$gcsv" >>$SETUP_FILE
+    unlockdir
 
-    if ! item_exists 1 $FILE_TIMEPERIODS $checkperiod; then
-        echo -n "NAGCTL ERROR: Checkperiod '$checkperiod' unavailable."
-        echo "Will not add host template."
-        unlockdir
-        exit 14
-    fi
+    echo "Success"
+}
 
-    [[ -n $contacts  && $contacts != "-" ]] && {
-        for i in $contacts; do
-            if ! item_exists 1 $FILE_CONTACTS "$i"; then
-                echo -n "NAGCTL ERROR: Contact '$i' not found."
-                echo " Will not add host template."
-                unlockdir
-                exit 13
-            fi
-        done
+# ----------------------------------------------------------------------------
+add_hostextinfo_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local name
+
+    IFS=, read hostname notes notes_url action_url \
+        icon_image icon_image_alt vrml_image statusmap_image \
+        coords2d coords3d disable x \
+        < <( echo "$gcsv" )
+
+    [[ $hostname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
     }
 
-    [[ -n $contactgroups  && $contactgroups != "-" ]] && {
-        for i in $contactgroups; do
-            if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
-                echo "NAGCTL ERROR: Contact Group '$i' not found."
-                echo " Will not add host template."
-                unlockdir
-                exit 13
-            fi
-        done
-    }
+    lockdir
+
+    if item_existsN "1" $FILE_HOSTEXTINFO "$hostname"
+    then
+        echo -n "NAGCTL ERROR: Host extinfo is a duplicate. "
+        echo "Cannot add item."
+        unlockdir
+        exit 13
+    fi
+    if ! item_existsN "1" $FILE_HOSTS "$hostname"
+    then
+        echo -n "NAGCTL ERROR: Hostname not found. "
+        echo "Cannot add item."
+        unlockdir
+        exit 13
+    fi
 
     echo "$gcsv" >>$SETUP_FILE
     unlockdir
@@ -2782,6 +3618,207 @@ delete_commands_line()
             RETVAL=15
         fi
     fi
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_servicedeps_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the servicedeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    IFS=, read dephostname dephostgroupname depsvcdesc \
+        hostname hostgroupname svcdesc inheritsparent \
+        execfailcriteria notiffailcriteria period disable x \
+        < <( echo "$gcsv" )
+
+    [[ $dephostname == *" "* || $dephostgroupname == *" "* || \
+       $hostname == *" "* || $hostgroupname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    lockdir
+
+    longline="$dephostname,$dephostgroupname,$depsvcdesc"
+    longline="$longline,$hostname,$hostgroupname,$svcdesc"
+
+    if item_existsN "1 2 3 4 5 6" $FILE_SERVICEDEPS "$longline"
+    then
+        item_deleteN "1 2 3 4 5 6" $FILE_SERVICEDEPS "$longline"
+        echo "Success"
+    else
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 13
+    fi
+
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_hostdeps_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    IFS=, read dephostname dephostgroupname \
+        hostname hostgroupname inheritsparent \
+        execfailcriteria notiffailcriteria period disable x \
+        < <( echo "$gcsv" )
+
+    [[ $dephostname == *" "* || $dephostgroupname == *" "* || \
+       $hostname == *" "* || $hostgroupname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    lockdir
+
+    longline="$dephostname,$dephostgroupname"
+    longline="$longline,$hostname,$hostgroupname"
+
+    if item_existsN "1 2 3 4" $FILE_HOSTDEPS "$longline"
+    then
+        item_deleteN "1 2 3 4" $FILE_HOSTDEPS "$longline"
+        echo "Success"
+    else
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 13
+    fi
+
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_serviceesc_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    IFS=, read hostname hostgroupname svcdesc contacts contactgroups \
+        firstnotif lastnotif notifinterval period escopts disable x \
+        < <( echo "$gcsv" )
+
+    [[ $hostname == *" "* || $hostgroupname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    longline="$hostname,$hostgroupname,$svcdesc"
+
+    lockdir
+
+    if item_existsN "1 2 3" $FILE_SERVICEESC "$longline"
+    then
+        item_deleteN "1 2 3" $FILE_SERVICEESC "$longline"
+        echo "Success"
+    else
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 13
+    fi
+
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_hostesc_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    IFS=, read hostname hostgroupname contacts contactgroups \
+        firstnotif lastnotif notifinterval period escopts disable x \
+        < <( echo "$gcsv" )
+
+    [[ $hostname == *" "* || $hostgroupname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    longline="$hostname,$hostgroupname"
+
+    lockdir
+
+    if item_existsN "1 2" $FILE_HOSTESC "$longline"
+    then
+        item_deleteN "1 2" $FILE_HOSTESC "$longline"
+        echo "Success"
+    else
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 13
+    fi
+
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_serviceextinfo_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    IFS=, read hostname svcdesc notes notes_url action_url \
+        icon_image icon_image_alt disable x \
+        < <( echo "$gcsv" )
+
+    [[ $hostname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    lockdir
+
+    if item_existsN "1 2" $FILE_SERVICEEXTINFO "$hostname,$svcdesc"
+    then
+        item_deleteN "1 2" $FILE_SERVICEEXTINFO "$hostname,$svcdesc"
+        echo "Success"
+    else
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 13
+    fi
+
+    unlockdir
+}
+
+# ----------------------------------------------------------------------------
+delete_hostextinfo_line()
+# ----------------------------------------------------------------------------
+# Purpose:      Add a line to the hostdeps file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    IFS=, read hostname notes notes_url action_url \
+        icon_image icon_image_alt vrml_image statusmap_image \
+        coords2d coords3d disable x \
+        < <( echo "$gcsv" )
+
+    [[ $hostname == *" "* ]] && {
+        echo "NAGCTL ERROR: Field cannot contain spaces."
+        exit 13
+    }
+
+    lockdir
+
+    if item_existsN "1" $FILE_HOSTEXTINFO "$hostname"
+    then
+        item_deleteN "1" $FILE_HOSTEXTINFO "$hostname"
+        echo "Success"
+    else
+        echo "NAGCTL ERROR: Item not found."
+        unlockdir
+        exit 13
+    fi
+
     unlockdir
 }
 

@@ -356,6 +356,12 @@ class WriteCmd
     const SERVICEGROUPS = 9;
     const TIMEPERIODS = 10;
     const COMMANDS = 11;
+    const SERVICEDEPS = 12;
+    const HOSTDEPS = 13;
+    const SERVICEESC = 14;
+    const HOSTESC = 15;
+    const SERVICEEXTINFO = 16;
+    const HOSTEXTINFO = 17;
     // Restart
     const RESTART_NAGIOS = 1;
     // Apply
@@ -570,6 +576,24 @@ class WriteCmd
             case self::COMMANDS:
                 $retval = $this->createCommandsDeleteCmd();
                 break;
+            case self::SERVICEDEPS:
+                $retval = $this->createServicedepsDeleteCmd();
+                break;
+            case self::HOSTDEPS:
+                $retval = $this->createHostdepsDeleteCmd();
+                break;
+            case self::SERVICEESC:
+                $retval = $this->createServiceescDeleteCmd();
+                break;
+            case self::HOSTESC:
+                $retval = $this->createHostescDeleteCmd();
+                break;
+            case self::SERVICEEXTINFO:
+                $retval = $this->createServiceextinfoDeleteCmd();
+                break;
+            case self::HOSTEXTINFO:
+                $retval = $this->createHostextinfoDeleteCmd();
+                break;
             default:
                 $this->newcmdline =
                     "ERROR 1009: Unknown error.";
@@ -620,6 +644,24 @@ class WriteCmd
                 break;
             case self::COMMANDS:
                 $retval = $this->createCommandsModifyCmd();
+                break;
+            case self::SERVICEDEPS:
+                $retval = $this->createServicedepsModifyCmd();
+                break;
+            case self::HOSTDEPS:
+                $retval = $this->createHostdepsModifyCmd();
+                break;
+            case self::SERVICEESC:
+                $retval = $this->createServiceescModifyCmd();
+                break;
+            case self::HOSTESC:
+                $retval = $this->createHostescModifyCmd();
+                break;
+            case self::SERVICEEXTINFO:
+                $retval = $this->createServiceextinfoModifyCmd();
+                break;
+            case self::HOSTEXTINFO:
+                $retval = $this->createHostextinfoModifyCmd();
                 break;
             default:
                 $this->newcmdline =
@@ -702,6 +744,24 @@ class WriteCmd
             case self::COMMANDS:
                 $retval = $this->createCommandsAddCmd();
                 break;
+            case self::SERVICEDEPS:
+                $retval = $this->createServicedepsAddCmd();
+                break;
+            case self::HOSTDEPS:
+                $retval = $this->createHostdepsAddCmd();
+                break;
+            case self::SERVICEESC:
+                $retval = $this->createServiceescAddCmd();
+                break;
+            case self::HOSTESC:
+                $retval = $this->createHostescAddCmd();
+                break;
+            case self::SERVICEEXTINFO:
+                $retval = $this->createServiceextinfoAddCmd();
+                break;
+            case self::HOSTEXTINFO:
+                $retval = $this->createHostextinfoAddCmd();
+                break;
             default:
                 $this->newcmdline =
                     "ERROR 1012: Unknown error.";
@@ -782,6 +842,24 @@ class WriteCmd
             case 'commands':
                 $this->subcmdtype = self::COMMANDS;
                 break;
+            case 'servicedeps':
+                $this->subcmdtype = self::SERVICEDEPS;
+                break;
+            case 'hostdeps':
+                $this->subcmdtype = self::HOSTDEPS;
+                break;
+            case 'serviceesc':
+                $this->subcmdtype = self::SERVICEESC;
+                break;
+            case 'hostesc':
+                $this->subcmdtype = self::HOSTESC;
+                break;
+            case 'serviceextinfo':
+                $this->subcmdtype = self::SERVICEEXTINFO;
+                break;
+            case 'hostextinfo':
+                $this->subcmdtype = self::HOSTEXTINFO;
+                break;
             default:
                 $retval = False;
         }
@@ -828,6 +906,24 @@ class WriteCmd
             case 'commands':
                 $this->subcmdtype = self::COMMANDS;
                 break;
+            case 'servicedeps':
+                $this->subcmdtype = self::SERVICEDEPS;
+                break;
+            case 'hostdeps':
+                $this->subcmdtype = self::HOSTDEPS;
+                break;
+            case 'serviceesc':
+                $this->subcmdtype = self::SERVICEESC;
+                break;
+            case 'hostesc':
+                $this->subcmdtype = self::HOSTESC;
+                break;
+            case 'serviceextinfo':
+                $this->subcmdtype = self::SERVICEEXTINFO;
+                break;
+            case 'hostextinfo':
+                $this->subcmdtype = self::HOSTEXTINFO;
+                break;
             default:
                 $retval = False;
         }
@@ -873,6 +969,24 @@ class WriteCmd
                 break;
             case 'commands':
                 $this->subcmdtype = self::COMMANDS;
+                break;
+            case 'servicedeps':
+                $this->subcmdtype = self::SERVICEDEPS;
+                break;
+            case 'hostdeps':
+                $this->subcmdtype = self::HOSTDEPS;
+                break;
+            case 'serviceesc':
+                $this->subcmdtype = self::SERVICEESC;
+                break;
+            case 'hostesc':
+                $this->subcmdtype = self::HOSTESC;
+                break;
+            case 'serviceextinfo':
+                $this->subcmdtype = self::SERVICEEXTINFO;
+                break;
+            case 'hostextinfo':
+                $this->subcmdtype = self::HOSTEXTINFO;
                 break;
             default:
                 $retval = False;
@@ -1505,6 +1619,168 @@ class WriteCmd
 
         return $retval;
     }
+    # ------------------------------------------------------------------------
+    private function createServicedepsDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($dephostname);
+        $this->newcmdline .= ",".$dephostgroupname;
+        $this->newcmdline .= ",".$depsvcdesc;
+        $this->newcmdline .= ",".$hostname;
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$svcdesc;
+        $this->newcmdline .= ",".$inheritsparent;
+        $this->newcmdline .= ",".$execfailcriteria;
+        $this->newcmdline .= ",".$notiffailcriteria;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostdepsDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($dephostname);
+        $this->newcmdline .= ",".$dephostgroupname;
+        $this->newcmdline .= ",".$hostname;
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$inheritsparent;
+        $this->newcmdline .= ",".$execfailcriteria;
+        $this->newcmdline .= ",".$notiffailcriteria;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServiceescDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($hostname);
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$svcdesc;
+        $this->newcmdline .= ",".$contacts;
+        $this->newcmdline .= ",".$contactgroups;
+        $this->newcmdline .= ",".$firstnotif;
+        $this->newcmdline .= ",".$lastnotif;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$escopts;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostescDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($hostname);
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$contacts;
+        $this->newcmdline .= ",".$contactgroups;
+        $this->newcmdline .= ",".$firstnotif;
+        $this->newcmdline .= ",".$lastnotif;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$escopts;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServiceextinfoDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($hostname);
+        $this->newcmdline .= ",".$svcdesc;
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$icon_image;
+        $this->newcmdline .= ",".$icon_image_alt;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostextinfoDeleteCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericDeletePrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($hostname);
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$icon_image;
+        $this->newcmdline .= ",".$icon_image_alt;
+        $this->newcmdline .= ",".$vrml_image;
+        $this->newcmdline .= ",".$statusmap_image;
+        $this->newcmdline .= ",".$coords2d;
+        $this->newcmdline .= ",".$coords3d;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
 
     # ------------------------------------------------------------------------
     private function genericModifyPrefix()
@@ -1925,6 +2201,169 @@ class WriteCmd
         # urlencode should be done for all and urldecode expanded in nagctl.
         $this->newcmdline .= urlencode($name) . ",";
         $this->newcmdline .= $command;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServicedepsModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($dephostname);
+        $this->newcmdline .= ",".$dephostgroupname;
+        $this->newcmdline .= ",".$depsvcdesc;
+        $this->newcmdline .= ",".$hostname;
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$svcdesc;
+        $this->newcmdline .= ",".$inheritsparent;
+        $this->newcmdline .= ",".$execfailcriteria;
+        $this->newcmdline .= ",".$notiffailcriteria;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$disable;
+
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostdepsModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($dephostname);
+        $this->newcmdline .= ",".$dephostgroupname;
+        $this->newcmdline .= ",".$hostname;
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$inheritsparent;
+        $this->newcmdline .= ",".$execfailcriteria;
+        $this->newcmdline .= ",".$notiffailcriteria;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServiceescModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($hostname);
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$svcdesc;
+        $this->newcmdline .= ",".$contacts;
+        $this->newcmdline .= ",".$contactgroups;
+        $this->newcmdline .= ",".$firstnotif;
+        $this->newcmdline .= ",".$lastnotif;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$escopts;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostescModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($hostname);
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$contacts;
+        $this->newcmdline .= ",".$contactgroups;
+        $this->newcmdline .= ",".$firstnotif;
+        $this->newcmdline .= ",".$lastnotif;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$escopts;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServiceextinfoModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($hostname);
+        $this->newcmdline .= ",".$svcdesc;
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$icon_image;
+        $this->newcmdline .= ",".$icon_image_alt;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostextinfoModifyCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericModifyPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($hostname);
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$icon_image;
+        $this->newcmdline .= ",".$icon_image_alt;
+        $this->newcmdline .= ",".$vrml_image;
+        $this->newcmdline .= ",".$statusmap_image;
+        $this->newcmdline .= ",".$coords2d;
+        $this->newcmdline .= ",".$coords3d;
         $this->newcmdline .= ",".$disable;
 
         $this->newcmdline .= "'";
@@ -2357,6 +2796,170 @@ class WriteCmd
 
         return $retval;
     }
+    # ------------------------------------------------------------------------
+    private function createServicedepsAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($dephostname);
+        $this->newcmdline .= ",".$dephostgroupname;
+        $this->newcmdline .= ",".$depsvcdesc;
+        $this->newcmdline .= ",".$hostname;
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$svcdesc;
+        $this->newcmdline .= ",".$inheritsparent;
+        $this->newcmdline .= ",".$execfailcriteria;
+        $this->newcmdline .= ",".$notiffailcriteria;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostdepsAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($dephostname);
+        $this->newcmdline .= ",".$dephostgroupname;
+        $this->newcmdline .= ",".$hostname;
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$inheritsparent;
+        $this->newcmdline .= ",".$execfailcriteria;
+        $this->newcmdline .= ",".$notiffailcriteria;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServiceescAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($hostname);
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$svcdesc;
+        $this->newcmdline .= ",".$contacts;
+        $this->newcmdline .= ",".$contactgroups;
+        $this->newcmdline .= ",".$firstnotif;
+        $this->newcmdline .= ",".$lastnotif;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$escopts;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostescAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($hostname);
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$contacts;
+        $this->newcmdline .= ",".$contactgroups;
+        $this->newcmdline .= ",".$firstnotif;
+        $this->newcmdline .= ",".$lastnotif;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$escopts;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createServiceextinfoAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($hostname);
+        $this->newcmdline .= ",".$hostgroupname;
+        $this->newcmdline .= ",".$contacts;
+        $this->newcmdline .= ",".$contactgroups;
+        $this->newcmdline .= ",".$firstnotif;
+        $this->newcmdline .= ",".$lastnotif;
+        $this->newcmdline .= ",".$notifinterval;
+        $this->newcmdline .= ",".$period;
+        $this->newcmdline .= ",".$escopts;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
+    # ------------------------------------------------------------------------
+    private function createHostextinfoAddCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericAddPrefix() == False ) return False;
+
+        extract( $this->jsonadata, EXTR_SKIP );
+
+        # TODO urlencodes:
+        # urlencode should be done for all and urldecode expanded in nagctl.
+        $this->newcmdline .= urlencode($hostname);
+        $this->newcmdline .= ",".$notes;
+        $this->newcmdline .= ",".$notes_url;
+        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$icon_image;
+        $this->newcmdline .= ",".$icon_image_alt;
+        $this->newcmdline .= ",".$vrml_image;
+        $this->newcmdline .= ",".$statusmap_image;
+        $this->newcmdline .= ",".$coords2d;
+        $this->newcmdline .= ",".$coords3d;
+        $this->newcmdline .= ",".$disable;
+
+        $this->newcmdline .= "'";
+
+        return $retval;
+    }
 }
 
 # ---------------------------------------------------------------------------
@@ -2380,6 +2983,12 @@ class ReadCmd
     const SERVICEGROUPS = 10;
     const TIMEPERIODS = 11;
     const COMMANDS = 12;
+    const SERVICEDEPS = 13;
+    const HOSTDEPS = 14;
+    const SERVICEESC = 15;
+    const HOSTESC = 16;
+    const SERVICEEXTINFO = 17;
+    const HOSTEXTINFO = 18;
     private $jsondata;
 
     # ------------------------------------------------------------------------
@@ -2500,6 +3109,24 @@ class ReadCmd
             case self::COMMANDS:
                 $retval = $this->createCommandsCmd();
                 break;
+            case self::SERVICEDEPS:
+                $retval = $this->createServicedepsCmd();
+                break;
+            case self::HOSTDEPS:
+                $retval = $this->createHostdepsCmd();
+                break;
+            case self::SERVICEESC:
+                $retval = $this->createServiceescCmd();
+                break;
+            case self::HOSTESC:
+                $retval = $this->createHostescCmd();
+                break;
+            case self::SERVICEEXTINFO:
+                $retval = $this->createServiceextinfoCmd();
+                break;
+            case self::HOSTEXTINFO:
+                $retval = $this->createHostextinfoCmd();
+                break;
             default:
                 $this->newcmdline = "ERROR 1021: Unknown error.";
                 $retval = False;
@@ -2550,6 +3177,24 @@ class ReadCmd
                 break;
             case 'commands':
                 $this->subcmdtype = self::COMMANDS;
+                break;
+            case 'servicedeps':
+                $this->subcmdtype = self::SERVICEDEPS;
+                break;
+            case 'hostdeps':
+                $this->subcmdtype = self::HOSTDEPS;
+                break;
+            case 'serviceesc':
+                $this->subcmdtype = self::SERVICEESC;
+                break;
+            case 'hostesc':
+                $this->subcmdtype = self::HOSTESC;
+                break;
+            case 'serviceextinfo':
+                $this->subcmdtype = self::SERVICEEXTINFO;
+                break;
+            case 'hostextinfo':
+                $this->subcmdtype = self::HOSTEXTINFO;
                 break;
             default:
                 $retval = False;
@@ -2647,6 +3292,42 @@ class ReadCmd
     }
     # ------------------------------------------------------------------------
     private function createCommandsCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createServicedepsCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createHostdepsCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createServiceescCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createHostescCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createServiceextinfoCmd()
+    # ------------------------------------------------------------------------
+    {
+        return $this->createSearchQuery();
+    }
+    # ------------------------------------------------------------------------
+    private function createHostextinfoCmd()
     # ------------------------------------------------------------------------
     {
         return $this->createSearchQuery();
@@ -2941,6 +3622,78 @@ function csv2array( $output, $subcmd )
             1 => "name",
             2 => "command",
             3 => "disable",
+        ),
+        'servicedeps' => array(
+            1 => "dephostname",
+            2 => "dephostgroupname",
+            3 => "depsvcdesc",
+            4 => "hostname",
+            5 => "hostgroupname",
+            6 => "svcdesc",
+            7 => "inheritsparent",
+            8 => "execfailcriteria",
+            9 => "notiffailcriteria",
+            10 => "period",
+            11 => "disable",
+        ),
+        'hostdeps' => array(
+            1 => "dephostname",
+            2 => "dephostgroupname",
+            3 => "hostname",
+            4 => "hostgroupname",
+            5 => "inheritsparent",
+            6 => "execfailcriteria",
+            7 => "notiffailcriteria",
+            8 => "period",
+            9 => "disable",
+        ),
+        'serviceesc' => array(
+            1 => "hostname",
+            2 => "hostgroupname",
+            3 => "svcdesc",
+            4 => "contacts",
+            5 => "contactgroups",
+            6 => "firstnotif",
+            7 => "lastnotif",
+            8 => "notifinterval",
+            9 => "period",
+            10 => "escopts",
+            11 => "disable",
+        ),
+        'hostesc' => array(
+            1 => "hostname",
+            2 => "hostgroupname",
+            3 => "contacts",
+            4 => "contactgroups",
+            5 => "firstnotif",
+            6 => "lastnotif",
+            7 => "notifinterval",
+            8 => "period",
+            9 => "escopts",
+            10 => "disable",
+        ),
+        'serviceextinfo' => array(
+            1 => "hostname",
+            2 => "svcdesc",
+            3 => "notes",
+            4 => "notes_url",
+            5 => "action_url",
+            6 => "icon_image",
+            7 => "icon_image_alt",
+            8 => "disable",
+        ),
+        'hostextinfo' => array(
+            1 => "hostname",
+            2 => "notes",
+            3 => "notes_url",
+            4 => "action_url",
+            5 => "icon_image",
+            6 => "icon_image_alt",
+            7 => "vrml_image",
+            8 => "statusmap_image",
+            9 => "coords2d",
+            10 => "coords3d",
+            11 => "disable",
         ),
     );
 

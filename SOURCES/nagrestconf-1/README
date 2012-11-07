@@ -209,6 +209,8 @@ li {
 News
 ----
 
+7 Nov 2012 - All nagios object definitions are now supported in the REST api.
+
 22 Oct 2012 - Fixes made for Centos 5/6 and Debian packages.
 
 4 Sep 2012 - Added more Nagios directives to the REST api. See the <<X10, Upgrade>> section below. 
@@ -499,7 +501,7 @@ define service {
 [[X20]]
 Status
 ------
-Currently implemented directives (123/177) = 69%.
+Currently implemented directives (177/177) = 100%.
 
 .Currently implemented directives
 [cols="<,^,^,>",frame="topbot",options="header,autowidth"]
@@ -514,12 +516,12 @@ Currently implemented directives (123/177) = 69%.
 | Service Sets | N/A | 10 | N/A
 | Time Periods | 5 | 5 | 100%
 | Commands | 2 | 2 | 100%
-| Host Dependency | 8 | 0 | 0%
-| Host Escalation | 9 | 0 | 0%
-| Service Dependency | 10 | 0 | 0%
-| Service Escalation | 10 | 0 | 0%
-| Hostextinfo | 10 | 0 | 0%
-| Serviceextinfo | 7 | 0 | 0%
+| Host Dependency | 8 | 8 | 100%
+| Host Escalation | 9 | 9 | 100%
+| Service Dependency | 10 | 10 | 100%
+| Service Escalation | 10 | 10 | 100%
+| Hostextinfo | 10 | 10 | 100%
+| Serviceextinfo | 7 | 7 | 100%
 |========================================================
 
 REST Commands
@@ -543,6 +545,12 @@ GET requests don't modify the configuration:
 *** contactgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 *** timeperiods json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 *** commands json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicedeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostdeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** serviceesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** serviceextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 
 POST requests are for modifying the configuration:
 
@@ -559,6 +567,12 @@ POST requests are for modifying the configuration:
 *** contactgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 *** timeperiods json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 *** commands json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicedeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostdeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** serviceesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** serviceextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 ** +delete/+
 *** hosttemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 *** servicetemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
@@ -571,6 +585,12 @@ POST requests are for modifying the configuration:
 *** contactgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 *** timeperiods json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 *** commands json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicedeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostdeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** serviceesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** serviceextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 ** +modify/+
 *** hosttemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 *** servicetemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
@@ -583,6 +603,12 @@ POST requests are for modifying the configuration:
 *** contactgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 *** timeperiods json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 *** commands json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** servicedeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostdeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** serviceesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** serviceextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hostextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
 ** +restart/+
 *** nagios json={“folder”:”<name>”}
 ** +apply/+
@@ -597,6 +623,9 @@ POST requests are for modifying the configuration:
 
 Currently Implemented Definitions and Directives
 ------------------------------------------------
+
+Nagios object definitions are here:
+http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html#servicedependency
 
 Key for Flags column:
 
@@ -617,11 +646,11 @@ Key for Flags column:
 | 3. | Alias pretty name | R | alias
 | 4. | Email address |  | emailaddr
 | 5. | Service notification period | R | svcnotifperiod
-| 6. | Service notification options | R | svcnotifopts
-| 7. | Service notification commands | R | svcnotifcmds
+| 6. | Service notification options | LR | svcnotifopts
+| 7. | Service notification commands | LR | svcnotifcmds
 | 8. | Host notification period | R | hstnotifperiod
-| 9. | Host notification options | R | hstnotifopts
-| 10. | Host notification commands | R | hstnotifcmds
+| 9. | Host notification options | LR | hstnotifopts
+| 10. | Host notification commands | LR | hstnotifcmds
 | 11. | Can submit commands |  | cansubmitcmds
 | 12. | Disable | U | disable
 | 13. | Service notification enabled | X | svcnotifenabled
@@ -715,7 +744,7 @@ Key for Flags column:
 | 6. | Check interval | R | checkinterval
 | 7. | Retry interval | R | retryinterval
 | 8. | Notification period | R | notifperiod
-| 9. | Notification options|  | notifopts
+| 9. | Notification options| L | notifopts
 | 10. | Disable | U | disable
 | 11. | Check period |  R | checkperiod
 | 12. | Max check attempts |  R | maxcheckattempts
@@ -801,7 +830,7 @@ Key for Flags column:
 | 46. | 3d coords | X | coords3d
 |========================================================
 
-\* Freshness thresh (auto) also sets check_command to no-checks-received,
+pass:[*] Freshness thresh (auto) also sets check_command to no-checks-received,
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.
@@ -859,7 +888,7 @@ to restrict to only setting the freshness_threshold.
 | 46. | 3d coords | X | coords3d
 |========================================================
 
-\* Freshness thresh (auto) also sets check_command to no-checks-received,
+pass:[*] Freshness thresh (auto) also sets check_command to no-checks-received,
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.
@@ -873,7 +902,7 @@ to restrict to only setting the freshness_threshold.
 | 2. | Use | R | use
 | 3. | Contacts | L | contacts
 | 4. | Contact groups | L | contactgroups
-| 5. | Notification options |  | notifopts
+| 5. | Notification options | L | notifopts
 | 6. | Check interval | R | checkinterval
 | 7. | Normal check interval | U | normchecki
 | 8. | Retry interval | R | retryinterval
@@ -937,56 +966,107 @@ to restrict to only setting the freshness_threshold.
 | 6. | Freestyle time exception | CX | exception
 |========================================================
 
-.Servicedependency File
+.Servicedeps File
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
 | Column | Description | Flags | REST variable name
-| 1. | Dependent host name | LRK | dephostname
-| 2. | Dependent hostgroup name | LK | dephostgroupname
-| 3. | Dependent service description | LRK | depsvcdesc
-| 4. | Host name | LRK | hostname
-| 5. | Hostgroup name | LK  | hostgroupname
-| 6. | Service description | LRK | svcdesc
-| 7. | Inherits parent |   | inheritsparent
-| 8. | Execution failure criteria |   | execfailcriteria
-| 9. | Notification failure criteria |   | notiffailcriteria
-| 10. | Dependency period |   | depperiod
-| 11. | Disable |   | disable
+| 1. | Dependent host name | RKX | dephostname
+| 2. | Dependent hostgroup name | KX | dephostgroupname
+| 3. | Dependent service description | RKX | depsvcdesc
+| 4. | Host name | RKX | hostname
+| 5. | Hostgroup name | KX | hostgroupname
+| 6. | Service description | RKX | svcdesc
+| 7. | Inherits parent | X | inheritsparent
+| 8. | Execution failure criteria | LX | execfailcriteria
+| 9. | Notification failure criteria | LX | notiffailcriteria
+| 10. | Dependency period | X | period
+| 11. | Disable | X | disable
 |========================================================
 
-.Hostdependency File
+Note: Columns 1,2,4 and 5 are not lists in REST as they are in a
+Nagios configuration file.
+
+.Hostdeps File
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
 | Column | Description | Flags | REST variable name
-| 1. | Dependent host name | RK | dephostname
-| 2. | Dependent hostgroup name | R | dephostgroupname
-| 3. | Host name | R | hostname
-| 4. | Hostgroup name | R | hostgroupname
-| 5. | Inherits parent | R | inheritsparent
-| 6. | Execution failure criteria | R | execfailcriteria
-| 7. | Notification failure criteria | R | notiffailcriteria
-| 8. | Dependency period | R | depperiod
-| 9. | Disable | U | disable
+| 1. | Dependent host name | LRKX | dephostname
+| 2. | Dependent hostgroup name | LKX | dephostgroupname
+| 3. | Host name | LRKX | hostname
+| 4. | Hostgroup name | LKX | hostgroupname
+| 5. | Inherits parent | RX | inheritsparent
+| 6. | Execution failure criteria | LRX | execfailcriteria
+| 7. | Notification failure criteria | LRX | notiffailcriteria
+| 8. | Dependency period | RX | period
+| 9. | Disable | UX | disable
 |========================================================
+
+Note: Columns 1 and 2 are not lists in REST as they are in a
+Nagios configuration file.
 
 .Serviceescalation File
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
-| 1. | Host name | R | hostname
-| 2. | Hostgroup name | R | hostgroupname
-| 3. | Service description | R | svcdesc
-| 4. | Contacts | L | contacts
-| 5. | Contact groups | L | contactgroups
-| 6. | First notification | X | firstnotif
-| 7. | Last notification | X | lastnotif
-| 8. | Notification interval | R | notifinterval
+| 1. | Host name | KRX | hostname
+| 2. | Hostgroup name | X | hostgroupname
+| 3. | Service description | KRX | svcdesc
+| 4. | Contacts | LRX | contacts
+| 5. | Contact groups | LR | contactgroups
+| 6. | First notification | RX | firstnotif
+| 7. | Last notification | RX | lastnotif
+| 8. | Notification interval | RX | notifinterval
+| 9. | Escalation period | X | period
+| 10. | Escalation options | LX | escopts
+| 11. | Disable | X | disable
+|========================================================
 
 .Hostescalation File
 
-.Hostextinfo File
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| 1. | Host name | KRX | hostname
+| 2. | Hostgroup name | X | hostgroupname
+| 3. | Contacts | LRX | contacts
+| 4. | Contact groups | LR | contactgroups
+| 5. | First notification | RX | firstnotif
+| 6. | Last notification | RX | lastnotif
+| 7. | Notification interval | RX | notifinterval
+| 8. | Escalation period | X | period
+| 9. | Escalation options | LX | escopts
+| 10. | Disable | X | disable
+|========================================================
 
 .Serviceextinfo File
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| 1. | Host name | RX | hostname
+| 2. | Service description | X | svcdesc
+| 3. | Notes | X | notes
+| 4. | Notes url | X | notes_url
+| 5. | Action url | X | action_url
+| 6. | Icon image | X | icon_image
+| 7. | Icon image alt | X | icon_image_alt
+| 8. | Disable | X | disable
+|========================================================
+
+.Hostextinfo File
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| 1. | Host name | RX | hostname
+| 2. | Notes | X | notes
+| 3. | Notes url | X | notes_url
+| 4. | Action url | X | action_url
+| 5. | Icon image | X | icon_image
+| 6. | Icon image alt | X | icon_image_alt
+| 7. | Vrml image | X | vrml_image
+| 8. | Statusmap image | X | statusmap_image
+| 9. | 2d coords | X | coords2d
+| 10. | 3d coords | X | coords3d
+| 11. | Disable | X | disable
+|========================================================
 
