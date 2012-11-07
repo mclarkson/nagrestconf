@@ -1010,6 +1010,7 @@ Nagios configuration file.
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
+| Column | Description | Flags | REST variable name
 | 1. | Host name | KRX | hostname
 | 2. | Hostgroup name | X | hostgroupname
 | 3. | Service description | KRX | svcdesc
@@ -1027,6 +1028,7 @@ Nagios configuration file.
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
+| Column | Description | Flags | REST variable name
 | 1. | Host name | KRX | hostname
 | 2. | Hostgroup name | X | hostgroupname
 | 3. | Contacts | LRX | contacts
@@ -1043,6 +1045,7 @@ Nagios configuration file.
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
+| Column | Description | Flags | REST variable name
 | 1. | Host name | RX | hostname
 | 2. | Service description | X | svcdesc
 | 3. | Notes | X | notes
@@ -1057,6 +1060,7 @@ Nagios configuration file.
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
+| Column | Description | Flags | REST variable name
 | 1. | Host name | RX | hostname
 | 2. | Notes | X | notes
 | 3. | Notes url | X | notes_url
