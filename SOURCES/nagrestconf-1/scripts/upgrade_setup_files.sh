@@ -33,6 +33,11 @@ for FILE in `ls $NAG_OBJ_DIR/*/setup/*_hosts.setup`; do
     append_commas
 done
 
+for FILE in `ls $NAG_OBJ_DIR/*/setup/*_servicetemplates.setup`; do
+    NUMCOLS=43
+    append_commas
+done
+
 for FILE in `ls $NAG_OBJ_DIR/*/setup/*_hosttemplates.setup`; do
     NUMCOLS=39
     append_commas

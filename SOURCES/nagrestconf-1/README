@@ -900,7 +900,7 @@ to restrict to only setting the freshness_threshold.
 |========================================================
 | Column | Description | Flags | REST variable name
 | 1. | Name | RK | name
-| 2. | Use | R | use
+| 2. | Use | | use
 | 3. | Contacts | L | contacts
 | 4. | Contact groups | L | contactgroups
 | 5. | Notification options | L | notifopts
@@ -912,6 +912,36 @@ to restrict to only setting the freshness_threshold.
 | 11. | Disable | U | disable
 | 12. | Check period | R | checkperiod
 | 13. | Max check attempts | R | maxcheckattempts
+| 14. | Freshness threshold (auto)* |  | freshnessthresh
+| 15. | Active checks |  | activechecks
+| 16. | Custom variables | C | customvars
+| 17. | Is volatile | X | isvolatile
+| 18. | Initial state | X | initialstate
+| 19. | Passive checks enabled | X | passivechecks
+| 20. | Obsess over service | X | obsessoverservice
+| 21. | Freshness threshold (manual) | X | manfreshnessthresh
+| 22. | Check Freshness | X | checkfreshness
+| 23. | Event handler | X | eventhandler
+| 24. | Event handler enabled | X | eventhandlerenabled
+| 25. | Low flap threshold | X | lowflapthresh
+| 26. | High flap threshold | X | highflapthresh
+| 27. | Flap detection enabled | X | flapdetectionenabled
+| 28. | Flap detection options | LX | flapdetectionoptions
+| 29. | Process perf data | X | processperfdata
+| 30. | Retain status information | X | retainstatusinfo
+| 31. | Retain nonstatus information | X | retainnonstatusinfo
+| 32. | First notification delay | X | firstnotifdelay
+| 33. | Notifications enabled | X | notifications_enabled
+| 34. | Stalking options | LX | stalkingoptions
+| 35. | Notes | X | notes
+| 36. | Notes url | X | notes_url
+| 37. | Action url | X | action_url
+| 38. | Icon image | X | icon_image
+| 39. | Icon image alt | X | icon_image_alt
+| 40. | Vrml image | X | vrml_image
+| 41. | Statusmap image | X | statusmap_image
+| 42. | 2d coords | X | coords2d
+| 43. | 3d coords | X | coords3d
 |========================================================
 
 .Commands File

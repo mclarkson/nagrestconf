@@ -977,6 +977,9 @@ create_service_entries()
                     echo "        ${cv%%|*}                  ${cv##*|}"
                 done < <(echo "$customvars,")
             }
+            [[ -n $isvolatile ]] && {
+                echo "       is_volatile $isvolatile"
+            }
             [[ -n $displayname ]] && {
                 echo "       display_name $displayname"
             }
@@ -1143,45 +1146,204 @@ create_servicetemplates()
 
         IFS=, read name use contacts cgroups notifopts checki normchecki \
             retrchecki notifinter notifperiod disable checkperiod \
-            maxcheckattempts x \
+            maxcheckattempts \
+            freshnessthresh activechecks customvars isvolatile \
+            initialstate passivechecks obsessoverservice \
+            manfreshnessthresh checkfreshness eventhandler \
+            eventhandlerenabled lowflapthresh highflapthresh \
+            flapdetectionenabled flapdetectionoptions processperfdata \
+            retainstatusinfo retainnonstatusinfo firstnotifdelay \
+            notifications_enabled stalkingoptions notes notes_url \
+            action_url icon_image icon_image_alt vrml_image \
+            statusmap_image coords2d coords3d \
             < <(echo "$a")
 
+        [[ "$disable" == "1" ]] && continue
+
         echo "define service {"
-        echo "       name                         $name"
+        echo "        name                            $name"
         [[ -n $use ]] && {
             echo "       use                          $use"
         }
-        echo "       active_checks_enabled        1"
-        echo "       passive_checks_enabled       1"
-        echo "       obsess_over_service          1"
-        echo "       check_freshness              0"
-        echo "       notifications_enabled        1"
-        echo "       event_handler_enabled        1"
-        echo "       flap_detection_enabled       1"
-        echo "       process_perf_data            1"
-        echo "       retain_status_information    1"
-        echo "       retain_nonstatus_information 1"
-        echo "       is_volatile                  0"
+        if [[ -n $freshness ]]; then 
+            echo "        check_command                   no-checks-received"
+            [[ $DCC -ne 1 ]] && {
+                echo "        active_checks_enabled           0"
+            }
+            echo "        passive_checks_enabled          1"
+            echo -n "        freshness_threshold             "
+            echo "$freshness"
+            echo "        check_freshness                 1"
+        else
+            echo "        check_command                   $scommand"
+            [[ -n $activechecks ]] && {
+                if [[ $activechecks == 0 ]]; then
+                    echo "        active_checks_enabled           0"
+                else
+                    echo "        active_checks_enabled           1"
+                fi
+            }
+            [[ -n $passivechecks ]] && {
+                if [[ $passivechecks == 0 ]]; then
+                    echo "        passive_checks_enabled          0"
+                else
+                    echo "        passive_checks_enabled          1"
+                fi
+            }
+            [[ -n $checkfreshness ]] && {
+                if [[ $checkfreshness == 1 ]]; then
+                    echo "        check_freshness                 1"
+                else
+                    echo "        check_freshness                 0"
+                fi
+            }
+            [[ -n $manfreshnessthresh ]] && {
+                    echo -n "        check_freshness                 "
+                    echo "$manfreshnessthresh"
+            }
+        fi
         [[ -n $contacts ]] && {
-            echo -n "       contacts                     "
+            echo -n "        contacts                        "
             echo "$contacts" | tr " " ,
         }
         [[ -n $cgroups ]] && {
-            echo -n "       contact_groups               "
+            echo -n "        contact_groups                  "
             echo "$cgroups" | tr " " ,
         }
-        # Not in V3 -> echo "       normal_check_interval    $normchecki"
-        echo "       check_period                 $checkperiod"
-        echo "       max_check_attempts           $maxcheckattempts"
-        echo "       check_interval               $checki"
-        echo "       retry_interval               $retrchecki"
-        echo "       notification_interval        $notifinter"
-        echo "       notification_period          $notifperiod"
+        [[ -n $customvars ]] && {
+            while read -d"," cv
+            do
+                echo "        ${cv%%|*}                  ${cv##*|}"
+            done < <(echo "$customvars,")
+        }
+        [[ -n $isvolatile ]] && {
+            echo "       is_volatile $isvolatile"
+        }
+        [[ -n $initialstate ]] && {
+            echo "       initial_state $initialstate"
+        }
+        [[ -n $maxcheckattempts ]] && {
+            echo "       max_check_attempts $maxcheckattempts"
+        }
+        [[ -n $checki]] && {
+            echo "       check_interval $checki"
+        }
+        [[ -n $retrchecki ]] && {
+            echo "       retry_interval $retrchecki"
+        }
+        [[ -n $checkperiod ]] && {
+            echo "       check_period $checkperiod"
+        }
+        [[ -n $obsessoverservice ]] && {
+            if [[ $obsessoverservice == 1 ]]; then
+                echo "       obsess_over_service 1"
+            else
+                echo "       obsess_over_service 0"
+            fi
+        }
+        [[ -n $freshnessthresh ]] && {
+            echo "       freshness_threshold $freshnessthresh"
+        }
+        [[ -n $eventhandler ]] && {
+            echo "       event_handler $eventhandler"
+        }
+        [[ -n $eventhandlerenabled ]] && {
+            if [[ $eventhandlerenabled == 0 ]]; then
+                echo "       event_handler_enabled 0"
+            else
+                echo "       event_handler_enabled 1"
+            fi
+        }
+        [[ -n $lowflapthresh ]] && {
+            echo "       low_flap_threshold $lowflapthresh"
+        }
+        [[ -n $highflapthresh ]] && {
+            echo "       high_flap_threshold $highflapthresh"
+        }
+        [[ -n $flapdetectionenabled ]] && {
+            if [[ $flapdetectionenabled == 0 ]]; then
+                echo "       flap_detection_enabled 0"
+            else
+                echo "       flap_detection_enabled 1"
+            fi
+        }
+        [[ -n $flapdetectionoptions ]] && {
+            echo -n "       flap_detection_options "
+            echo "$flapdetectionoptions" | tr " " ,
+        }
+        [[ -n $processperfdata ]] && {
+            if [[ $processperfdata == 0 ]]; then
+                echo "       process_perf_data 0"
+            else
+                echo "       process_perf_data 1"
+            fi
+        }
+        [[ -n $retainstatusinfo ]] && {
+            if [[ $retainstatusinfo == 0 ]]; then
+                echo "       retain_status_information 0"
+            else
+                echo "       retain_status_information 1"
+            fi
+        }
+        [[ -n $retainnonstatusinfo ]] && {
+            if [[ $retainnonstatusinfo == 0 ]]; then
+                echo "       retain_nonstatus_information 0"
+            else
+                echo "       retain_nonstatus_information 0"
+            fi
+        }
+        [[ -n $notifinter ]] && {
+            echo "       notification_interval $notifinter"
+        }
+        [[ -n $firstnotifdelay ]] && {
+            echo "       first_notifdelay $firstnotifdelay"
+        }
+        [[ -n $notifperiod ]] && {
+            echo "       notification_period $notifperiod"
+        }
         [[ -n $notifopts ]] && {
-            echo -n "       notification_options         "
+            echo -n "       notification_options "
             echo "$notifopts" | tr " " ,
         }
-        echo "       register                     0"
+        [[ -n $notifications_enabled ]] && {
+            if [[ $notifications_enabled == 0 ]]; then
+                echo "       notifications_enabled 0"
+            else
+                echo "       notifications_enabled 1"
+            fi
+        }
+        [[ -n $stalkingoptions ]] && {
+            echo -n "       stalking_options "
+            echo "$stalkingoptions" | tr " " ,
+        }
+        [[ -n $notes ]] && {
+            echo "       notes $notes"
+        }
+        [[ -n $notes_url ]] && {
+            echo "       notes_url $notes_url"
+        }
+        [[ -n $icon_image ]] && {
+            echo "       icon_image $icon_image"
+        }
+        [[ -n $icon_image_alt ]] && {
+            echo "       icon_image_alt $icon_image_alt"
+        }
+        [[ -n $vrml_image ]] && {
+            echo "       vrml_image $vrml_image"
+        }
+        [[ -n $statusmap_image ]] && {
+            echo "       statusmap_image $statusmap_image"
+        }
+        [[ -n $coords2d ]] && {
+            echo "       2d_coords $coords2d"
+        }
+        [[ -n $coords3d ]] && {
+            echo "       3d_coords $coords3d"
+        }
+        [[ -n $action_url ]] && {
+            echo "       action_url $action_url"
+        }
+        echo "       register 0"
         echo "}"
         echo
 
