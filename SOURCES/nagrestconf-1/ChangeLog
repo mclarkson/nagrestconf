@@ -1,5 +1,14 @@
+2012-11-08  mclarkson
+
+	* README, doc/README.html, rest/index.php, scripts/csv2nag,
+	  scripts/nagctl, scripts/upgrade_setup_files.sh: Added more nagios
+	  directives to servicetemplates
+
 2012-11-07  mclarkson
 
+	* README, doc/README.html: Fixed doc typos
+	* README, doc/README.html: Fixed doc typos
+	* ChangeLog, debian/changelog: Admin
 	* scripts/nagctl: All nagios object definitions now supported
 	  (Fixes)
 	* README, debian/changelog, doc/README.html,
