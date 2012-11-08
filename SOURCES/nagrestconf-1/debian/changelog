@@ -1,4 +1,11 @@
-nagrestconf (1.0.7) UNRELEASED; urgency=low
+nagrestconf (1.0.8) UNRELEASED; urgency=low
+
+  * Bugfixes
+  * Added more nagios directives to servicetemplates.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 08 Nov 2012 10:54:22 +0000
+
+nagrestconf (1.0.8) UNRELEASED; urgency=low
 
   * Added nagios objects: service dependencies, host dependencies,
     service escalations, host escalations, extra service info and
