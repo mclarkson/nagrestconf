@@ -899,15 +899,17 @@ yum install nagrestconf-1.73-1.noarch.rpm</tt></pre>
 <p>
 Configure the system:
 </p>
-<div class="paragraph"><p>The system should now be ready to configure using REST or by using the GUI at
-&#8216;http://localhost/nagrestconf&#8217;.</p></div>
+<div class="paragraph"><p>The system should now be ready to configure using REST or by using the GUI.</p></div>
 <div class="paragraph"><p>Test the installation with:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt># On Debian, Centos or Redhat:
 bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh</tt></pre>
 </div></div>
-<div class="paragraph"><p>Then check that it can be seen and edited in the <em>Nagrestconf</em> GUI.</p></div>
+<div class="paragraph"><p>Then check that it can be seen and edited in the <em>Nagrestconf</em> GUI by pointing
+a supported Web Browser at &#8216;http://localhost/nagrestconf&#8217;.</p></div>
+<div class="paragraph"><p>If something goes wrong then there are configuration files in
+<em>/etc/nagrestconf</em> that might need correcting.</p></div>
 </li>
 </ol></div>
 <h3 id="_install_from_source">8.3. Install From Source</h3><div style="clear:left"></div>
@@ -1168,7 +1170,15 @@ cellspacing="0" cellpadding="4">
 <h2 id="_rest_commands">11. REST Commands</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>The URL is in the form <em>https://&lt;HOST&gt;/rest/&lt;COMMAND&gt;/&lt;COMMANDARG&gt;</em>.</p></div>
-<div class="paragraph"><p>GET requests don&#8217;t modify the configuration:</p></div>
+<div class="paragraph"><p>COMMANDS are check, show, add, delete, modify, restart, apply and pipecmd.</p></div>
+<div class="paragraph"><p>Options to the COMMAND and COMMANDARG are added to the HTTP GET or POST query
+string in the form <em>json={"option":"value"[,"option":"value"]&#8230;}</em>.</p></div>
+<div class="paragraph"><p>GET requests are for operations that don&#8217;t modify data, for example:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>https://nagrestconf.host/rest/show/hosts?json={"folder":"local"}'</tt></pre>
+</div></div>
+<div class="paragraph"><p>All GET requests:</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1182,7 +1192,7 @@ cellspacing="0" cellpadding="4">
 <div class="ulist"><ul>
 <li>
 <p>
-nagiosconfig json={“folder”:”&lt;name&gt;”[,”verbose”:”true”]}
+nagiosconfig json={"folder":"&lt;name&gt;"[,"verbose":"true"]}
 </p>
 </li>
 </ul></div>
@@ -1194,87 +1204,87 @@ nagiosconfig json={“folder”:”&lt;name&gt;”[,”verbose”:”true”]}
 <div class="ulist"><ul>
 <li>
 <p>
-hosttemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hosttemplates json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicetemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicetemplates json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hosts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hosts json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-services json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+services json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicesets json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicesets json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicegroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicegroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostgroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-contacts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+contacts json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-contactgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+contactgroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-timeperiods json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+timeperiods json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-commands json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+commands json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicedeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicedeps json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostdeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostdeps json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-serviceesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+serviceesc json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostesc json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-serviceextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+serviceextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 </ul></div>
@@ -1282,7 +1292,27 @@ hostextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;v
 </ul></div>
 </li>
 </ul></div>
-<div class="paragraph"><p>POST requests are for modifying the configuration:</p></div>
+<div class="paragraph"><p>POST requests are operation that might modify data, for example:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>https://nagrestconf.host/rest/add/hosts</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>with POST data:</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>json={
+"folder":"acloud",
+"name":"vhost1.acloud.com",
+"alias":"vhost1.acloud.com",
+"ipaddress":"1.2.3.4",
+"template":"prod_htmpl",
+"hostgroup":"prodvhosts",
+"servicesets":"prod-linux-checks"}'</tt></pre>
+</div></div>
+<div class="paragraph"><p>All POST requests:</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1291,276 +1321,276 @@ hostextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;v
 <div class="ulist"><ul>
 <li>
 <p>
-<tt>add/</tt>
+<tt>add/</tt> Use options detailed in the following section.
 </p>
 <div class="ulist"><ul>
 <li>
 <p>
-hosttemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hosttemplates json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicetemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicetemplates json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hosts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hosts json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-services json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+services json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicesets json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicesets json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicegroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicegroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostgroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-contacts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+contacts json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-contactgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+contactgroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-timeperiods json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+timeperiods json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-commands json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+commands json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicedeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicedeps json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostdeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostdeps json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-serviceesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+serviceesc json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostesc json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-serviceextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+serviceextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 </ul></div>
 </li>
 <li>
 <p>
-<tt>delete/</tt>
+<tt>delete/</tt> Use options detailed in the following section.
 </p>
 <div class="ulist"><ul>
 <li>
 <p>
-hosttemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hosttemplates json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicetemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicetemplates json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hosts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hosts json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-services json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+services json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicesets json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicesets json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicegroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicegroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostgroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-contacts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+contacts json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-contactgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+contactgroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-timeperiods json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+timeperiods json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-commands json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+commands json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicedeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicedeps json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostdeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostdeps json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-serviceesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+serviceesc json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostesc json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-serviceextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+serviceextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 </ul></div>
 </li>
 <li>
 <p>
-<tt>modify/</tt>
+<tt>modify/</tt> Use options detailed in the following section.
 </p>
 <div class="ulist"><ul>
 <li>
 <p>
-hosttemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hosttemplates json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicetemplates json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicetemplates json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hosts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hosts json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-services json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+services json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicesets json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicesets json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicegroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicegroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostgroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-contacts json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+contacts json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-contactgroups json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+contactgroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-timeperiods json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+timeperiods json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-commands json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+commands json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicedeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+servicedeps json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostdeps json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostdeps json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-serviceesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+serviceesc json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostesc json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostesc json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-serviceextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+serviceextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;value&gt;”]*}
+hostextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 </ul></div>
@@ -1572,7 +1602,7 @@ hostextinfo json={“folder”:”&lt;name&gt;”[,”&lt;option&gt;”:”&lt;v
 <div class="ulist"><ul>
 <li>
 <p>
-nagios json={“folder”:”&lt;name&gt;”}
+nagios json={"folder":"&lt;name&gt;"}
 </p>
 </li>
 </ul></div>
@@ -1584,39 +1614,69 @@ nagios json={“folder”:”&lt;name&gt;”}
 <div class="ulist"><ul>
 <li>
 <p>
-nagiosconfig json={“folder”:”&lt;name&gt;”[,”verbose”:”true”]}
+nagiosconfig json={"folder":"&lt;name&gt;"[,"verbose":"true"]}
 </p>
 </li>
 <li>
 <p>
-nagioslastgoodconfig json={“folder”:”&lt;name&gt;”}
+nagioslastgoodconfig json={"folder":"&lt;name&gt;"}
 </p>
 </li>
 </ul></div>
 </li>
 <li>
 <p>
-<tt>pipecmd/</tt>
+<tt>pipecmd/</tt> Use options detailed in the following section.
 </p>
 <div class="ulist"><ul>
 <li>
 <p>
-enablehostsvcchecks json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname&gt;}
+enablehostsvcchecks json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;}
 </p>
 </li>
 <li>
 <p>
-disablehostsvcchecks json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname&gt;” [,”comment”,”&lt;comment&gt;”]}
+disablehostsvcchecks json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;" [,"comment","&lt;comment&gt;"]}
 </p>
 </li>
 <li>
 <p>
-enablesvccheck json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname&gt;, “svcdesc”:”&lt;Service Description&gt;” [,”comment”,”&lt;comment&gt;”]}
+enablesvccheck json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;, "svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
 </p>
 </li>
 <li>
 <p>
-disablesvccheck json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname&gt;” “svcdesc”:”&lt;Service Description&gt;” [,”comment”,”&lt;comment&gt;”]}
+disablesvccheck json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;" "svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
+</p>
+</li>
+<li>
+<p>
+schedulehostdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;,"duration":"&lt;minutes&gt;" [,"comment","&lt;comment&gt;"]}
+</p>
+</li>
+<li>
+<p>
+delhostdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;,"svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
+</p>
+</li>
+<li>
+<p>
+schedulehostsvcdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;","svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
+</p>
+</li>
+<li>
+<p>
+delhostsvcdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;","svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
+</p>
+</li>
+<li>
+<p>
+schedulesvcdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;","svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
+</p>
+</li>
+<li>
+<p>
+delsvcdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;","svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
 </p>
 </li>
 </ul></div>
@@ -1627,8 +1687,13 @@ disablesvccheck json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname
 </div>
 <h2 id="_currently_implemented_definitions_and_directives">12. Currently Implemented Definitions and Directives</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Nagios object definitions are here:</p></div>
+<div class="paragraph"><p>Refer to the Nagios object definitions documentation for more information about
+individual options in the following tables. It can be found at the following
+URL:</p></div>
 <div class="paragraph"><p><a href="http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html">http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html</a></p></div>
+<div class="paragraph"><p>The <em>Column</em> number in the following tables relates to the column number in the
+comma delimited files on the nagios server. These files are used by <em>csv2nag</em>
+to create the nagios configuration files.</p></div>
 <div class="paragraph"><p>Key for Flags column:</p></div>
 <div class="ulist"><ul>
 <li>
@@ -1662,11 +1727,11 @@ disablesvccheck json={“folder”:”&lt;name&gt;”,”name”:”&lt;hostname
 </p>
 </li>
 </ul></div>
+<h3 id="_contacts_commandarg">12.1. contacts COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Contacts File</caption>
 <col />
 <col />
 <col />
@@ -1827,11 +1892,11 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h3 id="_contactgroups_commandarg">12.2. contactgroups COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Contactgroups Files</caption>
 <col />
 <col />
 <col />
@@ -1872,11 +1937,11 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h3 id="_hosts_commandarg">12.3. hosts COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Hosts File</caption>
 <col />
 <col />
 <col />
@@ -2169,11 +2234,11 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h3 id="_hosttemplates_commandarg">12.4. hosttemplates COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Hosttemplates File</caption>
 <col />
 <col />
 <col />
@@ -2424,11 +2489,11 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h3 id="_services_commandarg">12.5. services COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Services File</caption>
 <col />
 <col />
 <col />
@@ -2725,11 +2790,11 @@ cellspacing="0" cellpadding="4">
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.</p></div>
+<h3 id="_servicesets_commandarg">12.6. servicesets COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Servicesets File</caption>
 <col />
 <col />
 <col />
@@ -3026,11 +3091,11 @@ cellspacing="0" cellpadding="4">
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.</p></div>
+<h3 id="_servicetemplates_commandarg">12.7. servicetemplates COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Servicetemplates File</caption>
 <col />
 <col />
 <col />
@@ -3305,11 +3370,15 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<div class="paragraph"><p>* Freshness thresh (auto) also sets check_command to no-checks-received,
+active_checks_enabled to 0 (depending on whether the host is a dcc or not),
+passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
+to restrict to only setting the freshness_threshold.</p></div>
+<h3 id="_commands_commandarg">12.8. commands COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Commands File</caption>
 <col />
 <col />
 <col />
@@ -3344,11 +3413,11 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h3 id="_hostgroups_commandarg">12.9. hostgroups COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Hostgroups File</caption>
 <col />
 <col />
 <col />
@@ -3413,11 +3482,11 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h3 id="_servicegroups_commandarg">12.10. servicegroups COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Servicegroups File</caption>
 <col />
 <col />
 <col />
@@ -3482,11 +3551,11 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h3 id="_timeperiods_commandarg">12.11. timeperiods COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Timeperiods File</caption>
 <col />
 <col />
 <col />
@@ -3539,11 +3608,11 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h3 id="_servicedeps_commandarg">12.12. servicedeps COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Servicedeps File</caption>
 <col />
 <col />
 <col />
@@ -3626,13 +3695,64 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<div class="paragraph"><p>Note: Columns 1,2,4 and 5 are not lists in REST as they are in a
-Nagios configuration file.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img alt="Note" src="data:image/png;base64,
+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" />
+</td>
+<td class="content">Columns 1,2,4 and 5 are not lists in REST as they are in a
+Nagios configuration file.</td>
+</tr></table>
+</div>
+<h3 id="_hostdeps_commandarg">12.13. hostdeps COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Hostdeps File</caption>
 <col />
 <col />
 <col />
@@ -3703,13 +3823,64 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<div class="paragraph"><p>Note: Columns 1 and 2 are not lists in REST as they are in a
-Nagios configuration file.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img alt="Note" src="data:image/png;base64,
+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" />
+</td>
+<td class="content">Columns 1 and 2 are not lists in REST as they are in a
+Nagios configuration file.</td>
+</tr></table>
+</div>
+<h3 id="_serviceescalation_commandarg">12.14. serviceescalation COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Serviceescalation File</caption>
 <col />
 <col />
 <col />
@@ -3792,11 +3963,11 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h3 id="_hostescalation_commandarg">12.15. hostescalation COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Hostescalation File</caption>
 <col />
 <col />
 <col />
@@ -3873,11 +4044,11 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h3 id="_serviceextinfo_commandarg">12.16. serviceextinfo COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Serviceextinfo File</caption>
 <col />
 <col />
 <col />
@@ -3942,11 +4113,11 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h3 id="_hostextinfo_commandarg">12.17. hostextinfo COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Hostextinfo File</caption>
 <col />
 <col />
 <col />
@@ -4029,10 +4200,267 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h3 id="_enablehostsvcchecks_commandarg">12.18. enablehostsvcchecks COMMANDARG</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Enables active checks for the host then enables all passive and active service
+checks for the host. The following nagios pipe commands are sent:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>ENABLE_HOST_CHECK
+ENABLE_PASSIVE_SVC_CHECKS
+ENABLE_SVC_CHECK</tt></pre>
+</div></div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Host name</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="_disablehostsvcchecks_commandarg">12.19. disablehostsvcchecks COMMANDARG</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Disables active checks for the host then disables all passive and active
+service checks for the host. Status is changed to green for the host and all
+of its service checks and the comment is set. The following nagios pipe
+commands are sent:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>DISABLE_HOST_CHECK
+DISABLE_HOST_SVC_CHECKS
+PROCESS_SERVICE_CHECK_RESULT
+... 10 second sleep ...
+DISABLE_PASSIVE_SVC_CHECKS</tt></pre>
+</div></div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Host name</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Comment for the Nagios GUI</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">comment</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="_enablesvccheck_commandarg">12.20. enablesvccheck COMMANDARG</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Enables an individual service check and optionally sets a comment otherwise the
+default comment will be used: "Un-disabled via REST. Check scheduled.". The
+following nagios pipe commands are sent:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>ENABLE_PASSIVE_SVC_CHECKS
+ENABLE_SVC_CHECK
+PROCESS_SERVICE_CHECK_RESULT</tt></pre>
+</div></div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Host name</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Service description</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">svcdesc</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Comment for the Nagios GUI</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">comment</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="_disablesvccheck_commandarg">12.21. disablesvccheck COMMANDARG</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Disables an individual service check and optionally sets a comment otherwise
+the default comment will be used: "Disabled via REST interface.". The following
+nagios pipe commands are sent:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>DISABLE_SVC_CHECK
+PROCESS_SERVICE_CHECK_RESULT
+DISABLE_PASSIVE_SVC_CHECKS</tt></pre>
+</div></div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Host name</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Service description</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">svcdesc</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Comment for the Nagios GUI</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">comment</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="_schedulehostdowntime_commandarg">12.22. schedulehostdowntime COMMANDARG</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Schedule fixed or flexible downtime for a host. The following nagios pipe
+commands are sent:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>SCHEDULE_HOST_DOWNTIME</tt></pre>
+</div></div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Host name</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Start time [unix time]</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">starttime</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">End time [unix time]</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">endtime</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Flexible downtime [<em>0</em>|1]</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">flexible</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Duration (for flexible downtime in minutes)</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">duration</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Comment for the Nagios GUI*</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">comment</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Author</p></td>
+<td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">author</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>\* If comment is not supplied then the default comment,
+"Scheduled via the REST interface.", is used.</p></div>
+<h3 id="_delhostdowntime_commandarg">12.23. delhostdowntime COMMANDARG</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Delete all scheduled downtime for a host.</p></div>
+<h3 id="_schedulehostsvcdowntime_commandarg">12.24. schedulehostsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Schedule fixed or flexible downtime for a host and all its services.</p></div>
+<h3 id="_delhostsvcdowntime_commandarg">12.25. delhostsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Delete all scheduled downtime for a host and all its services.</p></div>
+<h3 id="_schedulesvcdowntime_commandarg">12.26. schedulesvcdowntime COMMANDARG</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Schedule fixed or flexible downtime for a host.</p></div>
+<h3 id="_delsvcdowntime_commandarg">12.27. delsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Delete all scheduled downtime for a host.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-11-08 09:20:40 BST
+Last updated 2012-11-12 14:24:58 BST
 </div>
 </div>
 </body>

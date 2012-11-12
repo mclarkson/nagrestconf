@@ -243,6 +243,7 @@ Screenshot
 alt="Nagrestconf GUI Screenshot" style="float:none" width="500px" />
 ++++
 
+
 What is Nagrestconf?
 --------------------
 
@@ -337,8 +338,7 @@ yum install nagrestconf-1.73-1.noarch.rpm
 +
 2. Configure the system:
 +
-The system should now be ready to configure using REST or by using the GUI at
-`http://localhost/nagrestconf'.
+The system should now be ready to configure using REST or by using the GUI.
 +
 Test the installation with:
 +
@@ -347,7 +347,11 @@ Test the installation with:
 bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh
 ----------------------------------------------------------
 +
-Then check that it can be seen and edited in the 'Nagrestconf' GUI.
+Then check that it can be seen and edited in the 'Nagrestconf' GUI by pointing
+a supported Web Browser at `http://localhost/nagrestconf'.
++
+If something goes wrong then there are configuration files in
+'/etc/nagrestconf' that might need correcting.
 
 
 Install From Source
@@ -528,105 +532,141 @@ REST Commands
 -------------
 The URL is in the form 'https://<HOST>/rest/<COMMAND>/<COMMANDARG>'.
 
-GET requests don't modify the configuration:
+COMMANDS are check, show, add, delete, modify, restart, apply and pipecmd. 
+
+Options to the COMMAND and COMMANDARG are added to the HTTP GET or POST query
+string in the form 'json={"option":"value"[,"option":"value"]...}'.
+
+GET requests are for operations that don't modify data, for example:
+
+    https://nagrestconf.host/rest/show/hosts?json={"folder":"local"}'
+
+All GET requests:
 
 * +https://<HOST>/rest/+
 ** +check/+
-*** nagiosconfig json={“folder”:”<name>”[,”verbose”:”true”]}
+*** nagiosconfig json={"folder":"<name>"[,"verbose":"true"]}
 ** +show/+
-*** hosttemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicetemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hosts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** services json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicesets json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicegroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** contacts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** contactgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** timeperiods json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** commands json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicedeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostdeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** serviceesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** serviceextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+*** hosttemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicetemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hosts json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** services json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicesets json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicegroups json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostgroups json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** contacts json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** contactgroups json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** timeperiods json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** commands json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicedeps json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostdeps json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** serviceesc json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostesc json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** serviceextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
 
-POST requests are for modifying the configuration:
+POST requests are operation that might modify data, for example:
+
+        https://nagrestconf.host/rest/add/hosts
+
+    with POST data:
+
+        json={
+        "folder":"acloud",
+        "name":"vhost1.acloud.com",
+        "alias":"vhost1.acloud.com",
+        "ipaddress":"1.2.3.4",
+        "template":"prod_htmpl",
+        "hostgroup":"prodvhosts",
+        "servicesets":"prod-linux-checks"}' 
+
+All POST requests:
 
 * +https://<HOST>/rest/+
-** +add/+
-*** hosttemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicetemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hosts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** services json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicesets json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicegroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** contacts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** contactgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** timeperiods json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** commands json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicedeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostdeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** serviceesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** serviceextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-** +delete/+
-*** hosttemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicetemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hosts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** services json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicesets json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicegroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** contacts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** contactgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** timeperiods json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** commands json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicedeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostdeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** serviceesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** serviceextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-** +modify/+
-*** hosttemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicetemplates json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hosts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** services json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicesets json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicegroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** contacts json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** contactgroups json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** timeperiods json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** commands json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** servicedeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostdeps json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** serviceesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostesc json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** serviceextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
-*** hostextinfo json={“folder”:”<name>”[,”<option>”:”<value>”]*}
+** +add/+ Use options detailed in the following section.
+*** hosttemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicetemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hosts json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** services json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicesets json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicegroups json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostgroups json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** contacts json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** contactgroups json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** timeperiods json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** commands json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicedeps json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostdeps json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** serviceesc json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostesc json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** serviceextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
+** +delete/+ Use options detailed in the following section.
+*** hosttemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicetemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hosts json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** services json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicesets json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicegroups json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostgroups json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** contacts json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** contactgroups json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** timeperiods json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** commands json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicedeps json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostdeps json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** serviceesc json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostesc json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** serviceextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
+** +modify/+ Use options detailed in the following section.
+*** hosttemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicetemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hosts json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** services json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicesets json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicegroups json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostgroups json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** contacts json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** contactgroups json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** timeperiods json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** commands json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** servicedeps json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostdeps json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** serviceesc json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostesc json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** serviceextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hostextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
 ** +restart/+
-*** nagios json={“folder”:”<name>”}
+*** nagios json={"folder":"<name>"}
 ** +apply/+
-*** nagiosconfig json={“folder”:”<name>”[,”verbose”:”true”]}
-*** nagioslastgoodconfig json={“folder”:”<name>”}
-** +pipecmd/+
-*** enablehostsvcchecks json={“folder”:”<name>”,”name”:”<hostname>}
-*** disablehostsvcchecks json={“folder”:”<name>”,”name”:”<hostname>” [,”comment”,”<comment>”]}
-*** enablesvccheck json={“folder”:”<name>”,”name”:”<hostname>, “svcdesc”:”<Service Description>” [,”comment”,”<comment>”]}
-*** disablesvccheck json={“folder”:”<name>”,”name”:”<hostname>” “svcdesc”:”<Service Description>” [,”comment”,”<comment>”]}
+*** nagiosconfig json={"folder":"<name>"[,"verbose":"true"]}
+*** nagioslastgoodconfig json={"folder":"<name>"}
+** +pipecmd/+ Use options detailed in the following section.
+*** enablehostsvcchecks json={"folder":"<name>","name":"<hostname>}
+*** disablehostsvcchecks json={"folder":"<name>","name":"<hostname>" [,"comment","<comment>"]}
+*** enablesvccheck json={"folder":"<name>","name":"<hostname>, "svcdesc":"<Service Description>" [,"comment","<comment>"]}
+*** disablesvccheck json={"folder":"<name>","name":"<hostname>" "svcdesc":"<Service Description>" [,"comment","<comment>"]}
+*** schedulehostdowntime json={"folder":"<name>","name":"<hostname>,"duration":"<minutes>" [,"comment","<comment>"]}
+*** delhostdowntime json={"folder":"<name>","name":"<hostname>,"svcdesc":"<Service Description>" [,"comment","<comment>"]}
+*** schedulehostsvcdowntime json={"folder":"<name>","name":"<hostname>","svcdesc":"<Service Description>" [,"comment","<comment>"]}
+*** delhostsvcdowntime json={"folder":"<name>","name":"<hostname>","svcdesc":"<Service Description>" [,"comment","<comment>"]}
+*** schedulesvcdowntime json={"folder":"<name>","name":"<hostname>","svcdesc":"<Service Description>" [,"comment","<comment>"]}
+*** delsvcdowntime json={"folder":"<name>","name":"<hostname>","svcdesc":"<Service Description>" [,"comment","<comment>"]}
 
 
 Currently Implemented Definitions and Directives
 ------------------------------------------------
 
-Nagios object definitions are here:
+Refer to the Nagios object definitions documentation for more information about
+individual options in the following tables. It can be found at the following
+URL:
 
 http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html
+
+The 'Column' number in the following tables relates to the column number in the
+comma delimited files on the nagios server. These files are used by 'csv2nag'
+to create the nagios configuration files.
 
 Key for Flags column:
 
@@ -637,7 +677,8 @@ Key for Flags column:
  * \'C' for a compound field: <name>|<value>[,<name>|<value>]...
  * \'X' implemented in REST but not in the Web front-end.
 
-.Contacts File
+contacts COMMANDARG
+~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -668,7 +709,8 @@ Key for Flags column:
 | 24. | Contact groups | XL | contactgroups
 |========================================================
 
-.Contactgroups Files
+contactgroups COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -679,7 +721,8 @@ Key for Flags column:
 | 4. | Disable | U | disable
 |========================================================
 
-.Hosts File
+hosts COMMANDARG
+~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -732,8 +775,8 @@ Key for Flags column:
 | 46. | Action url | X | action_url
 |========================================================
 
-.Hosttemplates File 
-
+hosttemplates COMMANDARG 
+~~~~~~~~~~~~~~~~~~~~~~~~
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
 | Column | Description | Flags | REST variable name
@@ -778,7 +821,8 @@ Key for Flags column:
 | 39. | Action url | X | action_url
 |========================================================
 
-.Services File 
+services COMMANDARG 
+~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -836,7 +880,8 @@ active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.
 
-.Servicesets File 
+servicesets COMMANDARG 
+~~~~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -894,7 +939,8 @@ active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.
 
-.Servicetemplates File 
+servicetemplates COMMANDARG 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -944,7 +990,13 @@ to restrict to only setting the freshness_threshold.
 | 43. | 3d coords | X | coords3d
 |========================================================
 
-.Commands File
+pass:[*] Freshness thresh (auto) also sets check_command to no-checks-received,
+active_checks_enabled to 0 (depending on whether the host is a dcc or not),
+passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
+to restrict to only setting the freshness_threshold.
+
+commands COMMANDARG
+~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -954,7 +1006,8 @@ to restrict to only setting the freshness_threshold.
 | 3. | Disable | U | disable
 |========================================================
 
-.Hostgroups File
+hostgroups COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -969,7 +1022,8 @@ to restrict to only setting the freshness_threshold.
 | 8. | Action url | X | action_url
 |========================================================
 
-.Servicegroups File
+servicegroups COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -984,7 +1038,8 @@ to restrict to only setting the freshness_threshold.
 | 8. | Action url | X | action_url
 |========================================================
 
-.Timeperiods File
+timeperiods COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -997,7 +1052,8 @@ to restrict to only setting the freshness_threshold.
 | 6. | Freestyle time exception | CX | exception
 |========================================================
 
-.Servicedeps File
+servicedeps COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -1015,10 +1071,11 @@ to restrict to only setting the freshness_threshold.
 | 11. | Disable | X | disable
 |========================================================
 
-Note: Columns 1,2,4 and 5 are not lists in REST as they are in a
+NOTE: Columns 1,2,4 and 5 are not lists in REST as they are in a
 Nagios configuration file.
 
-.Hostdeps File
+hostdeps COMMANDARG
+~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -1034,10 +1091,11 @@ Nagios configuration file.
 | 9. | Disable | UX | disable
 |========================================================
 
-Note: Columns 1 and 2 are not lists in REST as they are in a
+NOTE: Columns 1 and 2 are not lists in REST as they are in a
 Nagios configuration file.
 
-.Serviceescalation File
+serviceescalation COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -1055,7 +1113,8 @@ Nagios configuration file.
 | 11. | Disable | X | disable
 |========================================================
 
-.Hostescalation File
+hostescalation COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -1072,7 +1131,8 @@ Nagios configuration file.
 | 10. | Disable | X | disable
 |========================================================
 
-.Serviceextinfo File
+serviceextinfo COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -1087,7 +1147,8 @@ Nagios configuration file.
 | 8. | Disable | X | disable
 |========================================================
 
-.Hostextinfo File
+hostextinfo COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -1105,3 +1166,125 @@ Nagios configuration file.
 | 11. | Disable | X | disable
 |========================================================
 
+enablehostsvcchecks COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Enables active checks for the host then enables all passive and active service
+checks for the host. The following nagios pipe commands are sent:
+
+ ENABLE_HOST_CHECK
+ ENABLE_PASSIVE_SVC_CHECKS
+ ENABLE_SVC_CHECK
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| N/a. | Host name | RX | name
+|========================================================
+
+disablehostsvcchecks COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Disables active checks for the host then disables all passive and active
+service checks for the host. Status is changed to green for the host and all
+of its service checks and the comment is set. The following nagios pipe
+commands are sent:
+
+ DISABLE_HOST_CHECK
+ DISABLE_HOST_SVC_CHECKS
+ PROCESS_SERVICE_CHECK_RESULT
+ ... 10 second sleep ...
+ DISABLE_PASSIVE_SVC_CHECKS
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| N/a. | Host name | RX | name
+| N/a. | Comment for the Nagios GUI | X | comment
+|========================================================
+
+enablesvccheck COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Enables an individual service check and optionally sets a comment otherwise the
+default comment will be used: "Un-disabled via REST. Check scheduled.". The
+following nagios pipe commands are sent:
+
+ ENABLE_PASSIVE_SVC_CHECKS
+ ENABLE_SVC_CHECK
+ PROCESS_SERVICE_CHECK_RESULT
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| N/a. | Host name | RX | name
+| N/a. | Service description | RX | svcdesc
+| N/a. | Comment for the Nagios GUI | X | comment
+|========================================================
+
+disablesvccheck COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Disables an individual service check and optionally sets a comment otherwise
+the default comment will be used: "Disabled via REST interface.". The following
+nagios pipe commands are sent:
+
+ DISABLE_SVC_CHECK
+ PROCESS_SERVICE_CHECK_RESULT
+ DISABLE_PASSIVE_SVC_CHECKS
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| N/a. | Host name | RX | name
+| N/a. | Service description | RX | svcdesc
+| N/a. | Comment for the Nagios GUI | X | comment
+|========================================================
+
+schedulehostdowntime COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Schedule fixed or flexible downtime for a host. The following nagios pipe
+commands are sent:
+
+ SCHEDULE_HOST_DOWNTIME
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| N/a. | Host name | RX | name
+| N/a. | Start time [unix time] | RX | starttime
+| N/a. | End time [unix time] | RX | endtime
+| N/a. | Flexible downtime [_0_\|1] | X | flexible
+| N/a. | Duration (for flexible downtime in minutes) | X | duration
+| N/a. | Comment for the Nagios GUI* | X | comment
+| N/a. | Author | X | author
+|========================================================
+
+\* If comment is not supplied then the default comment,
+"Scheduled via the REST interface.", is used.
+
+delhostdowntime COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Delete all scheduled downtime for a host.
+
+schedulehostsvcdowntime COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Schedule fixed or flexible downtime for a host and all its services.
+
+delhostsvcdowntime COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Delete all scheduled downtime for a host and all its services.
+
+schedulesvcdowntime COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Schedule fixed or flexible downtime for a host.
+
+delsvcdowntime COMMANDARG
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Delete all scheduled downtime for a host.

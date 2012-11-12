@@ -487,6 +487,31 @@ init()
 }
 
 # ---------------------------------------------------------------------------
+check_file_exists_and_is_writeable()
+# ---------------------------------------------------------------------------
+# Purpose:      Check variable and filename. On error exits right here.
+# Arguments:    $1 - Name of variable containing filename to check for.
+# Returns:      Nothing
+{
+    local varname file
+
+    eval varname="\$$1"
+
+    [[ -z $varname ]] && {
+        echo -n "NAGCTL ERROR: Variable '$1' is not set."
+        echo " Check nagctl.conf"
+    }
+    [[ -e $file ]] || {
+        echo "NAGCTL ERROR: File does not exist, '$1'."
+        exit 9
+    }
+    [[ -w $file ]] || {
+        echo "NAGCTL ERROR: Cannot write to $1."
+        exit 9
+    }
+}
+
+# ---------------------------------------------------------------------------
 check_setup_dir()
 # ---------------------------------------------------------------------------
 # Purpose:      Check for FILE_XXXs and setup dir. Quits on error.
@@ -3842,6 +3867,8 @@ pipecmd_enablehostsvcchecks()
 {
     local comment name item freshness
 
+    check_file_exists_and_is_writeable "COMMANDFILE"
+
     eval "$gcsv" 2>/dev/null
 
     [[ -z "$name" ]] && {
@@ -3890,6 +3917,8 @@ pipecmd_disablehostsvcchecks()
 # ----------------------------------------------------------------------------
 {
     local comment name descr
+
+    check_file_exists_and_is_writeable "COMMANDFILE"
 
     eval "$gcsv" 2>/dev/null
 
@@ -3952,6 +3981,8 @@ pipecmd_enablesvccheck()
 {
     local comment name svcdesc item freshness
 
+    check_file_exists_and_is_writeable "COMMANDFILE"
+
     eval "$gcsv" 2>/dev/null
 
     [[ -z "$svcdesc" ]] && {
@@ -4002,6 +4033,8 @@ pipecmd_disablesvccheck()
 {
     local comment name svcdesc
 
+    check_file_exists_and_is_writeable "COMMANDFILE"
+
     eval "$gcsv" 2>/dev/null
 
     [[ -z "$svcdesc" ]] && {
@@ -4033,6 +4066,48 @@ pipecmd_disablesvccheck()
 
         printf "[%lu] DISABLE_PASSIVE_SVC_CHECKS;$name;$svcdesc\n" \
             $now > $COMMANDFILE
+    fi
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+pipecmd_schedulehostdowntime()
+# ----------------------------------------------------------------------------
+{
+    local a comment name flexible stime ftime duration fixed
+
+    check_file_exists_and_is_writeable "COMMANDFILE"
+
+    eval "$gcsv" 2>/dev/null
+
+    [[ -z "$name" ]] && {
+        echo "NAGCTL ERROR: Host name is a required field."
+        exit 14
+    }
+    [[ -z "$comment" ]] && comment="Scheduled via the REST interface."
+    [[ -z "$author" ]] && author="nagrestconf"
+    if [[ -z "$flexible" || $flexible -eq 0 ]]; then
+        fixed=1
+    else
+        fixed=0
+    fi
+
+    # Force duration to a number
+    $((duration++)) ; $((duration--))
+    
+    lockdir
+    if ! item_existsN 1 $FILE_HOSTS "$name" ; then
+        echo "NAGCTL ERROR: Host '$name' not found."
+        unlockdir
+        exit 14
+    else
+        now=`date +%s`
+        a="[%lu] SCHEDULE_HOST_DOWNTIME;$name;$stime;$etime"
+        a="${a};$fixed;0;$duration;$author;$comment"
+        printf "$a" $now > $COMMANDFILE
+
     fi
     unlockdir
 
