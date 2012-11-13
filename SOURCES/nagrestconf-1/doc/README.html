@@ -1651,27 +1651,27 @@ disablesvccheck json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;" "svcdesc
 </li>
 <li>
 <p>
-schedulehostdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;,"duration":"&lt;minutes&gt;" [,"comment","&lt;comment&gt;"]}
+schedhstdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;,"starttime":"&lt;unixtime&gt;","endtime":"unixtime" [,"flexible":"&lt;0|1&gt;","duration":"&lt;minutes&gt;","author":"&lt;name&gt;","comment","&lt;comment&gt;"]}
 </p>
 </li>
 <li>
 <p>
-delhostdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;,"svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
+delhstdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;,"svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
 </p>
 </li>
 <li>
 <p>
-schedulehostsvcdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;","svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
+schedhstsvcdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;","svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
 </p>
 </li>
 <li>
 <p>
-delhostsvcdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;","svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
+delhstsvcdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;","svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
 </p>
 </li>
 <li>
 <p>
-schedulesvcdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;","svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
+schedsvcdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;","svcdesc":"&lt;Service Description&gt;" [,"comment","&lt;comment&gt;"]}
 </p>
 </li>
 <li>
@@ -4445,10 +4445,59 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<div class="paragraph"><p>\* If comment is not supplied then the default comment,
+<div class="paragraph"><p>* If comment is not supplied then the default comment,
 "Scheduled via the REST interface.", is used.</p></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -knX POST -d 'json={
+   "folder":"local",
+   "name":"hg2-lin02.company.local",
+   "starttime":"'`date +%s -d now`'",
+   "endtime":"'`date +%s -d "now + 1 hour"`'"}'
+   http://127.0.0.1/rest/pipecmd/schedhstdowntime</tt></pre>
+</div></div>
 <h3 id="_delhostdowntime_commandarg">12.23. delhostdowntime COMMANDARG</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Delete all scheduled downtime for a host.</p></div>
+<div class="paragraph"><p>Delete all scheduled downtime for a host. The following nagios pipe commands
+are sent:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>DEL_HOST_DOWNTIME</tt></pre>
+</div></div>
+<div class="tableblock">
+<table rules="all"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col />
+<col />
+<col />
+<col />
+<thead>
+<tr>
+<th align="center" valign="top"> Column </th>
+<th align="left" valign="top"> Description </th>
+<th align="center" valign="top"> Flags </th>
+<th align="left" valign="top"> REST variable name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
+<td align="left" valign="top"><p class="table">Host name</p></td>
+<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -knX POST -d 'json={
+   "folder":"local",
+   "name":"hg2-lin02.company.local" }'
+   http://127.0.0.1/rest/pipecmd/delhstdowntime</tt></pre>
+</div></div>
 <h3 id="_schedulehostsvcdowntime_commandarg">12.24. schedulehostsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Schedule fixed or flexible downtime for a host and all its services.</p></div>
 <h3 id="_delhostsvcdowntime_commandarg">12.25. delhostsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
@@ -4460,7 +4509,7 @@ cellspacing="0" cellpadding="4">
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-11-12 14:24:58 BST
+Last updated 2012-11-13 12:37:54 BST
 </div>
 </div>
 </body>

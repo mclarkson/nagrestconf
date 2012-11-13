@@ -22,7 +22,7 @@
 #
 #        ERROR codes created with:
 #
-# awk 'BEGIN { a=1000; } /ERROR/ { gsub( "ERROR [0-9]*", "ERROR "a );
+# awk 'BEGIN { a=1000; } /ERROR/ { gsub( "ERROR [0-9]+", "ERROR "a );
 #     print $0; a=a+1; } !/ERROR/ { print $0; }' \
 #     /var/www/html/rest/index.php > new
 #
@@ -372,6 +372,12 @@ class WriteCmd
     const PIPECMD_DISABLEHOSTSVCCHECKS = 2;
     const PIPECMD_DISABLESVCCHECK = 3;
     const PIPECMD_ENABLESVCCHECK = 4;
+    const PIPECMD_SCHEDULEHOSTDOWNTIME = 5;
+    const PIPECMD_DELHOSTDOWNTIME = 6;
+    const PIPECMD_SCHEDULEHOSTSVCDOWNTIME = 7;
+    const PIPECMD_DELHOSTSVCDOWNTIME = 8;
+    const PIPECMD_SCHEDULESVCDOWNTIME = 9;
+    const PIPECMD_DELSVCDOWNTIME = 10;
 
     private $cmdtype;
     const CMD_ADD = 1;
@@ -390,7 +396,7 @@ class WriteCmd
         $this->cmd = $cmd;
         if( ! $this->setCmdType() ) {
             $this->newcmdline =
-                "ERROR 1000: Invalid command '" . $cmd . "'.";
+                "ERROR 1003: Invalid command '" . $cmd . "'.";
             $this->retcode = 405;
             return;
         }
@@ -404,7 +410,7 @@ class WriteCmd
             case self::CMD_DELETE:
                 if( ! $this->setSubDeleteCmdType() ) {
                     $this->newcmdline =
-                        "ERROR 1001: Invalid type '" . $subcmd . "'.";
+                        "ERROR 1004: Invalid type '" . $subcmd . "'.";
                     $this->retcode = 405;
                     return;
                 }
@@ -416,7 +422,7 @@ class WriteCmd
             case self::CMD_MODIFY:
                 if( ! $this->setSubModifyCmdType() ) {
                     $this->newcmdline =
-                        "ERROR 1002: Invalid type '" . $subcmd . "'.";
+                        "ERROR 1005: Invalid type '" . $subcmd . "'.";
                     $this->retcode = 405;
                     return;
                 }
@@ -428,7 +434,7 @@ class WriteCmd
             case self::CMD_ADD:
                 if( ! $this->setSubAddCmdType() ) {
                     $this->newcmdline =
-                        "ERROR 1003: Invalid type '" . $subcmd . "'.";
+                        "ERROR 1006: Invalid type '" . $subcmd . "'.";
                     $this->retcode = 405;
                     return;
                 }
@@ -440,7 +446,7 @@ class WriteCmd
             case self::CMD_RESTART:
                 if( ! $this->setSubRestartCmdType() ) {
                     $this->newcmdline =
-                        "ERROR 1004: Invalid type '" . $subcmd . "'.";
+                        "ERROR 1007: Invalid type '" . $subcmd . "'.";
                     $this->retcode = 405;
                     return;
                 }
@@ -452,7 +458,7 @@ class WriteCmd
             case self::CMD_APPLY:
                 if( ! $this->setSubApplyCmdType() ) {
                     $this->newcmdline =
-                        "ERROR 1005: Invalid type '" . $subcmd . "'.";
+                        "ERROR 1008: Invalid type '" . $subcmd . "'.";
                     $this->retcode = 405;
                     return;
                 }
@@ -464,7 +470,7 @@ class WriteCmd
             case self::CMD_PIPECMD:
                 if( ! $this->setSubPipecmdCmdType() ) {
                     $this->newcmdline =
-                        "ERROR 1006: Invalid type '" . $subcmd . "'.";
+                        "ERROR 1009: Invalid type '" . $subcmd . "'.";
                     $this->retcode = 405;
                     return;
                 }
@@ -496,7 +502,7 @@ class WriteCmd
     {
         // apply nagios config
         if( ! $this->jsondata->{'folder'} ) {
-            $this->newcmdline = "ERROR 1007: 'folder' is undefined";
+            $this->newcmdline = "ERROR 1010: 'folder' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -524,7 +530,7 @@ class WriteCmd
     {
         // restart nagios
         if( ! $this->jsondata->{'folder'} ) {
-            $this->newcmdline = "ERROR 1008: 'folder' is undefined";
+            $this->newcmdline = "ERROR 1011: 'folder' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -596,7 +602,7 @@ class WriteCmd
                 break;
             default:
                 $this->newcmdline =
-                    "ERROR 1009: Unknown error.";
+                    "ERROR 1012: Unknown error.";
                 $retval = False;
         }
 
@@ -665,7 +671,7 @@ class WriteCmd
                 break;
             default:
                 $this->newcmdline =
-                    "ERROR 1010: Unknown error.";
+                    "ERROR 1013: Unknown error.";
                 $retval = False;
         }
 
@@ -690,12 +696,27 @@ class WriteCmd
             case self::PIPECMD_ENABLESVCCHECK:
                 $retval = $this->createEnablesvccheckPipecmdCmd();
                 break;
-            case self::PIPECMD_DISABLESVCCHECK:
-                $retval = $this->createDisablesvccheckPipecmdCmd();
+            case self::PIPECMD_SCHEDULEHOSTDOWNTIME:
+                $retval = $this->createScheduleHostDowntimePipecmdCmd();
+                break;
+            case self::PIPECMD_DELHOSTDOWNTIME:
+                $retval = $this->createDelHostDowntimePipecmdCmd();
+                break;
+            case self::PIPECMD_SCHEDULEHOSTSVCDOWNTIME:
+                $retval = $this->createScheduleHostSvcDowntimePipecmdCmd();
+                break;
+            case self::PIPECMD_DELHOSTSVCDOWNTIME:
+                $retval = $this->createDelHostSvcDowntimePipecmdCmd();
+                break;
+            case self::PIPECMD_SCHEDULESVCDOWNTIME:
+                $retval = $this->createScheduleSvcDowntimePipecmdCmd();
+                break;
+            case self::PIPECMD_DELSVCDOWNTIME:
+                $retval = $this->createDelSvcDowntimePipecmdCmd();
                 break;
             default:
                 $this->newcmdline =
-                    "ERROR 1011: Unknown error.";
+                    "ERROR 1014: Unknown error.";
                 $retval = False;
         }
 
@@ -764,7 +785,7 @@ class WriteCmd
                 break;
             default:
                 $this->newcmdline =
-                    "ERROR 1012: Unknown error.";
+                    "ERROR 1015: Unknown error.";
                 $retval = False;
         }
 
@@ -1013,6 +1034,24 @@ class WriteCmd
             case 'disablesvccheck':
                 $this->subcmdtype = self::PIPECMD_DISABLESVCCHECK;
                 break;
+            case 'schedhstdowntime':
+                $this->subcmdtype = self::PIPECMD_SCHEDULEHOSTDOWNTIME;
+                break;
+            case 'delhstdowntime':
+                $this->subcmdtype = self::PIPECMD_DELHOSTDOWNTIME;
+                break;
+            case 'schedhstsvcdowntime':
+                $this->subcmdtype = self::PIPECMD_SCHEDULEHOSTSVCDOWNTIME;
+                break;
+            case 'delhstsvcdowntime':
+                $this->subcmdtype = self::PIPECMD_DELHOSTSVCDOWNTIME;
+                break;
+            case 'schedsvcdowntime':
+                $this->subcmdtype = self::PIPECMD_SCHEDULESVCDOWNTIME;
+                break;
+            case 'delsvcdowntime':
+                $this->subcmdtype = self::PIPECMD_DELSVCDOWNTIME;
+                break;
             default:
                 $retval = False;
         }
@@ -1059,7 +1098,7 @@ class WriteCmd
     # ------------------------------------------------------------------------
     {
         if( ! $this->jsondata->{'folder'} ) {
-            $this->newcmdline = "ERROR 1013: 'folder' is undefined";
+            $this->newcmdline = "ERROR 1016: 'folder' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -1082,7 +1121,7 @@ class WriteCmd
                 $this->newcmdline .= ' " name=' . $this->jsondata->{'name'}
                     . ';';
         } else {
-            $this->newcmdline = "ERROR 1014: 'name' is undefined";
+            $this->newcmdline = "ERROR 1017: 'name' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -1105,7 +1144,7 @@ class WriteCmd
                 $this->newcmdline .= ' " name=' . $this->jsondata->{'name'}
                     . ';';
         } else {
-            $this->newcmdline = "ERROR 1015: 'name' is undefined";
+            $this->newcmdline = "ERROR 1018: 'name' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -1134,7 +1173,7 @@ class WriteCmd
                 $this->newcmdline .= ' " name=' . $this->jsondata->{'name'}
                     . ';';
         } else {
-            $this->newcmdline = "ERROR 1015: 'name' is undefined";
+            $this->newcmdline = "ERROR 1019: 'name' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -1142,7 +1181,7 @@ class WriteCmd
                 $this->newcmdline .= 'svcdesc=\"'
                     . $this->jsondata->{'svcdesc'} . '\";';
         } else {
-            $this->newcmdline = "ERROR 1015: 'svcdesc' is undefined";
+            $this->newcmdline = "ERROR 1020: 'svcdesc' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -1171,7 +1210,7 @@ class WriteCmd
                 $this->newcmdline .= ' " name=' . $this->jsondata->{'name'}
                     . ';';
         } else {
-            $this->newcmdline = "ERROR 1015: 'name' is undefined";
+            $this->newcmdline = "ERROR 1021: 'name' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -1179,7 +1218,7 @@ class WriteCmd
                 $this->newcmdline .= 'svcdesc='
                     . $this->jsondata->{'svcdesc'} . ';';
         } else {
-            $this->newcmdline = "ERROR 1015: 'svcdesc' is undefined";
+            $this->newcmdline = "ERROR 1022: 'svcdesc' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -1195,11 +1234,92 @@ class WriteCmd
     }
 
     # ------------------------------------------------------------------------
+    private function createScheduleHostDowntimePipecmdCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericPipecmdPrefix() == False ) return False;
+
+        $this->newcmdline .= " schedhstdowntime";
+
+        if( $this->jsondata->{'name'} ) {
+                $this->newcmdline .= ' " name=' . $this->jsondata->{'name'}
+                    . ';';
+        } else {
+            $this->newcmdline = "ERROR 1023: 'name' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+        if( $this->jsondata->{'starttime'} ) {
+                $this->newcmdline .= 'starttime='
+                    . $this->jsondata->{'starttime'} . ';';
+        } else {
+            $this->newcmdline = "ERROR 1024: 'starttime' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+        if( $this->jsondata->{'endtime'} ) {
+                $this->newcmdline .= 'endtime='
+                    . $this->jsondata->{'endtime'} . ';';
+        } else {
+            $this->newcmdline = "ERROR 1025: 'endtime' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+        if( $this->jsondata->{'flexible'} ) {
+                $this->newcmdline .= 'flexible='
+                    . $this->jsondata->{'flexible'} . ';';
+        }
+        if( $this->jsondata->{'duration'} ) {
+                $this->newcmdline .= 'duration='
+                    . $this->jsondata->{'duration'} . ';';
+        }
+        if( $this->jsondata->{'author'} ) {
+                $this->newcmdline .= 'author='
+                    . $this->jsondata->{'author'} . ';';
+        }
+        if( $this->jsondata->{'comment'} ) {
+                $this->newcmdline .= 'comment=\"' .
+                    $this->jsondata->{'comment'}
+                    . '\";';
+        }
+
+        $this->newcmdline .= '"';
+
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
+    private function createDelHostDowntimePipecmdCmd()
+    # ------------------------------------------------------------------------
+    {
+        $retval = True;
+
+        if( $this->genericPipecmdPrefix() == False ) return False;
+
+        $this->newcmdline .= " delhstdowntime";
+
+        if( $this->jsondata->{'name'} ) {
+                $this->newcmdline .= ' " name=' . $this->jsondata->{'name'}
+                    . ';';
+        } else {
+            $this->newcmdline = "ERROR 1050: 'name' is undefined";
+            $this->retcode = 405;
+            return False;
+        }
+
+        $this->newcmdline .= '"';
+
+        return $retval;
+    }
+
+    # ------------------------------------------------------------------------
     private function genericDeletePrefix()
     # ------------------------------------------------------------------------
     {
         if( ! $this->jsondata->{'folder'} ) {
-            $this->newcmdline = "ERROR 1016: 'folder' is undefined";
+            $this->newcmdline = "ERROR 1026: 'folder' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -1817,7 +1937,7 @@ class WriteCmd
     # ------------------------------------------------------------------------
     {
         if( ! $this->jsondata->{'folder'} ) {
-            $this->newcmdline = "ERROR 1017: 'folder' is undefined";
+            $this->newcmdline = "ERROR 1027: 'folder' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -2436,7 +2556,7 @@ class WriteCmd
     # ------------------------------------------------------------------------
     {
         if( ! $this->jsondata->{'folder'} ) {
-            $this->newcmdline = "ERROR 1018: 'folder' is undefined";
+            $this->newcmdline = "ERROR 1028: 'folder' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -3089,7 +3209,7 @@ class ReadCmd
 
         if( $cmd != "show" && $cmd != "check" ) {
             $this->newcmdline =
-                "ERROR 1019: Invalid command for this request type.";
+                "ERROR 1029: Invalid command for this request type.";
             $this->retcode = 405;
             return;
         } else {
@@ -3099,7 +3219,7 @@ class ReadCmd
         $this->subcmd = $subcmd;
         if( ! $this->setSubCmdType() ) {
             $this->newcmdline =
-                "ERROR 1020: Invalid type '" . $subcmd . "' to show.";
+                "ERROR 1030: Invalid type '" . $subcmd . "' to show.";
             $this->retcode = 405;
             return;
         }
@@ -3218,7 +3338,7 @@ class ReadCmd
                 $retval = $this->createHostextinfoCmd();
                 break;
             default:
-                $this->newcmdline = "ERROR 1021: Unknown error.";
+                $this->newcmdline = "ERROR 1031: Unknown error.";
                 $retval = False;
         }
 
@@ -3297,7 +3417,7 @@ class ReadCmd
     # ------------------------------------------------------------------------
     {
         if( ! $this->jsondata->{'folder'} ) {
-            $this->newcmdline = "ERROR 1022: 'folder' is undefined";
+            $this->newcmdline = "ERROR 1032: 'folder' is undefined";
             $this->retcode = 405;
             return False;
         }
@@ -3427,7 +3547,7 @@ class ReadCmd
     # ------------------------------------------------------------------------
     {
         if( ! $this->jsondata->{'folder'} ) {
-            $this->newcmdline = "ERROR 1023: 'folder' is undefined";
+            $this->newcmdline = "ERROR 1033: 'folder' is undefined";
             $this->retcode = 405;
             return False;
         }

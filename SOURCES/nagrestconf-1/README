@@ -647,11 +647,11 @@ All POST requests:
 *** disablehostsvcchecks json={"folder":"<name>","name":"<hostname>" [,"comment","<comment>"]}
 *** enablesvccheck json={"folder":"<name>","name":"<hostname>, "svcdesc":"<Service Description>" [,"comment","<comment>"]}
 *** disablesvccheck json={"folder":"<name>","name":"<hostname>" "svcdesc":"<Service Description>" [,"comment","<comment>"]}
-*** schedulehostdowntime json={"folder":"<name>","name":"<hostname>,"duration":"<minutes>" [,"comment","<comment>"]}
-*** delhostdowntime json={"folder":"<name>","name":"<hostname>,"svcdesc":"<Service Description>" [,"comment","<comment>"]}
-*** schedulehostsvcdowntime json={"folder":"<name>","name":"<hostname>","svcdesc":"<Service Description>" [,"comment","<comment>"]}
-*** delhostsvcdowntime json={"folder":"<name>","name":"<hostname>","svcdesc":"<Service Description>" [,"comment","<comment>"]}
-*** schedulesvcdowntime json={"folder":"<name>","name":"<hostname>","svcdesc":"<Service Description>" [,"comment","<comment>"]}
+*** schedhstdowntime json={"folder":"<name>","name":"<hostname>,"starttime":"<unixtime>","endtime":"unixtime" [,"flexible":"<0|1>","duration":"<minutes>","author":"<name>","comment","<comment>"]}
+*** delhstdowntime json={"folder":"<name>","name":"<hostname>,"svcdesc":"<Service Description>" [,"comment","<comment>"]}
+*** schedhstsvcdowntime json={"folder":"<name>","name":"<hostname>","svcdesc":"<Service Description>" [,"comment","<comment>"]}
+*** delhstsvcdowntime json={"folder":"<name>","name":"<hostname>","svcdesc":"<Service Description>" [,"comment","<comment>"]}
+*** schedsvcdowntime json={"folder":"<name>","name":"<hostname>","svcdesc":"<Service Description>" [,"comment","<comment>"]}
 *** delsvcdowntime json={"folder":"<name>","name":"<hostname>","svcdesc":"<Service Description>" [,"comment","<comment>"]}
 
 
@@ -1261,13 +1261,38 @@ commands are sent:
 | N/a. | Author | X | author
 |========================================================
 
-\* If comment is not supplied then the default comment,
+pass:[*] If comment is not supplied then the default comment,
 "Scheduled via the REST interface.", is used.
+
+Example:
+
+ curl -knX POST -d 'json={
+    "folder":"local",
+    "name":"hg2-lin02.company.local",
+    "starttime":"'`date +%s -d now`'",
+    "endtime":"'`date +%s -d "now + 1 hour"`'"}'
+    http://127.0.0.1/rest/pipecmd/schedhstdowntime
 
 delhostdowntime COMMANDARG
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Delete all scheduled downtime for a host.
+Delete all scheduled downtime for a host. The following nagios pipe commands
+are sent:
+
+ DEL_HOST_DOWNTIME
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| N/a. | Host name | RX | name
+|========================================================
+
+Example:
+
+ curl -knX POST -d 'json={
+    "folder":"local",
+    "name":"hg2-lin02.company.local" }'
+    http://127.0.0.1/rest/pipecmd/delhstdowntime
 
 schedulehostsvcdowntime COMMANDARG
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -140,6 +140,9 @@ cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 
 %changelog
 * Wed Nov 7 2012 Mark Clarkson <mark.clarkson@smorg.co.uk>
+- Added schedulehostdowntime and delhostdowntime.
+
+* Wed Nov 7 2012 Mark Clarkson <mark.clarkson@smorg.co.uk>
 - Added nagios objects: service dependencies, host dependencies,
   service escalations, host escalations, extra service info and
   extra host info.

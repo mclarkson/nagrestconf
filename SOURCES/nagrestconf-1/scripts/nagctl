@@ -67,6 +67,12 @@ PIPECMD_ENABLEHOSTSVCCHECKS=1
 PIPECMD_DISABLEHOSTSVCCHECKS=2
 PIPECMD_DISABLESVCCHECK=3
 PIPECMD_ENABLESVCCHECK=4
+PIPECMD_SCHEDULEHOSTDOWNTIME=5;
+PIPECMD_DELHOSTDOWNTIME=6;
+PIPECMD_SCHEDULEHOSTSVCDOWNTIME=7;
+PIPECMD_DELHOSTSVCDOWNTIME=8;
+PIPECMD_SCHEDULESVCDOWNTIME=9;
+PIPECMD_DELSVCDOWNTIME=10;
 
 FILE_HOSTTEMPLATES=1
 FILE_SERVICETEMPLATES=2
@@ -332,6 +338,18 @@ check_pipecmditem()
         ;;
         enablesvccheck) gnfile=$PIPECMD_ENABLESVCCHECK
         ;;
+        schedhstdowntime) gnfile=$PIPECMD_SCHEDULEHOSTDOWNTIME
+        ;;
+        delhstdowntime) gnfile=$PIPECMD_DELHOSTDOWNTIME
+        ;;
+        schedhstsvcdowntime) gnfile=$PIPECMD_SCHEDULEHOSTSVCDOWNTIME
+        ;;
+        delhstsvcdowntime) gnfile=$PIPECMD_DELHOSTSVCDOWNTIME
+        ;;
+        schedsvcdowntime) gnfile=$PIPECMD_SCHEDULESVCDOWNTIME
+        ;;
+        delsvcdowntime) gnfile=$PIPECMD_DELSVCDOWNTIME
+        ;;
         ?*) echo -e "NAGCTL ERROR: Invalid file."
             exit 4
         ;;
@@ -495,18 +513,45 @@ check_file_exists_and_is_writeable()
 {
     local varname file
 
-    eval varname="\$$1"
+    eval file="\$$1"
 
-    [[ -z $varname ]] && {
+    [[ -z $file ]] && {
         echo -n "NAGCTL ERROR: Variable '$1' is not set."
         echo " Check nagctl.conf"
+        exit 8
     }
     [[ -e $file ]] || {
-        echo "NAGCTL ERROR: File does not exist, '$1'."
+        echo "NAGCTL ERROR: File does not exist, '$file'."
         exit 9
     }
     [[ -w $file ]] || {
-        echo "NAGCTL ERROR: Cannot write to $1."
+        echo "NAGCTL ERROR: Cannot write to $file."
+        exit 9
+    }
+}
+
+# ---------------------------------------------------------------------------
+check_file_exists_and_is_readable()
+# ---------------------------------------------------------------------------
+# Purpose:      Check variable and filename. On error exits right here.
+# Arguments:    $1 - Name of variable containing filename to check for.
+# Returns:      Nothing
+{
+    local varname file
+
+    eval file="\$$1"
+
+    [[ -z $file ]] && {
+        echo -n "NAGCTL ERROR: Variable '$1' is not set."
+        echo " Check nagctl.conf"
+        exit 8
+    }
+    [[ -e $file ]] || {
+        echo "NAGCTL ERROR: File does not exist, '$file'."
+        exit 9
+    }
+    [[ -r $file ]] || {
+        echo "NAGCTL ERROR: Cannot read from $file."
         exit 9
     }
 }
@@ -1072,6 +1117,12 @@ action_pipecmd()
         $PIPECMD_DISABLEHOSTSVCCHECKS) pipecmd_disablehostsvcchecks ;;
         $PIPECMD_DISABLESVCCHECK) pipecmd_disablesvccheck ;;
         $PIPECMD_ENABLESVCCHECK) pipecmd_enablesvccheck ;;
+        $PIPECMD_SCHEDULEHOSTDOWNTIME) pipecmd_schedulehostdowntime ;;
+        $PIPECMD_DELHOSTDOWNTIME) pipecmd_delhostdowntime ;;
+        $PIPECMD_SCHEDULEHOSTSVCDOWNTIME) pipecmd_schedulehostsvcdowntime ;;
+        $PIPECMD_DELHOSTSVCDOWNTIME) pipecmd_delhostsvcdowntime ;;
+        $PIPECMD_SCHEDULESVCDOWNTIME) pipecmd_schedulesvcdowntime ;;
+        $PIPECMD_DELSVCDOWNTIME) pipecmd_delsvcdowntime ;;
     esac
 }
 
@@ -4076,7 +4127,7 @@ pipecmd_disablesvccheck()
 pipecmd_schedulehostdowntime()
 # ----------------------------------------------------------------------------
 {
-    local a comment name flexible stime ftime duration fixed
+    local a comment name fixed flexible starttime endtime duration flexible
 
     check_file_exists_and_is_writeable "COMMANDFILE"
 
@@ -4095,7 +4146,7 @@ pipecmd_schedulehostdowntime()
     fi
 
     # Force duration to a number
-    $((duration++)) ; $((duration--))
+    : $((duration++)) ; : $((duration--))
     
     lockdir
     if ! item_existsN 1 $FILE_HOSTS "$name" ; then
@@ -4104,10 +4155,44 @@ pipecmd_schedulehostdowntime()
         exit 14
     else
         now=`date +%s`
-        a="[%lu] SCHEDULE_HOST_DOWNTIME;$name;$stime;$etime"
+        a="[%lu] SCHEDULE_HOST_DOWNTIME;$name;$starttime;$endtime"
         a="${a};$fixed;0;$duration;$author;$comment"
         printf "$a" $now > $COMMANDFILE
 
+    fi
+    unlockdir
+
+    echo "Success"
+}
+
+# ----------------------------------------------------------------------------
+pipecmd_delhostdowntime()
+# ----------------------------------------------------------------------------
+{
+    local a name 
+
+    check_file_exists_and_is_writeable "COMMANDFILE"
+    check_file_exists_and_is_readable "STATUSFILE"
+
+    eval "$gcsv" 2>/dev/null
+
+    [[ -z "$name" ]] && {
+        echo "NAGCTL ERROR: Host name is a required field."
+        exit 14
+    }
+    
+    lockdir
+    if ! item_existsN 1 $FILE_HOSTS "$name" ; then
+        echo "NAGCTL ERROR: Host '$name' not found."
+        unlockdir
+        exit 14
+    else
+        now=`date +%s`
+        while read id; do
+            echo "[$now] DEL_HOST_DOWNTIME;$id" >$COMMANDFILE
+        done < <( sed -n "/hostdowntime/,/downtime_id/ {
+            /host_name=$name/,/downtime_id/ {
+            s/[[:space:]]*downtime_id=//p} }" $STATUSFILE )
     fi
     unlockdir
 
