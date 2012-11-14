@@ -4376,88 +4376,40 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_schedulehostdowntime_commandarg">12.22. schedulehostdowntime COMMANDARG</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Schedule fixed or flexible downtime for a host. The following nagios pipe
-commands are sent:</p></div>
-<div class="literalblock">
+<div class="paragraph"><p>schedhstdowntime COMMANDARG</p></div>
+<div class="listingblock">
 <div class="content">
-<pre><tt>SCHEDULE_HOST_DOWNTIME</tt></pre>
+<pre><tt>Schedule fixed or flexible downtime for a host. The following nagios pipe
+commands are sent:
+
+ SCHEDULE_HOST_DOWNTIME
+
+[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
+|========================================================
+| Column | Description | Flags | REST variable name
+| N/a. | Host name | RX | name
+| N/a. | Start time [unix time] | RX | starttime
+| N/a. | End time [unix time] | RX | endtime
+| N/a. | Flexible downtime [_0_\|1] | X | flexible
+| N/a. | Duration (for flexible downtime in minutes) | X | duration
+| N/a. | Comment for the Nagios GUI* | X | comment
+| N/a. | Author | X | author
+|========================================================
+
+pass:[*] If comment is not supplied then the default comment,
+"Scheduled via the REST interface.", is used.
+
+Example:
+
+ curl -knX POST -d 'json={
+    "folder":"local",
+    "name":"hg2-lin02.company.local",
+    "starttime":"'`date +%s -d now`'",
+    "endtime":"'`date +%s -d "now + 1 hour"`'"}'
+    http://127.0.0.1/rest/pipecmd/schedhstdowntime
+
+delhstdowntime COMMANDARG</tt></pre>
 </div></div>
-<div class="tableblock">
-<table rules="all"
-frame="hsides"
-cellspacing="0" cellpadding="4">
-<col />
-<col />
-<col />
-<col />
-<thead>
-<tr>
-<th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
-<td align="left" valign="top"><p class="table">Host name</p></td>
-<td align="center" valign="top"><p class="table">RX</p></td>
-<td align="left" valign="top"><p class="table">name</p></td>
-</tr>
-<tr>
-<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
-<td align="left" valign="top"><p class="table">Start time [unix time]</p></td>
-<td align="center" valign="top"><p class="table">RX</p></td>
-<td align="left" valign="top"><p class="table">starttime</p></td>
-</tr>
-<tr>
-<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
-<td align="left" valign="top"><p class="table">End time [unix time]</p></td>
-<td align="center" valign="top"><p class="table">RX</p></td>
-<td align="left" valign="top"><p class="table">endtime</p></td>
-</tr>
-<tr>
-<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
-<td align="left" valign="top"><p class="table">Flexible downtime [<em>0</em>|1]</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
-<td align="left" valign="top"><p class="table">flexible</p></td>
-</tr>
-<tr>
-<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
-<td align="left" valign="top"><p class="table">Duration (for flexible downtime in minutes)</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
-<td align="left" valign="top"><p class="table">duration</p></td>
-</tr>
-<tr>
-<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
-<td align="left" valign="top"><p class="table">Comment for the Nagios GUI*</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
-<td align="left" valign="top"><p class="table">comment</p></td>
-</tr>
-<tr>
-<td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
-<td align="left" valign="top"><p class="table">Author</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
-<td align="left" valign="top"><p class="table">author</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="paragraph"><p>* If comment is not supplied then the default comment,
-"Scheduled via the REST interface.", is used.</p></div>
-<div class="paragraph"><p>Example:</p></div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>curl -knX POST -d 'json={
-   "folder":"local",
-   "name":"hg2-lin02.company.local",
-   "starttime":"'`date +%s -d now`'",
-   "endtime":"'`date +%s -d "now + 1 hour"`'"}'
-   http://127.0.0.1/rest/pipecmd/schedhstdowntime</tt></pre>
-</div></div>
-<h3 id="_delhostdowntime_commandarg">12.23. delhostdowntime COMMANDARG</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Delete all scheduled downtime for a host. The following nagios pipe commands
 are sent:</p></div>
 <div class="literalblock">
@@ -4498,18 +4450,18 @@ cellspacing="0" cellpadding="4">
    "name":"hg2-lin02.company.local" }'
    http://127.0.0.1/rest/pipecmd/delhstdowntime</tt></pre>
 </div></div>
-<h3 id="_schedulehostsvcdowntime_commandarg">12.24. schedulehostsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
+<h3 id="_schedulehostsvcdowntime_commandarg">12.22. schedulehostsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Schedule fixed or flexible downtime for a host and all its services.</p></div>
-<h3 id="_delhostsvcdowntime_commandarg">12.25. delhostsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
+<h3 id="_delhostsvcdowntime_commandarg">12.23. delhostsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Delete all scheduled downtime for a host and all its services.</p></div>
-<h3 id="_schedulesvcdowntime_commandarg">12.26. schedulesvcdowntime COMMANDARG</h3><div style="clear:left"></div>
+<h3 id="_schedulesvcdowntime_commandarg">12.24. schedulesvcdowntime COMMANDARG</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Schedule fixed or flexible downtime for a host.</p></div>
-<h3 id="_delsvcdowntime_commandarg">12.27. delsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
+<h3 id="_delsvcdowntime_commandarg">12.25. delsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Delete all scheduled downtime for a host.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-11-13 12:37:54 BST
+Last updated 2012-11-14 10:01:57 BST
 </div>
 </div>
 </body>

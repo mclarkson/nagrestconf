@@ -1241,7 +1241,7 @@ nagios pipe commands are sent:
 | N/a. | Comment for the Nagios GUI | X | comment
 |========================================================
 
-schedulehostdowntime COMMANDARG
+schedhstdowntime COMMANDARG
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Schedule fixed or flexible downtime for a host. The following nagios pipe
@@ -1273,7 +1273,7 @@ Example:
     "endtime":"'`date +%s -d "now + 1 hour"`'"}'
     http://127.0.0.1/rest/pipecmd/schedhstdowntime
 
-delhostdowntime COMMANDARG
+delhstdowntime COMMANDARG
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Delete all scheduled downtime for a host. The following nagios pipe commands

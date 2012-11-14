@@ -1225,7 +1225,7 @@ create_servicetemplates()
         [[ -n $maxcheckattempts ]] && {
             echo "       max_check_attempts $maxcheckattempts"
         }
-        [[ -n $checki]] && {
+        [[ -n $checki ]] && {
             echo "       check_interval $checki"
         }
         [[ -n $retrchecki ]] && {
