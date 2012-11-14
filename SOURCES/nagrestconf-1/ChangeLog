@@ -1,5 +1,21 @@
+2012-11-14  mclarkson
+
+	* README, doc/README.html, scripts/csv2nag: Bugfix and docupdate
+
+2012-11-13  mclarkson
+
+	* README, doc/README.html, etc/nagrestconf/nagctl.conf,
+	  rest/index.php, scripts/nagctl: Added schedulehostdowntime and
+	  delhostdowntime
+
+2012-11-12  mclarkson
+
+	* README, doc/README.html, scripts/nagctl: dont build
+
 2012-11-08  mclarkson
 
+	* debian/changelog: Packaging
+	* ChangeLog: svn2cl --group-by-day
 	* README, doc/README.html, rest/index.php, scripts/csv2nag,
 	  scripts/nagctl, scripts/upgrade_setup_files.sh: Added more nagios
 	  directives to servicetemplates
