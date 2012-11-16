@@ -129,7 +129,7 @@ cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 %_bindir
 %defattr(644,root,root,755)
 /usr/share/nagrestconf/htdocs/
-%doc doc/initial-config doc/bulk-loading README doc/README.html
+%doc doc/initial-config doc/initial-config.dcc doc/bulk-loading README doc/README.html
 %config(noreplace) /etc/httpd/conf.d/rest.conf
 %config(noreplace) /etc/httpd/conf.d/nagrestconf.conf
 %config(noreplace) /etc/nagrestconf/nagrestconf.ini

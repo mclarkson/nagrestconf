@@ -36,9 +36,6 @@
 # SETINGS - MODIFY AS NEEDED
 # ---------------------------------------------------------------------------
 
-# Set DCC=1 if this is a data centre collector
-DCC=0
-
 #
 #
 # -------------------- DO NOT MODIFY ANYTHING BELOW -------------------------
@@ -50,6 +47,8 @@ DCC=0
 # ---------------------------------------------------------------------------
 
 VERSION="1.0"
+
+CONFIG="/etc/nagrestconf/csv2nag.conf"
 
 # -- Constants
 
@@ -2263,6 +2262,17 @@ main()
 # Arguments:    None
 # Returns:      Nothing
 {
+    if [[ -r $CONFIG ]]; then
+        source $CONFIG
+        [[ -z $DCC ]] && {
+            echo "ERROR: DCC variable is not set. Aborting."
+            exit 1
+        }
+    else
+        echo "ERROR: File does not exists, '$CONFIG'. Aborting"
+        exit 1
+    fi
+
     parse_options
 
     if [[ $gsetupfiletype -eq $FT_ALL ]]; then
