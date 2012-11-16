@@ -1,0 +1,39 @@
+#!/bin/bash
+
+PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin
+
+if [[ -r /etc/nagrestconf/nagctl.conf ]]; then
+    source /etc/nagrestconf/nagctl.conf
+else
+    echo "/etc/nagrestconf/nagctl.conf not found."
+    echo "Cannot start without NAG_OBJ_DIR variable."
+    echo "Aborting."
+    exit 1
+fi
+
+if [[ -r /etc/nagrestconf/restart_nagios.conf ]]; then
+    source /etc/nagrestconf/restart_nagios.conf
+else
+    echo "/etc/nagrestconf/restart_nagios.conf not found."
+    echo "Cannot start without NAG_INITD variable."
+    echo "Aborting."
+    exit 1
+fi
+
+UPDATE=0
+for i in `ls /tmp/nagios_update_* 2>/dev/null` ; do
+    rm $i
+    basedir=$NAG_OBJ_DIR/${i##/tmp/nagios_update_}
+    [[ -d $basedir/setup ]] && {
+        cd $basedir/setup
+        while read a b; do
+            UPDATE=1
+        done < <( svn up | tail -n+2 )
+    }
+    [[ $UPDATE -eq 1 ]] && {
+        cd $basedir
+        csv2nag -y all
+        service $NAG_INITD restart
+    }
+done
+

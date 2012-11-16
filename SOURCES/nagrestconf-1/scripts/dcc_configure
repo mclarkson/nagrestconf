@@ -1,0 +1,244 @@
+#!/bin/bash
+# Copyright (C) 2010 Nokia
+#
+# File:     dcc_configure
+# Author:   Mark Clarkson
+# Date:     15 Dec 2010
+# Version:  0.10
+# Modified:
+#           201X-0X-XX Mark Clarkson
+#           * XXX
+#
+# Purpose:  Set up a dcc container.
+#           Creates directories and repositories. See help.
+#
+# Notes:
+#
+
+# ----------------------------------------------------------------------------
+# SCRIPT CONFIGURATION (CHANGE AS NECESSARY)
+# ----------------------------------------------------------------------------
+NAGIOS_DIR=/etc/nagios
+PNP4NAGIOS_CFG=/etc/httpd/conf.d/pnp4nagios.conf
+SVCTMPL_CFG=/etc/nagios/objects/service_templates.cfg
+# Set MULTIDCC=1 to prepend hostname to pnp4nagios url
+MULTIDCC=0
+
+# ------------------ DON'T MODIFY ANYTHING BELOW THIS LINE -------------------
+
+# ----------------------------------------------------------------------------
+# GLOBALS
+# ----------------------------------------------------------------------------
+REPO_LOCATION=$NAGIOS_DIR/repos
+CMDLINE="$@"
+ME="$0"
+G_FOLDER=
+
+# ----------------------------------------------------------------------------
+usage()
+# ----------------------------------------------------------------------------
+{
+    local me=`basename $ME`
+
+    echo
+    echo "Configure a Data Centre Collector:"
+    echo
+    echo "  $me [-h] [--folder=<folder_name>]"
+    echo
+    echo "  -h            - this help text."
+    echo "  --folder      - the service line folder name to add."
+    echo
+    echo "Any omitted options will be prompted for."
+    echo
+}
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose:      Parse program options and set globals.
+# Arguments:    None
+# Returns:      Nothing
+{
+    set -- $CMDLINE
+    while true
+    do
+        case $1 in
+            -h) usage; exit 0
+            ;;
+            --folder=*) G_FOLDER="${1##--folder=}"
+            ;;
+            ?*) usage
+                echo -e "\nInvalid option, $1\n"
+                exit 4
+            ;;
+        esac
+        shift 1 || break
+    done
+}
+
+# ----------------------------------------------------------------------------
+prompt_for_config_var()
+# ----------------------------------------------------------------------------
+# $1 - The text to show
+# $2 - The variable to set
+{
+    local text="$1"
+    local var="$2"
+    local a
+
+    while true; do
+        echo "$text"
+        echo -n "> "
+        read a
+        [[ -n "$a" ]] && break
+    done
+
+    eval $2="$a"
+}
+
+# ----------------------------------------------------------------------------
+setup_repo()
+# ----------------------------------------------------------------------------
+{
+    echo "Adding repo at '$REPO_LOCATION/$G_FOLDER'"
+
+    cd $REPO_LOCATION/
+    svnadmin create $G_FOLDER
+    cat >$G_FOLDER/hooks/pre-revprop-change <<EnD 
+#!/bin/bash
+exit 0
+EnD
+    chmod +x $G_FOLDER/hooks/pre-revprop-change
+    chown -R svnsync: $G_FOLDER
+    cd $NAGIOS_DIR/objects
+    mkdir $G_FOLDER
+    cd $G_FOLDER
+    svn co file://$REPO_LOCATION/$G_FOLDER/ setup
+}
+
+# ----------------------------------------------------------------------------
+setup_nagios_cfg()
+# ----------------------------------------------------------------------------
+{
+    if grep -qs "cfg_dir=$NAGIOS_DIR/objects/$1" $NAGIOS_DIR/nagios.cfg; then
+        return
+    fi
+
+    echo "Adding 'cfg_dir' entry to nagios.cfg"
+
+    # Add the directory to the Nagios configuration
+    text="<SERVICE_LINE_CFG_ENTRY>"
+    sed -i "s%.*$text.*%cfg_dir=$NAGIOS_DIR/objects/$G_FOLDER \n#$text%" \
+        $NAGIOS_DIR/nagios.cfg
+}
+
+# ----------------------------------------------------------------------------
+setup_for_pnp4nagios()
+# ----------------------------------------------------------------------------
+{
+    local dcc_hostname="/`hostname`"
+
+    [[ $MULTIDCC -ne 1 ]] && dcc_hostname=
+
+    cat >$PNP4NAGIOS_CFG <<EnD
+###############################################################################
+# THIS FILE WAS CREATED BY dcc_configure
+###############################################################################
+# SAMPLE CONFIG SNIPPETS FOR APACHE WEB SERVER
+###############################################################################
+
+Alias $dcc_hostname/pnp4nagios "/usr/share/nagios/html/pnp4nagios"
+
+<Directory "/usr/share/nagios/html/pnp4nagios">
+        AllowOverride None
+        Order allow,deny                
+        Allow from all                  
+        #
+        # Use the same value as defined in nagios.conf
+        #
+        AuthName "Nagios Access"        
+        AuthType Basic
+        AuthUserFile /etc/nagios/htpasswd.users
+        Require valid-user
+        <IfModule mod_rewrite.c>
+                # Turn on URL rewriting 
+                RewriteEngine On
+                Options FollowSymLinks  
+                # Installation directory
+                RewriteBase $dcc_hostname/pnp4nagios/
+                # Protect application and system files from being viewed
+                RewriteRule ^(application|modules|system) - [F,L]
+                # Allow any files or directories that exist to be displayed directly
+                RewriteCond %{REQUEST_FILENAME} !-f
+                RewriteCond %{REQUEST_FILENAME} !-d
+                # Rewrite all other URLs to index.php/URL
+                RewriteRule .* index.php/\$0 [PT,L]
+        </IfModule>
+</Directory>
+EnD
+
+
+    cat >$SVCTMPL_CFG <<EnD
+###############################################################################
+# THIS FILE WAS CREATED BY dcc_configure
+###############################################################################
+###############################################################################
+#
+# SERVICE TEMPLATES
+#
+###############################################################################
+###############################################################################
+
+define service {
+   name       service-pnp
+   action_url $dcc_hostname/pnp4nagios/index.php/graph?host=\$HOSTNAME\$&srv=\$SERVICEDESC\$' class='tips' rel='$dcc_hostname/pnp4nagios/index.php/popup?host=\$HOSTNAME\$&srv=\$SERVICEDESC\$
+   register   0
+}
+
+define service {
+        name                            base-service
+        use                             service-pnp
+        active_checks_enabled           1
+        passive_checks_enabled          1
+        parallelize_check               1
+        obsess_over_service             1
+        check_freshness                 0
+        notifications_enabled           1
+        event_handler_enabled           1
+        flap_detection_enabled          1
+        failure_prediction_enabled      1
+        process_perf_data               1
+        retain_status_information       1
+        retain_nonstatus_information    1
+        is_volatile                     0
+        check_period                    24x7
+        max_check_attempts              3
+        retry_check_interval            1
+        contact_groups                  admins
+        notification_options            w,u,c,r
+        notification_period             24x7
+        register                        0
+}
+EnD
+}
+
+# ----------------------------------------------------------------------------
+main()
+# ----------------------------------------------------------------------------
+{
+    parse_options
+
+    [[ -z $G_FOLDER ]] && prompt_for_config_var "Enter 'folder' name" G_FOLDER
+
+    [[ -e $REPO_LOCATION/$G_FOLDER ]] && {
+        echo "Folder '$REPO_LOCATION/$G_FOLDER' exists. Aborting"
+        exit 0
+    }
+
+    setup_repo
+    setup_nagios_cfg
+    setup_for_pnp4nagios
+}
+
+main
+

@@ -1,0 +1,83 @@
+#!/bin/bash
+# Author: Mark Clarkson
+# Quick hack to fix problem 18.1 in Shared Nagios doc appendix D
+# Use crontab to check, e.g.
+#     */10 * * * * /usr/bin/auto_reschedule_nagios_check
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+
+if [[ -r /etc/nagrestconf/nagctl.conf ]]; then
+    source /etc/nagrestconf/nagctl.conf
+else
+    echo "/etc/nagrestconf/nagctl.conf not found."
+    echo "Cannot start without STATUSFILE and COMMANDFILE variables."
+    echo "Aborting."
+    exit 1
+fi
+
+log="/tmp/auto_reschedule_nagios_check.log"
+interval=600
+
+#echo
+#echo " unix time          num > ${interval}s   max(s)  ave(s) pending  disabled  num not OK"
+
+while true; do
+    while [[ -e $STATUSFILE && $((`date +%s`0-`stat -c %Z $STATUSFILE`0)) -gt 0 ]]
+    do
+        sleep .1
+    done;
+    [[ -e $STATUSFILE ]] || continue
+    sed -n '/servicestatus {/,/ *}/p' $STATUSFILE | \
+        awk -v interval=$interval '
+    BEGIN { tt=0;t=0;ttn=0;min=1000;"/bin/date +%s" | getline b}
+    /current_state=[123]/ { num_warncrit=num_warncrit+1; }
+    /host_name=/ { host_name=substr( $0, index($0, "=")+1 ); }
+    /service_description=/ { svc_desc=substr( $0, index($0, "=")+1 ); }
+    /last_check=/ {
+                    tot=tot+1;
+                    a=substr( $0, index($0, "=")+1 );
+                    if(a<=1) { pending=pending+1; next };
+                    if(b-a>interval){
+                        tnew=t+1;
+                        ttnew=tt+(b-a-interval);
+                        ttnnew=ttn+1;
+                        if(b-a-interval>max) maxnew=b-a-interval;
+                        if(b-a-interval<min) minnew=b-a-interval;
+                    }
+                    next;
+                  };
+    /active_checks_enabled=1/ {
+                                if(b-a>interval){
+                                    t=tnew;
+                                    tt=ttnew;
+                                    ttn=ttnnew;
+                                    max=maxnew;
+                                    min=minnew;
+                                    printf( "%s %s\n", host_name, svc_desc);
+                                }
+                               };
+    /active_checks_enabled=0/ {
+                                if(b-a>interval){disabled=disabled+1;maxnew=0;}
+                              };
+    END{
+         total=tot;
+         if(t==0){ min=0;max=0;tt=0;ttn=1;tot=1; }
+         if(ttn==0){ ttn=1; };
+         #printf( "%s %4d /%5d / %3.1f%%   %6d  %6.1f  %6d    %6d      %6d\n",
+         #        b, t, total, (t/tot)*100, max, tt/ttn, pending, disabled,
+         #        num_warncrit );
+    }' >/tmp/auto_reschedule_nagios_check.tmpfile
+    break
+done
+
+while read host svc
+do
+    [[ -z $svc ]] && continue
+    now=`date +%s`
+
+    printf "[%lu] SCHEDULE_SVC_CHECK;$host;$svc;$now\n" $now > $COMMANDFILE
+    printf "[%lu] SCHEDULE_SVC_CHECK;$host;$svc;$now\n" $now >> $log
+done </tmp/auto_reschedule_nagios_check.tmpfile
+
+exit 0
+
