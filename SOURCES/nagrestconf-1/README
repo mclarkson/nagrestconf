@@ -775,6 +775,19 @@ hosts COMMANDARG
 | 46. | Action url | X | action_url
 |========================================================
 
+Examples
+^^^^^^^^
+
+Show all hosts and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"tm01"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+Show only the host names beginning with 'tx':
+
+ curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"tm01","filter":"tx.*"\}'
+ | JSON.sh | grep '\[[0-9]\+,0]'
+
 hosttemplates COMMANDARG 
 ~~~~~~~~~~~~~~~~~~~~~~~~
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
@@ -879,6 +892,19 @@ pass:[*] Freshness thresh (auto) also sets check_command to no-checks-received,
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.
+
+Examples
+^^^^^^^^
+
+Show all services and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"tm01"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+Show all host names that have a 'Disks' service description (column 4)
+
+ curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"tm01","column":"4","filter":"Disks"\}' \
+ | JSON.sh | grep '\[[0-9]\+,0]'
 
 servicesets COMMANDARG 
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -1165,6 +1191,30 @@ hostextinfo COMMANDARG
 | 10. | 3d coords | X | coords3d
 | 11. | Disable | X | disable
 |========================================================
+
+Examples
+^^^^^^^^
+
+Set a pnp4nagios url for a host:
+
+ curl -knX POST -d 'json={"folder":"tm01",
+        "hostname":"tm01ws2201",
+        "action_url":"/pnp4nagios/graph?host=$HOSTNAME$"}' \
+        https://127.0.0.1/rest/modify/hostextinfo
+
+Set a pnp4nagios url for ALL hosts:
+
+ # Create a list of hosts
+ curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"tm01"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]' | sed 's/^.*:"\(.*\)".*/\1/' >list1
+
+ # Use the list to create hostextinfo entries
+ while read HNAME x; do
+ curl -knX POST -d 'json={"folder":"tm01",
+        "hostname":"'$HNAME'",
+        "action_url":"/pnp4nagios/graph?host=$HOSTNAME$"}' \
+        https://127.0.0.1/rest/add/hostextinfo \
+ done < list1
 
 enablehostsvcchecks COMMANDARG
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
