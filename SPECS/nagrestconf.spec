@@ -114,6 +114,7 @@ install -D -m 640 etc/nagrestconf/restart_nagios.conf ${RPM_BUILD_ROOT}/%_syscon
 install -D -m 755 scripts/csv2nag ${RPM_BUILD_ROOT}%_bindir/csv2nag
 install -D -m 755 scripts/nagctl ${RPM_BUILD_ROOT}%_bindir/nagctl
 install -D -m 755 scripts/restart_nagios ${RPM_BUILD_ROOT}%_bindir/restart_nagios
+install -D -m 755 scripts/dcc_configure ${RPM_BUILD_ROOT}%_bindir/dcc_configure
 install -D -m 755 scripts/slc_configure ${RPM_BUILD_ROOT}%_bindir/slc_configure
 install -D -m 755 scripts/upgrade_setup_files.sh ${RPM_BUILD_ROOT}%_bindir/upgrade_setup_files.sh
 install -D -m 755 scripts/update_nagios ${RPM_BUILD_ROOT}%_bindir/update_nagios
