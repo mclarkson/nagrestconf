@@ -677,6 +677,8 @@ Key for Flags column:
  * \'C' for a compound field: <name>|<value>[,<name>|<value>]...
  * \'X' implemented in REST but not in the Web front-end.
 
+NOTE: Many examples use JSON.sh, which can be found here: https://github.com/dominictarr/JSON.sh
+
 contacts COMMANDARG
 ~~~~~~~~~~~~~~~~~~~
 
@@ -780,12 +782,12 @@ Examples
 
 Show all hosts and attributes:
 
- curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"tm01"\}' \
+ curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
  | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
 
 Show only the host names beginning with 'tx':
 
- curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"tm01","filter":"tx.*"\}'
+ curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local","filter":"tx.*"\}'
  | JSON.sh | grep '\[[0-9]\+,0]'
 
 hosttemplates COMMANDARG 
@@ -898,12 +900,12 @@ Examples
 
 Show all services and attributes:
 
- curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"tm01"\}' \
+ curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"local"\}' \
  | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
 
 Show all host names that have a 'Disks' service description (column 4)
 
- curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"tm01","column":"4","filter":"Disks"\}' \
+ curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"local","column":"4","filter":"Disks"\}' \
  | JSON.sh | grep '\[[0-9]\+,0]'
 
 servicesets COMMANDARG 
@@ -1106,10 +1108,10 @@ hostdeps COMMANDARG
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
 | Column | Description | Flags | REST variable name
-| 1. | Dependent host name | LRKX | dephostname
-| 2. | Dependent hostgroup name | LKX | dephostgroupname
-| 3. | Host name | LRKX | hostname
-| 4. | Hostgroup name | LKX | hostgroupname
+| 1. | Dependent host name | RKX | dephostname
+| 2. | Dependent hostgroup name | KX | dephostgroupname
+| 3. | Host name | RKX | hostname
+| 4. | Hostgroup name | KX | hostgroupname
 | 5. | Inherits parent | RX | inheritsparent
 | 6. | Execution failure criteria | LRX | execfailcriteria
 | 7. | Notification failure criteria | LRX | notiffailcriteria
@@ -1197,23 +1199,23 @@ Examples
 
 Set a pnp4nagios url for a host:
 
- curl -knX POST -d 'json={"folder":"tm01",
-        "hostname":"tm01ws2201",
+ curl -knX POST -d 'json={"folder":"local",
+        "hostname":"linhst2",
         "action_url":"/pnp4nagios/graph?host=$HOSTNAME$"}' \
-        https://127.0.0.1/rest/modify/hostextinfo
+        https://127.0.0.1/rest/add/hostextinfo
 
 Set a pnp4nagios url for ALL hosts:
 
  # Create a list of hosts
- curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"tm01"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]' | sed 's/^.*:"\(.*\)".*/\1/' >list1
+ curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,0]' | sed 's/^.*:"\(.*\)".*/\1/' >list1
 
  # Use the list to create hostextinfo entries
  while read HNAME x; do
- curl -knX POST -d 'json={"folder":"tm01",
+ curl -knX POST -d 'json={"folder":"local",
         "hostname":"'$HNAME'",
-        "action_url":"/pnp4nagios/graph?host=$HOSTNAME$"}' \
-        https://127.0.0.1/rest/add/hostextinfo \
+        "action_url":"/pnp4nagios/graph?host=$HOSTNAME$"}'
+        https://127.0.0.1/rest/add/hostextinfo
  done < list1
 
 enablehostsvcchecks COMMANDARG
@@ -1292,7 +1294,7 @@ nagios pipe commands are sent:
 |========================================================
 
 schedhstdowntime COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Schedule fixed or flexible downtime for a host. The following nagios pipe
 commands are sent:
@@ -1314,11 +1316,14 @@ commands are sent:
 pass:[*] If comment is not supplied then the default comment,
 "Scheduled via the REST interface.", is used.
 
-Example:
+Example
+^^^^^^^
+
+Schedule 1 hour of fixed downtime for ahst2, starting from now.
 
  curl -knX POST -d 'json={
     "folder":"local",
-    "name":"hg2-lin02.company.local",
+    "name":"ahst2",
     "starttime":"'`date +%s -d now`'",
     "endtime":"'`date +%s -d "now + 1 hour"`'"}'
     http://127.0.0.1/rest/pipecmd/schedhstdowntime
@@ -1339,9 +1344,11 @@ are sent:
 
 Example:
 
+Get rid of all host downtime associated with ahst2.
+
  curl -knX POST -d 'json={
     "folder":"local",
-    "name":"hg2-lin02.company.local" }'
+    "name":"ahst2" }'
     http://127.0.0.1/rest/pipecmd/delhstdowntime
 
 schedulehostsvcdowntime COMMANDARG
