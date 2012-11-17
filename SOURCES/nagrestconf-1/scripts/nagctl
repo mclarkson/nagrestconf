@@ -1209,19 +1209,23 @@ modify_hosttemplate_line()
         exit 14
     fi
 
-    if ! item_exists 1 $FILE_TIMEPERIODS $notifperiod; then
-        echo -n "NAGCTL ERROR: Notifperiod '$notifperiod' unavailable."
-        echo "Will not modify host template."
-        unlockdir
-        exit 14
-    fi
+    [[ -n $notifperiod && $notifperiod != "-" ]] && {
+        if ! item_exists 1 $FILE_TIMEPERIODS $notifperiod; then
+            echo -n "NAGCTL ERROR: Notifperiod '$notifperiod' not found."
+            echo " Will not modify host template."
+            unlockdir
+            exit 14
+        fi
+    }
 
-    if ! item_exists 1 $FILE_TIMEPERIODS $checkperiod; then
-        echo -n "NAGCTL ERROR: Checkperiod '$checkperiod' unavailable."
-        echo "Will not modify host template."
-        unlockdir
-        exit 14
-    fi
+    [[ -n $checkperiod && $checkperiod != "-" ]] && {
+        if ! item_exists 1 $FILE_TIMEPERIODS $checkperiod; then
+            echo -n "NAGCTL ERROR: Checkperiod '$checkperiod' not found."
+            echo "Will not modify host template."
+            unlockdir
+            exit 14
+        fi
+    }
 
     [[ -n $contacts && $contacts != "-" ]] && {
         for i in $contacts; do
@@ -1282,19 +1286,23 @@ modify_servicetemplate_line()
         exit 14
     fi
 
-    if ! item_exists 1 $FILE_TIMEPERIODS $notifperiod; then
-        echo -n "NAGCTL ERROR: Notifperiod '$notifperiod' unavailable."
-        echo "Will not modify service template."
-        unlockdir
-        exit 14
-    fi
+    [[ -n $notifperiod && $notifperiod != "-" ]] && {
+        if ! item_exists 1 $FILE_TIMEPERIODS $notifperiod; then
+            echo -n "NAGCTL ERROR: Notifperiod '$notifperiod' unavailable."
+            echo "Will not modify service template."
+            unlockdir
+            exit 14
+        fi
+    }
 
-    if ! item_exists 1 $FILE_TIMEPERIODS $checkperiod; then
-        echo -n "NAGCTL ERROR: Checkperiod '$checkperiod' unavailable."
-        echo "Will not modify service template."
-        unlockdir
-        exit 14
-    fi
+    [[ -n $checkperiod && $checkperiod != "-" ]] && {
+        if ! item_exists 1 $FILE_TIMEPERIODS $checkperiod; then
+            echo -n "NAGCTL ERROR: Checkperiod '$checkperiod' unavailable."
+            echo "Will not modify service template."
+            unlockdir
+            exit 14
+        fi
+    }
 
     [[ -n $contacts && $contacts != "-" ]] && {
         for i in $contacts; do
@@ -1402,6 +1410,14 @@ modify_host_line()
                 exit 16
             fi
         done < <( item_search 1 $FILE_SERVICES "$name" )
+
+        if item_existsN "1" $FILE_HOSTEXTINFO "$name"
+        then
+            echo -n "NAGCTL ERROR: Host has"
+            echo " one or more hostextinfo entries. Will not disable."
+            unlockdir
+            exit 16
+        fi
     }
 
     olditem=`item_search 1 $FILE_HOSTS "$name"`

@@ -836,6 +836,20 @@ hosttemplates COMMANDARG
 | 39. | Action url | X | action_url
 |========================================================
 
+Examples
+^^^^^^^^
+
+Show all host templates and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/hosttemplates?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+Set the action_url for the host template:
+
+ curl -knX POST -d 'json={"folder":"local","name":"std_htmpl",
+        "action_url":"/pnp4nagios/graph?host=$HOSTNAME$"}' \
+        https://127.0.0.1/rest/modify/hosttemplates
+
 services COMMANDARG 
 ~~~~~~~~~~~~~~~~~~~
 
@@ -1175,6 +1189,14 @@ serviceextinfo COMMANDARG
 | 8. | Disable | X | disable
 |========================================================
 
+Examples
+^^^^^^^^
+
+Show all serviceextinfo entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/serviceextinfo?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
 hostextinfo COMMANDARG
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1197,14 +1219,20 @@ hostextinfo COMMANDARG
 Examples
 ^^^^^^^^
 
-Set a pnp4nagios url for a host:
+Show all hostextinfo entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/hostextinfo?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+Set action_url for a host:
 
  curl -knX POST -d 'json={"folder":"local",
         "hostname":"linhst2",
         "action_url":"/pnp4nagios/graph?host=$HOSTNAME$"}' \
         https://127.0.0.1/rest/add/hostextinfo
 
-Set a pnp4nagios url for ALL hosts:
+Set action_url for ALL hosts. Note that it would probably be better
+to set the action_url in the host template or for each host.
 
  # Create a list of hosts
  curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
@@ -1217,6 +1245,11 @@ Set a pnp4nagios url for ALL hosts:
         "action_url":"/pnp4nagios/graph?host=$HOSTNAME$"}'
         https://127.0.0.1/rest/add/hostextinfo
  done < list1
+
+Delete ALL hostextinfo entries:
+
+ curl -knX POST -d 'json={"folder":"local","hostname":".*"}'
+        https://127.0.0.1/rest/delete/hostextinfo
 
 enablehostsvcchecks COMMANDARG
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
