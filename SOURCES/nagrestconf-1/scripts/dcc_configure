@@ -18,9 +18,11 @@
 # ----------------------------------------------------------------------------
 # SCRIPT CONFIGURATION (CHANGE AS NECESSARY)
 # ----------------------------------------------------------------------------
-NAGIOS_DIR=/etc/nagios
+
+source /etc/nagrestconf/nagctl.conf
+
 PNP4NAGIOS_CFG=/etc/httpd/conf.d/pnp4nagios.conf
-SVCTMPL_CFG=/etc/nagios/objects/service_templates.cfg
+SVCTMPL_CFG=$NAG_OBJ_DIR/service_templates.cfg
 # Set MULTIDCC=1 to prepend hostname to pnp4nagios url
 MULTIDCC=0
 
@@ -29,7 +31,7 @@ MULTIDCC=0
 # ----------------------------------------------------------------------------
 # GLOBALS
 # ----------------------------------------------------------------------------
-REPO_LOCATION=$NAGIOS_DIR/repos
+REPO_LOCATION=$NAG_DIR/repos
 CMDLINE="$@"
 ME="$0"
 G_FOLDER=
@@ -110,7 +112,7 @@ exit 0
 EnD
     chmod +x $G_FOLDER/hooks/pre-revprop-change
     chown -R svnsync: $G_FOLDER
-    cd $NAGIOS_DIR/objects
+    cd $NAG_DIR/objects
     mkdir $G_FOLDER
     cd $G_FOLDER
     svn co file://$REPO_LOCATION/$G_FOLDER/ setup
@@ -120,7 +122,7 @@ EnD
 setup_nagios_cfg()
 # ----------------------------------------------------------------------------
 {
-    if grep -qs "cfg_dir=$NAGIOS_DIR/objects/$1" $NAGIOS_DIR/nagios.cfg; then
+    if grep -qs "cfg_dir=$NAG_DIR/objects/$1" $NAG_DIR/nagios.cfg; then
         return
     fi
 
@@ -128,8 +130,8 @@ setup_nagios_cfg()
 
     # Add the directory to the Nagios configuration
     text="<SERVICE_LINE_CFG_ENTRY>"
-    sed -i "s%.*$text.*%cfg_dir=$NAGIOS_DIR/objects/$G_FOLDER \n#$text%" \
-        $NAGIOS_DIR/nagios.cfg
+    sed -i "s%.*$text.*%cfg_dir=$NAG_DIR/objects/$G_FOLDER \n#$text%" \
+        $NAG_DIR/nagios.cfg
 }
 
 # ----------------------------------------------------------------------------
@@ -147,9 +149,9 @@ setup_for_pnp4nagios()
 # SAMPLE CONFIG SNIPPETS FOR APACHE WEB SERVER
 ###############################################################################
 
-Alias $dcc_hostname/pnp4nagios "/usr/share/nagios/html/pnp4nagios"
+Alias $dcc_hostname/pnp4nagios "/usr/share/pnp4nagios"
 
-<Directory "/usr/share/nagios/html/pnp4nagios">
+<Directory "/usr/share/pnp4nagios">
         AllowOverride None
         Order allow,deny                
         Allow from all                  
@@ -167,12 +169,12 @@ Alias $dcc_hostname/pnp4nagios "/usr/share/nagios/html/pnp4nagios"
                 # Installation directory
                 RewriteBase $dcc_hostname/pnp4nagios/
                 # Protect application and system files from being viewed
-                RewriteRule ^(application|modules|system) - [F,L]
+                RewriteRule ^(?:application|modules|system) - [F]
                 # Allow any files or directories that exist to be displayed directly
                 RewriteCond %{REQUEST_FILENAME} !-f
                 RewriteCond %{REQUEST_FILENAME} !-d
                 # Rewrite all other URLs to index.php/URL
-                RewriteRule .* index.php/\$0 [PT,L]
+                RewriteRule "^.*\$" index.php/\$0 [PT]
         </IfModule>
 </Directory>
 EnD

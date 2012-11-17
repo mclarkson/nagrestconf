@@ -2234,6 +2234,19 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h4 id="_examples">12.3.1. Examples</h4>
+<div class="paragraph"><p>Show all hosts and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"tm01"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<div class="paragraph"><p>Show only the host names beginning with <em>tx</em>:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"tm01","filter":"tx.*"\}'
+| JSON.sh | grep '\[[0-9]\+,0]'</tt></pre>
+</div></div>
 <h3 id="_hosttemplates_commandarg">12.4. hosttemplates COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
@@ -2790,6 +2803,19 @@ cellspacing="0" cellpadding="4">
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.</p></div>
+<h4 id="_examples_2">12.5.1. Examples</h4>
+<div class="paragraph"><p>Show all services and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"tm01"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<div class="paragraph"><p>Show all host names that have a <em>Disks</em> service description (column 4)</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"tm01","column":"4","filter":"Disks"\}' \
+| JSON.sh | grep '\[[0-9]\+,0]'</tt></pre>
+</div></div>
 <h3 id="_servicesets_commandarg">12.6. servicesets COMMANDARG</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="all"
@@ -4200,6 +4226,32 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
+<h4 id="_examples_3">12.17.1. Examples</h4>
+<div class="paragraph"><p>Set a pnp4nagios url for a host:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -knX POST -d 'json={"folder":"tm01",
+       "hostname":"tm01ws2201",
+       "action_url":"/pnp4nagios/graph?host=$HOSTNAME$"}' \
+       https://127.0.0.1/rest/modify/hostextinfo</tt></pre>
+</div></div>
+<div class="paragraph"><p>Set a pnp4nagios url for ALL hosts:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt># Create a list of hosts
+curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"tm01"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]' | sed 's/^.*:"\(.*\)".*/\1/' &gt;list1</tt></pre>
+</div></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt># Use the list to create hostextinfo entries
+while read HNAME x; do
+curl -knX POST -d 'json={"folder":"tm01",
+       "hostname":"'$HNAME'",
+       "action_url":"/pnp4nagios/graph?host=$HOSTNAME$"}' \
+       https://127.0.0.1/rest/add/hostextinfo \
+done &lt; list1</tt></pre>
+</div></div>
 <h3 id="_enablehostsvcchecks_commandarg">12.18. enablehostsvcchecks COMMANDARG</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Enables active checks for the host then enables all passive and active service
 checks for the host. The following nagios pipe commands are sent:</p></div>
@@ -4461,7 +4513,7 @@ cellspacing="0" cellpadding="4">
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-11-14 10:01:57 BST
+Last updated 2012-11-16 16:35:05 BST
 </div>
 </div>
 </body>
