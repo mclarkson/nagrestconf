@@ -363,149 +363,17 @@ REST Examples
 -------------
 
 Please look at the 'REST_setup_local.sh' script located in the +bulk-loading/+
-document directory. This script gives an example of `Bulk loading'.
+document directory. This script shows how a complete monitoring configuration can
+be made using the REST interface.
 
-Here is an example of showing the configuration of a host:
-
-----
-# curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local","filter":"abcp3v-lin40.company.local"\}'
-
-[[{"name":"abcp3v-lin40.company.local"},{"alias":"abcp3v-lin40.company.local"},
-{"ipaddress":"192.168.1.40"},{"template":"abcprod_htmpl"},
-{"hostgroup":"abcprod"},{"contact":""},{"contactgroups":""},
-{"activechecks":""},{"servicesets":"basic-linux-checks"},{"disable":""}]]
-----
-
-Here is an example of adding a new host:
-
-----
-curl -knX POST -d 'json={"folder":"local", \
-        "name":"abcp3v-lin02.company.local", \
-        "alias":"abcp3v-lin02.company.local", \
-        "ipaddress":"192.168.1.2", \
-        "template":"abcprod_htmpl", \
-        "hostgroup":"abcprod", \
-        "servicesets":"basic-linux-checks"}' https://127.0.0.1/rest/add/hosts
-
-["Success"]
-----
-
-A service set, basic-linux-checks, had previously been added using the REST
-interface as had hostgroups, hosttemplates, servicetemplates and contacts.
-
-The following Nagios `.cfg' file was written for the host:
-
-----
-#################################################################
-#         THIS FILE WAS CREATED BY THE CSV2NAG SCRIPT           #
-#   DON'T MODIFY THIS FILE. ALL CHANGES WILL BE OVERWRITTEN     #
-#################################################################
-
-define host {
-       use             abcprod_htmpl
-       host_name       abcp3v-lin02.company.local
-       alias           abcp3v-lin02.company.local
-       address         192.168.1.2
-       hostgroups      abcprod
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Load
-        check_command                   check_any!check_load -r -w 4,4,4 -c 8,8,8
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Puppet Log
-        check_command                   check_any!check_puppet_wrapper
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Read-write filesystems
-        check_command                   check_any!check_fs_ro.sh
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Puppet Version
-        check_command                   check_any!check_puppet_version.sh -v puppet-2.6.16-1
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             PING
-        check_command                   check_ping!100.0,20%!500.0,60%
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Swap
-        check_command                   check_any!check_swap -w 10% -c 5%
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             DNS
-        check_command                   check_any!check_dns -w 0.5 -c 1 -t 30 -H www.google.com
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_10trytmpl
-        service_description             NTP Time
-        check_command                   check_any!check_ntp -H 0.uk.pool.ntp.org -w 0.5 -c 1.0
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Num Users
-        check_command                   check_any!check_users -w 15 -c 20
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Processes: Zombies
-        check_command                   check_any!check_procs -w 40 -c 80 -s Z
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             CPU
-        check_command                   check_any!check_cpu.sh
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Memory
-        check_command                   check_any!check_mem.pl -w 80 -c 95
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Disks
-        check_command                   check_any!check_disk -e -w 10% -c 5%
-}
-
-----
+More examples are in the sections `REST Commands' and `Object Definitions and
+Options' below.
 
 [[X20]]
 Status
 ------
-Currently implemented directives (177/177) = 100%.
+All nagios directives are now implemented in the REST interface. GUI support
+is planned for the future.
 
 .Currently implemented directives
 [cols="<,^,^,>",frame="topbot",options="header,autowidth"]
@@ -530,60 +398,42 @@ Currently implemented directives (177/177) = 100%.
 
 REST Commands
 -------------
-The URL is in the form 'https://<HOST>/rest/<COMMAND>/<COMMANDARG>'.
+The URL is in the general form 'https://<HOST>/rest/<COMMAND>/<COMMANDARG>'.
 
-COMMANDS are check, show, add, delete, modify, restart, apply and pipecmd. 
+Valid COMMANDS are check, show, add, delete, modify, restart, apply and
+pipecmd. 
 
-Options to the COMMAND and COMMANDARG are added to the HTTP GET or POST query
-string in the form 'json={"option":"value"[,"option":"value"]...}'.
+COMMAND options are added to the HTTP GET or POST query string in the form
+'json={"option":"value"[,"option":"value"]...}'.
 
-GET requests are for operations that don't modify data, for example:
-
-    https://nagrestconf.host/rest/show/hosts?json={"folder":"local"}'
-
-All GET requests:
+GET requests are for operations that don't modify data.
 
 * +https://<HOST>/rest/+
 ** +check/+
 *** nagiosconfig json={"folder":"<name>"[,"verbose":"true"]}
 ** +show/+
-*** hosttemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** servicetemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** hosts json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** services json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** servicesets json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** servicegroups json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** hostgroups json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** contacts json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** contactgroups json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** timeperiods json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** commands json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** servicedeps json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** hostdeps json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** serviceesc json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** hostesc json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** serviceextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
-*** hostextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
+*** hosttemplates json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** servicetemplates json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** hosts json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** services json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** servicesets json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** servicegroups json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** hostgroups json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** contacts json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** contactgroups json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** timeperiods json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** commands json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** servicedeps json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** hostdeps json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** serviceesc json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** hostesc json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** serviceextinfo json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** hostextinfo json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
 
-POST requests are operation that might modify data, for example:
-
-        https://nagrestconf.host/rest/add/hosts
-
-    with POST data:
-
-        json={
-        "folder":"acloud",
-        "name":"vhost1.acloud.com",
-        "alias":"vhost1.acloud.com",
-        "ipaddress":"1.2.3.4",
-        "template":"prod_htmpl",
-        "hostgroup":"prodvhosts",
-        "servicesets":"prod-linux-checks"}' 
-
-All POST requests:
+POST requests are for operations that might modify data or state.
 
 * +https://<HOST>/rest/+
-** +add/+ Use options detailed in the following section.
+** +add/+
 *** hosttemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
 *** servicetemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
 *** hosts json={"folder":"<name>"[,"<option>":"<value>"]*}
@@ -601,7 +451,7 @@ All POST requests:
 *** hostesc json={"folder":"<name>"[,"<option>":"<value>"]*}
 *** serviceextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
 *** hostextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
-** +delete/+ Use options detailed in the following section.
+** +delete/+
 *** hosttemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
 *** servicetemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
 *** hosts json={"folder":"<name>"[,"<option>":"<value>"]*}
@@ -619,7 +469,7 @@ All POST requests:
 *** hostesc json={"folder":"<name>"[,"<option>":"<value>"]*}
 *** serviceextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
 *** hostextinfo json={"folder":"<name>"[,"<option>":"<value>"]*}
-** +modify/+ Use options detailed in the following section.
+** +modify/+
 *** hosttemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
 *** servicetemplates json={"folder":"<name>"[,"<option>":"<value>"]*}
 *** hosts json={"folder":"<name>"[,"<option>":"<value>"]*}
@@ -642,7 +492,7 @@ All POST requests:
 ** +apply/+
 *** nagiosconfig json={"folder":"<name>"[,"verbose":"true"]}
 *** nagioslastgoodconfig json={"folder":"<name>"}
-** +pipecmd/+ Use options detailed in the following section.
+** +pipecmd/+
 *** enablehostsvcchecks json={"folder":"<name>","name":"<hostname>}
 *** disablehostsvcchecks json={"folder":"<name>","name":"<hostname>" [,"comment","<comment>"]}
 *** enablesvccheck json={"folder":"<name>","name":"<hostname>, "svcdesc":"<Service Description>" [,"comment","<comment>"]}
@@ -655,8 +505,8 @@ All POST requests:
 *** delsvcdowntime json={"folder":"<name>","name":"<hostname>","svcdesc":"<Service Description>" [,"comment","<comment>"]}
 
 
-Currently Implemented Definitions and Directives
-------------------------------------------------
+Object Definitions and Options
+------------------------------
 
 Refer to the Nagios object definitions documentation for more information about
 individual options in the following tables. It can be found at the following
@@ -664,20 +514,20 @@ URL:
 
 http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html
 
-The 'Column' number in the following tables relates to the column number in the
-comma delimited files on the nagios server. These files are used by 'csv2nag'
-to create the nagios configuration files.
+The column number in the following tables relates to the column number in the
+database files on the nagios server. These are comma delimited files used by
+'csv2nag' to create the nagios configuration files.
 
 Key for Flags column:
 
- * \'U' - the option is Unimplemented.
- * \'R' for a required field.
- * \'K' to show the fields required to specify a unique key.
- * \'L' for a list field. Lists consist of zero or more items separated by spaces.
- * \'C' for a compound field: <name>|<value>[,<name>|<value>]...
- * \'X' implemented in REST but not in the Web front-end.
+ * \'U' - The option is Unimplemented.
+ * \'R' - A required field.
+ * \'K' - A key field. Required to uniquely identify an entry.
+ * \'L' - A list field. Lists consist of zero or more items separated by spaces.
+ * \'C' - A compound field: <name>|<value>[,<name>|<value>]...
+ * \'X' - Not available in the Web front-end.
 
-NOTE: Many examples use JSON.sh, which can be found here: https://github.com/dominictarr/JSON.sh
+NOTE: Many examples use `JSON.sh', which can be found here: https://github.com/dominictarr/JSON.sh
 
 contacts COMMANDARG
 ~~~~~~~~~~~~~~~~~~~
