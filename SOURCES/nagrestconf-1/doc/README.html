@@ -383,7 +383,7 @@ div#toc a:visited { color: blue; }
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
-window.onload = function(){generateToc(2)}
+window.onload = function(){generateToc(3)}
 /* Author: Mihai Bazon, September 2002
  * http://students.infoiasi.ro/~mishoo
  *
@@ -881,7 +881,9 @@ cellspacing="0" cellpadding="4">
 <div class="paragraph"><p><a href="https://sourceforge.net/projects/nagrestconf/files/">https://sourceforge.net/projects/nagrestconf/files/</a></p></div>
 <div class="paragraph"><p>Debian install packages are also available.</p></div>
 <h3 id="_install_using_prebuilt_packages">8.2. Install Using Prebuilt Packages</h3><div style="clear:left"></div>
-<div class="olist arabic"><div class="title"><strong>DEBIAN, CENTOS &amp; REDHAT</strong></div><ol class="arabic">
+<div class="paragraph"><div class="title"><strong>DEBIAN, CENTOS &amp; REDHAT</strong></div><p>Do not install on an existing Nagios server. Use the following procedure after
+freshly installing the Operating System with a minimal set of packages.</p></div>
+<div class="olist arabic"><ol class="arabic">
 <li>
 <p>
 Install the prebuilt package downloaded from Sourceforge. For example:
@@ -903,8 +905,7 @@ Configure the system:
 <div class="paragraph"><p>Test the installation with:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt># On Debian, Centos or Redhat:
-bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh</tt></pre>
+<pre><tt>bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh</tt></pre>
 </div></div>
 <div class="paragraph"><p>Then check that it can be seen and edited in the <em>Nagrestconf</em> GUI by pointing
 a supported Web Browser at &#8216;http://localhost/nagrestconf&#8217;.</p></div>
@@ -918,143 +919,14 @@ a supported Web Browser at &#8216;http://localhost/nagrestconf&#8217;.</p></div>
 <h2 id="_rest_examples">9. REST Examples</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Please look at the <em>REST_setup_local.sh</em> script located in the <tt>bulk-loading/</tt>
-document directory. This script gives an example of &#8216;Bulk loading&#8217;.</p></div>
-<div class="paragraph"><p>Here is an example of showing the configuration of a host:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt># curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local","filter":"abcp3v-lin40.company.local"\}'
-
-[[{"name":"abcp3v-lin40.company.local"},{"alias":"abcp3v-lin40.company.local"},
-{"ipaddress":"192.168.1.40"},{"template":"abcprod_htmpl"},
-{"hostgroup":"abcprod"},{"contact":""},{"contactgroups":""},
-{"activechecks":""},{"servicesets":"basic-linux-checks"},{"disable":""}]]</tt></pre>
-</div></div>
-<div class="paragraph"><p>Here is an example of adding a new host:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>curl -knX POST -d 'json={"folder":"local", \
-        "name":"abcp3v-lin02.company.local", \
-        "alias":"abcp3v-lin02.company.local", \
-        "ipaddress":"192.168.1.2", \
-        "template":"abcprod_htmpl", \
-        "hostgroup":"abcprod", \
-        "servicesets":"basic-linux-checks"}' https://127.0.0.1/rest/add/hosts
-
-["Success"]</tt></pre>
-</div></div>
-<div class="paragraph"><p>A service set, basic-linux-checks, had previously been added using the REST
-interface as had hostgroups, hosttemplates, servicetemplates and contacts.</p></div>
-<div class="paragraph"><p>The following Nagios &#8216;.cfg&#8217; file was written for the host:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>#################################################################
-#         THIS FILE WAS CREATED BY THE CSV2NAG SCRIPT           #
-#   DON'T MODIFY THIS FILE. ALL CHANGES WILL BE OVERWRITTEN     #
-#################################################################
-
-define host {
-       use             abcprod_htmpl
-       host_name       abcp3v-lin02.company.local
-       alias           abcp3v-lin02.company.local
-       address         192.168.1.2
-       hostgroups      abcprod
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Load
-        check_command                   check_any!check_load -r -w 4,4,4 -c 8,8,8
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Puppet Log
-        check_command                   check_any!check_puppet_wrapper
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Read-write filesystems
-        check_command                   check_any!check_fs_ro.sh
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Puppet Version
-        check_command                   check_any!check_puppet_version.sh -v puppet-2.6.16-1
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             PING
-        check_command                   check_ping!100.0,20%!500.0,60%
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Swap
-        check_command                   check_any!check_swap -w 10% -c 5%
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             DNS
-        check_command                   check_any!check_dns -w 0.5 -c 1 -t 30 -H www.google.com
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_10trytmpl
-        service_description             NTP Time
-        check_command                   check_any!check_ntp -H 0.uk.pool.ntp.org -w 0.5 -c 1.0
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Num Users
-        check_command                   check_any!check_users -w 15 -c 20
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Processes: Zombies
-        check_command                   check_any!check_procs -w 40 -c 80 -s Z
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             CPU
-        check_command                   check_any!check_cpu.sh
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Memory
-        check_command                   check_any!check_mem.pl -w 80 -c 95
-}
-
-define service {
-        host_name                       abcp3v-lin02.company.local
-        use                             abc_stmpl
-        service_description             Disks
-        check_command                   check_any!check_disk -e -w 10% -c 5%
-}</tt></pre>
-</div></div>
+document directory. This script shows how a complete monitoring configuration can
+be made using the REST interface.</p></div>
+<div class="paragraph"><p>More examples are in the sections &#8216;REST Commands&#8217; and &#8216;Object Definitions and
+Options&#8217; below.</p></div>
 </div>
 <h2 id="X20">10. Status</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Currently implemented directives (177/177) = 100%.</p></div>
+<div class="paragraph"><p>All nagios directives are now implemented in the REST interface. A smaller set of nagios directives are supported in the Web GUI.</p></div>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -1169,16 +1041,12 @@ cellspacing="0" cellpadding="4">
 </div>
 <h2 id="_rest_commands">11. REST Commands</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>The URL is in the form <em>https://&lt;HOST&gt;/rest/&lt;COMMAND&gt;/&lt;COMMANDARG&gt;</em>.</p></div>
-<div class="paragraph"><p>COMMANDS are check, show, add, delete, modify, restart, apply and pipecmd.</p></div>
-<div class="paragraph"><p>Options to the COMMAND and COMMANDARG are added to the HTTP GET or POST query
-string in the form <em>json={"option":"value"[,"option":"value"]&#8230;}</em>.</p></div>
-<div class="paragraph"><p>GET requests are for operations that don&#8217;t modify data, for example:</p></div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>https://nagrestconf.host/rest/show/hosts?json={"folder":"local"}'</tt></pre>
-</div></div>
-<div class="paragraph"><p>All GET requests:</p></div>
+<div class="paragraph"><p>The URL is in the general form <em>https://&lt;HOST&gt;/rest/&lt;COMMAND&gt;/&lt;COMMANDARG&gt;</em>.</p></div>
+<div class="paragraph"><p>Valid COMMANDS are check, show, add, delete, modify, restart, apply and
+pipecmd.</p></div>
+<div class="paragraph"><p>COMMAND options are added to the HTTP GET or POST query string in the form
+<em>json={"option":"value"[,"option":"value"]&#8230;}</em>.</p></div>
+<div class="paragraph"><p>GET requests are for operations that don&#8217;t modify data.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1204,87 +1072,87 @@ nagiosconfig json={"folder":"&lt;name&gt;"[,"verbose":"true"]}
 <div class="ulist"><ul>
 <li>
 <p>
-hosttemplates json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+hosttemplates json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicetemplates json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+servicetemplates json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hosts json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+hosts json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-services json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+services json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicesets json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+servicesets json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicegroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+servicegroups json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostgroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+hostgroups json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-contacts json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+contacts json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-contactgroups json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+contactgroups json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-timeperiods json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+timeperiods json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-commands json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+commands json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-servicedeps json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+servicedeps json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostdeps json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+hostdeps json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-serviceesc json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+serviceesc json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostesc json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+hostesc json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-serviceextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+serviceextinfo json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 <li>
 <p>
-hostextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
+hostextinfo json={"folder":"&lt;name&gt;"[,"filter":"&lt;regex&gt;"][,"column":"&lt;integer&gt;"][,"&lt;option&gt;":"&lt;value&gt;"]*}
 </p>
 </li>
 </ul></div>
@@ -1292,27 +1160,7 @@ hostextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </ul></div>
 </li>
 </ul></div>
-<div class="paragraph"><p>POST requests are operation that might modify data, for example:</p></div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>https://nagrestconf.host/rest/add/hosts</tt></pre>
-</div></div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>with POST data:</tt></pre>
-</div></div>
-<div class="literalblock">
-<div class="content">
-<pre><tt>json={
-"folder":"acloud",
-"name":"vhost1.acloud.com",
-"alias":"vhost1.acloud.com",
-"ipaddress":"1.2.3.4",
-"template":"prod_htmpl",
-"hostgroup":"prodvhosts",
-"servicesets":"prod-linux-checks"}'</tt></pre>
-</div></div>
-<div class="paragraph"><p>All POST requests:</p></div>
+<div class="paragraph"><p>POST requests are for operations that might modify data or state.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1321,7 +1169,7 @@ hostextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 <div class="ulist"><ul>
 <li>
 <p>
-<tt>add/</tt> Use options detailed in the following section.
+<tt>add/</tt>
 </p>
 <div class="ulist"><ul>
 <li>
@@ -1413,7 +1261,7 @@ hostextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </li>
 <li>
 <p>
-<tt>delete/</tt> Use options detailed in the following section.
+<tt>delete/</tt>
 </p>
 <div class="ulist"><ul>
 <li>
@@ -1505,7 +1353,7 @@ hostextinfo json={"folder":"&lt;name&gt;"[,"&lt;option&gt;":"&lt;value&gt;"]*}
 </li>
 <li>
 <p>
-<tt>modify/</tt> Use options detailed in the following section.
+<tt>modify/</tt>
 </p>
 <div class="ulist"><ul>
 <li>
@@ -1626,7 +1474,7 @@ nagioslastgoodconfig json={"folder":"&lt;name&gt;"}
 </li>
 <li>
 <p>
-<tt>pipecmd/</tt> Use options detailed in the following section.
+<tt>pipecmd/</tt>
 </p>
 <div class="ulist"><ul>
 <li>
@@ -1685,48 +1533,52 @@ delsvcdowntime json={"folder":"&lt;name&gt;","name":"&lt;hostname&gt;","svcdesc"
 </li>
 </ul></div>
 </div>
-<h2 id="_currently_implemented_definitions_and_directives">12. Currently Implemented Definitions and Directives</h2>
+<h2 id="_object_definitions_and_options">12. Object Definitions and Options</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Refer to the Nagios object definitions documentation for more information about
 individual options in the following tables. It can be found at the following
 URL:</p></div>
 <div class="paragraph"><p><a href="http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html">http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html</a></p></div>
-<div class="paragraph"><p>The <em>Column</em> number in the following tables relates to the column number in the
-comma delimited files on the nagios server. These files are used by <em>csv2nag</em>
-to create the nagios configuration files.</p></div>
-<div class="paragraph"><p>Key for Flags column:</p></div>
+<h3 id="_listing_of_all_valid_rest_options">12.1. Listing of all Valid REST Options</h3><div style="clear:left"></div>
+<div class="paragraph"><p>The <em>Column</em> number in the following tables relate to the column number in the
+database files on the nagios server. These are comma delimited files used by
+<em>csv2nag</em> to create the nagios configuration files.</p></div>
+<div class="paragraph"><p>Key for the <em>Flags</em> column:</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-'U' - the option is Unimplemented.
+'U' - The option is Unimplemented.
 </p>
 </li>
 <li>
 <p>
-'R' for a required field.
+'R' - A required field.
 </p>
 </li>
 <li>
 <p>
-'K' to show the fields required to specify a unique key.
+'K' - A key field. Required to uniquely identify an entry.
 </p>
 </li>
 <li>
 <p>
-'L' for a list field. Lists consist of zero or more items separated by spaces.
+'L' - A list field. Lists consist of zero or more items separated by spaces.
 </p>
 </li>
 <li>
 <p>
-'C' for a compound field: &lt;name&gt;|&lt;value&gt;[,&lt;name&gt;|&lt;value&gt;]&#8230;
+'C' - A compound field: &lt;name&gt;|&lt;value&gt;[,&lt;name&gt;|&lt;value&gt;]&#8230;
 </p>
 </li>
 <li>
 <p>
-'X' implemented in REST but not in the Web front-end.
+'X' - Not available in the Web front-end.
 </p>
 </li>
 </ul></div>
+<div class="paragraph"><p>The <em>REST variable name</em> column lists the option names that can be used in the
+&#8216;json=&#8217; part of the query. These names are used in place of <em>&lt;option&gt;</em> shown
+in the &#8216;Rest Commands&#8217; section above.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -1776,10 +1628,11 @@ lmUMDQ1RKpXOm9EXvV6v1+tWr9eZnp5mZmaGWq1GjLHF62aiNZ+bnPfe45xrvTZzxMyYmZk56+LX
 zKjX661DvHOOJElIkoRSqYT3/vLvRlW15eHCa4VxzdvmpjZDfubzuXeb3vuzqCEixBhbo0NTkyS5
 PAr9L8j/96+U/w3yCoCXW14B8HLLvwDd67nwZIEPdgAAAABJRU5ErkJggg==" />
 </td>
-<td class="content">Many examples use JSON.sh, which can be found here: <a href="https://github.com/dominictarr/JSON.sh">https://github.com/dominictarr/JSON.sh</a></td>
+<td class="content">Many examples use &#8216;JSON.sh&#8217;, which can be found here:
+<a href="https://github.com/dominictarr/JSON.sh">https://github.com/dominictarr/JSON.sh</a></td>
 </tr></table>
 </div>
-<h3 id="_contacts_commandarg">12.1. contacts COMMANDARG</h3><div style="clear:left"></div>
+<h4 id="_contacts">12.1.1. contacts</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -1944,7 +1797,14 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_contactgroups_commandarg">12.2. contactgroups COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples">Examples</h5>
+<div class="paragraph"><p>Show all <em>contacts</em> entries and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/contacts?json=\{"folder":"local"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<h4 id="_contactgroups">12.1.2. contactgroups</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -1989,7 +1849,14 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_hosts_commandarg">12.3. hosts COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_2">Examples</h5>
+<div class="paragraph"><p>Show all <em>contactgroups</em> entries and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/contactgroups?json=\{"folder":"local"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<h4 id="_hosts">12.1.3. hosts</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -2286,7 +2153,7 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h4 id="_examples">12.3.1. Examples</h4>
+<h5 id="_examples_3">Examples</h5>
 <div class="paragraph"><p>Show all hosts and attributes:</p></div>
 <div class="literalblock">
 <div class="content">
@@ -2299,7 +2166,7 @@ cellspacing="0" cellpadding="4">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local","filter":"tx.*"\}'
 | JSON.sh | grep '\[[0-9]\+,0]'</tt></pre>
 </div></div>
-<h3 id="_hosttemplates_commandarg">12.4. hosttemplates COMMANDARG</h3><div style="clear:left"></div>
+<h4 id="_hosttemplates">12.1.4. hosttemplates</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -2554,8 +2421,8 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h4 id="_examples_2">12.4.1. Examples</h4>
-<div class="paragraph"><p>Show all host templates and attributes:</p></div>
+<h5 id="_examples_4">Examples</h5>
+<div class="paragraph"><p>Show all <em>hosttemplates</em> and attributes:</p></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/hosttemplates?json=\{"folder":"local"\}' \
@@ -2568,7 +2435,7 @@ cellspacing="0" cellpadding="4">
        "action_url":"/pnp4nagios/graph?host=$HOSTNAME$"}' \
        https://127.0.0.1/rest/modify/hosttemplates</tt></pre>
 </div></div>
-<h3 id="_services_commandarg">12.5. services COMMANDARG</h3><div style="clear:left"></div>
+<h4 id="_services">12.1.5. services</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -2869,8 +2736,8 @@ cellspacing="0" cellpadding="4">
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.</p></div>
-<h4 id="_examples_3">12.5.1. Examples</h4>
-<div class="paragraph"><p>Show all services and attributes:</p></div>
+<h5 id="_examples_5">Examples</h5>
+<div class="paragraph"><p>Show all <em>services</em> and attributes:</p></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"local"\}' \
@@ -2882,7 +2749,7 @@ to restrict to only setting the freshness_threshold.</p></div>
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"local","column":"4","filter":"Disks"\}' \
 | JSON.sh | grep '\[[0-9]\+,0]'</tt></pre>
 </div></div>
-<h3 id="_servicesets_commandarg">12.6. servicesets COMMANDARG</h3><div style="clear:left"></div>
+<h4 id="_servicesets">12.1.6. servicesets</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -3183,7 +3050,14 @@ cellspacing="0" cellpadding="4">
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.</p></div>
-<h3 id="_servicetemplates_commandarg">12.7. servicetemplates COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_6">Examples</h5>
+<div class="paragraph"><p>Show all <em>servicesets</em> entries and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/servicesets?json=\{"folder":"local"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<h4 id="_servicetemplates">12.1.7. servicetemplates</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -3466,7 +3340,14 @@ cellspacing="0" cellpadding="4">
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.</p></div>
-<h3 id="_commands_commandarg">12.8. commands COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_7">Examples</h5>
+<div class="paragraph"><p>Show all <em>servicetemplates</em> entries and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/servicetemplates?json=\{"folder":"local"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<h4 id="_commands">12.1.8. commands</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -3505,7 +3386,14 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_hostgroups_commandarg">12.9. hostgroups COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_8">Examples</h5>
+<div class="paragraph"><p>Show all <em>commands</em> entries and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/commands?json=\{"folder":"local"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<h4 id="_hostgroups">12.1.9. hostgroups</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -3574,7 +3462,14 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_servicegroups_commandarg">12.10. servicegroups COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_9">Examples</h5>
+<div class="paragraph"><p>Show all <em>hostgroups</em> entries and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/hostgroups?json=\{"folder":"local"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<h4 id="_servicegroups">12.1.10. servicegroups</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -3643,7 +3538,14 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_timeperiods_commandarg">12.11. timeperiods COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_10">Examples</h5>
+<div class="paragraph"><p>Show all <em>servicegroups</em> entries and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/servicegroups?json=\{"folder":"local"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<h4 id="_timeperiods">12.1.11. timeperiods</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -3700,7 +3602,14 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_servicedeps_commandarg">12.12. servicedeps COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_11">Examples</h5>
+<div class="paragraph"><p>Show all <em>timeperiods</em> entries and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/timeperiods?json=\{"folder":"local"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<h4 id="_servicedeps">12.1.12. servicedeps</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -3840,7 +3749,14 @@ PAr9L8j/96+U/w3yCoCXW14B8HLLvwDd67nwZIEPdgAAAABJRU5ErkJggg==" />
 Nagios configuration file.</td>
 </tr></table>
 </div>
-<h3 id="_hostdeps_commandarg">12.13. hostdeps COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_12">Examples</h5>
+<div class="paragraph"><p>Show all <em>servicedeps</em> entries and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/servicedeps?json=\{"folder":"local"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<h4 id="_hostdeps">12.1.13. hostdeps</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -3968,7 +3884,14 @@ PAr9L8j/96+U/w3yCoCXW14B8HLLvwDd67nwZIEPdgAAAABJRU5ErkJggg==" />
 Nagios configuration file.</td>
 </tr></table>
 </div>
-<h3 id="_serviceescalation_commandarg">12.14. serviceescalation COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_13">Examples</h5>
+<div class="paragraph"><p>Show all <em>hostdeps</em> entries and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/hostdeps?json=\{"folder":"local"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<h4 id="_serviceescalation">12.1.14. serviceescalation</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -4055,7 +3978,14 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_hostescalation_commandarg">12.15. hostescalation COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_14">Examples</h5>
+<div class="paragraph"><p>Show all <em>serviceescalation</em> entries and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/serviceescalation?json=\{"folder":"local"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<h4 id="_hostescalation">12.1.15. hostescalation</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -4136,7 +4066,14 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_serviceextinfo_commandarg">12.16. serviceextinfo COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_15">Examples</h5>
+<div class="paragraph"><p>Show all <em>hostescalation</em> entries and attributes:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>curl -kn 'https://127.0.0.1/rest/show/hostescalation?json=\{"folder":"local"\}' \
+| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+</div></div>
+<h4 id="_serviceextinfo">12.1.16. serviceextinfo</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -4205,14 +4142,14 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h4 id="_examples_4">12.16.1. Examples</h4>
-<div class="paragraph"><p>Show all serviceextinfo entries and attributes:</p></div>
+<h5 id="_examples_16">Examples</h5>
+<div class="paragraph"><p>Show all <em>serviceextinfo</em> entries and attributes:</p></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/serviceextinfo?json=\{"folder":"local"\}' \
 | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
 </div></div>
-<h3 id="_hostextinfo_commandarg">12.17. hostextinfo COMMANDARG</h3><div style="clear:left"></div>
+<h4 id="_hostextinfo">12.1.17. hostextinfo</h4>
 <div class="tableblock">
 <table rules="all"
 frame="hsides"
@@ -4299,8 +4236,8 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h4 id="_examples_5">12.17.1. Examples</h4>
-<div class="paragraph"><p>Show all hostextinfo entries and attributes:</p></div>
+<h5 id="_examples_17">Examples</h5>
+<div class="paragraph"><p>Show all <em>hostextinfo</em> entries and attributes:</p></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/hostextinfo?json=\{"folder":"local"\}' \
@@ -4338,7 +4275,7 @@ done &lt; list1</tt></pre>
 <pre><tt>curl -knX POST -d 'json={"folder":"local","hostname":".*"}'
        https://127.0.0.1/rest/delete/hostextinfo</tt></pre>
 </div></div>
-<h3 id="_enablehostsvcchecks_commandarg">12.18. enablehostsvcchecks COMMANDARG</h3><div style="clear:left"></div>
+<h4 id="_enablehostsvcchecks">12.1.18. enablehostsvcchecks</h4>
 <div class="paragraph"><p>Enables active checks for the host then enables all passive and active service
 checks for the host. The following nagios pipe commands are sent:</p></div>
 <div class="literalblock">
@@ -4373,7 +4310,8 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_disablehostsvcchecks_commandarg">12.19. disablehostsvcchecks COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_18">Examples</h5>
+<h4 id="_disablehostsvcchecks">12.1.19. disablehostsvcchecks</h4>
 <div class="paragraph"><p>Disables active checks for the host then disables all passive and active
 service checks for the host. Status is changed to green for the host and all
 of its service checks and the comment is set. The following nagios pipe
@@ -4382,7 +4320,7 @@ commands are sent:</p></div>
 <div class="content">
 <pre><tt>DISABLE_HOST_CHECK
 DISABLE_HOST_SVC_CHECKS
-PROCESS_SERVICE_CHECK_RESULT
+PROCESS_SERVICE_CHECK_RESULT   &lt;-- Sets the comment and service status
 ... 10 second sleep ...
 DISABLE_PASSIVE_SVC_CHECKS</tt></pre>
 </div></div>
@@ -4418,7 +4356,8 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_enablesvccheck_commandarg">12.20. enablesvccheck COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_19">Examples</h5>
+<h4 id="_enablesvccheck">12.1.20. enablesvccheck</h4>
 <div class="paragraph"><p>Enables an individual service check and optionally sets a comment otherwise the
 default comment will be used: "Un-disabled via REST. Check scheduled.". The
 following nagios pipe commands are sent:</p></div>
@@ -4466,7 +4405,8 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_disablesvccheck_commandarg">12.21. disablesvccheck COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_20">Examples</h5>
+<h4 id="_disablesvccheck">12.1.21. disablesvccheck</h4>
 <div class="paragraph"><p>Disables an individual service check and optionally sets a comment otherwise
 the default comment will be used: "Disabled via REST interface.". The following
 nagios pipe commands are sent:</p></div>
@@ -4514,7 +4454,8 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_schedhstdowntime_commandarg">12.22. schedhstdowntime COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_21">Examples</h5>
+<h4 id="_schedhstdowntime">12.1.22. schedhstdowntime</h4>
 <div class="paragraph"><p>Schedule fixed or flexible downtime for a host. The following nagios pipe
 commands are sent:</p></div>
 <div class="literalblock">
@@ -4584,9 +4525,9 @@ cellspacing="0" cellpadding="4">
 </table>
 </div>
 <div class="paragraph"><p>* If comment is not supplied then the default comment,
-"Scheduled via the REST interface.", is used.</p></div>
-<h4 id="_example">12.22.1. Example</h4>
-<div class="paragraph"><p>Schedule 1 hour of fixed downtime for ahst2, starting from now.</p></div>
+&#8220;Scheduled via the REST interface.&#8221;, is used.</p></div>
+<h5 id="_examples_22">Examples</h5>
+<div class="paragraph"><p>Schedule 1 hour of fixed downtime for &#8216;ahst2&#8217;, starting from now.</p></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -knX POST -d 'json={
@@ -4596,7 +4537,7 @@ cellspacing="0" cellpadding="4">
    "endtime":"'`date +%s -d "now + 1 hour"`'"}'
    http://127.0.0.1/rest/pipecmd/schedhstdowntime</tt></pre>
 </div></div>
-<h3 id="_delhstdowntime_commandarg">12.23. delhstdowntime COMMANDARG</h3><div style="clear:left"></div>
+<h4 id="_delhstdowntime">12.1.23. delhstdowntime</h4>
 <div class="paragraph"><p>Delete all scheduled downtime for a host. The following nagios pipe commands
 are sent:</p></div>
 <div class="literalblock">
@@ -4629,8 +4570,8 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<div class="paragraph"><p>Example:</p></div>
-<div class="paragraph"><p>Get rid of all host downtime associated with ahst2.</p></div>
+<h5 id="_examples_23">Examples</h5>
+<div class="paragraph"><p>Get rid of all host downtime associated with &#8216;ahst2&#8217;.</p></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -knX POST -d 'json={
@@ -4638,18 +4579,22 @@ cellspacing="0" cellpadding="4">
    "name":"ahst2" }'
    http://127.0.0.1/rest/pipecmd/delhstdowntime</tt></pre>
 </div></div>
-<h3 id="_schedulehostsvcdowntime_commandarg">12.24. schedulehostsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
+<h4 id="_schedulehostsvcdowntime">12.1.24. schedulehostsvcdowntime</h4>
 <div class="paragraph"><p>Schedule fixed or flexible downtime for a host and all its services.</p></div>
-<h3 id="_delhostsvcdowntime_commandarg">12.25. delhostsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_24">Examples</h5>
+<h4 id="_delhostsvcdowntime">12.1.25. delhostsvcdowntime</h4>
 <div class="paragraph"><p>Delete all scheduled downtime for a host and all its services.</p></div>
-<h3 id="_schedulesvcdowntime_commandarg">12.26. schedulesvcdowntime COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_25">Examples</h5>
+<h4 id="_schedulesvcdowntime">12.1.26. schedulesvcdowntime</h4>
 <div class="paragraph"><p>Schedule fixed or flexible downtime for a host.</p></div>
-<h3 id="_delsvcdowntime_commandarg">12.27. delsvcdowntime COMMANDARG</h3><div style="clear:left"></div>
+<h5 id="_examples_26">Examples</h5>
+<h4 id="_delsvcdowntime">12.1.27. delsvcdowntime</h4>
 <div class="paragraph"><p>Delete all scheduled downtime for a host.</p></div>
+<h5 id="_examples_27">Examples</h5>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-11-17 21:26:17 BST
+Last updated 2012-11-18 01:44:45 BST
 </div>
 </div>
 </body>

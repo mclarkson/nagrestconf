@@ -312,6 +312,7 @@ After the upgrade run `/usr/bin/upgrade_setup_files.sh'.
 Install
 -------
 
+
 Prebuilt Packages
 ~~~~~~~~~~~~~~~~~
 
@@ -325,6 +326,9 @@ Install Using Prebuilt Packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .*DEBIAN, CENTOS & REDHAT*
+
+Do not install on an existing Nagios server. Use the following procedure after
+freshly installing the Operating System with a minimal set of packages.
 
 1. Install the prebuilt package downloaded from Sourceforge. For example:
 +
@@ -342,10 +346,9 @@ The system should now be ready to configure using REST or by using the GUI.
 +
 Test the installation with:
 +
-----------------------------------------------------------
-# On Debian, Centos or Redhat:
+------------------------------------------------------------------
 bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh
-----------------------------------------------------------
+------------------------------------------------------------------
 +
 Then check that it can be seen and edited in the 'Nagrestconf' GUI by pointing
 a supported Web Browser at `http://localhost/nagrestconf'.
@@ -372,8 +375,8 @@ Options' below.
 [[X20]]
 Status
 ------
-All nagios directives are now implemented in the REST interface. GUI support
-is planned for the future.
+
+All nagios directives are now implemented in the REST interface. A smaller set of nagios directives are supported in the Web GUI.
 
 .Currently implemented directives
 [cols="<,^,^,>",frame="topbot",options="header,autowidth"]
@@ -412,23 +415,23 @@ GET requests are for operations that don't modify data.
 ** +check/+
 *** nagiosconfig json={"folder":"<name>"[,"verbose":"true"]}
 ** +show/+
-*** hosttemplates json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** servicetemplates json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** hosts json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** services json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** servicesets json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** servicegroups json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** hostgroups json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** contacts json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** contactgroups json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** timeperiods json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** commands json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** servicedeps json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** hostdeps json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** serviceesc json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** hostesc json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** serviceextinfo json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
-*** hostextinfo json={"folder":"<name>","filter":"<regex>","column":"<integer>"[,"<option>":"<value>"]*}
+*** hosttemplates json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** servicetemplates json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** hosts json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** services json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** servicesets json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** servicegroups json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** hostgroups json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** contacts json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** contactgroups json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** timeperiods json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** commands json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** servicedeps json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** hostdeps json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** serviceesc json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** hostesc json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** serviceextinfo json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
+*** hostextinfo json={"folder":"<name>"[,"filter":"<regex>"][,"column":"<integer>"][,"<option>":"<value>"]*}
 
 POST requests are for operations that might modify data or state.
 
@@ -514,11 +517,14 @@ URL:
 
 http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html
 
-The column number in the following tables relates to the column number in the
+Listing of all Valid REST Options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The 'Column' number in the following tables relate to the column number in the
 database files on the nagios server. These are comma delimited files used by
 'csv2nag' to create the nagios configuration files.
 
-Key for Flags column:
+Key for the 'Flags' column:
 
  * \'U' - The option is Unimplemented.
  * \'R' - A required field.
@@ -527,10 +533,15 @@ Key for Flags column:
  * \'C' - A compound field: <name>|<value>[,<name>|<value>]...
  * \'X' - Not available in the Web front-end.
 
-NOTE: Many examples use `JSON.sh', which can be found here: https://github.com/dominictarr/JSON.sh
+The 'REST variable name' column lists the option names that can be used in the
+`json=' part of the query. These names are used in place of '<option>' shown
+in the `Rest Commands' section above.
 
-contacts COMMANDARG
-~~~~~~~~~~~~~~~~~~~
+NOTE: Many examples use `JSON.sh', which can be found here:
+https://github.com/dominictarr/JSON.sh
+
+contacts
+^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -561,8 +572,16 @@ contacts COMMANDARG
 | 24. | Contact groups | XL | contactgroups
 |========================================================
 
-contactgroups COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+Show all 'contacts' entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/contacts?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+contactgroups
+^^^^^^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -573,8 +592,16 @@ contactgroups COMMANDARG
 | 4. | Disable | U | disable
 |========================================================
 
-hosts COMMANDARG
-~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+Show all 'contactgroups' entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/contactgroups?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+hosts
+^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -628,7 +655,7 @@ hosts COMMANDARG
 |========================================================
 
 Examples
-^^^^^^^^
+++++++++
 
 Show all hosts and attributes:
 
@@ -640,8 +667,8 @@ Show only the host names beginning with 'tx':
  curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local","filter":"tx.*"\}'
  | JSON.sh | grep '\[[0-9]\+,0]'
 
-hosttemplates COMMANDARG 
-~~~~~~~~~~~~~~~~~~~~~~~~
+hosttemplates
+^^^^^^^^^^^^^
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
 | Column | Description | Flags | REST variable name
@@ -687,9 +714,9 @@ hosttemplates COMMANDARG
 |========================================================
 
 Examples
-^^^^^^^^
+++++++++
 
-Show all host templates and attributes:
+Show all 'hosttemplates' and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/hosttemplates?json=\{"folder":"local"\}' \
  | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
@@ -700,8 +727,8 @@ Set the action_url for the host template:
         "action_url":"/pnp4nagios/graph?host=$HOSTNAME$"}' \
         https://127.0.0.1/rest/modify/hosttemplates
 
-services COMMANDARG 
-~~~~~~~~~~~~~~~~~~~
+services
+^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -760,9 +787,9 @@ passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.
 
 Examples
-^^^^^^^^
+++++++++
 
-Show all services and attributes:
+Show all 'services' and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"local"\}' \
  | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
@@ -772,8 +799,8 @@ Show all host names that have a 'Disks' service description (column 4)
  curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"local","column":"4","filter":"Disks"\}' \
  | JSON.sh | grep '\[[0-9]\+,0]'
 
-servicesets COMMANDARG 
-~~~~~~~~~~~~~~~~~~~~~~
+servicesets
+^^^^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -831,8 +858,16 @@ active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.
 
-servicetemplates COMMANDARG 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+Show all 'servicesets' entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/servicesets?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+servicetemplates
+^^^^^^^^^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -887,8 +922,16 @@ active_checks_enabled to 0 (depending on whether the host is a dcc or not),
 passive_checks_enabled to 1 and check_freshness to 1. Use manfreshnessthresh
 to restrict to only setting the freshness_threshold.
 
-commands COMMANDARG
-~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+Show all 'servicetemplates' entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/servicetemplates?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+commands
+^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -898,8 +941,16 @@ commands COMMANDARG
 | 3. | Disable | U | disable
 |========================================================
 
-hostgroups COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+Show all 'commands' entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/commands?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+hostgroups
+^^^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -914,8 +965,16 @@ hostgroups COMMANDARG
 | 8. | Action url | X | action_url
 |========================================================
 
-servicegroups COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+Show all 'hostgroups' entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/hostgroups?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+servicegroups
+^^^^^^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -930,8 +989,16 @@ servicegroups COMMANDARG
 | 8. | Action url | X | action_url
 |========================================================
 
-timeperiods COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+Show all 'servicegroups' entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/servicegroups?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+timeperiods
+^^^^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -944,8 +1011,16 @@ timeperiods COMMANDARG
 | 6. | Freestyle time exception | CX | exception
 |========================================================
 
-servicedeps COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+Show all 'timeperiods' entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/timeperiods?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+servicedeps
+^^^^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -966,8 +1041,16 @@ servicedeps COMMANDARG
 NOTE: Columns 1,2,4 and 5 are not lists in REST as they are in a
 Nagios configuration file.
 
-hostdeps COMMANDARG
-~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+Show all 'servicedeps' entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/servicedeps?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+hostdeps
+^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -986,8 +1069,16 @@ hostdeps COMMANDARG
 NOTE: Columns 1 and 2 are not lists in REST as they are in a
 Nagios configuration file.
 
-serviceescalation COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+Show all 'hostdeps' entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/hostdeps?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+serviceescalation
+^^^^^^^^^^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -1005,8 +1096,16 @@ serviceescalation COMMANDARG
 | 11. | Disable | X | disable
 |========================================================
 
-hostescalation COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+Show all 'serviceescalation' entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/serviceescalation?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+hostescalation
+^^^^^^^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -1023,8 +1122,16 @@ hostescalation COMMANDARG
 | 10. | Disable | X | disable
 |========================================================
 
-serviceextinfo COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+Show all 'hostescalation' entries and attributes:
+
+ curl -kn 'https://127.0.0.1/rest/show/hostescalation?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+serviceextinfo
+^^^^^^^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -1040,15 +1147,15 @@ serviceextinfo COMMANDARG
 |========================================================
 
 Examples
-^^^^^^^^
+++++++++
 
-Show all serviceextinfo entries and attributes:
+Show all 'serviceextinfo' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/serviceextinfo?json=\{"folder":"local"\}' \
  | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
 
-hostextinfo COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~
+hostextinfo
+^^^^^^^^^^^
 
 [cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
 |========================================================
@@ -1067,9 +1174,9 @@ hostextinfo COMMANDARG
 |========================================================
 
 Examples
-^^^^^^^^
+++++++++
 
-Show all hostextinfo entries and attributes:
+Show all 'hostextinfo' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/hostextinfo?json=\{"folder":"local"\}' \
  | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
@@ -1101,8 +1208,8 @@ Delete ALL hostextinfo entries:
  curl -knX POST -d 'json={"folder":"local","hostname":".*"}'
         https://127.0.0.1/rest/delete/hostextinfo
 
-enablehostsvcchecks COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+enablehostsvcchecks
+^^^^^^^^^^^^^^^^^^^
 
 Enables active checks for the host then enables all passive and active service
 checks for the host. The following nagios pipe commands are sent:
@@ -1117,8 +1224,11 @@ checks for the host. The following nagios pipe commands are sent:
 | N/a. | Host name | RX | name
 |========================================================
 
-disablehostsvcchecks COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+disablehostsvcchecks
+^^^^^^^^^^^^^^^^^^^^
 
 Disables active checks for the host then disables all passive and active
 service checks for the host. Status is changed to green for the host and all
@@ -1127,7 +1237,7 @@ commands are sent:
 
  DISABLE_HOST_CHECK
  DISABLE_HOST_SVC_CHECKS
- PROCESS_SERVICE_CHECK_RESULT
+ PROCESS_SERVICE_CHECK_RESULT   <-- Sets the comment and service status
  ... 10 second sleep ...
  DISABLE_PASSIVE_SVC_CHECKS
 
@@ -1138,8 +1248,11 @@ commands are sent:
 | N/a. | Comment for the Nagios GUI | X | comment
 |========================================================
 
-enablesvccheck COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+enablesvccheck
+^^^^^^^^^^^^^^
 
 Enables an individual service check and optionally sets a comment otherwise the
 default comment will be used: "Un-disabled via REST. Check scheduled.". The
@@ -1157,8 +1270,11 @@ following nagios pipe commands are sent:
 | N/a. | Comment for the Nagios GUI | X | comment
 |========================================================
 
-disablesvccheck COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+disablesvccheck
+^^^^^^^^^^^^^^^
 
 Disables an individual service check and optionally sets a comment otherwise
 the default comment will be used: "Disabled via REST interface.". The following
@@ -1176,8 +1292,11 @@ nagios pipe commands are sent:
 | N/a. | Comment for the Nagios GUI | X | comment
 |========================================================
 
-schedhstdowntime COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+schedhstdowntime
+^^^^^^^^^^^^^^^^
 
 Schedule fixed or flexible downtime for a host. The following nagios pipe
 commands are sent:
@@ -1197,12 +1316,12 @@ commands are sent:
 |========================================================
 
 pass:[*] If comment is not supplied then the default comment,
-"Scheduled via the REST interface.", is used.
+``Scheduled via the REST interface.'', is used.
 
-Example
-^^^^^^^
+Examples
+++++++++
 
-Schedule 1 hour of fixed downtime for ahst2, starting from now.
+Schedule 1 hour of fixed downtime for `ahst2', starting from now.
 
  curl -knX POST -d 'json={
     "folder":"local",
@@ -1211,8 +1330,8 @@ Schedule 1 hour of fixed downtime for ahst2, starting from now.
     "endtime":"'`date +%s -d "now + 1 hour"`'"}'
     http://127.0.0.1/rest/pipecmd/schedhstdowntime
 
-delhstdowntime COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+delhstdowntime
+^^^^^^^^^^^^^^
 
 Delete all scheduled downtime for a host. The following nagios pipe commands
 are sent:
@@ -1225,31 +1344,45 @@ are sent:
 | N/a. | Host name | RX | name
 |========================================================
 
-Example:
+Examples
+++++++++
 
-Get rid of all host downtime associated with ahst2.
+Get rid of all host downtime associated with `ahst2'.
 
  curl -knX POST -d 'json={
     "folder":"local",
     "name":"ahst2" }'
     http://127.0.0.1/rest/pipecmd/delhstdowntime
 
-schedulehostsvcdowntime COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+schedulehostsvcdowntime
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Schedule fixed or flexible downtime for a host and all its services.
 
-delhostsvcdowntime COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+delhostsvcdowntime
+^^^^^^^^^^^^^^^^^^
 
 Delete all scheduled downtime for a host and all its services.
 
-schedulesvcdowntime COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+schedulesvcdowntime
+^^^^^^^^^^^^^^^^^^^
 
 Schedule fixed or flexible downtime for a host.
 
-delsvcdowntime COMMANDARG
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Examples
+++++++++
+
+delsvcdowntime
+^^^^^^^^^^^^^^
 
 Delete all scheduled downtime for a host.
+
+Examples
+++++++++
+
