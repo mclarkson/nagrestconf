@@ -34,6 +34,7 @@ CMDLINE="$@"
 ME="$0"
 G_FOLDER=
 G_DCCIP=
+G_USEDCC=0
 
 # ----------------------------------------------------------------------------
 usage()
@@ -72,6 +73,8 @@ parse_options()
             --folder=*) G_FOLDER="${1##--folder=}"
             ;;
             --dccip=*) G_DCCIP="${1##--dccip=}"
+            ;;
+            --usedcc) G_USEDCC=1
             ;;
             ?*) usage
                 echo -e "\nInvalid option, $1\n"
@@ -114,7 +117,7 @@ configure_ssh()
 configure_restart_nagios_script()
 # ----------------------------------------------------------------------------
 {
-    sed -i "s/^#dcc=.*/dcc=$G_DCCIP/" /usr/bin/restart_nagios
+    sed -i "s/^#dcc=.*/dcc=$G_DCCIP/" /etc/nagrestconf/restart_nagios.conf
 }
 
 # ----------------------------------------------------------------------------
@@ -325,7 +328,9 @@ setup_repo()
     cd $REPO_LOCATION/
     svnadmin create $G_FOLDER
     # When this node is a satellite and syncing to a central console
-    #svnsync init svn+ssh://svnsync@$G_DCCIP/$folder file://$folder
+    [[ $G_USEDCC -eq 1 ]] && {
+        svnsync init svn+ssh://svnsync@$G_DCCIP/$folder file://$folder
+    }
 
     # Configure the check result sender (ocsp only)
     #sed -i "s/\(command_line.*submit_[a-z]*check_result.*\) .*/\1 $G_DCCIP/" \
@@ -361,8 +366,10 @@ setup_repo()
 
     # Finally kick off the first full sync.
     for i in 1 2 3 4; do /usr/bin/restart_nagios; done
-    #svnsync sync svn+ssh://svnsync@$G_DCCIP/$folder
-    #ssh svnsync@$G_DCCIP "touch /tmp/nagios_update_$G_FOLDER"
+    [[ $G_USEDCC -eq 1 ]] && {
+        svnsync sync svn+ssh://svnsync@$G_DCCIP/$folder
+        ssh svnsync@$G_DCCIP "touch /tmp/nagios_update_$G_FOLDER"
+    }
 }
 
 # ----------------------------------------------------------------------------
@@ -410,12 +417,14 @@ main()
     }
 
     # Do this yourself
-    #[[ -z $G_DCCIP ]] && prompt_for_config_var "Enter DCC IP address" G_DCCIP
+    [[ -z $G_DCCIP ]] && prompt_for_config_var "Enter DCC IP address" G_DCCIP
 
     setup_nagios_cfg
-    #configure_ssh
-    #configure_restart_nagios_script
-    #configure_mod_gearman
+    [[ $G_USEDCC -eq 1 ]] && {
+        configure_ssh
+        configure_restart_nagios_script
+        configure_mod_gearman
+    }
     setup_repo
 }
 

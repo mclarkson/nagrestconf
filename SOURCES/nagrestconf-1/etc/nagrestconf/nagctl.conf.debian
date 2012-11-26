@@ -7,6 +7,10 @@ NAG_OBJ_DIR=$NAG_DIR/objects
 # Where nagios.cfg file is.
 NAG_CONFIG=$NAG_DIR/nagios.cfg
 
+# Where some livestatus files are
+#LIVESTATUSCOMMANDFILE='/var/log/nagios/rw/live'
+#LIVESTATUSUNIXCAT='/usr/bin/unixcat'
+
 # Where the nagios.cmd file is.
 COMMANDFILE='/var/lib/nagios3/rw'
 

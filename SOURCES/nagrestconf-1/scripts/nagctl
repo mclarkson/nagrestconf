@@ -4098,7 +4098,7 @@ pipecmd_enablesvccheck()
 pipecmd_disablesvccheck()
 # ----------------------------------------------------------------------------
 {
-    local comment name svcdesc
+    local comment name svcdesc a
 
     check_file_exists_and_is_writeable "COMMANDFILE"
 
@@ -4129,7 +4129,21 @@ pipecmd_disablesvccheck()
             "[%lu] PROCESS_SERVICE_CHECK_RESULT;$name;$svcdesc;0;$comment\n" \
             $now >$COMMANDFILE
 
-        sleep 1
+        if [[ -w $LIVESTATUSCOMMANDFILE && -x $LIVESTATUSUNIXCAT ]]; then
+            # Wait for the state to change - PROCESS_SERVICE_CHECK_RESULT
+            # changes the state to OK.
+            a="GET services\n"
+            a="${a}WaitObject: $name $svcdesc\n"
+            a="${a}WaitTrigger: all\n"
+            a="${a}WaitTimeout: 15000\n"
+            a="${a}WaitCondition: plugin_output = $comment\n"
+            a="${a}Filter: host_name = $name\n"
+            a="${a}Filter: description = $svcdesc\n"
+            a="${a}Columns: plugin_output\n"
+            echo -en "$a" | $LIVESTATUSUNIXCAT $LIVESTATUSCOMMANDFILE
+        else
+            sleep 1
+        fi
 
         printf "[%lu] DISABLE_PASSIVE_SVC_CHECKS;$name;$svcdesc\n" \
             $now > $COMMANDFILE
