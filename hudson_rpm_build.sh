@@ -151,7 +151,9 @@ for PKG in `( cd SPECS; ls *.spec )`; do
     else 
         echo "Building un-signed package for '${NAME}-${VERSION}'..." 
         echo 
-        rpmbuild -ba --rcfile ${BASE}/TMP/rpmrc ${BASE}/TMP/${PKG} 
+        # RH5 -> rpmbuild -ba --rcfile ${BASE}/TMP/rpmrc ${BASE}/TMP/${PKG} 
+        # RH6 ->
+        rpmbuild --define "_topdir ${BASE}" -ba --rcfile ${BASE}/TMP/rpmrc ${BASE}/TMP/${PKG} 
     fi
 
     RV=$?
