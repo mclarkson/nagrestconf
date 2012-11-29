@@ -1,5 +1,9 @@
 %define name nagrestconf
 %define version 1
+%define php php
+%if "%{?dist}" == ".el5"
+%define php php53
+%endif
 # The following line may be required
 #%define debug_package %{nil}
 
@@ -11,7 +15,7 @@ Release: 1
 License: GPL
 Group: Applications/System
 Source: nagrestconf-%{version}.tar.gz
-Requires: bash, grep, nagios >= 3, procmail, sed, gawk, grep, php >= 5.3, httpd, mod_ssl, subversion
+Requires: bash, grep, nagios >= 3, procmail, sed, gawk, grep, %php >= 5.3, httpd, mod_ssl, subversion
 # PreReq: sh-utils
 BuildArch: noarch
 BuildRoot: %{_builddir}/%{name}-%{version}/tmp
@@ -96,6 +100,8 @@ fi
 %postun
 
 %install
+
+echo "php requires = %{php}"
 
 [ "$RPM_BUILD_ROOT" != "/" ] && %{__rm} -rf %{buildroot}
 

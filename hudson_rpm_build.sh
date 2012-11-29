@@ -153,7 +153,10 @@ for PKG in `( cd SPECS; ls *.spec )`; do
         echo 
         # RH5 -> rpmbuild -ba --rcfile ${BASE}/TMP/rpmrc ${BASE}/TMP/${PKG} 
         # RH6 ->
-        rpmbuild --define "_topdir ${BASE}" -ba --rcfile ${BASE}/TMP/rpmrc ${BASE}/TMP/${PKG} 
+        if grep -qs 4\. /etc/redhat-release; then dist=.el4; fi
+        if grep -qs 5\. /etc/redhat-release; then dist=.el5; fi
+        if grep -qs 6\. /etc/redhat-release; then dist=.el6; fi
+        rpmbuild --define "_topdir ${BASE}" --define "dist $dist" -ba --rcfile ${BASE}/TMP/rpmrc ${BASE}/TMP/${PKG} 
     fi
 
     RV=$?
