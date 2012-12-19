@@ -50,6 +50,9 @@ VERSION="1.0"
 
 CONFIG="/etc/nagrestconf/csv2nag.conf"
 
+REMOTE_EXECUTOR=
+FRESHNESS_CHECK_COMMAND=
+
 # -- Constants
 
 # Program args
@@ -919,7 +922,9 @@ create_service_entries()
             echo "        use                             $stemplate"
             echo "        service_description             $sdescr"
             if [[ -n $freshness ]]; then 
-                echo "        check_command                   no-checks-received"
+                sc=${scommand#$REMOTE_EXECUTOR!} ; sc=${sc%% *}
+                sc="$FRESHNESS_CHECK_COMMAND!$sc"
+                echo "        check_command                   $sc"
                 [[ $DCC -ne 1 ]] && {
                     echo "        active_checks_enabled           0"
                 }
@@ -2256,12 +2261,25 @@ start_writing_process()
 }
 
 # ---------------------------------------------------------------------------
+set_default_globals()
+# ---------------------------------------------------------------------------
+# Purpose:      Set some default values overridden by config file.
+# Arguments:    None
+# Returns:      Nothing
+{
+    REMOTE_EXECUTOR="check_any"
+    FRESHNESS_CHECK_COMMAND="no-checks-received"
+}
+
+# ---------------------------------------------------------------------------
 main()
 # ---------------------------------------------------------------------------
 # Purpose:      Program execution starts here.
 # Arguments:    None
 # Returns:      Nothing
 {
+    set_default_globals
+
     if [[ -r $CONFIG ]]; then
         source $CONFIG
         [[ -z $DCC ]] && {
@@ -2269,7 +2287,7 @@ main()
             exit 1
         }
     else
-        echo "ERROR: File does not exists, '$CONFIG'. Aborting"
+        echo "ERROR: File does not exist, '$CONFIG'. Aborting"
         exit 1
     fi
 
