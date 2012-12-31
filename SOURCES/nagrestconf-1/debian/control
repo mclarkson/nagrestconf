@@ -13,9 +13,9 @@ Depends: ${misc:Depends}, apache2, cron, nagios3, sed (>=4), gawk, grep (>=2), p
 Description: REST interface and configuration GUI for Nagios.
  Nagrestconf:
  .
-  * allows Nagios configuration files to be written using a REST api.
+  * allows Nagios to be configured using a REST api.
   * allows the server to be restarted using the REST api.
-  * provides a Web GUI for configuring nagios that only uses the REST api.
+  * provides a Web GUI for configuring built on the REST api.
  .
  It can be useful for:
  .
@@ -23,7 +23,4 @@ Description: REST interface and configuration GUI for Nagios.
   * Bulk editing
   * Automation
   * Catching common configuration mistakes
-  * Configuration Delegation (using additional tools)
-  * Distributed monitoring (using additional tools)
  .
- Not all of the Nagios directives are implemented.
