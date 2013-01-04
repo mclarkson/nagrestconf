@@ -1,0 +1,296 @@
+#!/bin/bash
+#
+# Copyright(C) 2010 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#
+#    This software is provided under the terms of the GNU
+#    General Public License (GPL), as published at: 
+#    http://www.gnu.org/licenses/gpl.html .
+#
+# File:     nagrestconf_install
+# Author:   Mark Clarkson
+# Date:     04 Jan 2013
+# Version:  0.10
+# Modified:
+#           201x-xx-xx Mark Clarkson <mark.clarkson@smorg.co.uk>
+#           * xxxxxx
+#
+# Purpose:  Modify the system so nagrestconf works.
+#
+#             ./nagrestconf_install -h
+#
+# Notes:
+#
+
+# ---------------------------------------------------------------------------
+# SETINGS - MODIFY AS NEEDED
+# ---------------------------------------------------------------------------
+
+#
+#
+# -------------------- DO NOT MODIFY ANYTHING BELOW -------------------------
+#
+#
+
+# ---------------------------------------------------------------------------
+# GLOBALS
+# ---------------------------------------------------------------------------
+
+# NAG_CONFIG is defined in this file
+CONFFILE=/etc/nagrestconf/nagctl.conf
+
+VERSION="0.10"
+
+MODIFY_NAGIOS_CFG=0
+ADD_USERGRP=0
+ADD_ROOT_CRONTAB=0
+ADD_SUDOERS_ENTRY=0
+RESTART_SERVICES=0
+
+ME="$0"
+
+# ---------------------------------------------------------------------------
+main()
+# ---------------------------------------------------------------------------
+# Purpose:      Program execution starts here.
+# Arguments:    Argv
+# Returns:      Nothing (exits here)
+{
+    parse_options "$@"
+
+    init
+
+    [[ $MODIFY_NAGIOS_CFG -eq 1 ]] && modify_nagios_cfg
+
+    [[ $ADD_USERGRP -eq 1 ]] && add_usergrp
+
+    [[ $ADD_ROOT_CRONTAB -eq 1 ]] && add_root_crontab
+
+    [[ $ADD_SUDOERS_ENTRY -eq 1 ]] && add_sudoers_entry
+
+    [[ $RESTART_SERVICES -eq 1 ]] && restart_services
+
+    post_install_info
+
+    exit 0
+}
+
+# ---------------------------------------------------------------------------
+add_usergrp()
+# ---------------------------------------------------------------------------
+{
+    # Perform tasks to prepare for the initial installation
+    echo "Attempting to add $WWWUSER to the nagios group."
+    echo "usermod -a -G nagios apache"
+    usermod -a -G nagios apache
+    echo "Attempting to add $WWWUSER to the nagiocmd group."
+    echo "usermod -a -G nagiocmd apache"
+    usermod -a -G nagiocmd apache
+}
+
+# ---------------------------------------------------------------------------
+add_root_crontab()
+# ---------------------------------------------------------------------------
+{
+    # Add crontab
+    echo "Attempting to delete any existing crontab entry."
+    sed -i '/nagios_restart_request/d' /var/spool/cron/root
+    echo "Appending crontab entry:"
+    cat >>/var/spool/cron/root <<EnD
+
+        * * * * * /usr/bin/test -e /tmp/nagios_restart_request && \
+        ( /bin/rm /tmp/nagios_restart_request; /usr/bin/restart_nagios; )
+EnD
+    cat >>/var/spool/cron/root <<EnD
+* * * * * /usr/bin/test -e /tmp/nagios_restart_request && ( /bin/rm /tmp/nagios_restart_request; /usr/bin/restart_nagios; )
+EnD
+    touch /var/spool/cron/
+}
+
+# ---------------------------------------------------------------------------
+add_sudoers_entry()
+# ---------------------------------------------------------------------------
+{
+    # Add sudoers entry
+    echo "Attempting to delete any existing sudoers entries."
+    sed -i '/\/usr\/bin\/csv2nag -y all/d' /etc/sudoers
+    sed -i '/nagios.*requiretty/d' /etc/sudoers
+    echo "Appending sudoers entry:"
+    cat <<EnD
+        Defaults:%nagios !requiretty
+        %nagios ALL = NOPASSWD: /usr/sbin/nagios -v *, /usr/bin/csv2nag -y all
+EnD
+    cat >>/etc/sudoers <<EnD
+Defaults:%nagios !requiretty
+%nagios ALL = NOPASSWD: /usr/sbin/nagios -v *, /usr/bin/csv2nag -y all
+
+EnD
+}
+
+# ---------------------------------------------------------------------------
+init()
+# ---------------------------------------------------------------------------
+# Purpose:      Initialise globals
+# Arguments:    None
+# Returns:      Nothing
+{
+    [[ -r $CONFFILE ]] || {
+        echo "ERROR: Configuration file '$CONFFILE' is not readable."
+        echo "Aborting. Cannot continue."
+        exit 1
+    }
+
+    source $CONFFILE
+}
+
+# ----------------------------------------------------------------------------
+usage()
+# ----------------------------------------------------------------------------
+# Purpose:      Show program options.
+# Arguments:    None
+# Returns:      Nothing
+{
+    echo
+    echo "`basename $ME` - Modify the environment so nagrestconf will work."
+    echo
+    echo "Usage: `basename $ME` [-h] [-v] [-a] [-n] [-o] [-p] [-q] [-r]"
+    echo
+    echo " -h       :  Display this help text."
+    echo " -v       :  Display the program version string."
+    echo " -a       :  Try to do everything required."
+    echo " -n       :  Modify nagios.cfg only."
+    echo " -o       :  Modify system users only."
+    echo " -p       :  Modify crontab only."
+    echo " -q       :  Modify sudoers only."
+    echo " -r       :  Restart services only."
+    echo
+}
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose:      Parse program options and set globals.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local atleastone=0
+
+    set -- "$@"
+    while true
+    do
+        case $1 in
+            -h|--help) usage; exit 0
+            ;;
+            -v|--version) echo "$VERSION"; exit 0
+            ;;
+            -a) MODIFY_NAGIOS_CFG=1
+                ADD_USERGRP=1
+                ADD_ROOT_CRONTAB=1
+                ADD_SUDOERS_ENTRY=1
+                RESTART_SERVICES=1
+                atleastone=1
+            ;;
+            -n) MODIFY_NAGIOS_CFG=1
+                atleastone=1
+            ;;
+            -o) ADD_USERGRP=1
+                atleastone=1
+            ;;
+            -p) ADD_ROOT_CRONTAB=1
+                atleastone=1
+            ;;
+            -q) ADD_SUDOERS_ENTRY=1
+                atleastone=1
+            ;;
+            -r) RESTART_SERVICES=1
+                atleastone=1
+            ;;
+            ?*) echo "ERROR: Unknown program option. Aborting."
+                exit 1
+            ;;
+        esac
+        shift 1 || break
+    done
+    
+    [[ $atleastone -eq 0 ]] && {
+        usage
+        echo "Nothing to do. Specify one or more options"
+        echo
+        exit 0
+    }
+}
+
+# ----------------------------------------------------------------------------
+modify_nagios_cfg()
+# ----------------------------------------------------------------------------
+# Purpose:      Adds extra lines to nagios.cfg that nagrestconf needs.
+#               Comments out some other lines that should not be included.
+# Arguments:    None
+# Returns:      Nothing
+{
+    [[ -r $NAG_CONFIG ]] || {
+        echo "Is not readable: $NAG_CONFIG"
+        echo "An existing nagios configuration is required."
+        echo "Cannot continue."
+        exit 1
+    }
+
+    echo "Attempting to modify $NAG_CONFIG."
+
+    if ! grep -qs "<SERVICE_LINE_CFG_ENTRY>" /etc/nagios/nagios.cfg; then
+        cp $NAG_CONFIG $NAG_CONFIG.nagrestconf-saved
+        %{__sed} -i '/SERVICE_LINE_CFG_ENTRY/d' $NAG_CONFIG
+        echo "## Next line added by nagrestconf"  >>$NAG_CONFIG
+        echo "<SERVICE_LINE_CFG_ENTRY>" >>$NAG_CONFIG
+        # Comment out cfg_ lines in nagios.cfg
+        %{__sed} -i \
+            's/^[[:space:]]*cfg_/# - commented out by nagrestconf - cfg_/' \
+            $NAG_CONFIG
+    else
+        echo "Skipping since $NAG_CONFIG seems to have been modified already."
+    fi
+}
+
+# ----------------------------------------------------------------------------
+post_install_info()
+# ----------------------------------------------------------------------------
+# Purpose:      Display information to the user after a successful install.
+# Arguments:    None
+# Returns:      Nothing
+{
+    echo
+    echo "Congratulations, system modifications (if any) are complete."
+    echo
+    echo "Nagrestconf has been configured for http://127.0.0.1/nagrestconf/."
+    echo
+    echo "slc_configure should be invoked now. For single server setups"
+    echo "or for testing the following command will suffice:"
+    echo
+    echo "    slc_configure --folder=local"
+    echo
+
+}
+
+# ----------------------------------------------------------------------------
+restart_services()
+# ----------------------------------------------------------------------------
+# Purpose:      Display information to the user after a successful install.
+# Arguments:    None
+# Returns:      Nothing
+{
+    echo
+    echo "Attempting to restart the web server."
+    echo
+
+    # Restart the webserver so the new configs are picked up
+
+    # Should work on all Debian and Centos:
+    [[ -x /etc/init.d/httpd ]] && {
+        echo "Running: /etc/init.d/httpd restart"
+        /etc/init.d/httpd restart
+    }
+}
+
+# start...
+main "$@"
+
+# vim:ts=4:et:sw=4:tw=76

@@ -7,9 +7,6 @@ set -e
 
 case "$1" in
   remove|deconfigure)
-    sed -i '/nagios_restart_request/d' /var/spool/cron/root
-    touch /var/spool/cron
-    sed -i '/\/usr\/bin\/csv2nag -y all/d' /etc/sudoers
   ;;
 
   upgrade|failed-upgrade)
