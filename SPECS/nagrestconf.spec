@@ -66,6 +66,7 @@ install -D -m 755 scripts/slc_configure ${RPM_BUILD_ROOT}%_bindir/slc_configure
 install -D -m 755 scripts/upgrade_setup_files.sh ${RPM_BUILD_ROOT}%_bindir/upgrade_setup_files.sh
 install -D -m 755 scripts/update_nagios ${RPM_BUILD_ROOT}%_bindir/update_nagios
 install -D -m 755 scripts/auto_reschedule_nagios_check ${RPM_BUILD_ROOT}%_bindir/auto_reschedule_nagios_check
+install -D -m 755 scripts/nagrestconf_install ${RPM_BUILD_ROOT}%_bindir/nagrestconf_install
 
 # PHP Directories
 install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
