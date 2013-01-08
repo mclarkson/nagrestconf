@@ -5,6 +5,35 @@
 #     */10 * * * * /usr/bin/auto_reschedule_nagios_check
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
+PIDFILE=/var/tmp/auto_reschedule_nagios_check.pid
+ME="$0"
+
+# ---------------------------------------------------------------------------
+quit()
+# ---------------------------------------------------------------------------
+{
+    rm -f $PIDFILE
+}
+
+# ---------------------------------------------------------------------------
+write_pid_or_exit()
+# ---------------------------------------------------------------------------
+{
+    local me=`basename $ME`
+
+    if test -e $PIDFILE; then
+        pid=`cat $PIDFILE`
+        # Stale pid?
+        if ps ax | grep -qs "^$pid.*$me"; then
+            exit 0
+        fi
+    fi
+
+    echo "$$" >$PIDFILE
+    trap quit EXIT
+}
+
+write_pid_or_exit
 
 if [[ -r /etc/nagrestconf/nagctl.conf ]]; then
     source /etc/nagrestconf/nagctl.conf
@@ -20,6 +49,9 @@ interval=600
 
 #echo
 #echo " unix time          num > ${interval}s   max(s)  ave(s) pending  disabled  num not OK"
+
+# Nagios is down? Configuration is wrong?
+[[ -e $STATUSFILE ]] || exit 0
 
 while true; do
     while [[ -e $STATUSFILE && $((`date +%s`0-`stat -c %Z $STATUSFILE`0)) -gt 0 ]]
