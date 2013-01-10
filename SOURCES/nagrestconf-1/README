@@ -272,7 +272,7 @@ How does it work?
 -----------------
 
 [cols="<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
+|===========================================================================================================
 | Program | Language | Description 
 | +rest/index.php+ | PHP | Provides the REST interface and calls 'nagctl'.
 | 'nagctl'| Bash | Writes the CSV .setup files and calls 'csv2nag'.
@@ -280,7 +280,7 @@ How does it work?
 | 'restart_nagios' | Bash | Called periodically by cron.
 | 'slc_configure' | Bash | For initial configuration.
 | +nagrestconf/index.php+ | PHP | A Configuration GUI that uses the REST api.
-|========================================================
+|===========================================================================================================
 
 Requirements
 ------------
@@ -289,7 +289,7 @@ For the Web GUI the following Browsers work: Firefox, Opera, Chrome, Safari -
 including Maemo, IPAD and Android versions.
 
 [cols="<,<",frame="topbot",options="header,autowidth"]
-|========================================================
+|===========================================================================================================
 | Software Requirement | Reason
 | php | for REST interface and Web GUI. v5.3+ only.
 | nagios | for checking the configuration. v3+ only.
@@ -301,7 +301,7 @@ including Maemo, IPAD and Android versions.
 | sed | used in the bash scripts.
 | gawk | used in the bash scripts.
 | procmail | for locking with 'lockfile'.
-|========================================================
+|===========================================================================================================
 
 [[X10]]
 Upgrade
@@ -380,7 +380,7 @@ All nagios directives are now implemented in the REST interface. A smaller set o
 
 .Currently implemented directives
 [cols="<,^,^,>",frame="topbot",options="header,autowidth"]
-|========================================================
+|===========================================================================================================
 | Definition | No. in Nagios | No. in Nagrestconf | %
 | Contacts | 17 | 17 | 100%
 | Contact Groups | 3 | 3 | 100%
@@ -397,7 +397,7 @@ All nagios directives are now implemented in the REST interface. A smaller set o
 | Service Escalation | 10 | 10 | 100%
 | Hostextinfo | 10 | 10 | 100%
 | Serviceextinfo | 7 | 7 | 100%
-|========================================================
+|===========================================================================================================
 
 REST Commands
 -------------
@@ -543,34 +543,34 @@ https://github.com/dominictarr/JSON.sh
 contacts
 ^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Contact name | RK | name
-| 2. | Use| R | use
-| 3. | Alias pretty name | R | alias
-| 4. | Email address |  | emailaddr
-| 5. | Service notification period | R | svcnotifperiod
-| 6. | Service notification options | LR | svcnotifopts
-| 7. | Service notification commands | LR | svcnotifcmds
-| 8. | Host notification period | R | hstnotifperiod
-| 9. | Host notification options | LR | hstnotifopts
-| 10. | Host notification commands | LR | hstnotifcmds
-| 11. | Can submit commands |  | cansubmitcmds
-| 12. | Disable | U | disable
-| 13. | Service notification enabled | X | svcnotifenabled
-| 14. | Host notification enabled | X | hstnotifenabled
-| 15. | Pager | X | pager
-| 16. | Address1 | X | address1
-| 17. | Address2 | X | address2
-| 18. | Address3 | X | address3
-| 19. | Address4 | X | address4
-| 20. | Address5 | X | address5
-| 21. | Address6 | X | address6
-| 22. | Retain status info | X | retainstatusinfo
-| 23. | Retain non-status info | X | retainnonstatusinfo
-| 24. | Contact groups | XL | contactgroups
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Contact name                  | RK      | name                      | contact_name
+| 2.     | Us                            | R       | use                       |
+| 3.     | Alias pretty name             | R       | alias                     | alias
+| 4.     | Email address                 |         | emailaddr                 | email
+| 5.     | Service notification period   | R       | svcnotifperiod            | service_notification_period
+| 6.     | Service notification options  | LR      | svcnotifopts              | service_notification_options
+| 7.     | Service notification commands | LR      | svcnotifcmds              | service_notification_commands
+| 8.     | Host notification period      | R       | hstnotifperiod            | host_notification_period
+| 9.     | Host notification options     | LR      | hstnotifopts              | host_notification_options
+| 10.    | Host notification commands    | LR      | hstnotifcmds              | host_notification_commands
+| 11.    | Can submit commands           |         | cansubmitcmds             | can_submit_commands
+| 12.    | Disable                       | U       | disable                   | 
+| 13.    | Service notification enabled  | X       | svcnotifenabled           | service_notifications_enabled
+| 14.    | Host notification enabled     | X       | hstnotifenabled           | host_notifications_enabled
+| 15.    | Pager                         | X       | pager                     | pager
+| 16.    | Address1                      | X       | address1                  | address1
+| 17.    | Address2                      | X       | address2                  | address2
+| 18.    | Address3                      | X       | address3                  | address3
+| 19.    | Address4                      | X       | address4                  | address4
+| 20.    | Address5                      | X       | address5                  | address5
+| 21.    | Address6                      | X       | address6                  | address6
+| 22.    | Retain status info            | X       | retainstatusinfo          | retain_status_information
+| 23.    | Retain non-status info        | X       | retainnonstatusinfo       | retain_nonstatus_information
+| 24.    | Contact groups                | XL      | contactgroups             | contactgroups
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -583,14 +583,14 @@ Show all 'contacts' entries and attributes:
 contactgroups
 ^^^^^^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Contact group name | RK | name
-| 2. | Alias pretty name | R | alias
-| 3. | Members list | RL | members
-| 4. | Disable | U | disable
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Contact group name            | RK      | name                      | contactgroup_name
+| 2.     | Alias pretty name             | R       | alias                     | alias
+| 3.     | Members list                  | RL      | members                   | members
+| 4.     | Disable                       | U       | disable                   | 
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -603,56 +603,56 @@ Show all 'contactgroups' entries and attributes:
 hosts
 ^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Host name | RK | name
-| 2. | Alias | R | alias
-| 3. | IP Address (address) | R | ipaddress
-| 4. | Template (use) | R | template
-| 5. | Shown Hostgroup |  L | hostgroup
-| 6. | Contact |  L | contact
-| 7. | Contact Group | L | contactgroups
-| 8. | Active checks |  | activechecks
-| 9. | Service Set |  | servicesets
-| 10. | Disable |  | disable
-| 11. | Display name |  | displayname
-| 12. | Parents | LX | parents
-| 13. | Check command | X | command
-| 14. | Initial state | X | initialstate
-| 15. | Max check attempts | X | maxcheckattempts
-| 16. | Check interval | X | checkinterval
-| 17. | Retry interval | X | retryinterval
-| 18. | Passive checks enabled | X | passivechecks
-| 19. | Check period | X | checkperiod
-| 20. | Obsess over host | X | obsessoverhost
-| 21. | Check freshness | X | checkfreshness
-| 22. | Freshness threshold | X | freshnessthresh
-| 23. | Event handler | X | eventhandler
-| 24. | Event handler enabled | X | eventhandlerenabled
-| 25. | Low flap threshold | X | lowflapthresh
-| 26. | High flap threshold | X | highflapthresh
-| 27. | Flap detection enabled | X | flapdetectionenabled
-| 28. | Flap detection options | LX | flapdetectionoptions
-| 29. | Process perf data | X | processperfdata
-| 30. | Retain status information | X | retainstatusinfo
-| 31. | Retain nonstatus information | X | retainnonstatusinfo
-| 32. | Notification interval | X | notifinterval
-| 33. | First notification delay | X | firstnotifdelay
-| 34. | Notification period | X | notifperiod
-| 35. | Notification opts | LX | notifopts
-| 36. | Notifications enabled | X | notifications_enabled
-| 37. | Stalking options | LX | stalkingoptions
-| 38. | Notes | X | notes
-| 39. | Notes url | X | notes_url
-| 40. | Icon image | X | icon_image
-| 41. | Icon image alt | X | icon_image_alt
-| 42. | Vrml image | X | vrml_image
-| 43. | Statusmap image | X | statusmap_image
-| 44. | 2d coords | X | coords2d
-| 45. | 3d coords | X | coords3d
-| 46. | Action url | X | action_url
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Host name                     | RK      | name                      | host_name
+| 2.     | Alias                         | R       | alias                     | alias
+| 3.     | IP Address                    | R       | ipaddress                 | address
+| 4.     | Template                      | R       | template                  | use
+| 5.     | Shown Hostgroup               | L       | hostgroup                 | hostgroups
+| 6.     | Contact                       | L       | contact                   | contacts
+| 7.     | Contact Group                 | L       | contactgroups             | contact_groups
+| 8.     | Active checks                 |         | activechecks              | active_checks_enabled
+| 9.     | Service Set                   |         | servicesets               | 
+| 10.    | Disable                       |         | disable                   |
+| 11.    | Display name                  |         | displayname               | display_name
+| 12.    | Parents                       | LX      | parents                   | parents
+| 13.    | Check command                 | X       | command                   | check_command
+| 14.    | Initial state                 | X       | initialstate              | initial_state
+| 15.    | Max check attempts            | X       | maxcheckattempts          | max_check_attempts
+| 16.    | Check interval                | X       | checkinterval             | check_interval
+| 17.    | Retry interval                | X       | retryinterval             | retry_interval
+| 18.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
+| 19.    | Check period                  | X       | checkperiod               | check_period
+| 20.    | Obsess over host              | X       | obsessoverhost            |obsess_over_host
+| 21.    | Check freshness               | X       | checkfreshness            | check_freshness
+| 22.    | Freshness threshold           | X       | freshnessthresh           | freshness_threshold
+| 23.    | Event handler                 | X       | eventhandler              | event_handler
+| 24.    | Event handler enabled         | X       | eventhandlerenabled       | event_handler_enabled
+| 25.    | Low flap threshold            | X       | lowflapthresh             | low_flap_threshold
+| 26.    | High flap threshold           | X       | highflapthresh            | high_flap_threshold
+| 27.    | Flap detection enabled        | X       | flapdetectionenabled      | flap_detection_enabled
+| 28.    | Flap detection options        | LX      | flapdetectionoptions      | flap_detection_options
+| 29.    | Process perf data             | X       | processperfdata           | process_perf_data
+| 30.    | Retain status information     | X       | retainstatusinfo          | retain_status_information
+| 31.    | Retain nonstatus information  | X       | retainnonstatusinfo       | retain_nonstatus_information
+| 32.    | Notification interval         | X       | notifinterval             | notification_interval
+| 33.    | First notification delay      | X       | firstnotifdelay           | first_notifdelay
+| 34.    | Notification period           | X       | notifperiod               | notification_period
+| 35.    | Notification opts             | LX      | notifopts                 | notification_options
+| 36.    | Notifications enabled         | X       | notifications_enabled     | notifications_enabled
+| 37.    | Stalking options              | LX      | stalkingoptions           | stalking_options
+| 38.    | Notes                         | X       | notes                     | notes
+| 39.    | Notes url                     | X       | notes_url                 | notes_url
+| 40.    | Icon image                    | X       | icon_image                | icon_image
+| 41.    | Icon image alt                | X       | icon_image_alt            | icon_image_alt
+| 42.    | Vrml image                    | X       | vrml_image                | vrml_image
+| 43.    | Statusmap image               | X       | statusmap_image           | statusmap_image
+| 44.    | 2d coords                     | X       | coords2d                  | 2d_coords 
+| 45.    | 3d coords                     | X       | coords3d                  | 3d_coords
+| 46.    | Action url                    | X       | action_url                | action_url
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -669,49 +669,49 @@ Show only the host names beginning with 'tx':
 
 hosttemplates
 ^^^^^^^^^^^^^
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Name | RK | name
-| 2. | Use | R | use
-| 3. | Contacts | L | contacts
-| 4. | Contact groups | L | contactgroups
-| 5. | Normal check interval | U | normchecki
-| 6. | Check interval | R | checkinterval
-| 7. | Retry interval | R | retryinterval
-| 8. | Notification period | R | notifperiod
-| 9. | Notification options| L | notifopts
-| 10. | Disable | U | disable
-| 11. | Check period |  R | checkperiod
-| 12. | Max check attempts |  R | maxcheckattempts
-| 13. | Check command |  | checkcommand
-| 14. | Notification interval |  R | notifinterval
-| 15. | Passive checks enabled | X | passivechecks
-| 16. | Obsess over host | X | obsessoverhost
-| 17. | Check freshness | X | checkfreshness
-| 18. | Freshness threshold | X | freshnessthresh
-| 19. | Event handler | X | eventhandler
-| 20. | Event handler enabled | X | eventhandlerenabled
-| 21. | Low flap threshold | X | lowflapthresh
-| 22. | High flap threshold | X | highflapthresh
-| 23. | Flap detection enabled | X | flapdetectionenabled
-| 24. | Flap detection options | LX | flapdetectionoptions
-| 25. | Process perf data | X | processperfdata
-| 26. | Retain status information | X | retainstatusinfo
-| 27. | Retain nonstatus information | X | retainnonstatusinfo
-| 28. | First notification delay | X | firstnotifdelay
-| 29. | Notifications enabled | X | notifications_enabled
-| 30. | Stalking options | LX | stalkingoptions
-| 31. | Notes | X | notes
-| 32. | Notes url | X | notes_url
-| 33. | Icon image | X | icon_image
-| 34. | Icon image alt | X | icon_image_alt
-| 35. | Vrml image | X | vrml_image
-| 36. | Statusmap image | X | statusmap_image
-| 37. | 2d coords | X | coords2d
-| 38. | 3d coords | X | coords3d
-| 39. | Action url | X | action_url
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Name                          | RK      | name                      | name
+| 2.     | Use                           | R       | use                       | use
+| 3.     | Contacts                      | L       | contacts                  | contacts
+| 4.     | Contact groups                | L       | contactgroups             | contact_groups
+| 5.     | Normal check interval         | U       | normchecki                | normchecki
+| 6.     | Check interval                | R       | checkinterval             | check_interval
+| 7.     | Retry interval                | R       | retryinterval             | retry_interval
+| 8.     | Notification period           | R       | notifperiod               | notification_period
+| 9.     | Notification option           | L       | notifopts                 | notification_options
+| 10.    | Disable                       | U       | disable                   | 
+| 11.    | Check period                  | R       | checkperiod               | check_period
+| 12.    | Max check attempts            | R       | maxcheckattempts          | max_check_attempts
+| 13.    | Check command                 |         | checkcommand              | check_command
+| 14.    | Notification interval         | R       | notifinterval             | notification_interval
+| 15.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
+| 16.    | Obsess over host              | X       | obsessoverhost            | obsess_over_host
+| 17.    | Check freshness               | X       | checkfreshness            | check_freshness
+| 18.    | Freshness threshold           | X       | freshnessthresh           | freshness_threshold
+| 19.    | Event handler                 | X       | eventhandler              | event_handler
+| 20.    | Event handler enabled         | X       | eventhandlerenabled       | event_handler_enabled
+| 21.    | Low flap threshold            | X       | lowflapthresh             | low_flap_threshold
+| 22.    | High flap threshold           | X       | highflapthresh            | high_flap_threshold
+| 23.    | Flap detection enabled        | X       | flapdetectionenabled      | flap_detection_enabled
+| 24.    | Flap detection options        | LX      | flapdetectionoptions      | flap_detection_options
+| 25.    | Process perf data             | X       | processperfdata           | process_perf_data
+| 26.    | Retain status information     | X       | retainstatusinfo          | retain_status_information
+| 27.    | Retain nonstatus information  | X       | retainnonstatusinfo       | retain_nonstatus_information
+| 28.    | First notification delay      | X       | firstnotifdelay           | first_notifdelay
+| 29.    | Notifications enabled         | X       | notifications_enabled     | notifications_enabled
+| 30.    | Stalking options              | LX      | stalkingoptions           | stalking_options
+| 31.    | Notes                         | X       | notes                     | notes
+| 32.    | Notes url                     | X       | notes_url                 | notes_url
+| 33.    | Icon image                    | X       | icon_image                | icon_image
+| 34.    | Icon image alt                | X       | icon_image_alt            | icon_image_alt
+| 35.    | Vrml image                    | X       | vrml_image                | vrml_image
+| 36.    | Statusmap image               | X       | statusmap_image           | statusmap_image
+| 37.    | 2d coords                     | X       | coords2d                  | 2d_coords
+| 38.    | 3d coords                     | X       | coords3d                  | 3d_coords
+| 39.    | Action url                    | X       | action_url                | action_url
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -730,56 +730,56 @@ Set the action_url for the host template:
 services
 ^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Name (host_name) | RK | name
-| 2. | Service template (use) | R | template
-| 3. | Service command (check_command) | R | command
-| 4. | Service description | RK | svcdesc
-| 5. | Service groups | L | svcgroup
-| 6. | Contacts | L | contacts
-| 7. | Contact groups | L | contactgroups
-| 8. | Freshness threshold (auto)* |  | freshnessthresh
-| 9. | Active checks enabled |  | activechecks
-| 10. | Custom variables | C | customvars
-| 11. | Disable |  | disable
-| 12. | Display name | X | displayname
-| 13. | Is volatile | X | isvolatile
-| 14. | Initial state | X | initialstate
-| 15. | Max check attempts | X | maxcheckattempts
-| 16. | Check interval | X | checkinterval
-| 17. | Retry interval | X | retryinterval
-| 18. | Passive checks enabled | X | passivechecks
-| 19. | Check period | X | checkperiod
-| 20. | Obsess over service | X | obsessoverservice
-| 21. | Freshness threshold (manual) | X | manfreshnessthresh
-| 22. | Check Freshness | X | checkfreshness
-| 23. | Event handler | X | eventhandler
-| 24. | Event handler enabled | X | eventhandlerenabled
-| 25. | Low flap threshold | X | lowflapthresh
-| 26. | High flap threshold | X | highflapthresh
-| 27. | Flap detection enabled | X | flapdetectionenabled
-| 28. | Flap detection options | LX | flapdetectionoptions
-| 29. | Process perf data | X | processperfdata
-| 30. | Retain status information | X | retainstatusinfo
-| 31. | Retain nonstatus information | X | retainnonstatusinfo
-| 32. | Notification interval | X | notifinterval
-| 33. | First notification delay | X | firstnotifdelay
-| 34. | Notification period | X | notifperiod
-| 35. | Notification opts | LX | notifopts
-| 36. | Notifications enabled | X | notifications_enabled
-| 37. | Stalking options | LX | stalkingoptions
-| 38. | Notes | X | notes
-| 39. | Notes url | X | notes_url
-| 40. | Action url | X | action_url
-| 41. | Icon image | X | icon_image
-| 42. | Icon image alt | X | icon_image_alt
-| 43. | Vrml image | X | vrml_image
-| 44. | Statusmap image | X | statusmap_image
-| 45. | 2d coords | X | coords2d
-| 46. | 3d coords | X | coords3d
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Name                          | RK      | name                      | host_name
+| 2.     | Service template              | R       | template                  | use
+| 3.     | Service command               | R       | command                   | check_command
+| 4.     | Service description           | RK      | svcdesc                   | service_description
+| 5.     | Service groups                | L       | svcgroup                  | servicegroups
+| 6.     | Contacts                      | L       | contacts                  | contacts
+| 7.     | Contact groups                | L       | contactgroups             | contact_groups
+| 8.     | Freshness threshold (auto)*   |         | freshnessthresh           | N/A
+| 9.     | Active checks enabled         |         | activechecks              | active_checks_enabled
+| 10.    | Custom variables              | C       | customvars                | N/A
+| 11.    | Disable                       |         | disable                   | 
+| 12.    | Display name                  | X       | displayname               | display_name
+| 13.    | Is volatile                   | X       | isvolatile                | is_volatile
+| 14.    | Initial state                 | X       | initialstate              | initial_state
+| 15.    | Max check attempts            | X       | maxcheckattempts          | max_check_attempts
+| 16.    | Check interval                | X       | checkinterval             | check_interval
+| 17.    | Retry interval                | X       | retryinterval             | retry_interval
+| 18.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
+| 19.    | Check period                  | X       | checkperiod               | check_period
+| 20.    | Obsess over service           | X       | obsessoverservice         | obsess_over_service
+| 21.    | Freshness threshold (manual)  | X       | manfreshnessthresh        | freshness_threshold
+| 22.    | Check Freshness               | X       | checkfreshness            | check_freshness
+| 23.    | Event handler                 | X       | eventhandler              | event_handler
+| 24.    | Event handler enabled         | X       | eventhandlerenabled       | event_handler_enabled
+| 25.    | Low flap threshold            | X       | lowflapthresh             | low_flap_threshold
+| 26.    | High flap threshold           | X       | highflapthresh            | high_flap_threshold
+| 27.    | Flap detection enabled        | X       | flapdetectionenabled      | flap_detection_enabled
+| 28.    | Flap detection options        | LX      | flapdetectionoptions      | flap_detection_options
+| 29.    | Process perf data             | X       | processperfdata           | process_perf_data
+| 30.    | Retain status information     | X       | retainstatusinfo          | retain_status_information
+| 31.    | Retain nonstatus information  | X       | retainnonstatusinfo       | retain_nonstatus_information
+| 32.    | Notification interval         | X       | notifinterval             | notification_interval
+| 33.    | First notification delay      | X       | firstnotifdelay           | first_notifdelay
+| 34.    | Notification period           | X       | notifperiod               | notification_period
+| 35.    | Notification opts             | LX      | notifopts                 | notification_options
+| 36.    | Notifications enabled         | X       | notifications_enabled     | notifications_enabled
+| 37.    | Stalking options              | LX      | stalkingoptions           | stalking_options
+| 38.    | Notes                         | X       | notes                     | notes
+| 39.    | Notes url                     | X       | notes_url                 | notes_url
+| 40.    | Action url                    | X       | action_url                | action_url
+| 41.    | Icon image                    | X       | icon_image                | icon_image
+| 42.    | Icon image alt                | X       | icon_image_alt            | icon_image_alt
+| 43.    | Vrml image                    | X       | vrml_image                | vrml_image
+| 44.    | Statusmap image               | X       | statusmap_image           | statusmap_image
+| 45.    | 2d coords                     | X       | coords2d                  | 2d_coords
+| 46.    | 3d coords                     | X       | coords3d                  | 3d_coords
+|===========================================================================================================
 
 pass:[*] Freshness thresh (auto) also sets check_command to no-checks-received,
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
@@ -802,56 +802,56 @@ Show all host names that have a 'Disks' service description (column 4)
 servicesets
 ^^^^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Name (host_name) | RK | name
-| 2. | Service template (use) | R | template
-| 3. | Service command (check_command) | R | command
-| 4. | Service description | RK | svcdesc
-| 5. | Service groups | L | svcgroup
-| 6. | Contacts | L | contacts
-| 7. | Contact groups | L | contactgroups
-| 8. | Freshness threshold (auto)* |  | freshnessthresh
-| 9. | Active checks |  | activechecks
-| 10. | Custom variables | C | customvars
-| 11. | Disable | U | disable
-| 12. | Display name | X | displayname
-| 13. | Is volatile | X | isvolatile
-| 14. | Initial state | X | initialstate
-| 15. | Max check attempts | X | maxcheckattempts
-| 16. | Check interval | X | checkinterval
-| 17. | Retry interval | X | retryinterval
-| 18. | Passive checks enabled | X | passivechecks
-| 19. | Check period | X | checkperiod
-| 20. | Obsess over service | X | obsessoverservice
-| 21. | Freshness threshold (manual) | X | manfreshnessthresh
-| 22. | Check Freshness | X | checkfreshness
-| 23. | Event handler | X | eventhandler
-| 24. | Event handler enabled | X | eventhandlerenabled
-| 25. | Low flap threshold | X | lowflapthresh
-| 26. | High flap threshold | X | highflapthresh
-| 27. | Flap detection enabled | X | flapdetectionenabled
-| 28. | Flap detection options | LX | flapdetectionoptions
-| 29. | Process perf data | X | processperfdata
-| 30. | Retain status information | X | retainstatusinfo
-| 31. | Retain nonstatus information | X | retainnonstatusinfo
-| 32. | Notification interval | X | notifinterval
-| 33. | First notification delay | X | firstnotifdelay
-| 34. | Notification period | X | notifperiod
-| 35. | Notification opts | LX | notifopts
-| 36. | Notifications enabled | X | notifications_enabled
-| 37. | Stalking options | LX | stalkingoptions
-| 38. | Notes | X | notes
-| 39. | Notes url | X | notes_url
-| 40. | Action url | X | action_url
-| 41. | Icon image | X | icon_image
-| 42. | Icon image alt | X | icon_image_alt
-| 43. | Vrml image | X | vrml_image
-| 44. | Statusmap image | X | statusmap_image
-| 45. | 2d coords | X | coords2d
-| 46. | 3d coords | X | coords3d
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Serviceset name               | RK      | name                      | N/A      
+| 2.     | Service template              | R       | template                  | use
+| 3.     | Service command               | R       | command                   | check_command
+| 4.     | Service description           | RK      | svcdesc                   | service_description
+| 5.     | Service groups                | L       | svcgroup                  | servicegroups
+| 6.     | Contacts                      | L       | contacts                  | contacts
+| 7.     | Contact groups                | L       | contactgroups             | contact_groups
+| 8.     | Freshness threshold (auto)*   |         | freshnessthresh           | N/A
+| 9.     | Active checks                 |         | activechecks              | active_checks_enabled
+| 10.    | Custom variables              | C       | customvars                | N/A
+| 11.    | Disable                       | U       | disable                   | 
+| 12.    | Display name                  | X       | displayname               | display_name
+| 13.    | Is volatile                   | X       | isvolatile                | is_volatile
+| 14.    | Initial state                 | X       | initialstate              | initial_state
+| 15.    | Max check attempts            | X       | maxcheckattempts          | max_check_attempts
+| 16.    | Check interval                | X       | checkinterval             | check_interval
+| 17.    | Retry interval                | X       | retryinterval             | retry_interval
+| 18.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
+| 19.    | Check period                  | X       | checkperiod               | check_period
+| 20.    | Obsess over service           | X       | obsessoverservice         | obsess_over_service
+| 21.    | Freshness threshold (manual)  | X       | manfreshnessthresh        | freshness_threshold
+| 22.    | Check Freshness               | X       | checkfreshness            | check_freshness
+| 23.    | Event handler                 | X       | eventhandler              | event_handler
+| 24.    | Event handler enabled         | X       | eventhandlerenabled       | event_handler_enabled
+| 25.    | Low flap threshold            | X       | lowflapthresh             | low_flap_threshold
+| 26.    | High flap threshold           | X       | highflapthresh            | high_flap_threshold
+| 27.    | Flap detection enabled        | X       | flapdetectionenabled      | flap_detection_enabled
+| 28.    | Flap detection options        | LX      | flapdetectionoptions      | flap_detection_options
+| 29.    | Process perf data             | X       | processperfdata           | process_perf_data
+| 30.    | Retain status information     | X       | retainstatusinfo          | retain_status_information
+| 31.    | Retain nonstatus information  | X       | retainnonstatusinfo       | retain_nonstatus_information
+| 32.    | Notification interval         | X       | notifinterval             | notification_interval
+| 33.    | First notification delay      | X       | firstnotifdelay           | first_notifdelay
+| 34.    | Notification period           | X       | notifperiod               | notification_period
+| 35.    | Notification opts             | LX      | notifopts                 | notification_options
+| 36.    | Notifications enabled         | X       | notifications_enabled     | notifications_enabled
+| 37.    | Stalking options              | LX      | stalkingoptions           | stalking_options
+| 38.    | Notes                         | X       | notes                     | notes
+| 39.    | Notes url                     | X       | notes_url                 | notes_url
+| 40.    | Action url                    | X       | action_url                | action_url
+| 41.    | Icon image                    | X       | icon_image                | icon_image
+| 42.    | Icon image alt                | X       | icon_image_alt            | icon_image_alt
+| 43.    | Vrml image                    | X       | vrml_image                | vrml_image
+| 44.    | Statusmap image               | X       | statusmap_image           | statusmap_image
+| 45.    | 2d coords                     | X       | coords2d                  | 2d_coords
+| 46.    | 3d coords                     | X       | coords3d                  | 3d_coords
+|===========================================================================================================
 
 pass:[*] Freshness thresh (auto) also sets check_command to no-checks-received,
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
@@ -869,53 +869,53 @@ Show all 'servicesets' entries and attributes:
 servicetemplates
 ^^^^^^^^^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Name | RK | name
-| 2. | Use | | use
-| 3. | Contacts | L | contacts
-| 4. | Contact groups | L | contactgroups
-| 5. | Notification options | L | notifopts
-| 6. | Check interval | R | checkinterval
-| 7. | Normal check interval | U | normchecki
-| 8. | Retry interval | R | retryinterval
-| 9. | Notification interval | R | notifinterval
-| 10. | Notification period | R | notifperiod
-| 11. | Disable | U | disable
-| 12. | Check period | R | checkperiod
-| 13. | Max check attempts | R | maxcheckattempts
-| 14. | Freshness threshold (auto)* |  | freshnessthresh
-| 15. | Active checks |  | activechecks
-| 16. | Custom variables | C | customvars
-| 17. | Is volatile | X | isvolatile
-| 18. | Initial state | X | initialstate
-| 19. | Passive checks enabled | X | passivechecks
-| 20. | Obsess over service | X | obsessoverservice
-| 21. | Freshness threshold (manual) | X | manfreshnessthresh
-| 22. | Check Freshness | X | checkfreshness
-| 23. | Event handler | X | eventhandler
-| 24. | Event handler enabled | X | eventhandlerenabled
-| 25. | Low flap threshold | X | lowflapthresh
-| 26. | High flap threshold | X | highflapthresh
-| 27. | Flap detection enabled | X | flapdetectionenabled
-| 28. | Flap detection options | LX | flapdetectionoptions
-| 29. | Process perf data | X | processperfdata
-| 30. | Retain status information | X | retainstatusinfo
-| 31. | Retain nonstatus information | X | retainnonstatusinfo
-| 32. | First notification delay | X | firstnotifdelay
-| 33. | Notifications enabled | X | notifications_enabled
-| 34. | Stalking options | LX | stalkingoptions
-| 35. | Notes | X | notes
-| 36. | Notes url | X | notes_url
-| 37. | Action url | X | action_url
-| 38. | Icon image | X | icon_image
-| 39. | Icon image alt | X | icon_image_alt
-| 40. | Vrml image | X | vrml_image
-| 41. | Statusmap image | X | statusmap_image
-| 42. | 2d coords | X | coords2d
-| 43. | 3d coords | X | coords3d
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Name                          | RK      | name                      | name
+| 2.     | Use                           |         | use                       | use
+| 3.     | Contacts                      | L       | contacts                  | contacts
+| 4.     | Contact groups                | L       | contactgroups             | contact_groups
+| 5.     | Notification options          | L       | notifopts                 | notification_options
+| 6.     | Check interval                | R       | checkinterval             | check_interval
+| 7.     | Normal check interval         | U       | normchecki                | normchecki
+| 8.     | Retry interval                | R       | retryinterval             | retry_interval
+| 9.     | Notification interval         | R       | notifinterval             | notification_interval
+| 10.    | Notification period           | R       | notifperiod               | notification_period
+| 11.    | Disable                       | U       | disable                   | 
+| 12.    | Check period                  | R       | checkperiod               | check_period
+| 13.    | Max check attempts            | R       | maxcheckattempts          | max_check_attempts
+| 14.    | Freshness threshold (auto)*   |         | freshnessthresh           | N/A
+| 15.    | Active checks                 |         | activechecks              | active_checks_enabled
+| 16.    | Custom variables              | C       | customvars                | 
+| 17.    | Is volatile                   | X       | isvolatile                | is_volatile
+| 18.    | Initial state                 | X       | initialstate              | initial_state
+| 19.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
+| 20.    | Obsess over service           | X       | obsessoverservice         | obsess_over_service
+| 21.    | Freshness threshold (manual)  | X       | manfreshnessthresh        | freshness_threshold
+| 22.    | Check Freshness               | X       | checkfreshness            | check_freshness
+| 23.    | Event handler                 | X       | eventhandler              | event_handler
+| 24.    | Event handler enabled         | X       | eventhandlerenabled       | event_handler_enabled
+| 25.    | Low flap threshold            | X       | lowflapthresh             | low_flap_threshold
+| 26.    | High flap threshold           | X       | highflapthresh            | high_flap_threshold
+| 27.    | Flap detection enabled        | X       | flapdetectionenabled      | flap_detection_enabled
+| 28.    | Flap detection options        | LX      | flapdetectionoptions      | flap_detection_options
+| 29.    | Process perf data             | X       | processperfdata           | process_perf_data
+| 30.    | Retain status information     | X       | retainstatusinfo          | retain_status_information
+| 31.    | Retain nonstatus information  | X       | retainnonstatusinfo       | retain_nonstatus_information
+| 32.    | First notification delay      | X       | firstnotifdelay           | first_notifdelay
+| 33.    | Notifications enabled         | X       | notifications_enabled     | notifications_enabled
+| 34.    | Stalking options              | LX      | stalkingoptions           | stalking_options
+| 35.    | Notes                         | X       | notes                     | notes
+| 36.    | Notes url                     | X       | notes_url                 | notes_url
+| 37.    | Action url                    | X       | action_url                | action_url
+| 38.    | Icon image                    | X       | icon_image                | icon_image
+| 39.    | Icon image alt                | X       | icon_image_alt            | icon_image_alt
+| 40.    | Vrml image                    | X       | vrml_image                | vrml_image
+| 41.    | Statusmap image               | X       | statusmap_image           | statusmap_image
+| 42.    | 2d coords                     | X       | coords2d                  | 2d_coords
+| 43.    | 3d coords                     | X       | coords3d                  | 3d_coords
+|===========================================================================================================
 
 pass:[*] Freshness thresh (auto) also sets check_command to no-checks-received,
 active_checks_enabled to 0 (depending on whether the host is a dcc or not),
@@ -933,13 +933,13 @@ Show all 'servicetemplates' entries and attributes:
 commands
 ^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Command name | RK | name
-| 2. | Command line | R | command
-| 3. | Disable | U | disable
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Command name                  | RK      | name                      | command_name
+| 2.     | Command line                  | R       | command                   | command_line
+| 3.     | Disable                       | U       | disable                   | N/A
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -952,18 +952,18 @@ Show all 'commands' entries and attributes:
 hostgroups
 ^^^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Hostgroup name | RK | name
-| 2. | Alias | R | alias
-| 3. | Disable |   | disable
-| 4. | Members | LX | members
-| 5. | Hostgroup members | LX | hostgroupmembers
-| 6. | Notes | X | notes
-| 7. | Notes url | X | notes_url
-| 8. | Action url | X | action_url
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Hostgroup name                | RK      | name                      | hostgroup_name
+| 2.     | Alias                         | R       | alias                     | alias
+| 3.     | Disable                       |         | disable                   | N/A
+| 4.     | Members                       | LX      | members                   | members
+| 5.     | Hostgroup members             | LX      | hostgroupmembers          | hostgroup_members
+| 6.     | Notes                         | X       | notes                     | notes
+| 7.     | Notes url                     | X       | notes_url                 | notes_url
+| 8.     | Action url                    | X       | action_url                | action_url
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -976,18 +976,18 @@ Show all 'hostgroups' entries and attributes:
 servicegroups
 ^^^^^^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Hostgroup name | RK | name
-| 2. | Alias | R | alias
-| 3. | Disable | U | disable
-| 4. | Members | LX | members
-| 5. | Servicegroup members | LX | servicegroupmembers
-| 6. | Notes | X | notes
-| 7. | Notes url | X | notes_url
-| 8. | Action url | X | action_url
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Servicegroup name             | RK      | name                      | servicegroup_name
+| 2.     | Alias                         | R       | alias                     | alias
+| 3.     | Disable                       | U       | disable                   | N/A
+| 4.     | Members                       | LX      | members                   | members
+| 5.     | Servicegroup members          | LX      | servicegroupmembers       | servicegroup_members
+| 6.     | Notes                         | X       | notes                     | notes
+| 7.     | Notes url                     | X       | notes_url                 | notes_url
+| 8.     | Action url                    | X       | action_url                | action_url
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -1000,16 +1000,16 @@ Show all 'servicegroups' entries and attributes:
 timeperiods
 ^^^^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Timeperiod name | RK | name
-| 2. | Alias| R | alias
-| 3. | Freestyle time definition | C | definition
-| 4. | Timeperiod to exclude | L | exclude
-| 5. | Disable | U | disable
-| 6. | Freestyle time exception | CX | exception
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Timeperiod name               | RK      | name                      | timeperiod_name
+| 2.     | Alias                         | R       | alias                     | alias
+| 3.     | Freestyle time definition     | C       | definition                | 
+| 4.     | Timeperiod to exclude         | L       | exclude                   | exclude
+| 5.     | Disable                       | U       | disable                   | N/A
+| 6.     | Freestyle time exception      | CX      | exception                 | 
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -1022,21 +1022,21 @@ Show all 'timeperiods' entries and attributes:
 servicedeps
 ^^^^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Dependent host name | RKX | dephostname
-| 2. | Dependent hostgroup name | KX | dephostgroupname
-| 3. | Dependent service description | RKX | depsvcdesc
-| 4. | Host name | RKX | hostname
-| 5. | Hostgroup name | KX | hostgroupname
-| 6. | Service description | RKX | svcdesc
-| 7. | Inherits parent | X | inheritsparent
-| 8. | Execution failure criteria | LX | execfailcriteria
-| 9. | Notification failure criteria | LX | notiffailcriteria
-| 10. | Dependency period | X | period
-| 11. | Disable | X | disable
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Dependent host name           | RKX     | dephostname               | dependent_host_name
+| 2.     | Dependent hostgroup name      | KX      | dephostgroupname          | dependent_hostgroup_name
+| 3.     | Dependent service description | RKX     | depsvcdesc                | dependent_service_description
+| 4.     | Host name                     | RKX     | hostname                  | host_name
+| 5.     | Hostgroup name                | KX      | hostgroupname             | hostgroup_name
+| 6.     | Service description           | RKX     | svcdesc                   | service_description
+| 7.     | Inherits parent               | X       | inheritsparent            | inherits_parent
+| 8.     | Execution failure criteria    | LX      | execfailcriteria          | execution_failure_criteria
+| 9.     | Notification failure criteria | LX      | notiffailcriteria         | notification_failure_criteria
+| 10.    | Dependency period             | X       | period                    | dependency_period
+| 11.    | Disable                       | X       | disable                   | N/A
+|===========================================================================================================
 
 NOTE: Columns 1,2,4 and 5 are not lists in REST as they are in a
 Nagios configuration file.
@@ -1052,19 +1052,19 @@ Show all 'servicedeps' entries and attributes:
 hostdeps
 ^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Dependent host name | RKX | dephostname
-| 2. | Dependent hostgroup name | KX | dephostgroupname
-| 3. | Host name | RKX | hostname
-| 4. | Hostgroup name | KX | hostgroupname
-| 5. | Inherits parent | RX | inheritsparent
-| 6. | Execution failure criteria | LRX | execfailcriteria
-| 7. | Notification failure criteria | LRX | notiffailcriteria
-| 8. | Dependency period | RX | period
-| 9. | Disable | UX | disable
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Dependent host name           | RKX     | dephostname               | dependent_host_name
+| 2.     | Dependent hostgroup name      | KX      | dephostgroupname          | dependent_hostgroup_name
+| 3.     | Host name                     | RKX     | hostname                  | host_name
+| 4.     | Hostgroup name                | KX      | hostgroupname             | hostgroup_name
+| 5.     | Inherits parent               | RX      | inheritsparent            | inherits_parent
+| 6.     | Execution failure criteria    | LRX     | execfailcriteria          | execution_failure_criteria
+| 7.     | Notification failure criteria | LRX     | notiffailcriteria         | notification_failure_criteria
+| 8.     | Dependency period             | RX      | period                    | dependency_period
+| 9.     | Disable                       | UX      | disable                   | N/A
+|===========================================================================================================
 
 NOTE: Columns 1 and 2 are not lists in REST as they are in a
 Nagios configuration file.
@@ -1080,21 +1080,21 @@ Show all 'hostdeps' entries and attributes:
 serviceescalation
 ^^^^^^^^^^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Host name | KRX | hostname
-| 2. | Hostgroup name | X | hostgroupname
-| 3. | Service description | KRX | svcdesc
-| 4. | Contacts | LRX | contacts
-| 5. | Contact groups | LR | contactgroups
-| 6. | First notification | RX | firstnotif
-| 7. | Last notification | RX | lastnotif
-| 8. | Notification interval | RX | notifinterval
-| 9. | Escalation period | X | period
-| 10. | Escalation options | LX | escopts
-| 11. | Disable | X | disable
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Host name                     | KRX     | hostname                  | host_name
+| 2.     | Hostgroup name                | X       | hostgroupname             | hostgroup_name
+| 3.     | Service description           | KRX     | svcdesc                   | service_description
+| 4.     | Contacts                      | LRX     | contacts                  | contacts
+| 5.     | Contact groups                | LR      | contactgroups             | contact_groups
+| 6.     | First notification            | RX      | firstnotif                | first_notification
+| 7.     | Last notification             | RX      | lastnotif                 | last_notification
+| 8.     | Notification interval         | RX      | notifinterval             | notification_interval
+| 9.     | Escalation period             | X       | period                    | escalation_period
+| 10.    | Escalation options            | LX      | escopts                   | escalation_options
+| 11.    | Disable                       | X       | disable                   | N/A
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -1107,20 +1107,20 @@ Show all 'serviceescalation' entries and attributes:
 hostescalation
 ^^^^^^^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Host name | KRX | hostname
-| 2. | Hostgroup name | X | hostgroupname
-| 3. | Contacts | LRX | contacts
-| 4. | Contact groups | LR | contactgroups
-| 5. | First notification | RX | firstnotif
-| 6. | Last notification | RX | lastnotif
-| 7. | Notification interval | RX | notifinterval
-| 8. | Escalation period | X | period
-| 9. | Escalation options | LX | escopts
-| 10. | Disable | X | disable
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Host name                     | KRX     | hostname                  | host_name
+| 2.     | Hostgroup name                | X       | hostgroupname             | hostgroup_name
+| 3.     | Contacts                      | LRX     | contacts                  | contacts
+| 4.     | Contact groups                | LR      | contactgroups             | contact_groups
+| 5.     | First notification            | RX      | firstnotif                | first_notification
+| 6.     | Last notification             | RX      | lastnotif                 | last_notification
+| 7.     | Notification interval         | RX      | notifinterval             | notification_interval
+| 8.     | Escalation period             | X       | period                    | escalation_period
+| 9.     | Escalation options            | LX      | escopts                   | escalation_options
+| 10.    | Disable                       | X       | disable                   | N/A
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -1133,18 +1133,18 @@ Show all 'hostescalation' entries and attributes:
 serviceextinfo
 ^^^^^^^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Host name | RX | hostname
-| 2. | Service description | X | svcdesc
-| 3. | Notes | X | notes
-| 4. | Notes url | X | notes_url
-| 5. | Action url | X | action_url
-| 6. | Icon image | X | icon_image
-| 7. | Icon image alt | X | icon_image_alt
-| 8. | Disable | X | disable
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Host name                     | RX      | hostname                  | host_name
+| 2.     | Service description           | X       | svcdesc                   | service_description
+| 3.     | Notes                         | X       | notes                     | notes
+| 4.     | Notes url                     | X       | notes_url                 | notes_url
+| 5.     | Action url                    | X       | action_url                | action_url
+| 6.     | Icon image                    | X       | icon_image                | icon_image
+| 7.     | Icon image alt                | X       | icon_image_alt            | icon_image_alt
+| 8.     | Disable                       | X       | disable                   | N/A
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -1157,21 +1157,21 @@ Show all 'serviceextinfo' entries and attributes:
 hostextinfo
 ^^^^^^^^^^^
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| 1. | Host name | RX | hostname
-| 2. | Notes | X | notes
-| 3. | Notes url | X | notes_url
-| 4. | Action url | X | action_url
-| 5. | Icon image | X | icon_image
-| 6. | Icon image alt | X | icon_image_alt
-| 7. | Vrml image | X | vrml_image
-| 8. | Statusmap image | X | statusmap_image
-| 9. | 2d coords | X | coords2d
-| 10. | 3d coords | X | coords3d
-| 11. | Disable | X | disable
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| 1.     | Host name                     | RX      | hostname                  | host_name
+| 2.     | Notes                         | X       | notes                     | notes
+| 3.     | Notes url                     | X       | notes_url                 | notes_url
+| 4.     | Action url                    | X       | action_url                | action_url
+| 5.     | Icon image                    | X       | icon_image                | icon_image
+| 6.     | Icon image alt                | X       | icon_image_alt            | icon_image_alt
+| 7.     | Vrml image                    | X       | vrml_image                | vrml_image
+| 8.     | Statusmap image               | X       | statusmap_image           | statusmap_image
+| 9.     | 2d coords                     | X       | coords2d                  | 2d_coords
+| 10.    | 3d coords                     | X       | coords3d                  | 3d_coords
+| 11.    | Disable                       | X       | disable                   | N/A
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -1218,11 +1218,11 @@ checks for the host. The following nagios pipe commands are sent:
  ENABLE_PASSIVE_SVC_CHECKS
  ENABLE_SVC_CHECK
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| N/a. | Host name | RX | name
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| N/a.   | Host name                     | RX      | name                      | N/A
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -1241,12 +1241,12 @@ commands are sent:
  ... 10 second sleep ...
  DISABLE_PASSIVE_SVC_CHECKS
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| N/a. | Host name | RX | name
-| N/a. | Comment for the Nagios GUI | X | comment
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| N/a.   | Host name                     | RX      | name                      | N/A
+| N/a.   | Comment for the Nagios GUI    | X       | comment                   | N/A
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -1262,13 +1262,13 @@ following nagios pipe commands are sent:
  ENABLE_SVC_CHECK
  PROCESS_SERVICE_CHECK_RESULT
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| N/a. | Host name | RX | name
-| N/a. | Service description | RX | svcdesc
-| N/a. | Comment for the Nagios GUI | X | comment
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| N/a.   | Host name                     | RX      | name                      | N/A
+| N/a.   | Service description           | RX      | svcdesc                   | N/A
+| N/a.   | Comment for the Nagios GUI    | X       | comment                   | N/A
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -1284,13 +1284,13 @@ nagios pipe commands are sent:
  PROCESS_SERVICE_CHECK_RESULT
  DISABLE_PASSIVE_SVC_CHECKS
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| N/a. | Host name | RX | name
-| N/a. | Service description | RX | svcdesc
-| N/a. | Comment for the Nagios GUI | X | comment
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| N/a.   | Host name                     | RX      | name                      | N/A
+| N/a.   | Service description           | RX      | svcdesc                   | N/A
+| N/a.   | Comment for the Nagios GUI    | X       | comment                   | N/A
+|===========================================================================================================
 
 Examples
 ++++++++
@@ -1303,17 +1303,17 @@ commands are sent:
 
  SCHEDULE_HOST_DOWNTIME
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| N/a. | Host name | RX | name
-| N/a. | Start time [unix time] | RX | starttime
-| N/a. | End time [unix time] | RX | endtime
-| N/a. | Flexible downtime [_0_\|1] | X | flexible
-| N/a. | Duration (for flexible downtime in minutes) | X | duration
-| N/a. | Comment for the Nagios GUI* | X | comment
-| N/a. | Author | X | author
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| N/a.   | Host name                     | RX      | name                      | N/A
+| N/a.   | Start time [unix time]        | RX      | starttime                 | N/A
+| N/a.   | End time [unix time]          | RX      | endtime                   | N/A
+| N/a.   | Flexible downtime [_0_\|1]    | X       | flexible                  | N/A
+| N/a.   | Duration (flexible downtime in minutes) | X       | duration                  | N/A
+| N/a.   | Comment for the Nagios GUI*   | X       | comment                   | N/A
+| N/a.   | Author                        | X       | author                    | N/A
+|===========================================================================================================
 
 pass:[*] If comment is not supplied then the default comment,
 ``Scheduled via the REST interface.'', is used.
@@ -1338,11 +1338,11 @@ are sent:
 
  DEL_HOST_DOWNTIME
 
-[cols="^e,<,^,<",frame="topbot",options="header,autowidth"]
-|========================================================
-| Column | Description | Flags | REST variable name
-| N/a. | Host name | RX | name
-|========================================================
+[cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
+|===========================================================================================================
+| Column | Description                   | Flags   | REST variable name        | Nagios argument name
+| N/a.   | Host name                     | RX      | name                      | N/A
+|===========================================================================================================
 
 Examples
 ++++++++

@@ -1641,12 +1641,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -1655,17 +1657,20 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Contact name</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">contact_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
-<td align="left" valign="top"><p class="table">Use</p></td>
+<td align="left" valign="top"><p class="table">Us</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
 <td align="left" valign="top"><p class="table">Alias pretty name</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">alias</p></td>
 <td align="left" valign="top"><p class="table">alias</p></td>
 </tr>
 <tr>
@@ -1673,71 +1678,83 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Email address</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">emailaddr</p></td>
+<td align="left" valign="top"><p class="table">email</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Service notification period</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">svcnotifperiod</p></td>
+<td align="left" valign="top"><p class="table">service_notification_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Service notification options</p></td>
 <td align="center" valign="top"><p class="table">LR</p></td>
 <td align="left" valign="top"><p class="table">svcnotifopts</p></td>
+<td align="left" valign="top"><p class="table">service_notification_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Service notification commands</p></td>
 <td align="center" valign="top"><p class="table">LR</p></td>
 <td align="left" valign="top"><p class="table">svcnotifcmds</p></td>
+<td align="left" valign="top"><p class="table">service_notification_commands</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Host notification period</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">hstnotifperiod</p></td>
+<td align="left" valign="top"><p class="table">host_notification_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
 <td align="left" valign="top"><p class="table">Host notification options</p></td>
 <td align="center" valign="top"><p class="table">LR</p></td>
 <td align="left" valign="top"><p class="table">hstnotifopts</p></td>
+<td align="left" valign="top"><p class="table">host_notification_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Host notification commands</p></td>
 <td align="center" valign="top"><p class="table">LR</p></td>
 <td align="left" valign="top"><p class="table">hstnotifcmds</p></td>
+<td align="left" valign="top"><p class="table">host_notification_commands</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>11.</em></p></td>
 <td align="left" valign="top"><p class="table">Can submit commands</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">cansubmitcmds</p></td>
+<td align="left" valign="top"><p class="table">can_submit_commands</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>12.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">U</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>13.</em></p></td>
 <td align="left" valign="top"><p class="table">Service notification enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">svcnotifenabled</p></td>
+<td align="left" valign="top"><p class="table">service_notifications_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>14.</em></p></td>
 <td align="left" valign="top"><p class="table">Host notification enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">hstnotifenabled</p></td>
+<td align="left" valign="top"><p class="table">host_notifications_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>15.</em></p></td>
 <td align="left" valign="top"><p class="table">Pager</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">pager</p></td>
 <td align="left" valign="top"><p class="table">pager</p></td>
 </tr>
 <tr>
@@ -1745,11 +1762,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Address1</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">address1</p></td>
+<td align="left" valign="top"><p class="table">address1</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>17.</em></p></td>
 <td align="left" valign="top"><p class="table">Address2</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">address2</p></td>
 <td align="left" valign="top"><p class="table">address2</p></td>
 </tr>
 <tr>
@@ -1757,11 +1776,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Address3</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">address3</p></td>
+<td align="left" valign="top"><p class="table">address3</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>19.</em></p></td>
 <td align="left" valign="top"><p class="table">Address4</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">address4</p></td>
 <td align="left" valign="top"><p class="table">address4</p></td>
 </tr>
 <tr>
@@ -1769,11 +1790,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Address5</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">address5</p></td>
+<td align="left" valign="top"><p class="table">address5</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>21.</em></p></td>
 <td align="left" valign="top"><p class="table">Address6</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">address6</p></td>
 <td align="left" valign="top"><p class="table">address6</p></td>
 </tr>
 <tr>
@@ -1781,17 +1804,20 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Retain status info</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retainstatusinfo</p></td>
+<td align="left" valign="top"><p class="table">retain_status_information</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>23.</em></p></td>
 <td align="left" valign="top"><p class="table">Retain non-status info</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retainnonstatusinfo</p></td>
+<td align="left" valign="top"><p class="table">retain_nonstatus_information</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>24.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
 <td align="center" valign="top"><p class="table">XL</p></td>
+<td align="left" valign="top"><p class="table">contactgroups</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
 </tr>
 </tbody>
@@ -1813,12 +1839,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -1827,11 +1855,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Contact group name</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">contactgroup_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Alias pretty name</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">alias</p></td>
 <td align="left" valign="top"><p class="table">alias</p></td>
 </tr>
 <tr>
@@ -1839,12 +1869,14 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Members list</p></td>
 <td align="center" valign="top"><p class="table">RL</p></td>
 <td align="left" valign="top"><p class="table">members</p></td>
+<td align="left" valign="top"><p class="table">members</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">U</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 </tbody>
 </table>
@@ -1865,12 +1897,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -1879,71 +1913,83 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">host_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Alias</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">alias</p></td>
+<td align="left" valign="top"><p class="table">alias</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
-<td align="left" valign="top"><p class="table">IP Address (address)</p></td>
+<td align="left" valign="top"><p class="table">IP Address</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">ipaddress</p></td>
+<td align="left" valign="top"><p class="table">address</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
-<td align="left" valign="top"><p class="table">Template (use)</p></td>
+<td align="left" valign="top"><p class="table">Template</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">template</p></td>
+<td align="left" valign="top"><p class="table">use</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Shown Hostgroup</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">hostgroup</p></td>
+<td align="left" valign="top"><p class="table">hostgroups</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">contact</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact Group</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
+<td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Active checks</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">activechecks</p></td>
+<td align="left" valign="top"><p class="table">active_checks_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
 <td align="left" valign="top"><p class="table">Service Set</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">servicesets</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>11.</em></p></td>
 <td align="left" valign="top"><p class="table">Display name</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">displayname</p></td>
+<td align="left" valign="top"><p class="table">display_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>12.</em></p></td>
 <td align="left" valign="top"><p class="table">Parents</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
+<td align="left" valign="top"><p class="table">parents</p></td>
 <td align="left" valign="top"><p class="table">parents</p></td>
 </tr>
 <tr>
@@ -1951,143 +1997,167 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Check command</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">command</p></td>
+<td align="left" valign="top"><p class="table">check_command</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>14.</em></p></td>
 <td align="left" valign="top"><p class="table">Initial state</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">initialstate</p></td>
+<td align="left" valign="top"><p class="table">initial_state</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>15.</em></p></td>
 <td align="left" valign="top"><p class="table">Max check attempts</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">maxcheckattempts</p></td>
+<td align="left" valign="top"><p class="table">max_check_attempts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>16.</em></p></td>
 <td align="left" valign="top"><p class="table">Check interval</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">checkinterval</p></td>
+<td align="left" valign="top"><p class="table">check_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>17.</em></p></td>
 <td align="left" valign="top"><p class="table">Retry interval</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retryinterval</p></td>
+<td align="left" valign="top"><p class="table">retry_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>18.</em></p></td>
 <td align="left" valign="top"><p class="table">Passive checks enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">passivechecks</p></td>
+<td align="left" valign="top"><p class="table">passive_checks_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>19.</em></p></td>
 <td align="left" valign="top"><p class="table">Check period</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">checkperiod</p></td>
+<td align="left" valign="top"><p class="table">check_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>20.</em></p></td>
 <td align="left" valign="top"><p class="table">Obsess over host</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">obsessoverhost</p></td>
+<td align="left" valign="top"><p class="table">obsess_over_host</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>21.</em></p></td>
 <td align="left" valign="top"><p class="table">Check freshness</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">checkfreshness</p></td>
+<td align="left" valign="top"><p class="table">check_freshness</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>22.</em></p></td>
 <td align="left" valign="top"><p class="table">Freshness threshold</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">freshnessthresh</p></td>
+<td align="left" valign="top"><p class="table">freshness_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>23.</em></p></td>
 <td align="left" valign="top"><p class="table">Event handler</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">eventhandler</p></td>
+<td align="left" valign="top"><p class="table">event_handler</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>24.</em></p></td>
 <td align="left" valign="top"><p class="table">Event handler enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">eventhandlerenabled</p></td>
+<td align="left" valign="top"><p class="table">event_handler_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>25.</em></p></td>
 <td align="left" valign="top"><p class="table">Low flap threshold</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">lowflapthresh</p></td>
+<td align="left" valign="top"><p class="table">low_flap_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>26.</em></p></td>
 <td align="left" valign="top"><p class="table">High flap threshold</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">highflapthresh</p></td>
+<td align="left" valign="top"><p class="table">high_flap_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>27.</em></p></td>
 <td align="left" valign="top"><p class="table">Flap detection enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">flapdetectionenabled</p></td>
+<td align="left" valign="top"><p class="table">flap_detection_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>28.</em></p></td>
 <td align="left" valign="top"><p class="table">Flap detection options</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">flapdetectionoptions</p></td>
+<td align="left" valign="top"><p class="table">flap_detection_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>29.</em></p></td>
 <td align="left" valign="top"><p class="table">Process perf data</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">processperfdata</p></td>
+<td align="left" valign="top"><p class="table">process_perf_data</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>30.</em></p></td>
 <td align="left" valign="top"><p class="table">Retain status information</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retainstatusinfo</p></td>
+<td align="left" valign="top"><p class="table">retain_status_information</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>31.</em></p></td>
 <td align="left" valign="top"><p class="table">Retain nonstatus information</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retainnonstatusinfo</p></td>
+<td align="left" valign="top"><p class="table">retain_nonstatus_information</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>32.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification interval</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notifinterval</p></td>
+<td align="left" valign="top"><p class="table">notification_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>33.</em></p></td>
 <td align="left" valign="top"><p class="table">First notification delay</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">firstnotifdelay</p></td>
+<td align="left" valign="top"><p class="table">first_notifdelay</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>34.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification period</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notifperiod</p></td>
+<td align="left" valign="top"><p class="table">notification_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>35.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification opts</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">notifopts</p></td>
+<td align="left" valign="top"><p class="table">notification_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>36.</em></p></td>
 <td align="left" valign="top"><p class="table">Notifications enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notifications_enabled</p></td>
 <td align="left" valign="top"><p class="table">notifications_enabled</p></td>
 </tr>
 <tr>
@@ -2095,11 +2165,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Stalking options</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">stalkingoptions</p></td>
+<td align="left" valign="top"><p class="table">stalking_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>38.</em></p></td>
 <td align="left" valign="top"><p class="table">Notes</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes</p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 </tr>
 <tr>
@@ -2107,11 +2179,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Notes url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notes_url</p></td>
+<td align="left" valign="top"><p class="table">notes_url</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>40.</em></p></td>
 <td align="left" valign="top"><p class="table">Icon image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">icon_image</p></td>
 <td align="left" valign="top"><p class="table">icon_image</p></td>
 </tr>
 <tr>
@@ -2119,11 +2193,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Icon image alt</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">icon_image_alt</p></td>
+<td align="left" valign="top"><p class="table">icon_image_alt</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>42.</em></p></td>
 <td align="left" valign="top"><p class="table">Vrml image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">vrml_image</p></td>
 <td align="left" valign="top"><p class="table">vrml_image</p></td>
 </tr>
 <tr>
@@ -2131,23 +2207,27 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Statusmap image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">statusmap_image</p></td>
+<td align="left" valign="top"><p class="table">statusmap_image</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>44.</em></p></td>
 <td align="left" valign="top"><p class="table">2d coords</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">coords2d</p></td>
+<td align="left" valign="top"><p class="table">2d_coords</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>45.</em></p></td>
 <td align="left" valign="top"><p class="table">3d coords</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">coords3d</p></td>
+<td align="left" valign="top"><p class="table">3d_coords</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>46.</em></p></td>
 <td align="left" valign="top"><p class="table">Action url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">action_url</p></td>
 <td align="left" valign="top"><p class="table">action_url</p></td>
 </tr>
 </tbody>
@@ -2175,12 +2255,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -2189,11 +2271,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Name</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Use</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">use</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
 </tr>
 <tr>
@@ -2201,17 +2285,20 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Contacts</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
+<td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Normal check interval</p></td>
 <td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">normchecki</p></td>
 <td align="left" valign="top"><p class="table">normchecki</p></td>
 </tr>
 <tr>
@@ -2219,143 +2306,167 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Check interval</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">checkinterval</p></td>
+<td align="left" valign="top"><p class="table">check_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Retry interval</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">retryinterval</p></td>
+<td align="left" valign="top"><p class="table">retry_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification period</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">notifperiod</p></td>
+<td align="left" valign="top"><p class="table">notification_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
-<td align="left" valign="top"><p class="table">Notification options</p></td>
+<td align="left" valign="top"><p class="table">Notification option</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">notifopts</p></td>
+<td align="left" valign="top"><p class="table">notification_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">U</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>11.</em></p></td>
 <td align="left" valign="top"><p class="table">Check period</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">checkperiod</p></td>
+<td align="left" valign="top"><p class="table">check_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>12.</em></p></td>
 <td align="left" valign="top"><p class="table">Max check attempts</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">maxcheckattempts</p></td>
+<td align="left" valign="top"><p class="table">max_check_attempts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>13.</em></p></td>
 <td align="left" valign="top"><p class="table">Check command</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">checkcommand</p></td>
+<td align="left" valign="top"><p class="table">check_command</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>14.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification interval</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">notifinterval</p></td>
+<td align="left" valign="top"><p class="table">notification_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>15.</em></p></td>
 <td align="left" valign="top"><p class="table">Passive checks enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">passivechecks</p></td>
+<td align="left" valign="top"><p class="table">passive_checks_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>16.</em></p></td>
 <td align="left" valign="top"><p class="table">Obsess over host</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">obsessoverhost</p></td>
+<td align="left" valign="top"><p class="table">obsess_over_host</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>17.</em></p></td>
 <td align="left" valign="top"><p class="table">Check freshness</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">checkfreshness</p></td>
+<td align="left" valign="top"><p class="table">check_freshness</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>18.</em></p></td>
 <td align="left" valign="top"><p class="table">Freshness threshold</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">freshnessthresh</p></td>
+<td align="left" valign="top"><p class="table">freshness_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>19.</em></p></td>
 <td align="left" valign="top"><p class="table">Event handler</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">eventhandler</p></td>
+<td align="left" valign="top"><p class="table">event_handler</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>20.</em></p></td>
 <td align="left" valign="top"><p class="table">Event handler enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">eventhandlerenabled</p></td>
+<td align="left" valign="top"><p class="table">event_handler_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>21.</em></p></td>
 <td align="left" valign="top"><p class="table">Low flap threshold</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">lowflapthresh</p></td>
+<td align="left" valign="top"><p class="table">low_flap_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>22.</em></p></td>
 <td align="left" valign="top"><p class="table">High flap threshold</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">highflapthresh</p></td>
+<td align="left" valign="top"><p class="table">high_flap_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>23.</em></p></td>
 <td align="left" valign="top"><p class="table">Flap detection enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">flapdetectionenabled</p></td>
+<td align="left" valign="top"><p class="table">flap_detection_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>24.</em></p></td>
 <td align="left" valign="top"><p class="table">Flap detection options</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">flapdetectionoptions</p></td>
+<td align="left" valign="top"><p class="table">flap_detection_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>25.</em></p></td>
 <td align="left" valign="top"><p class="table">Process perf data</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">processperfdata</p></td>
+<td align="left" valign="top"><p class="table">process_perf_data</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>26.</em></p></td>
 <td align="left" valign="top"><p class="table">Retain status information</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retainstatusinfo</p></td>
+<td align="left" valign="top"><p class="table">retain_status_information</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>27.</em></p></td>
 <td align="left" valign="top"><p class="table">Retain nonstatus information</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retainnonstatusinfo</p></td>
+<td align="left" valign="top"><p class="table">retain_nonstatus_information</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>28.</em></p></td>
 <td align="left" valign="top"><p class="table">First notification delay</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">firstnotifdelay</p></td>
+<td align="left" valign="top"><p class="table">first_notifdelay</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>29.</em></p></td>
 <td align="left" valign="top"><p class="table">Notifications enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notifications_enabled</p></td>
 <td align="left" valign="top"><p class="table">notifications_enabled</p></td>
 </tr>
 <tr>
@@ -2363,11 +2474,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Stalking options</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">stalkingoptions</p></td>
+<td align="left" valign="top"><p class="table">stalking_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>31.</em></p></td>
 <td align="left" valign="top"><p class="table">Notes</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes</p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 </tr>
 <tr>
@@ -2375,11 +2488,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Notes url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notes_url</p></td>
+<td align="left" valign="top"><p class="table">notes_url</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>33.</em></p></td>
 <td align="left" valign="top"><p class="table">Icon image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">icon_image</p></td>
 <td align="left" valign="top"><p class="table">icon_image</p></td>
 </tr>
 <tr>
@@ -2387,11 +2502,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Icon image alt</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">icon_image_alt</p></td>
+<td align="left" valign="top"><p class="table">icon_image_alt</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>35.</em></p></td>
 <td align="left" valign="top"><p class="table">Vrml image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">vrml_image</p></td>
 <td align="left" valign="top"><p class="table">vrml_image</p></td>
 </tr>
 <tr>
@@ -2399,23 +2516,27 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Statusmap image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">statusmap_image</p></td>
+<td align="left" valign="top"><p class="table">statusmap_image</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>37.</em></p></td>
 <td align="left" valign="top"><p class="table">2d coords</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">coords2d</p></td>
+<td align="left" valign="top"><p class="table">2d_coords</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>38.</em></p></td>
 <td align="left" valign="top"><p class="table">3d coords</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">coords3d</p></td>
+<td align="left" valign="top"><p class="table">3d_coords</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>39.</em></p></td>
 <td align="left" valign="top"><p class="table">Action url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">action_url</p></td>
 <td align="left" valign="top"><p class="table">action_url</p></td>
 </tr>
 </tbody>
@@ -2444,49 +2565,57 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td align="center" valign="top"><p class="table"><em>1.</em></p></td>
-<td align="left" valign="top"><p class="table">Name (host_name)</p></td>
+<td align="left" valign="top"><p class="table">Name</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">host_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
-<td align="left" valign="top"><p class="table">Service template (use)</p></td>
+<td align="left" valign="top"><p class="table">Service template</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">template</p></td>
+<td align="left" valign="top"><p class="table">use</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
-<td align="left" valign="top"><p class="table">Service command (check_command)</p></td>
+<td align="left" valign="top"><p class="table">Service command</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">command</p></td>
+<td align="left" valign="top"><p class="table">check_command</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Service description</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">svcdesc</p></td>
+<td align="left" valign="top"><p class="table">service_description</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Service groups</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">svcgroup</p></td>
+<td align="left" valign="top"><p class="table">servicegroups</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Contacts</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
@@ -2494,179 +2623,209 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
+<td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Freshness threshold (auto)*</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">freshnessthresh</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
 <td align="left" valign="top"><p class="table">Active checks enabled</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">activechecks</p></td>
+<td align="left" valign="top"><p class="table">active_checks_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Custom variables</p></td>
 <td align="center" valign="top"><p class="table">C</p></td>
 <td align="left" valign="top"><p class="table">customvars</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>11.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>12.</em></p></td>
 <td align="left" valign="top"><p class="table">Display name</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">displayname</p></td>
+<td align="left" valign="top"><p class="table">display_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>13.</em></p></td>
 <td align="left" valign="top"><p class="table">Is volatile</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">isvolatile</p></td>
+<td align="left" valign="top"><p class="table">is_volatile</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>14.</em></p></td>
 <td align="left" valign="top"><p class="table">Initial state</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">initialstate</p></td>
+<td align="left" valign="top"><p class="table">initial_state</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>15.</em></p></td>
 <td align="left" valign="top"><p class="table">Max check attempts</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">maxcheckattempts</p></td>
+<td align="left" valign="top"><p class="table">max_check_attempts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>16.</em></p></td>
 <td align="left" valign="top"><p class="table">Check interval</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">checkinterval</p></td>
+<td align="left" valign="top"><p class="table">check_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>17.</em></p></td>
 <td align="left" valign="top"><p class="table">Retry interval</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retryinterval</p></td>
+<td align="left" valign="top"><p class="table">retry_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>18.</em></p></td>
 <td align="left" valign="top"><p class="table">Passive checks enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">passivechecks</p></td>
+<td align="left" valign="top"><p class="table">passive_checks_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>19.</em></p></td>
 <td align="left" valign="top"><p class="table">Check period</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">checkperiod</p></td>
+<td align="left" valign="top"><p class="table">check_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>20.</em></p></td>
 <td align="left" valign="top"><p class="table">Obsess over service</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">obsessoverservice</p></td>
+<td align="left" valign="top"><p class="table">obsess_over_service</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>21.</em></p></td>
 <td align="left" valign="top"><p class="table">Freshness threshold (manual)</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">manfreshnessthresh</p></td>
+<td align="left" valign="top"><p class="table">freshness_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>22.</em></p></td>
 <td align="left" valign="top"><p class="table">Check Freshness</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">checkfreshness</p></td>
+<td align="left" valign="top"><p class="table">check_freshness</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>23.</em></p></td>
 <td align="left" valign="top"><p class="table">Event handler</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">eventhandler</p></td>
+<td align="left" valign="top"><p class="table">event_handler</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>24.</em></p></td>
 <td align="left" valign="top"><p class="table">Event handler enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">eventhandlerenabled</p></td>
+<td align="left" valign="top"><p class="table">event_handler_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>25.</em></p></td>
 <td align="left" valign="top"><p class="table">Low flap threshold</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">lowflapthresh</p></td>
+<td align="left" valign="top"><p class="table">low_flap_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>26.</em></p></td>
 <td align="left" valign="top"><p class="table">High flap threshold</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">highflapthresh</p></td>
+<td align="left" valign="top"><p class="table">high_flap_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>27.</em></p></td>
 <td align="left" valign="top"><p class="table">Flap detection enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">flapdetectionenabled</p></td>
+<td align="left" valign="top"><p class="table">flap_detection_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>28.</em></p></td>
 <td align="left" valign="top"><p class="table">Flap detection options</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">flapdetectionoptions</p></td>
+<td align="left" valign="top"><p class="table">flap_detection_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>29.</em></p></td>
 <td align="left" valign="top"><p class="table">Process perf data</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">processperfdata</p></td>
+<td align="left" valign="top"><p class="table">process_perf_data</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>30.</em></p></td>
 <td align="left" valign="top"><p class="table">Retain status information</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retainstatusinfo</p></td>
+<td align="left" valign="top"><p class="table">retain_status_information</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>31.</em></p></td>
 <td align="left" valign="top"><p class="table">Retain nonstatus information</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retainnonstatusinfo</p></td>
+<td align="left" valign="top"><p class="table">retain_nonstatus_information</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>32.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification interval</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notifinterval</p></td>
+<td align="left" valign="top"><p class="table">notification_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>33.</em></p></td>
 <td align="left" valign="top"><p class="table">First notification delay</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">firstnotifdelay</p></td>
+<td align="left" valign="top"><p class="table">first_notifdelay</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>34.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification period</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notifperiod</p></td>
+<td align="left" valign="top"><p class="table">notification_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>35.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification opts</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">notifopts</p></td>
+<td align="left" valign="top"><p class="table">notification_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>36.</em></p></td>
 <td align="left" valign="top"><p class="table">Notifications enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notifications_enabled</p></td>
 <td align="left" valign="top"><p class="table">notifications_enabled</p></td>
 </tr>
 <tr>
@@ -2674,11 +2833,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Stalking options</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">stalkingoptions</p></td>
+<td align="left" valign="top"><p class="table">stalking_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>38.</em></p></td>
 <td align="left" valign="top"><p class="table">Notes</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes</p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 </tr>
 <tr>
@@ -2686,11 +2847,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Notes url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notes_url</p></td>
+<td align="left" valign="top"><p class="table">notes_url</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>40.</em></p></td>
 <td align="left" valign="top"><p class="table">Action url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">action_url</p></td>
 <td align="left" valign="top"><p class="table">action_url</p></td>
 </tr>
 <tr>
@@ -2698,11 +2861,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Icon image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">icon_image</p></td>
+<td align="left" valign="top"><p class="table">icon_image</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>42.</em></p></td>
 <td align="left" valign="top"><p class="table">Icon image alt</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">icon_image_alt</p></td>
 <td align="left" valign="top"><p class="table">icon_image_alt</p></td>
 </tr>
 <tr>
@@ -2710,11 +2875,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Vrml image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">vrml_image</p></td>
+<td align="left" valign="top"><p class="table">vrml_image</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>44.</em></p></td>
 <td align="left" valign="top"><p class="table">Statusmap image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">statusmap_image</p></td>
 <td align="left" valign="top"><p class="table">statusmap_image</p></td>
 </tr>
 <tr>
@@ -2722,12 +2889,14 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">2d coords</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">coords2d</p></td>
+<td align="left" valign="top"><p class="table">2d_coords</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>46.</em></p></td>
 <td align="left" valign="top"><p class="table">3d coords</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">coords3d</p></td>
+<td align="left" valign="top"><p class="table">3d_coords</p></td>
 </tr>
 </tbody>
 </table>
@@ -2758,49 +2927,57 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td align="center" valign="top"><p class="table"><em>1.</em></p></td>
-<td align="left" valign="top"><p class="table">Name (host_name)</p></td>
+<td align="left" valign="top"><p class="table">Serviceset name</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
-<td align="left" valign="top"><p class="table">Service template (use)</p></td>
+<td align="left" valign="top"><p class="table">Service template</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">template</p></td>
+<td align="left" valign="top"><p class="table">use</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
-<td align="left" valign="top"><p class="table">Service command (check_command)</p></td>
+<td align="left" valign="top"><p class="table">Service command</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">command</p></td>
+<td align="left" valign="top"><p class="table">check_command</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Service description</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">svcdesc</p></td>
+<td align="left" valign="top"><p class="table">service_description</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Service groups</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">svcgroup</p></td>
+<td align="left" valign="top"><p class="table">servicegroups</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Contacts</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
@@ -2808,179 +2985,209 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
+<td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Freshness threshold (auto)*</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">freshnessthresh</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
 <td align="left" valign="top"><p class="table">Active checks</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">activechecks</p></td>
+<td align="left" valign="top"><p class="table">active_checks_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Custom variables</p></td>
 <td align="center" valign="top"><p class="table">C</p></td>
 <td align="left" valign="top"><p class="table">customvars</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>11.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">U</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>12.</em></p></td>
 <td align="left" valign="top"><p class="table">Display name</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">displayname</p></td>
+<td align="left" valign="top"><p class="table">display_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>13.</em></p></td>
 <td align="left" valign="top"><p class="table">Is volatile</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">isvolatile</p></td>
+<td align="left" valign="top"><p class="table">is_volatile</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>14.</em></p></td>
 <td align="left" valign="top"><p class="table">Initial state</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">initialstate</p></td>
+<td align="left" valign="top"><p class="table">initial_state</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>15.</em></p></td>
 <td align="left" valign="top"><p class="table">Max check attempts</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">maxcheckattempts</p></td>
+<td align="left" valign="top"><p class="table">max_check_attempts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>16.</em></p></td>
 <td align="left" valign="top"><p class="table">Check interval</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">checkinterval</p></td>
+<td align="left" valign="top"><p class="table">check_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>17.</em></p></td>
 <td align="left" valign="top"><p class="table">Retry interval</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retryinterval</p></td>
+<td align="left" valign="top"><p class="table">retry_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>18.</em></p></td>
 <td align="left" valign="top"><p class="table">Passive checks enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">passivechecks</p></td>
+<td align="left" valign="top"><p class="table">passive_checks_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>19.</em></p></td>
 <td align="left" valign="top"><p class="table">Check period</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">checkperiod</p></td>
+<td align="left" valign="top"><p class="table">check_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>20.</em></p></td>
 <td align="left" valign="top"><p class="table">Obsess over service</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">obsessoverservice</p></td>
+<td align="left" valign="top"><p class="table">obsess_over_service</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>21.</em></p></td>
 <td align="left" valign="top"><p class="table">Freshness threshold (manual)</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">manfreshnessthresh</p></td>
+<td align="left" valign="top"><p class="table">freshness_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>22.</em></p></td>
 <td align="left" valign="top"><p class="table">Check Freshness</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">checkfreshness</p></td>
+<td align="left" valign="top"><p class="table">check_freshness</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>23.</em></p></td>
 <td align="left" valign="top"><p class="table">Event handler</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">eventhandler</p></td>
+<td align="left" valign="top"><p class="table">event_handler</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>24.</em></p></td>
 <td align="left" valign="top"><p class="table">Event handler enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">eventhandlerenabled</p></td>
+<td align="left" valign="top"><p class="table">event_handler_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>25.</em></p></td>
 <td align="left" valign="top"><p class="table">Low flap threshold</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">lowflapthresh</p></td>
+<td align="left" valign="top"><p class="table">low_flap_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>26.</em></p></td>
 <td align="left" valign="top"><p class="table">High flap threshold</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">highflapthresh</p></td>
+<td align="left" valign="top"><p class="table">high_flap_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>27.</em></p></td>
 <td align="left" valign="top"><p class="table">Flap detection enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">flapdetectionenabled</p></td>
+<td align="left" valign="top"><p class="table">flap_detection_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>28.</em></p></td>
 <td align="left" valign="top"><p class="table">Flap detection options</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">flapdetectionoptions</p></td>
+<td align="left" valign="top"><p class="table">flap_detection_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>29.</em></p></td>
 <td align="left" valign="top"><p class="table">Process perf data</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">processperfdata</p></td>
+<td align="left" valign="top"><p class="table">process_perf_data</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>30.</em></p></td>
 <td align="left" valign="top"><p class="table">Retain status information</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retainstatusinfo</p></td>
+<td align="left" valign="top"><p class="table">retain_status_information</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>31.</em></p></td>
 <td align="left" valign="top"><p class="table">Retain nonstatus information</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retainnonstatusinfo</p></td>
+<td align="left" valign="top"><p class="table">retain_nonstatus_information</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>32.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification interval</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notifinterval</p></td>
+<td align="left" valign="top"><p class="table">notification_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>33.</em></p></td>
 <td align="left" valign="top"><p class="table">First notification delay</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">firstnotifdelay</p></td>
+<td align="left" valign="top"><p class="table">first_notifdelay</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>34.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification period</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notifperiod</p></td>
+<td align="left" valign="top"><p class="table">notification_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>35.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification opts</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">notifopts</p></td>
+<td align="left" valign="top"><p class="table">notification_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>36.</em></p></td>
 <td align="left" valign="top"><p class="table">Notifications enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notifications_enabled</p></td>
 <td align="left" valign="top"><p class="table">notifications_enabled</p></td>
 </tr>
 <tr>
@@ -2988,11 +3195,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Stalking options</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">stalkingoptions</p></td>
+<td align="left" valign="top"><p class="table">stalking_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>38.</em></p></td>
 <td align="left" valign="top"><p class="table">Notes</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes</p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 </tr>
 <tr>
@@ -3000,11 +3209,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Notes url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notes_url</p></td>
+<td align="left" valign="top"><p class="table">notes_url</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>40.</em></p></td>
 <td align="left" valign="top"><p class="table">Action url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">action_url</p></td>
 <td align="left" valign="top"><p class="table">action_url</p></td>
 </tr>
 <tr>
@@ -3012,11 +3223,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Icon image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">icon_image</p></td>
+<td align="left" valign="top"><p class="table">icon_image</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>42.</em></p></td>
 <td align="left" valign="top"><p class="table">Icon image alt</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">icon_image_alt</p></td>
 <td align="left" valign="top"><p class="table">icon_image_alt</p></td>
 </tr>
 <tr>
@@ -3024,11 +3237,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Vrml image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">vrml_image</p></td>
+<td align="left" valign="top"><p class="table">vrml_image</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>44.</em></p></td>
 <td align="left" valign="top"><p class="table">Statusmap image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">statusmap_image</p></td>
 <td align="left" valign="top"><p class="table">statusmap_image</p></td>
 </tr>
 <tr>
@@ -3036,12 +3251,14 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">2d coords</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">coords2d</p></td>
+<td align="left" valign="top"><p class="table">2d_coords</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>46.</em></p></td>
 <td align="left" valign="top"><p class="table">3d coords</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">coords3d</p></td>
+<td align="left" valign="top"><p class="table">3d_coords</p></td>
 </tr>
 </tbody>
 </table>
@@ -3066,12 +3283,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -3080,11 +3299,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Name</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Use</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">use</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
 </tr>
 <tr>
@@ -3092,29 +3313,34 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Contacts</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
+<td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification options</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
 <td align="left" valign="top"><p class="table">notifopts</p></td>
+<td align="left" valign="top"><p class="table">notification_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Check interval</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">checkinterval</p></td>
+<td align="left" valign="top"><p class="table">check_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Normal check interval</p></td>
 <td align="center" valign="top"><p class="table">U</p></td>
+<td align="left" valign="top"><p class="table">normchecki</p></td>
 <td align="left" valign="top"><p class="table">normchecki</p></td>
 </tr>
 <tr>
@@ -3122,155 +3348,181 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Retry interval</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">retryinterval</p></td>
+<td align="left" valign="top"><p class="table">retry_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification interval</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">notifinterval</p></td>
+<td align="left" valign="top"><p class="table">notification_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification period</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">notifperiod</p></td>
+<td align="left" valign="top"><p class="table">notification_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>11.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">U</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>12.</em></p></td>
 <td align="left" valign="top"><p class="table">Check period</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">checkperiod</p></td>
+<td align="left" valign="top"><p class="table">check_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>13.</em></p></td>
 <td align="left" valign="top"><p class="table">Max check attempts</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">maxcheckattempts</p></td>
+<td align="left" valign="top"><p class="table">max_check_attempts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>14.</em></p></td>
 <td align="left" valign="top"><p class="table">Freshness threshold (auto)*</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">freshnessthresh</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>15.</em></p></td>
 <td align="left" valign="top"><p class="table">Active checks</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">activechecks</p></td>
+<td align="left" valign="top"><p class="table">active_checks_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>16.</em></p></td>
 <td align="left" valign="top"><p class="table">Custom variables</p></td>
 <td align="center" valign="top"><p class="table">C</p></td>
 <td align="left" valign="top"><p class="table">customvars</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>17.</em></p></td>
 <td align="left" valign="top"><p class="table">Is volatile</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">isvolatile</p></td>
+<td align="left" valign="top"><p class="table">is_volatile</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>18.</em></p></td>
 <td align="left" valign="top"><p class="table">Initial state</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">initialstate</p></td>
+<td align="left" valign="top"><p class="table">initial_state</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>19.</em></p></td>
 <td align="left" valign="top"><p class="table">Passive checks enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">passivechecks</p></td>
+<td align="left" valign="top"><p class="table">passive_checks_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>20.</em></p></td>
 <td align="left" valign="top"><p class="table">Obsess over service</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">obsessoverservice</p></td>
+<td align="left" valign="top"><p class="table">obsess_over_service</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>21.</em></p></td>
 <td align="left" valign="top"><p class="table">Freshness threshold (manual)</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">manfreshnessthresh</p></td>
+<td align="left" valign="top"><p class="table">freshness_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>22.</em></p></td>
 <td align="left" valign="top"><p class="table">Check Freshness</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">checkfreshness</p></td>
+<td align="left" valign="top"><p class="table">check_freshness</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>23.</em></p></td>
 <td align="left" valign="top"><p class="table">Event handler</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">eventhandler</p></td>
+<td align="left" valign="top"><p class="table">event_handler</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>24.</em></p></td>
 <td align="left" valign="top"><p class="table">Event handler enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">eventhandlerenabled</p></td>
+<td align="left" valign="top"><p class="table">event_handler_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>25.</em></p></td>
 <td align="left" valign="top"><p class="table">Low flap threshold</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">lowflapthresh</p></td>
+<td align="left" valign="top"><p class="table">low_flap_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>26.</em></p></td>
 <td align="left" valign="top"><p class="table">High flap threshold</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">highflapthresh</p></td>
+<td align="left" valign="top"><p class="table">high_flap_threshold</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>27.</em></p></td>
 <td align="left" valign="top"><p class="table">Flap detection enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">flapdetectionenabled</p></td>
+<td align="left" valign="top"><p class="table">flap_detection_enabled</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>28.</em></p></td>
 <td align="left" valign="top"><p class="table">Flap detection options</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">flapdetectionoptions</p></td>
+<td align="left" valign="top"><p class="table">flap_detection_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>29.</em></p></td>
 <td align="left" valign="top"><p class="table">Process perf data</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">processperfdata</p></td>
+<td align="left" valign="top"><p class="table">process_perf_data</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>30.</em></p></td>
 <td align="left" valign="top"><p class="table">Retain status information</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retainstatusinfo</p></td>
+<td align="left" valign="top"><p class="table">retain_status_information</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>31.</em></p></td>
 <td align="left" valign="top"><p class="table">Retain nonstatus information</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">retainnonstatusinfo</p></td>
+<td align="left" valign="top"><p class="table">retain_nonstatus_information</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>32.</em></p></td>
 <td align="left" valign="top"><p class="table">First notification delay</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">firstnotifdelay</p></td>
+<td align="left" valign="top"><p class="table">first_notifdelay</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>33.</em></p></td>
 <td align="left" valign="top"><p class="table">Notifications enabled</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notifications_enabled</p></td>
 <td align="left" valign="top"><p class="table">notifications_enabled</p></td>
 </tr>
 <tr>
@@ -3278,11 +3530,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Stalking options</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">stalkingoptions</p></td>
+<td align="left" valign="top"><p class="table">stalking_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>35.</em></p></td>
 <td align="left" valign="top"><p class="table">Notes</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes</p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 </tr>
 <tr>
@@ -3290,11 +3544,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Notes url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notes_url</p></td>
+<td align="left" valign="top"><p class="table">notes_url</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>37.</em></p></td>
 <td align="left" valign="top"><p class="table">Action url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">action_url</p></td>
 <td align="left" valign="top"><p class="table">action_url</p></td>
 </tr>
 <tr>
@@ -3302,11 +3558,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Icon image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">icon_image</p></td>
+<td align="left" valign="top"><p class="table">icon_image</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>39.</em></p></td>
 <td align="left" valign="top"><p class="table">Icon image alt</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">icon_image_alt</p></td>
 <td align="left" valign="top"><p class="table">icon_image_alt</p></td>
 </tr>
 <tr>
@@ -3314,11 +3572,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Vrml image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">vrml_image</p></td>
+<td align="left" valign="top"><p class="table">vrml_image</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>41.</em></p></td>
 <td align="left" valign="top"><p class="table">Statusmap image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">statusmap_image</p></td>
 <td align="left" valign="top"><p class="table">statusmap_image</p></td>
 </tr>
 <tr>
@@ -3326,12 +3586,14 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">2d coords</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">coords2d</p></td>
+<td align="left" valign="top"><p class="table">2d_coords</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>43.</em></p></td>
 <td align="left" valign="top"><p class="table">3d coords</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">coords3d</p></td>
+<td align="left" valign="top"><p class="table">3d_coords</p></td>
 </tr>
 </tbody>
 </table>
@@ -3356,12 +3618,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -3370,18 +3634,21 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Command name</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">command_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Command line</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
 <td align="left" valign="top"><p class="table">command</p></td>
+<td align="left" valign="top"><p class="table">command_line</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">U</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -3402,12 +3669,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -3416,11 +3685,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Hostgroup name</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">hostgroup_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Alias</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">alias</p></td>
 <td align="left" valign="top"><p class="table">alias</p></td>
 </tr>
 <tr>
@@ -3428,11 +3699,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Members</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
+<td align="left" valign="top"><p class="table">members</p></td>
 <td align="left" valign="top"><p class="table">members</p></td>
 </tr>
 <tr>
@@ -3440,11 +3713,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Hostgroup members</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">hostgroupmembers</p></td>
+<td align="left" valign="top"><p class="table">hostgroup_members</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Notes</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes</p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 </tr>
 <tr>
@@ -3452,11 +3727,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Notes url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notes_url</p></td>
+<td align="left" valign="top"><p class="table">notes_url</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Action url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">action_url</p></td>
 <td align="left" valign="top"><p class="table">action_url</p></td>
 </tr>
 </tbody>
@@ -3478,25 +3755,29 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td align="center" valign="top"><p class="table"><em>1.</em></p></td>
-<td align="left" valign="top"><p class="table">Hostgroup name</p></td>
+<td align="left" valign="top"><p class="table">Servicegroup name</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">servicegroup_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Alias</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">alias</p></td>
 <td align="left" valign="top"><p class="table">alias</p></td>
 </tr>
 <tr>
@@ -3504,11 +3785,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">U</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Members</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
+<td align="left" valign="top"><p class="table">members</p></td>
 <td align="left" valign="top"><p class="table">members</p></td>
 </tr>
 <tr>
@@ -3516,11 +3799,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Servicegroup members</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">servicegroupmembers</p></td>
+<td align="left" valign="top"><p class="table">servicegroup_members</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Notes</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes</p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 </tr>
 <tr>
@@ -3528,11 +3813,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Notes url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notes_url</p></td>
+<td align="left" valign="top"><p class="table">notes_url</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Action url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">action_url</p></td>
 <td align="left" valign="top"><p class="table">action_url</p></td>
 </tr>
 </tbody>
@@ -3554,12 +3841,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -3568,11 +3857,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Timeperiod name</p></td>
 <td align="center" valign="top"><p class="table">RK</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">timeperiod_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Alias</p></td>
 <td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">alias</p></td>
 <td align="left" valign="top"><p class="table">alias</p></td>
 </tr>
 <tr>
@@ -3580,11 +3871,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Freestyle time definition</p></td>
 <td align="center" valign="top"><p class="table">C</p></td>
 <td align="left" valign="top"><p class="table">definition</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Timeperiod to exclude</p></td>
 <td align="center" valign="top"><p class="table">L</p></td>
+<td align="left" valign="top"><p class="table">exclude</p></td>
 <td align="left" valign="top"><p class="table">exclude</p></td>
 </tr>
 <tr>
@@ -3592,12 +3885,14 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">U</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Freestyle time exception</p></td>
 <td align="center" valign="top"><p class="table">CX</p></td>
 <td align="left" valign="top"><p class="table">exception</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 </tbody>
 </table>
@@ -3618,12 +3913,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -3632,66 +3929,77 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Dependent host name</p></td>
 <td align="center" valign="top"><p class="table">RKX</p></td>
 <td align="left" valign="top"><p class="table">dephostname</p></td>
+<td align="left" valign="top"><p class="table">dependent_host_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Dependent hostgroup name</p></td>
 <td align="center" valign="top"><p class="table">KX</p></td>
 <td align="left" valign="top"><p class="table">dephostgroupname</p></td>
+<td align="left" valign="top"><p class="table">dependent_hostgroup_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
 <td align="left" valign="top"><p class="table">Dependent service description</p></td>
 <td align="center" valign="top"><p class="table">RKX</p></td>
 <td align="left" valign="top"><p class="table">depsvcdesc</p></td>
+<td align="left" valign="top"><p class="table">dependent_service_description</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">RKX</p></td>
 <td align="left" valign="top"><p class="table">hostname</p></td>
+<td align="left" valign="top"><p class="table">host_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Hostgroup name</p></td>
 <td align="center" valign="top"><p class="table">KX</p></td>
 <td align="left" valign="top"><p class="table">hostgroupname</p></td>
+<td align="left" valign="top"><p class="table">hostgroup_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Service description</p></td>
 <td align="center" valign="top"><p class="table">RKX</p></td>
 <td align="left" valign="top"><p class="table">svcdesc</p></td>
+<td align="left" valign="top"><p class="table">service_description</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Inherits parent</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">inheritsparent</p></td>
+<td align="left" valign="top"><p class="table">inherits_parent</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Execution failure criteria</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">execfailcriteria</p></td>
+<td align="left" valign="top"><p class="table">execution_failure_criteria</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification failure criteria</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">notiffailcriteria</p></td>
+<td align="left" valign="top"><p class="table">notification_failure_criteria</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Dependency period</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">period</p></td>
+<td align="left" valign="top"><p class="table">dependency_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>11.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -3765,12 +4073,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -3779,54 +4089,63 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Dependent host name</p></td>
 <td align="center" valign="top"><p class="table">RKX</p></td>
 <td align="left" valign="top"><p class="table">dephostname</p></td>
+<td align="left" valign="top"><p class="table">dependent_host_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Dependent hostgroup name</p></td>
 <td align="center" valign="top"><p class="table">KX</p></td>
 <td align="left" valign="top"><p class="table">dephostgroupname</p></td>
+<td align="left" valign="top"><p class="table">dependent_hostgroup_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">RKX</p></td>
 <td align="left" valign="top"><p class="table">hostname</p></td>
+<td align="left" valign="top"><p class="table">host_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Hostgroup name</p></td>
 <td align="center" valign="top"><p class="table">KX</p></td>
 <td align="left" valign="top"><p class="table">hostgroupname</p></td>
+<td align="left" valign="top"><p class="table">hostgroup_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Inherits parent</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">inheritsparent</p></td>
+<td align="left" valign="top"><p class="table">inherits_parent</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Execution failure criteria</p></td>
 <td align="center" valign="top"><p class="table">LRX</p></td>
 <td align="left" valign="top"><p class="table">execfailcriteria</p></td>
+<td align="left" valign="top"><p class="table">execution_failure_criteria</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification failure criteria</p></td>
 <td align="center" valign="top"><p class="table">LRX</p></td>
 <td align="left" valign="top"><p class="table">notiffailcriteria</p></td>
+<td align="left" valign="top"><p class="table">notification_failure_criteria</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Dependency period</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">period</p></td>
+<td align="left" valign="top"><p class="table">dependency_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">UX</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -3900,12 +4219,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -3914,23 +4235,27 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">KRX</p></td>
 <td align="left" valign="top"><p class="table">hostname</p></td>
+<td align="left" valign="top"><p class="table">host_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Hostgroup name</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">hostgroupname</p></td>
+<td align="left" valign="top"><p class="table">hostgroup_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
 <td align="left" valign="top"><p class="table">Service description</p></td>
 <td align="center" valign="top"><p class="table">KRX</p></td>
 <td align="left" valign="top"><p class="table">svcdesc</p></td>
+<td align="left" valign="top"><p class="table">service_description</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Contacts</p></td>
 <td align="center" valign="top"><p class="table">LRX</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
@@ -3938,42 +4263,49 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
 <td align="center" valign="top"><p class="table">LR</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
+<td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">First notification</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">firstnotif</p></td>
+<td align="left" valign="top"><p class="table">first_notification</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Last notification</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">lastnotif</p></td>
+<td align="left" valign="top"><p class="table">last_notification</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification interval</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">notifinterval</p></td>
+<td align="left" valign="top"><p class="table">notification_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
 <td align="left" valign="top"><p class="table">Escalation period</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">period</p></td>
+<td align="left" valign="top"><p class="table">escalation_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Escalation options</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">escopts</p></td>
+<td align="left" valign="top"><p class="table">escalation_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>11.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -3994,12 +4326,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -4008,17 +4342,20 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">KRX</p></td>
 <td align="left" valign="top"><p class="table">hostname</p></td>
+<td align="left" valign="top"><p class="table">host_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Hostgroup name</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">hostgroupname</p></td>
+<td align="left" valign="top"><p class="table">hostgroup_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
 <td align="left" valign="top"><p class="table">Contacts</p></td>
 <td align="center" valign="top"><p class="table">LRX</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
@@ -4026,42 +4363,49 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
 <td align="center" valign="top"><p class="table">LR</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
+<td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">First notification</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">firstnotif</p></td>
+<td align="left" valign="top"><p class="table">first_notification</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Last notification</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">lastnotif</p></td>
+<td align="left" valign="top"><p class="table">last_notification</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification interval</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">notifinterval</p></td>
+<td align="left" valign="top"><p class="table">notification_interval</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Escalation period</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">period</p></td>
+<td align="left" valign="top"><p class="table">escalation_period</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
 <td align="left" valign="top"><p class="table">Escalation options</p></td>
 <td align="center" valign="top"><p class="table">LX</p></td>
 <td align="left" valign="top"><p class="table">escopts</p></td>
+<td align="left" valign="top"><p class="table">escalation_options</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -4082,12 +4426,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -4096,17 +4442,20 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">hostname</p></td>
+<td align="left" valign="top"><p class="table">host_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Service description</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">svcdesc</p></td>
+<td align="left" valign="top"><p class="table">service_description</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
 <td align="left" valign="top"><p class="table">Notes</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes</p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 </tr>
 <tr>
@@ -4114,11 +4463,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Notes url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notes_url</p></td>
+<td align="left" valign="top"><p class="table">notes_url</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Action url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">action_url</p></td>
 <td align="left" valign="top"><p class="table">action_url</p></td>
 </tr>
 <tr>
@@ -4126,11 +4477,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Icon image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">icon_image</p></td>
+<td align="left" valign="top"><p class="table">icon_image</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Icon image alt</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">icon_image_alt</p></td>
 <td align="left" valign="top"><p class="table">icon_image_alt</p></td>
 </tr>
 <tr>
@@ -4138,6 +4491,7 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -4158,12 +4512,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -4172,11 +4528,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">hostname</p></td>
+<td align="left" valign="top"><p class="table">host_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Notes</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">notes</p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 </tr>
 <tr>
@@ -4184,11 +4542,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Notes url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">notes_url</p></td>
+<td align="left" valign="top"><p class="table">notes_url</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Action url</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">action_url</p></td>
 <td align="left" valign="top"><p class="table">action_url</p></td>
 </tr>
 <tr>
@@ -4196,11 +4556,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Icon image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">icon_image</p></td>
+<td align="left" valign="top"><p class="table">icon_image</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Icon image alt</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">icon_image_alt</p></td>
 <td align="left" valign="top"><p class="table">icon_image_alt</p></td>
 </tr>
 <tr>
@@ -4208,11 +4570,13 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Vrml image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">vrml_image</p></td>
+<td align="left" valign="top"><p class="table">vrml_image</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Statusmap image</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
+<td align="left" valign="top"><p class="table">statusmap_image</p></td>
 <td align="left" valign="top"><p class="table">statusmap_image</p></td>
 </tr>
 <tr>
@@ -4220,18 +4584,21 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">2d coords</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">coords2d</p></td>
+<td align="left" valign="top"><p class="table">2d_coords</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">3d coords</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">coords3d</p></td>
+<td align="left" valign="top"><p class="table">3d_coords</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>11.</em></p></td>
 <td align="left" valign="top"><p class="table">Disable</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">disable</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -4292,12 +4659,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -4306,6 +4675,7 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -4332,12 +4702,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -4346,12 +4718,14 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
 <td align="left" valign="top"><p class="table">Comment for the Nagios GUI</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">comment</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -4375,12 +4749,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -4389,18 +4765,21 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
 <td align="left" valign="top"><p class="table">Service description</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">svcdesc</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
 <td align="left" valign="top"><p class="table">Comment for the Nagios GUI</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">comment</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -4424,12 +4803,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -4438,18 +4819,21 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
 <td align="left" valign="top"><p class="table">Service description</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">svcdesc</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
 <td align="left" valign="top"><p class="table">Comment for the Nagios GUI</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">comment</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -4470,12 +4854,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -4484,42 +4870,49 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
 <td align="left" valign="top"><p class="table">Start time [unix time]</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">starttime</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
 <td align="left" valign="top"><p class="table">End time [unix time]</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">endtime</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
 <td align="left" valign="top"><p class="table">Flexible downtime [<em>0</em>|1]</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">flexible</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
-<td align="left" valign="top"><p class="table">Duration (for flexible downtime in minutes)</p></td>
+<td align="left" valign="top"><p class="table">Duration (flexible downtime in minutes)</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">duration</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
 <td align="left" valign="top"><p class="table">Comment for the Nagios GUI*</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">comment</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>N/a.</em></p></td>
 <td align="left" valign="top"><p class="table">Author</p></td>
 <td align="center" valign="top"><p class="table">X</p></td>
 <td align="left" valign="top"><p class="table">author</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -4552,12 +4945,14 @@ cellspacing="0" cellpadding="4">
 <col />
 <col />
 <col />
+<col />
 <thead>
 <tr>
 <th align="center" valign="top"> Column </th>
-<th align="left" valign="top"> Description </th>
-<th align="center" valign="top"> Flags </th>
-<th align="left" valign="top"> REST variable name</th>
+<th align="left" valign="top"> Description                   </th>
+<th align="center" valign="top"> Flags   </th>
+<th align="left" valign="top"> REST variable name        </th>
+<th align="left" valign="top"> Nagios argument name</th>
 </tr>
 </thead>
 <tbody>
@@ -4566,6 +4961,7 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Host name</p></td>
 <td align="center" valign="top"><p class="table">RX</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -4594,7 +4990,7 @@ cellspacing="0" cellpadding="4">
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-11-18 01:44:45 BST
+Last updated 2013-01-10 11:16:12 BST
 </div>
 </div>
 </body>
