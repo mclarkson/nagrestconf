@@ -532,6 +532,8 @@ Key for the 'Flags' column:
  * \'L' - A list field. Lists consist of zero or more items separated by spaces.
  * \'C' - A compound field: <name>|<value>[,<name>|<value>]...
  * \'X' - Not available in the Web front-end.
+ * \'M' - Name mangling is applied to a passive-only nagios server. (Where the
+          DCC variable is set to `1' in /etc/nagrestconf/csv2nag.conf.)
 
 The 'REST variable name' column lists the option names that can be used in the
 `json=' part of the query. These names are used in place of '<option>' shown
@@ -546,16 +548,16 @@ contacts
 [cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
-| 1.     | Contact name                  | RK      | name                      | contact_name
-| 2.     | Us                            | R       | use                       |
+| 1.     | Contact name                  | RKM     | name                      | contact_name
+| 2.     | Use                           | RM      | use                       | use
 | 3.     | Alias pretty name             | R       | alias                     | alias
 | 4.     | Email address                 |         | emailaddr                 | email
-| 5.     | Service notification period   | R       | svcnotifperiod            | service_notification_period
+| 5.     | Service notification period   | RM      | svcnotifperiod            | service_notification_period
 | 6.     | Service notification options  | LR      | svcnotifopts              | service_notification_options
-| 7.     | Service notification commands | LR      | svcnotifcmds              | service_notification_commands
-| 8.     | Host notification period      | R       | hstnotifperiod            | host_notification_period
+| 7.     | Service notification commands | LRM     | svcnotifcmds              | service_notification_commands
+| 8.     | Host notification period      | RM      | hstnotifperiod            | host_notification_period
 | 9.     | Host notification options     | LR      | hstnotifopts              | host_notification_options
-| 10.    | Host notification commands    | LR      | hstnotifcmds              | host_notification_commands
+| 10.    | Host notification commands    | LRM     | hstnotifcmds              | host_notification_commands
 | 11.    | Can submit commands           |         | cansubmitcmds             | can_submit_commands
 | 12.    | Disable                       | U       | disable                   | 
 | 13.    | Service notification enabled  | X       | svcnotifenabled           | service_notifications_enabled
@@ -569,7 +571,7 @@ contacts
 | 21.    | Address6                      | X       | address6                  | address6
 | 22.    | Retain status info            | X       | retainstatusinfo          | retain_status_information
 | 23.    | Retain non-status info        | X       | retainnonstatusinfo       | retain_nonstatus_information
-| 24.    | Contact groups                | XL      | contactgroups             | contactgroups
+| 24.    | Contact groups                | XLM     | contactgroups             | contactgroups
 |===========================================================================================================
 
 Examples
@@ -586,9 +588,9 @@ contactgroups
 [cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
-| 1.     | Contact group name            | RK      | name                      | contactgroup_name
+| 1.     | Contact group name            | RKM     | name                      | contactgroup_name
 | 2.     | Alias pretty name             | R       | alias                     | alias
-| 3.     | Members list                  | RL      | members                   | members
+| 3.     | Members list                  | RLM     | members                   | members
 | 4.     | Disable                       | U       | disable                   | 
 |===========================================================================================================
 
@@ -609,23 +611,23 @@ hosts
 | 1.     | Host name                     | RK      | name                      | host_name
 | 2.     | Alias                         | R       | alias                     | alias
 | 3.     | IP Address                    | R       | ipaddress                 | address
-| 4.     | Template                      | R       | template                  | use
-| 5.     | Shown Hostgroup               | L       | hostgroup                 | hostgroups
-| 6.     | Contact                       | L       | contact                   | contacts
-| 7.     | Contact Group                 | L       | contactgroups             | contact_groups
+| 4.     | Host Template                 | RM      | template                  | use
+| 5.     | Shown Hostgroup               | LM      | hostgroup                 | hostgroups
+| 6.     | Contact                       | LM      | contact                   | contacts
+| 7.     | Contact Group                 | LM      | contactgroups             | contact_groups
 | 8.     | Active checks                 |         | activechecks              | active_checks_enabled
 | 9.     | Service Set                   |         | servicesets               | 
 | 10.    | Disable                       |         | disable                   |
 | 11.    | Display name                  |         | displayname               | display_name
-| 12.    | Parents                       | LX      | parents                   | parents
-| 13.    | Check command                 | X       | command                   | check_command
+| 12.    | Parents                       | LXM     | parents                   | parents
+| 13.    | Check command                 | XM      | command                   | check_command
 | 14.    | Initial state                 | X       | initialstate              | initial_state
 | 15.    | Max check attempts            | X       | maxcheckattempts          | max_check_attempts
 | 16.    | Check interval                | X       | checkinterval             | check_interval
 | 17.    | Retry interval                | X       | retryinterval             | retry_interval
 | 18.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
-| 19.    | Check period                  | X       | checkperiod               | check_period
-| 20.    | Obsess over host              | X       | obsessoverhost            |obsess_over_host
+| 19.    | Check period                  | XM      | checkperiod               | check_period
+| 20.    | Obsess over host              | X       | obsessoverhost            | obsess_over_host
 | 21.    | Check freshness               | X       | checkfreshness            | check_freshness
 | 22.    | Freshness threshold           | X       | freshnessthresh           | freshness_threshold
 | 23.    | Event handler                 | X       | eventhandler              | event_handler
@@ -639,7 +641,7 @@ hosts
 | 31.    | Retain nonstatus information  | X       | retainnonstatusinfo       | retain_nonstatus_information
 | 32.    | Notification interval         | X       | notifinterval             | notification_interval
 | 33.    | First notification delay      | X       | firstnotifdelay           | first_notifdelay
-| 34.    | Notification period           | X       | notifperiod               | notification_period
+| 34.    | Notification period           | XM      | notifperiod               | notification_period
 | 35.    | Notification opts             | LX      | notifopts                 | notification_options
 | 36.    | Notifications enabled         | X       | notifications_enabled     | notifications_enabled
 | 37.    | Stalking options              | LX      | stalkingoptions           | stalking_options
@@ -672,17 +674,17 @@ hosttemplates
 [cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
-| 1.     | Name                          | RK      | name                      | name
-| 2.     | Use                           | R       | use                       | use
-| 3.     | Contacts                      | L       | contacts                  | contacts
-| 4.     | Contact groups                | L       | contactgroups             | contact_groups
+| 1.     | Name                          | RKM     | name                      | name
+| 2.     | Use                           | RM      | use                       | use
+| 3.     | Contacts                      | LM      | contacts                  | contacts
+| 4.     | Contact groups                | LM      | contactgroups             | contact_groups
 | 5.     | Normal check interval         | U       | normchecki                | normchecki
 | 6.     | Check interval                | R       | checkinterval             | check_interval
 | 7.     | Retry interval                | R       | retryinterval             | retry_interval
-| 8.     | Notification period           | R       | notifperiod               | notification_period
+| 8.     | Notification period           | RM      | notifperiod               | notification_period
 | 9.     | Notification option           | L       | notifopts                 | notification_options
 | 10.    | Disable                       | U       | disable                   | 
-| 11.    | Check period                  | R       | checkperiod               | check_period
+| 11.    | Check period                  | RM      | checkperiod               | check_period
 | 12.    | Max check attempts            | R       | maxcheckattempts          | max_check_attempts
 | 13.    | Check command                 |         | checkcommand              | check_command
 | 14.    | Notification interval         | R       | notifinterval             | notification_interval
@@ -735,11 +737,11 @@ services
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
 | 1.     | Name                          | RK      | name                      | host_name
 | 2.     | Service template              | R       | template                  | use
-| 3.     | Service command               | R       | command                   | check_command
+| 3.     | Service command               | RM      | command                   | check_command
 | 4.     | Service description           | RK      | svcdesc                   | service_description
 | 5.     | Service groups                | L       | svcgroup                  | servicegroups
-| 6.     | Contacts                      | L       | contacts                  | contacts
-| 7.     | Contact groups                | L       | contactgroups             | contact_groups
+| 6.     | Contacts                      | LM      | contacts                  | contacts
+| 7.     | Contact groups                | LM      | contactgroups             | contact_groups
 | 8.     | Freshness threshold (auto)*   |         | freshnessthresh           | N/A
 | 9.     | Active checks enabled         |         | activechecks              | active_checks_enabled
 | 10.    | Custom variables              | C       | customvars                | N/A
@@ -751,7 +753,7 @@ services
 | 16.    | Check interval                | X       | checkinterval             | check_interval
 | 17.    | Retry interval                | X       | retryinterval             | retry_interval
 | 18.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
-| 19.    | Check period                  | X       | checkperiod               | check_period
+| 19.    | Check period                  | XM      | checkperiod               | check_period
 | 20.    | Obsess over service           | X       | obsessoverservice         | obsess_over_service
 | 21.    | Freshness threshold (manual)  | X       | manfreshnessthresh        | freshness_threshold
 | 22.    | Check Freshness               | X       | checkfreshness            | check_freshness
@@ -766,7 +768,7 @@ services
 | 31.    | Retain nonstatus information  | X       | retainnonstatusinfo       | retain_nonstatus_information
 | 32.    | Notification interval         | X       | notifinterval             | notification_interval
 | 33.    | First notification delay      | X       | firstnotifdelay           | first_notifdelay
-| 34.    | Notification period           | X       | notifperiod               | notification_period
+| 34.    | Notification period           | XM      | notifperiod               | notification_period
 | 35.    | Notification opts             | LX      | notifopts                 | notification_options
 | 36.    | Notifications enabled         | X       | notifications_enabled     | notifications_enabled
 | 37.    | Stalking options              | LX      | stalkingoptions           | stalking_options
@@ -873,17 +875,17 @@ servicetemplates
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
 | 1.     | Name                          | RK      | name                      | name
-| 2.     | Use                           |         | use                       | use
-| 3.     | Contacts                      | L       | contacts                  | contacts
-| 4.     | Contact groups                | L       | contactgroups             | contact_groups
+| 2.     | Use                           | XM      | use                       | use
+| 3.     | Contacts                      | LM      | contacts                  | contacts
+| 4.     | Contact groups                | LM      | contactgroups             | contact_groups
 | 5.     | Notification options          | L       | notifopts                 | notification_options
 | 6.     | Check interval                | R       | checkinterval             | check_interval
 | 7.     | Normal check interval         | U       | normchecki                | normchecki
 | 8.     | Retry interval                | R       | retryinterval             | retry_interval
 | 9.     | Notification interval         | R       | notifinterval             | notification_interval
-| 10.    | Notification period           | R       | notifperiod               | notification_period
+| 10.    | Notification period           | RM      | notifperiod               | notification_period
 | 11.    | Disable                       | U       | disable                   | 
-| 12.    | Check period                  | R       | checkperiod               | check_period
+| 12.    | Check period                  | RM      | checkperiod               | check_period
 | 13.    | Max check attempts            | R       | maxcheckattempts          | max_check_attempts
 | 14.    | Freshness threshold (auto)*   |         | freshnessthresh           | N/A
 | 15.    | Active checks                 |         | activechecks              | active_checks_enabled
@@ -936,7 +938,7 @@ commands
 [cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
-| 1.     | Command name                  | RK      | name                      | command_name
+| 1.     | Command name                  | RKM     | name                      | command_name
 | 2.     | Command line                  | R       | command                   | command_line
 | 3.     | Disable                       | U       | disable                   | N/A
 |===========================================================================================================
@@ -955,11 +957,11 @@ hostgroups
 [cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
-| 1.     | Hostgroup name                | RK      | name                      | hostgroup_name
+| 1.     | Hostgroup name                | RKM     | name                      | hostgroup_name
 | 2.     | Alias                         | R       | alias                     | alias
 | 3.     | Disable                       |         | disable                   | N/A
 | 4.     | Members                       | LX      | members                   | members
-| 5.     | Hostgroup members             | LX      | hostgroupmembers          | hostgroup_members
+| 5.     | Hostgroup members             | LXM     | hostgroupmembers          | hostgroup_members
 | 6.     | Notes                         | X       | notes                     | notes
 | 7.     | Notes url                     | X       | notes_url                 | notes_url
 | 8.     | Action url                    | X       | action_url                | action_url
@@ -1003,12 +1005,12 @@ timeperiods
 [cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
-| 1.     | Timeperiod name               | RK      | name                      | timeperiod_name
+| 1.     | Timeperiod name               | RKM     | name                      | timeperiod_name
 | 2.     | Alias                         | R       | alias                     | alias
 | 3.     | Freestyle time definition     | C       | definition                | 
-| 4.     | Timeperiod to exclude         | L       | exclude                   | exclude
+| 4.     | Timeperiod to exclude         | LM      | exclude                   | exclude
 | 5.     | Disable                       | U       | disable                   | N/A
-| 6.     | Freestyle time exception      | CX      | exception                 | 
+| 6.     | Freestyle time exception      | CXM     | exception                 | 
 |===========================================================================================================
 
 Examples
@@ -1026,15 +1028,15 @@ servicedeps
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
 | 1.     | Dependent host name           | RKX     | dephostname               | dependent_host_name
-| 2.     | Dependent hostgroup name      | KX      | dephostgroupname          | dependent_hostgroup_name
+| 2.     | Dependent hostgroup name      | KXM     | dephostgroupname          | dependent_hostgroup_name
 | 3.     | Dependent service description | RKX     | depsvcdesc                | dependent_service_description
 | 4.     | Host name                     | RKX     | hostname                  | host_name
-| 5.     | Hostgroup name                | KX      | hostgroupname             | hostgroup_name
+| 5.     | Hostgroup name                | KXM     | hostgroupname             | hostgroup_name
 | 6.     | Service description           | RKX     | svcdesc                   | service_description
 | 7.     | Inherits parent               | X       | inheritsparent            | inherits_parent
 | 8.     | Execution failure criteria    | LX      | execfailcriteria          | execution_failure_criteria
 | 9.     | Notification failure criteria | LX      | notiffailcriteria         | notification_failure_criteria
-| 10.    | Dependency period             | X       | period                    | dependency_period
+| 10.    | Dependency period             | XM      | period                    | dependency_period
 | 11.    | Disable                       | X       | disable                   | N/A
 |===========================================================================================================
 
@@ -1056,13 +1058,13 @@ hostdeps
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
 | 1.     | Dependent host name           | RKX     | dephostname               | dependent_host_name
-| 2.     | Dependent hostgroup name      | KX      | dephostgroupname          | dependent_hostgroup_name
+| 2.     | Dependent hostgroup name      | KXM     | dephostgroupname          | dependent_hostgroup_name
 | 3.     | Host name                     | RKX     | hostname                  | host_name
-| 4.     | Hostgroup name                | KX      | hostgroupname             | hostgroup_name
+| 4.     | Hostgroup name                | KXM     | hostgroupname             | hostgroup_name
 | 5.     | Inherits parent               | RX      | inheritsparent            | inherits_parent
 | 6.     | Execution failure criteria    | LRX     | execfailcriteria          | execution_failure_criteria
 | 7.     | Notification failure criteria | LRX     | notiffailcriteria         | notification_failure_criteria
-| 8.     | Dependency period             | RX      | period                    | dependency_period
+| 8.     | Dependency period             | RXM     | period                    | dependency_period
 | 9.     | Disable                       | UX      | disable                   | N/A
 |===========================================================================================================
 
@@ -1084,14 +1086,14 @@ serviceescalation
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
 | 1.     | Host name                     | KRX     | hostname                  | host_name
-| 2.     | Hostgroup name                | X       | hostgroupname             | hostgroup_name
+| 2.     | Hostgroup name                | XM      | hostgroupname             | hostgroup_name
 | 3.     | Service description           | KRX     | svcdesc                   | service_description
-| 4.     | Contacts                      | LRX     | contacts                  | contacts
-| 5.     | Contact groups                | LR      | contactgroups             | contact_groups
+| 4.     | Contacts                      | LRXM    | contacts                  | contacts
+| 5.     | Contact groups                | LRM     | contactgroups             | contact_groups
 | 6.     | First notification            | RX      | firstnotif                | first_notification
 | 7.     | Last notification             | RX      | lastnotif                 | last_notification
 | 8.     | Notification interval         | RX      | notifinterval             | notification_interval
-| 9.     | Escalation period             | X       | period                    | escalation_period
+| 9.     | Escalation period             | XM      | period                    | escalation_period
 | 10.    | Escalation options            | LX      | escopts                   | escalation_options
 | 11.    | Disable                       | X       | disable                   | N/A
 |===========================================================================================================
@@ -1111,13 +1113,13 @@ hostescalation
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
 | 1.     | Host name                     | KRX     | hostname                  | host_name
-| 2.     | Hostgroup name                | X       | hostgroupname             | hostgroup_name
-| 3.     | Contacts                      | LRX     | contacts                  | contacts
-| 4.     | Contact groups                | LR      | contactgroups             | contact_groups
+| 2.     | Hostgroup name                | XM      | hostgroupname             | hostgroup_name
+| 3.     | Contacts                      | LRXM    | contacts                  | contacts
+| 4.     | Contact groups                | LRM     | contactgroups             | contact_groups
 | 5.     | First notification            | RX      | firstnotif                | first_notification
 | 6.     | Last notification             | RX      | lastnotif                 | last_notification
 | 7.     | Notification interval         | RX      | notifinterval             | notification_interval
-| 8.     | Escalation period             | X       | period                    | escalation_period
+| 8.     | Escalation period             | XM      | period                    | escalation_period
 | 9.     | Escalation options            | LX      | escopts                   | escalation_options
 | 10.    | Disable                       | X       | disable                   | N/A
 |===========================================================================================================

@@ -1575,6 +1575,12 @@ database files on the nagios server. These are comma delimited files used by
 'X' - Not available in the Web front-end.
 </p>
 </li>
+<li>
+<p>
+'M' - Name mangling is applied to a passive-only nagios server. (Where the
+          DCC variable is set to &#8216;1&#8217; in /etc/nagrestconf/csv2nag.conf.)
+</p>
+</li>
 </ul></div>
 <div class="paragraph"><p>The <em>REST variable name</em> column lists the option names that can be used in the
 &#8216;json=&#8217; part of the query. These names are used in place of <em>&lt;option&gt;</em> shown
@@ -1655,16 +1661,16 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>1.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact name</p></td>
-<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="center" valign="top"><p class="table">RKM</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
 <td align="left" valign="top"><p class="table">contact_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
-<td align="left" valign="top"><p class="table">Us</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">Use</p></td>
+<td align="center" valign="top"><p class="table">RM</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
-<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">use</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
@@ -1683,7 +1689,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Service notification period</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="center" valign="top"><p class="table">RM</p></td>
 <td align="left" valign="top"><p class="table">svcnotifperiod</p></td>
 <td align="left" valign="top"><p class="table">service_notification_period</p></td>
 </tr>
@@ -1697,14 +1703,14 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Service notification commands</p></td>
-<td align="center" valign="top"><p class="table">LR</p></td>
+<td align="center" valign="top"><p class="table">LRM</p></td>
 <td align="left" valign="top"><p class="table">svcnotifcmds</p></td>
 <td align="left" valign="top"><p class="table">service_notification_commands</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Host notification period</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="center" valign="top"><p class="table">RM</p></td>
 <td align="left" valign="top"><p class="table">hstnotifperiod</p></td>
 <td align="left" valign="top"><p class="table">host_notification_period</p></td>
 </tr>
@@ -1718,7 +1724,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Host notification commands</p></td>
-<td align="center" valign="top"><p class="table">LR</p></td>
+<td align="center" valign="top"><p class="table">LRM</p></td>
 <td align="left" valign="top"><p class="table">hstnotifcmds</p></td>
 <td align="left" valign="top"><p class="table">host_notification_commands</p></td>
 </tr>
@@ -1816,7 +1822,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>24.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
-<td align="center" valign="top"><p class="table">XL</p></td>
+<td align="center" valign="top"><p class="table">XLM</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
 </tr>
@@ -1853,7 +1859,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>1.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact group name</p></td>
-<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="center" valign="top"><p class="table">RKM</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
 <td align="left" valign="top"><p class="table">contactgroup_name</p></td>
 </tr>
@@ -1867,7 +1873,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
 <td align="left" valign="top"><p class="table">Members list</p></td>
-<td align="center" valign="top"><p class="table">RL</p></td>
+<td align="center" valign="top"><p class="table">RLM</p></td>
 <td align="left" valign="top"><p class="table">members</p></td>
 <td align="left" valign="top"><p class="table">members</p></td>
 </tr>
@@ -1931,29 +1937,29 @@ cellspacing="0" cellpadding="4">
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
-<td align="left" valign="top"><p class="table">Template</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="left" valign="top"><p class="table">Host Template</p></td>
+<td align="center" valign="top"><p class="table">RM</p></td>
 <td align="left" valign="top"><p class="table">template</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Shown Hostgroup</p></td>
-<td align="center" valign="top"><p class="table">L</p></td>
+<td align="center" valign="top"><p class="table">LM</p></td>
 <td align="left" valign="top"><p class="table">hostgroup</p></td>
 <td align="left" valign="top"><p class="table">hostgroups</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact</p></td>
-<td align="center" valign="top"><p class="table">L</p></td>
+<td align="center" valign="top"><p class="table">LM</p></td>
 <td align="left" valign="top"><p class="table">contact</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact Group</p></td>
-<td align="center" valign="top"><p class="table">L</p></td>
+<td align="center" valign="top"><p class="table">LM</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
 <td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
@@ -1988,14 +1994,14 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>12.</em></p></td>
 <td align="left" valign="top"><p class="table">Parents</p></td>
-<td align="center" valign="top"><p class="table">LX</p></td>
+<td align="center" valign="top"><p class="table">LXM</p></td>
 <td align="left" valign="top"><p class="table">parents</p></td>
 <td align="left" valign="top"><p class="table">parents</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>13.</em></p></td>
 <td align="left" valign="top"><p class="table">Check command</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
+<td align="center" valign="top"><p class="table">XM</p></td>
 <td align="left" valign="top"><p class="table">command</p></td>
 <td align="left" valign="top"><p class="table">check_command</p></td>
 </tr>
@@ -2037,7 +2043,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>19.</em></p></td>
 <td align="left" valign="top"><p class="table">Check period</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
+<td align="center" valign="top"><p class="table">XM</p></td>
 <td align="left" valign="top"><p class="table">checkperiod</p></td>
 <td align="left" valign="top"><p class="table">check_period</p></td>
 </tr>
@@ -2142,7 +2148,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>34.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification period</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
+<td align="center" valign="top"><p class="table">XM</p></td>
 <td align="left" valign="top"><p class="table">notifperiod</p></td>
 <td align="left" valign="top"><p class="table">notification_period</p></td>
 </tr>
@@ -2269,28 +2275,28 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>1.</em></p></td>
 <td align="left" valign="top"><p class="table">Name</p></td>
-<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="center" valign="top"><p class="table">RKM</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Use</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="center" valign="top"><p class="table">RM</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
 <td align="left" valign="top"><p class="table">Contacts</p></td>
-<td align="center" valign="top"><p class="table">L</p></td>
+<td align="center" valign="top"><p class="table">LM</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
-<td align="center" valign="top"><p class="table">L</p></td>
+<td align="center" valign="top"><p class="table">LM</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
 <td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
@@ -2318,7 +2324,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification period</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="center" valign="top"><p class="table">RM</p></td>
 <td align="left" valign="top"><p class="table">notifperiod</p></td>
 <td align="left" valign="top"><p class="table">notification_period</p></td>
 </tr>
@@ -2339,7 +2345,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>11.</em></p></td>
 <td align="left" valign="top"><p class="table">Check period</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="center" valign="top"><p class="table">RM</p></td>
 <td align="left" valign="top"><p class="table">checkperiod</p></td>
 <td align="left" valign="top"><p class="table">check_period</p></td>
 </tr>
@@ -2593,7 +2599,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
 <td align="left" valign="top"><p class="table">Service command</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="center" valign="top"><p class="table">RM</p></td>
 <td align="left" valign="top"><p class="table">command</p></td>
 <td align="left" valign="top"><p class="table">check_command</p></td>
 </tr>
@@ -2614,14 +2620,14 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Contacts</p></td>
-<td align="center" valign="top"><p class="table">L</p></td>
+<td align="center" valign="top"><p class="table">LM</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>7.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
-<td align="center" valign="top"><p class="table">L</p></td>
+<td align="center" valign="top"><p class="table">LM</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
 <td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
@@ -2705,7 +2711,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>19.</em></p></td>
 <td align="left" valign="top"><p class="table">Check period</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
+<td align="center" valign="top"><p class="table">XM</p></td>
 <td align="left" valign="top"><p class="table">checkperiod</p></td>
 <td align="left" valign="top"><p class="table">check_period</p></td>
 </tr>
@@ -2810,7 +2816,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>34.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification period</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
+<td align="center" valign="top"><p class="table">XM</p></td>
 <td align="left" valign="top"><p class="table">notifperiod</p></td>
 <td align="left" valign="top"><p class="table">notification_period</p></td>
 </tr>
@@ -3304,21 +3310,21 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Use</p></td>
-<td align="center" valign="top"><p class="table"></p></td>
+<td align="center" valign="top"><p class="table">XM</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
 <td align="left" valign="top"><p class="table">Contacts</p></td>
-<td align="center" valign="top"><p class="table">L</p></td>
+<td align="center" valign="top"><p class="table">LM</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
-<td align="center" valign="top"><p class="table">L</p></td>
+<td align="center" valign="top"><p class="table">LM</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
 <td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
@@ -3360,7 +3366,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Notification period</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="center" valign="top"><p class="table">RM</p></td>
 <td align="left" valign="top"><p class="table">notifperiod</p></td>
 <td align="left" valign="top"><p class="table">notification_period</p></td>
 </tr>
@@ -3374,7 +3380,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>12.</em></p></td>
 <td align="left" valign="top"><p class="table">Check period</p></td>
-<td align="center" valign="top"><p class="table">R</p></td>
+<td align="center" valign="top"><p class="table">RM</p></td>
 <td align="left" valign="top"><p class="table">checkperiod</p></td>
 <td align="left" valign="top"><p class="table">check_period</p></td>
 </tr>
@@ -3632,7 +3638,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>1.</em></p></td>
 <td align="left" valign="top"><p class="table">Command name</p></td>
-<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="center" valign="top"><p class="table">RKM</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
 <td align="left" valign="top"><p class="table">command_name</p></td>
 </tr>
@@ -3683,7 +3689,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>1.</em></p></td>
 <td align="left" valign="top"><p class="table">Hostgroup name</p></td>
-<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="center" valign="top"><p class="table">RKM</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
 <td align="left" valign="top"><p class="table">hostgroup_name</p></td>
 </tr>
@@ -3711,7 +3717,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Hostgroup members</p></td>
-<td align="center" valign="top"><p class="table">LX</p></td>
+<td align="center" valign="top"><p class="table">LXM</p></td>
 <td align="left" valign="top"><p class="table">hostgroupmembers</p></td>
 <td align="left" valign="top"><p class="table">hostgroup_members</p></td>
 </tr>
@@ -3855,7 +3861,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>1.</em></p></td>
 <td align="left" valign="top"><p class="table">Timeperiod name</p></td>
-<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="center" valign="top"><p class="table">RKM</p></td>
 <td align="left" valign="top"><p class="table">name</p></td>
 <td align="left" valign="top"><p class="table">timeperiod_name</p></td>
 </tr>
@@ -3876,7 +3882,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Timeperiod to exclude</p></td>
-<td align="center" valign="top"><p class="table">L</p></td>
+<td align="center" valign="top"><p class="table">LM</p></td>
 <td align="left" valign="top"><p class="table">exclude</p></td>
 <td align="left" valign="top"><p class="table">exclude</p></td>
 </tr>
@@ -3890,7 +3896,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
 <td align="left" valign="top"><p class="table">Freestyle time exception</p></td>
-<td align="center" valign="top"><p class="table">CX</p></td>
+<td align="center" valign="top"><p class="table">CXM</p></td>
 <td align="left" valign="top"><p class="table">exception</p></td>
 <td align="left" valign="top"><p class="table"></p></td>
 </tr>
@@ -3934,7 +3940,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Dependent hostgroup name</p></td>
-<td align="center" valign="top"><p class="table">KX</p></td>
+<td align="center" valign="top"><p class="table">KXM</p></td>
 <td align="left" valign="top"><p class="table">dephostgroupname</p></td>
 <td align="left" valign="top"><p class="table">dependent_hostgroup_name</p></td>
 </tr>
@@ -3955,7 +3961,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Hostgroup name</p></td>
-<td align="center" valign="top"><p class="table">KX</p></td>
+<td align="center" valign="top"><p class="table">KXM</p></td>
 <td align="left" valign="top"><p class="table">hostgroupname</p></td>
 <td align="left" valign="top"><p class="table">hostgroup_name</p></td>
 </tr>
@@ -3990,7 +3996,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>10.</em></p></td>
 <td align="left" valign="top"><p class="table">Dependency period</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
+<td align="center" valign="top"><p class="table">XM</p></td>
 <td align="left" valign="top"><p class="table">period</p></td>
 <td align="left" valign="top"><p class="table">dependency_period</p></td>
 </tr>
@@ -4094,7 +4100,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Dependent hostgroup name</p></td>
-<td align="center" valign="top"><p class="table">KX</p></td>
+<td align="center" valign="top"><p class="table">KXM</p></td>
 <td align="left" valign="top"><p class="table">dephostgroupname</p></td>
 <td align="left" valign="top"><p class="table">dependent_hostgroup_name</p></td>
 </tr>
@@ -4108,7 +4114,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Hostgroup name</p></td>
-<td align="center" valign="top"><p class="table">KX</p></td>
+<td align="center" valign="top"><p class="table">KXM</p></td>
 <td align="left" valign="top"><p class="table">hostgroupname</p></td>
 <td align="left" valign="top"><p class="table">hostgroup_name</p></td>
 </tr>
@@ -4136,7 +4142,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Dependency period</p></td>
-<td align="center" valign="top"><p class="table">RX</p></td>
+<td align="center" valign="top"><p class="table">RXM</p></td>
 <td align="left" valign="top"><p class="table">period</p></td>
 <td align="left" valign="top"><p class="table">dependency_period</p></td>
 </tr>
@@ -4240,7 +4246,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Hostgroup name</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
+<td align="center" valign="top"><p class="table">XM</p></td>
 <td align="left" valign="top"><p class="table">hostgroupname</p></td>
 <td align="left" valign="top"><p class="table">hostgroup_name</p></td>
 </tr>
@@ -4254,14 +4260,14 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Contacts</p></td>
-<td align="center" valign="top"><p class="table">LRX</p></td>
+<td align="center" valign="top"><p class="table">LRXM</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>5.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
-<td align="center" valign="top"><p class="table">LR</p></td>
+<td align="center" valign="top"><p class="table">LRM</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
 <td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
@@ -4289,7 +4295,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>9.</em></p></td>
 <td align="left" valign="top"><p class="table">Escalation period</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
+<td align="center" valign="top"><p class="table">XM</p></td>
 <td align="left" valign="top"><p class="table">period</p></td>
 <td align="left" valign="top"><p class="table">escalation_period</p></td>
 </tr>
@@ -4347,21 +4353,21 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Hostgroup name</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
+<td align="center" valign="top"><p class="table">XM</p></td>
 <td align="left" valign="top"><p class="table">hostgroupname</p></td>
 <td align="left" valign="top"><p class="table">hostgroup_name</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>3.</em></p></td>
 <td align="left" valign="top"><p class="table">Contacts</p></td>
-<td align="center" valign="top"><p class="table">LRX</p></td>
+<td align="center" valign="top"><p class="table">LRXM</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Contact groups</p></td>
-<td align="center" valign="top"><p class="table">LR</p></td>
+<td align="center" valign="top"><p class="table">LRM</p></td>
 <td align="left" valign="top"><p class="table">contactgroups</p></td>
 <td align="left" valign="top"><p class="table">contact_groups</p></td>
 </tr>
@@ -4389,7 +4395,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>8.</em></p></td>
 <td align="left" valign="top"><p class="table">Escalation period</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
+<td align="center" valign="top"><p class="table">XM</p></td>
 <td align="left" valign="top"><p class="table">period</p></td>
 <td align="left" valign="top"><p class="table">escalation_period</p></td>
 </tr>
@@ -4990,7 +4996,7 @@ cellspacing="0" cellpadding="4">
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-01-10 11:16:12 BST
+Last updated 2013-01-10 16:14:24 BST
 </div>
 </div>
 </body>

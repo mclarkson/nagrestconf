@@ -478,6 +478,33 @@ are_you_sure()
 }
 
 # ---------------------------------------------------------------------------
+setup_name_mangling()
+# ---------------------------------------------------------------------------
+# Set up the name mangling echo if DCC=1, else plain echo.
+# No arguments.
+# Returns: Nothing
+{
+    if [[ $DCC -eq 1 ]]
+    then
+        # -------------------------------------------------------------------
+        function Echo {
+        # -------------------------------------------------------------------
+        # Expects input to be in the form:
+        #   ([:space:])*(WORD)+([:space:])*([,]*MANGLE_ME)+
+        # Outputs the entire string but with MANGLE_ME mangled.
+        # $1 - the string to output in mangled form
+            local str="$1" P="${gconfigprefix}-"
+
+            echo "$1" | sed "s/^\( \+[^ ]\+ \+[+,]*\)\([^,]*\)/\1$P\2/g;s/,/,$P/g"
+        }
+    else
+        # -------------------------------------------------------------------
+        function Echo { echo "$1"; }
+        # -------------------------------------------------------------------
+    fi
+}
+
+# ---------------------------------------------------------------------------
 #
 # CREATE FUNCTIONS
 #
@@ -558,7 +585,7 @@ create_host_files()
 
         echo_warning_header
         echo "define host {"
-        echo "       use             $hosttempl"
+        Echo "       use             $hosttempl"
         echo "       host_name       $hostname"
         echo "       alias           $alias"
         echo "       address         $ipaddr"
@@ -566,30 +593,30 @@ create_host_files()
             exec 1>&3 3>&-
             add_hostgroup_entries "$shostgroups"
             exec 3>&1 >>$fnnewconfig
-            echo -n "       hostgroups      "
-            echo "$shostgroups" | tr " " ,
+            t=`echo "$shostgroups" | tr " " ,`
+            echo "       hostgroups      $t"
         }
         [[ -n $contacts ]] && {
             ## TODO ## CHECK contact exists in gateway_contacts.setup
-            echo -n "       contacts        +"
-            echo "$contacts" | tr " " ,
+            t=`echo "$contacts" | tr " " ,`
+            Echo "       contacts        +$t"
         }
         [[ $active_checks == 0 ]] && {
             echo "       active_checks_enabled 0"
         }
         [[ -n $contact_groups ]] && {
             ## TODO ## CHECK contact_group exists in gateway_contacts.setup
-            echo -n "       contact_groups  +"
-            echo "$contact_groups" | tr " " ,
+            t=`echo "$contact_groups" | tr " " ,`
+            Echo "       contact_groups  +$t"
         }
         [[ -n $displayname ]] && {
             echo "       display_name $displayname"
         }
         [[ -n $parents ]] && {
-            echo "       parents $parents"
+            Echo "       parents $parents"
         }
         [[ -n $command ]] && {
-            echo "       check_command $command"
+            Echo "       check_command $command"
         }
         [[ -n $initialstate ]] && {
             echo "       initial_state $initialstate"
@@ -611,7 +638,7 @@ create_host_files()
             fi
         }
         [[ -n $checkperiod ]] && {
-            echo "       check_period $checkperiod"
+            Echo "       check_period $checkperiod"
         }
         [[ -n $obsessoverhost ]] && {
             if [[ $obsessoverhost == 1 ]]; then
@@ -685,7 +712,7 @@ create_host_files()
             echo "       first_notifdelay $firstnotifdelay"
         }
         [[ -n $notifperiod ]] && {
-            echo "       notification_period $notifperiod"
+            Echo "       notification_period $notifperiod"
         }
         [[ -n $notifopts ]] && {
             echo -n "       notification_options "
@@ -827,15 +854,15 @@ create_hostgroups()
         }
         exec 3>&1 >>$gfnhostgrpcfg
         echo "define hostgroup {"
-        echo "    hostgroup_name    ${prefix}$a"
+        Echo "    hostgroup_name    $a"
         echo "    alias             $alias"  
         [[ -n $members ]] && {
             echo -n "    members           "
             echo "$members" | tr " " ,
         }
         [[ -n $hostgroupmembers ]] && {
-            echo -n "    hostgroup_members "
-            echo "$hostgroupmembers" | tr " " ,
+            t=`echo "$hostgroupmembers" | tr " " ,`
+            Echo "    hostgroup_members $t"
         }
         [[ -n $notes ]] && {
             echo "    notes             $notes"
@@ -924,7 +951,7 @@ create_service_entries()
             if [[ -n $freshness ]]; then 
                 sc=${scommand#$REMOTE_EXECUTOR!} ; sc=${sc%% *}
                 sc="$FRESHNESS_CHECK_COMMAND!$sc"
-                echo "        check_command                   $sc"
+                Echo "        check_command                   $sc"
                 [[ $DCC -ne 1 ]] && {
                     echo "        active_checks_enabled           0"
                 }
@@ -968,12 +995,12 @@ create_service_entries()
                 echo "$svcgroups" | tr " " ,
             }
             [[ -n $contacts ]] && {
-                echo -n "        contacts                        "
-                echo "$contacts" | tr " " ,
+                t=`echo "$contacts" | tr " " ,`
+                Echo "        contacts                        $t"
             }
             [[ -n $cgroups ]] && {
-                echo -n "        contact_groups                  "
-                echo "$cgroups" | tr " " ,
+                t=`echo "$cgroups" | tr " " ,`
+                Echo "        contact_groups                  $t"
             }
             [[ -n $customvars ]] && {
                 while read -d"," cv
@@ -1000,7 +1027,7 @@ create_service_entries()
                 echo "       retry_interval $retryinterval"
             }
             [[ -n $checkperiod ]] && {
-                echo "       check_period $checkperiod"
+                Echo "       check_period $checkperiod"
             }
             [[ -n $obsessoverservice ]] && {
                 if [[ $obsessoverservice == 1 ]]; then
@@ -1067,7 +1094,7 @@ create_service_entries()
                 echo "       first_notifdelay $firstnotifdelay"
             }
             [[ -n $notifperiod ]] && {
-                echo "       notification_period $notifperiod"
+                Echo "       notification_period $notifperiod"
             }
             [[ -n $notifopts ]] && {
                 echo -n "       notification_options "
@@ -1167,7 +1194,7 @@ create_servicetemplates()
         echo "define service {"
         echo "        name                            $name"
         [[ -n $use ]] && {
-            echo "       use                          $use"
+            Echo "       use                          $use"
         }
         if [[ -n $freshness ]]; then 
             echo "        check_command                   no-checks-received"
@@ -1207,12 +1234,12 @@ create_servicetemplates()
             }
         fi
         [[ -n $contacts ]] && {
-            echo -n "        contacts                        "
-            echo "$contacts" | tr " " ,
+            t=`echo "$contacts" | tr " " ,`
+            Echo "        contacts                        $t"
         }
         [[ -n $cgroups ]] && {
-            echo -n "        contact_groups                  "
-            echo "$cgroups" | tr " " ,
+            t=`echo "$cgroups" | tr " " ,`
+            Echo "        contact_groups                  $t"
         }
         [[ -n $customvars ]] && {
             while read -d"," cv
@@ -1236,7 +1263,7 @@ create_servicetemplates()
             echo "       retry_interval $retrchecki"
         }
         [[ -n $checkperiod ]] && {
-            echo "       check_period $checkperiod"
+            Echo "       check_period $checkperiod"
         }
         [[ -n $obsessoverservice ]] && {
             if [[ $obsessoverservice == 1 ]]; then
@@ -1303,7 +1330,7 @@ create_servicetemplates()
             echo "       first_notifdelay $firstnotifdelay"
         }
         [[ -n $notifperiod ]] && {
-            echo "       notification_period $notifperiod"
+            Echo "       notification_period $notifperiod"
         }
         [[ -n $notifopts ]] && {
             echo -n "       notification_options "
@@ -1405,7 +1432,7 @@ create_hosttemplates()
         # not in nagios 3
         #echo "       normal_check_interval        $normchecki"
         #echo "       failure_prediction_enabled   1"
-        echo "       name                         $name"
+        Echo "       name                         $name"
         echo "       check_interval               $checki"
         echo "       retry_interval               $retrchecki"
         echo "       max_check_attempts           $maxcheckattempts"
@@ -1442,16 +1469,16 @@ create_hosttemplates()
             echo "       retain_nonstatus_information 0"
         fi
         [[ -n $use ]] && {
-            echo "       use                          $use"
+            Echo "       use                          $use"
         }
         [[ -n $contacts ]] && {
-            echo -n "       contacts                     +"
-            echo "$contacts" | tr " " ,
+            t=`echo "$contacts" | tr " " ,`
+            Echo "       contacts                     +$t"
         }
         if [[ $DCC -eq 1 ]]; then
             [[ -n $cgroups || -n $mandgroup ]] && {
-                echo -n "       contact_groups               +"
-                echo "$mandgroup $cgroups" | tr " " ,
+                t=`echo "$mandgroup $cgroups" | tr " " ,`
+                Echo "       contact_groups               +$t"
             }
         else
             [[ -n $cgroups ]] && {
@@ -1460,7 +1487,7 @@ create_hosttemplates()
             }
         fi
         [[ -n $checkperiod ]] && {
-            echo "       check_period                 $checkperiod"
+            Echo "       check_period                 $checkperiod"
         }
         [[ -n $checkcommand ]] && {
             echo "       check_command                $checkcommand"
@@ -1510,7 +1537,7 @@ create_hosttemplates()
             echo "       first_notifdelay             $firstnotifdelay"
         }
         [[ -n $notifperiod ]] && {
-            echo "       notification_period          $notifperiod"
+            Echo "       notification_period          $notifperiod"
         }
         [[ -n $notifopts ]] && {
             echo -n "       notification_options        "
@@ -1596,35 +1623,35 @@ create_contacts()
             < <(echo "$a")
 
         echo "define contact {"
-        echo "       contact_name                  $cname"
+        Echo "       contact_name                  $cname"
         [[ -n $use ]] && {
-            echo "       use                           $use"
+            Echo "       use                           $use"
         }
         echo "       alias                         $alias"
         [[ -n $email ]] && {
             echo "       email                         $email"
         }
         [[ -n $srvnotper ]] && {
-            echo "       service_notification_period   $srvnotper"
+            Echo "       service_notification_period   $srvnotper"
         }
         [[ -n $srvnotopts ]] && {
             echo -n "       service_notification_options  "
             echo "$srvnotopts" | tr " " ,
         }
         [[ -n $srvnotcmds ]] && {
-            echo -n "       service_notification_commands "
-            echo "$srvnotcmds" | tr " " ,
+            t=`echo "$srvnotcmds" | tr " " ,`
+            Echo "       service_notification_commands $t"
         }
         [[ -n $hstnotper ]] && {
-            echo "       host_notification_period      $hstnotper"
+            Echo "       host_notification_period      $hstnotper"
         }
         [[ -n $hstnotopts ]] && {
             echo -n "       host_notification_options     "
             echo "$hstnotopts" | tr " " ,
         }
         [[ -n $hstnotcmds ]] && {
-            echo -n "       host_notification_commands    "
-            echo "$hstnotcmds" | tr " " ,
+            t=`echo "$hstnotcmds" | tr " " ,`
+            Echo "       host_notification_commands    $t"
         }
         [[ -n $cansubmit ]] && {
             echo "       can_submit_commands           $cansubmit"
@@ -1663,8 +1690,8 @@ create_contacts()
             echo "       retain_nonstatus_information  $retainnonstatusinfo"
         }
         [[ -n $contactgroups ]] && {
-            echo -n "       contactgroups                 "
-            echo "$contactgroups" | tr " " ,
+            t=`echo "$contactgroups" | tr " " ,`
+            Echo "       contactgroups                 $t"
         }
         echo "}"
         echo
@@ -1686,11 +1713,11 @@ create_contacts()
         members=`echo $a | cut -d, -f3`
 
         echo "define contactgroup {"
-        echo "       contactgroup_name             $cname"
+        Echo "       contactgroup_name             $cname"
         echo "       alias                         $use"
         [[ -n $members ]] && {
-            echo -n "       members                       "
-            echo "$members" | tr " " ,
+            t=`echo "$members" | tr " " ,`
+            Echo "       members                       $t"
         }
         echo "}"
         echo
@@ -1731,7 +1758,7 @@ create_timeperiods()
         alias=$(echo "$alias" | tr '`' ',')
 
         echo "define timeperiod {"
-        echo "       timeperiod_name   $name"
+        Echo "       timeperiod_name   $name"
         echo "       alias             $alias"
         [[ -n $definition ]] && {
             while read -d"," b
@@ -1746,8 +1773,8 @@ create_timeperiods()
             done < <(echo "$exception,")
         }
         [[ -n $exclude ]] && {
-            echo -n "       exclude                       "
-            echo "$exclude" | tr " " ,
+            t=`echo "$exclude" | tr " " ,`
+            Echo "       exclude                       $t"
         }
         echo "}"
         echo
@@ -1785,7 +1812,7 @@ create_commands()
         [[ -n $command ]] && command=$(echo "$command" | tr '`' ',')
 
         echo "define command {"
-        echo "       command_name $name"
+        Echo "       command_name $name"
         echo "       command_line $command"
         echo "}"
         echo
@@ -1829,13 +1856,13 @@ create_servicedeps()
         if [[ -n $dephostname ]]; then
             echo "       dependent_host_name           $dephostname"
         else
-            echo "       dependent_hostgroup_name      $dephostgroupname"
+            Echo "       dependent_hostgroup_name      $dephostgroupname"
         fi
         echo "       dependent_service_description $depsvcdesc"
         if [[ -n $hostname ]]; then
             echo "       host_name                     $hostname"
         else
-            echo "       hostgroup_name                $hostgroupname"
+            Echo "       hostgroup_name                $hostgroupname"
         fi
         echo "       service_description           $svcdesc"
         [[ -n $inheritsparent ]] && {
@@ -1854,7 +1881,7 @@ create_servicedeps()
             echo "$notiffailcriteria" | tr " " ,
         }
         [[ -n $period ]] && {
-            echo "       dependency_period             $period"
+            Echo "       dependency_period             $period"
         }
         echo "}"
         echo
@@ -1898,12 +1925,12 @@ create_hostdeps()
         if [[ -n $dephostname ]]; then
             echo "       dependent_host_name           $dephostname"
         else
-            echo "       dependent_hostgroup_name      $dephostgroupname"
+            Echo "       dependent_hostgroup_name      $dephostgroupname"
         fi
         if [[ -n $hostname ]]; then
             echo "       host_name                     $hostname"
         else
-            echo "       hostgroup_name                $hostgroupname"
+            Echo "       hostgroup_name                $hostgroupname"
         fi
         [[ -n $inheritsparent ]] && {
             if [[ $inheritsparent == 1 ]]; then
@@ -1921,7 +1948,7 @@ create_hostdeps()
             echo "$notiffailcriteria" | tr " " ,
         }
         [[ -n $period ]] && {
-            echo "       dependency_period             $period"
+            Echo "       dependency_period             $period"
         }
         echo "}"
         echo
@@ -1964,16 +1991,16 @@ create_serviceesc()
         if [[ -n $hostname ]]; then
             echo "       host_name            $hostname"
         else
-            echo "       hostgroup_name       $hostgroupname"
+            Echo "       hostgroup_name       $hostgroupname"
         fi
         echo "       service_description  $svcdesc"
         [[ -n $contacts ]] && {
-            echo -n "       contacts             "
-            echo "$contacts" | tr " " ,
+            t=`echo "$contacts" | tr " " ,`
+            Echo "       contacts             $t"
         }
         [[ -n $contactgroups ]] && {
-            echo -n "       contact_groups       "
-            echo "$contactgroups" | tr " " ,
+            t=`echo "$contactgroups" | tr " " ,`
+            Echo "       contact_groups       $t"
         }
         [[ -n $escopts ]] && {
             echo -n "       escalation_options   "
@@ -1989,7 +2016,7 @@ create_serviceesc()
             echo "       notification_interval $notifinterval"
         }
         [[ -n $period ]] && {
-            echo "       escalation_period     $period"
+            Echo "       escalation_period     $period"
         }
         echo "}"
         echo
@@ -2032,15 +2059,15 @@ create_hostesc()
         if [[ -n $hostname ]]; then
             echo "       host_name            $hostname"
         else
-            echo "       hostgroup_name       $hostgroupname"
+            Echo "       hostgroup_name       $hostgroupname"
         fi
         [[ -n $contacts ]] && {
-            echo -n "       contacts             "
-            echo "$contacts" | tr " " ,
+            t=`echo "$contacts" | tr " " ,`
+            Echo "       contacts             $t"
         }
         [[ -n $contactgroups ]] && {
-            echo -n "       contact_groups       "
-            echo "$contactgroups" | tr " " ,
+            t=`echo "$contactgroups" | tr " " ,`
+            Echo "       contact_groups       $t"
         }
         [[ -n $escopts ]] && {
             echo -n "       escalation_options   "
@@ -2056,7 +2083,7 @@ create_hostesc()
             echo "       notification_interval $notifinterval"
         }
         [[ -n $period ]] && {
-            echo "       escalation_period     $period"
+            Echo "       escalation_period     $period"
         }
         echo "}"
         echo
@@ -2286,6 +2313,8 @@ main()
     fi
 
     parse_options
+
+    setup_name_mangling
 
     if [[ $gsetupfiletype -eq $FT_ALL ]]; then
         gsetupfiletype=$FT_HOSTS
