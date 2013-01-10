@@ -1991,9 +1991,6 @@ create_serviceesc()
         [[ -n $period ]] && {
             echo "       escalation_period     $period"
         }
-        [[ -n $options ]] && {
-            echo "       escalation_options    $escopts"
-        }
         echo "}"
         echo
 
@@ -2060,9 +2057,6 @@ create_hostesc()
         }
         [[ -n $period ]] && {
             echo "       escalation_period     $period"
-        }
-        [[ -n $options ]] && {
-            echo "       escalation_options    $escopts"
         }
         echo "}"
         echo
