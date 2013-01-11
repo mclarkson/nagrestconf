@@ -686,7 +686,7 @@ hosttemplates
 | 10.    | Disable                       | U       | disable                   | 
 | 11.    | Check period                  | RM      | checkperiod               | check_period
 | 12.    | Max check attempts            | R       | maxcheckattempts          | max_check_attempts
-| 13.    | Check command                 |         | checkcommand              | check_command
+| 13.    | Check command                 | M       | checkcommand              | check_command
 | 14.    | Notification interval         | R       | notifinterval             | notification_interval
 | 15.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
 | 16.    | Obsess over host              | X       | obsessoverhost            | obsess_over_host

@@ -493,9 +493,13 @@ setup_name_mangling()
         #   ([:space:])*(WORD)+([:space:])*([,]*MANGLE_ME)+
         # Outputs the entire string but with MANGLE_ME mangled.
         # $1 - the string to output in mangled form
+        # $2 - if set [to anything at all] then ` will be replaced with ,
             local str="$1" P="${gconfigprefix}-"
 
-            echo "$1" | sed "s/^\( \+[^ ]\+ \+[+,]*\)\([^,]*\)/\1$P\2/g;s/,/,$P/g"
+            [[ -n $2 ]] && R='s/`/,/g'
+
+            echo "$1" | sed \
+                "s/^\( \+[^ ]\+ \+[+,]*\)\([^,]*\)/\1$P\2/g;s/,/,$P/g;$R"
         }
     else
         # -------------------------------------------------------------------
@@ -555,7 +559,7 @@ create_host_files()
 
         [[ "$disable" == "1" ]] && continue
 
-        prihostgroup=`echo $shostgroups | cut -d" " -f1`
+        prihostgroup="${shostgroups%% *}"
 
         [[ $DCC -eq 1 ]] && {
             shostgroups=`echo "$shostgroups" \
@@ -593,12 +597,12 @@ create_host_files()
             exec 1>&3 3>&-
             add_hostgroup_entries "$shostgroups"
             exec 3>&1 >>$fnnewconfig
-            t=`echo "$shostgroups" | tr " " ,`
+            t="${shostgroups// /,}"
             echo "       hostgroups      $t"
         }
         [[ -n $contacts ]] && {
             ## TODO ## CHECK contact exists in gateway_contacts.setup
-            t=`echo "$contacts" | tr " " ,`
+            t="${contacts// /,}"
             Echo "       contacts        +$t"
         }
         [[ $active_checks == 0 ]] && {
@@ -606,7 +610,7 @@ create_host_files()
         }
         [[ -n $contact_groups ]] && {
             ## TODO ## CHECK contact_group exists in gateway_contacts.setup
-            t=`echo "$contact_groups" | tr " " ,`
+            t="${contact_groups// /,}"
             Echo "       contact_groups  +$t"
         }
         [[ -n $displayname ]] && {
@@ -899,11 +903,9 @@ create_service_entries()
     while read a; do 
         [[ -z $a || $a == "#"* ]] && continue
 
-        disable=`echo $a | cut -d, -f10`
+        IFS=, read hostname x x x x x x x x disable x < <(echo "$a")
         
         [[ "$disable" == "1" ]] && continue
-
-        hostname=`echo $a | cut -d, -f1`
 
         # Find the hostname.cfg file to append to in xxx-nodes directory
         hfile=`find $gconfigprefix-nodes -name $hostname.cfg`
@@ -939,8 +941,7 @@ create_service_entries()
 
             [[ "$disable" == "1" ]] && continue
 
-            scommand=$(echo $scommand | tr '`' ',')
-            [[ -n $customvars ]] && customvars=$(echo "$customvars" | tr '`' ',')
+            [[ -n $customvars ]] && customvars="${customvars//\`/,}"
 
             [[ $DCC -eq 1 && -z $freshness ]] && freshness=600
 
@@ -951,7 +952,7 @@ create_service_entries()
             if [[ -n $freshness ]]; then 
                 sc=${scommand#$REMOTE_EXECUTOR!} ; sc=${sc%% *}
                 sc="$FRESHNESS_CHECK_COMMAND!$sc"
-                Echo "        check_command                   $sc"
+                Echo "        check_command                   $sc" do_replace
                 [[ $DCC -ne 1 ]] && {
                     echo "        active_checks_enabled           0"
                 }
@@ -960,6 +961,7 @@ create_service_entries()
                 echo "$freshness"
                 echo "        check_freshness                 1"
             else
+                scommand="${scommand//\`/,}"
                 echo "        check_command                   $scommand"
                 [[ -n $active_checks ]] && {
                     if [[ $active_checks == 0 ]]; then
@@ -992,14 +994,14 @@ create_service_entries()
                 add_servicegroup_entries "$svcgroups"
                 exec 3>&1 >>$hfile
                 echo -n "        servicegroups                   "
-                echo "$svcgroups" | tr " " ,
+                echo "${svcgroups// /,}"
             }
             [[ -n $contacts ]] && {
-                t=`echo "$contacts" | tr " " ,`
+                t="${contacts// /,}"
                 Echo "        contacts                        $t"
             }
             [[ -n $cgroups ]] && {
-                t=`echo "$cgroups" | tr " " ,`
+                t="${cgroups// /,}"
                 Echo "        contact_groups                  $t"
             }
             [[ -n $customvars ]] && {
@@ -1064,7 +1066,7 @@ create_service_entries()
             }
             [[ -n $flapdetectionoptions ]] && {
                 echo -n "       flap_detection_options "
-                echo "$flapdetectionoptions" | tr " " ,
+                echo "${flapdetectionoptions// /,}"
             }
             [[ -n $processperfdata ]] && {
                 if [[ $processperfdata == 0 ]]; then
@@ -1098,7 +1100,7 @@ create_service_entries()
             }
             [[ -n $notifopts ]] && {
                 echo -n "       notification_options "
-                echo "$notifopts" | tr " " ,
+                echo "${notifopts// /,}"
             }
             [[ -n $notifications_enabled ]] && {
                 if [[ $notifications_enabled == 0 ]]; then
@@ -1109,7 +1111,7 @@ create_service_entries()
             }
             [[ -n $stalkingoptions ]] && {
                 echo -n "       stalking_options "
-                echo "$stalkingoptions" | tr " " ,
+                echo "${stalkingoptions// /,}"
             }
             [[ -n $notes ]] && {
                 echo "       notes $notes"
@@ -1234,11 +1236,11 @@ create_servicetemplates()
             }
         fi
         [[ -n $contacts ]] && {
-            t=`echo "$contacts" | tr " " ,`
+            t="${contacts// /,}"
             Echo "        contacts                        $t"
         }
         [[ -n $cgroups ]] && {
-            t=`echo "$cgroups" | tr " " ,`
+            t="${cgroups// /,}"
             Echo "        contact_groups                  $t"
         }
         [[ -n $customvars ]] && {
@@ -1300,7 +1302,7 @@ create_servicetemplates()
         }
         [[ -n $flapdetectionoptions ]] && {
             echo -n "       flap_detection_options "
-            echo "$flapdetectionoptions" | tr " " ,
+            echo "${flapdetectionoptions// /,}"
         }
         [[ -n $processperfdata ]] && {
             if [[ $processperfdata == 0 ]]; then
@@ -1334,7 +1336,7 @@ create_servicetemplates()
         }
         [[ -n $notifopts ]] && {
             echo -n "       notification_options "
-            echo "$notifopts" | tr " " ,
+            echo "${notifopts// /,}"
         }
         [[ -n $notifications_enabled ]] && {
             if [[ $notifications_enabled == 0 ]]; then
@@ -1345,7 +1347,7 @@ create_servicetemplates()
         }
         [[ -n $stalkingoptions ]] && {
             echo -n "       stalking_options "
-            echo "$stalkingoptions" | tr " " ,
+            echo "${stalkingoptions// /,}"
         }
         [[ -n $notes ]] && {
             echo "       notes $notes"
@@ -1405,10 +1407,10 @@ create_hosttemplates()
 
     echo_warning_header
 
-    [[ $DCC -eq 1 ]] && {
+    [[ $DCC -eq 1 && -r $gfnmandatorygroupcfg ]] && {
         # Read mandatory group
         read a <$gfnmandatorygroupcfg
-        mandgroup=`echo "$a" | sed 's/^ *//;s/ *$//;s/  / /g' | tr " " ,`
+        mandgroup=`echo "$a " | sed 's/^ *//;s/ *$//;s/  / /g' | tr " " ,`
     }
 
     while read a; do 
@@ -1472,29 +1474,29 @@ create_hosttemplates()
             Echo "       use                          $use"
         }
         [[ -n $contacts ]] && {
-            t=`echo "$contacts" | tr " " ,`
+            t="${contacts// /,}"
             Echo "       contacts                     +$t"
         }
         if [[ $DCC -eq 1 ]]; then
             [[ -n $cgroups || -n $mandgroup ]] && {
-                t=`echo "$mandgroup $cgroups" | tr " " ,`
+                t=`echo "$mandgroup$cgroups" | tr " " ,`
                 Echo "       contact_groups               +$t"
             }
         else
             [[ -n $cgroups ]] && {
                 echo -n "       contact_groups               +"
-                echo "$cgroups" | tr " " ,
+                echo "${cgroups// /,}"
             }
         fi
         [[ -n $checkperiod ]] && {
             Echo "       check_period                 $checkperiod"
         }
         [[ -n $checkcommand ]] && {
-            echo "       check_command                $checkcommand"
+            Echo "       check_command                $checkcommand"
         }
         [[ -n $notifopts ]] && {
             echo -n "       notification_options         "
-            echo "$notifopts" | tr " " ,
+            echo "${notifopts// /,}"
         }
         [[ -n $passivechecks ]] && {
             if [[ $passivechecks == 0 ]]; then
@@ -1531,7 +1533,7 @@ create_hosttemplates()
         }
         [[ -n $flapdetectionoptions ]] && {
             echo -n "       flap_detection_options        "
-            echo "$flapdetectionoptions" | tr " " ,
+            echo "${flapdetectionoptions// /,}"
         }
         [[ -n $firstnotifdelay ]] && {
             echo "       first_notifdelay             $firstnotifdelay"
@@ -1541,11 +1543,11 @@ create_hosttemplates()
         }
         [[ -n $notifopts ]] && {
             echo -n "       notification_options        "
-            echo "$notifopts" | tr " " ,
+            echo "${notifopts// /,}"
         }
         [[ -n $stalkingoptions ]] && {
             echo -n "       stalking_options            "
-            echo "$stalkingoptions" | tr " " ,
+            echo "${stalkingoptions// /,}"
         }
         [[ -n $notes ]] && {
             echo "       notes                        $notes"
@@ -1636,10 +1638,10 @@ create_contacts()
         }
         [[ -n $srvnotopts ]] && {
             echo -n "       service_notification_options  "
-            echo "$srvnotopts" | tr " " ,
+            echo "${srvnotopts// /,}"
         }
         [[ -n $srvnotcmds ]] && {
-            t=`echo "$srvnotcmds" | tr " " ,`
+            t="${srvnotcmds// /,}"
             Echo "       service_notification_commands $t"
         }
         [[ -n $hstnotper ]] && {
@@ -1647,10 +1649,10 @@ create_contacts()
         }
         [[ -n $hstnotopts ]] && {
             echo -n "       host_notification_options     "
-            echo "$hstnotopts" | tr " " ,
+            echo "${hstnotopts// /,}"
         }
         [[ -n $hstnotcmds ]] && {
-            t=`echo "$hstnotcmds" | tr " " ,`
+            t="${hstnotcmds// /,}"
             Echo "       host_notification_commands    $t"
         }
         [[ -n $cansubmit ]] && {
@@ -1690,7 +1692,7 @@ create_contacts()
             echo "       retain_nonstatus_information  $retainnonstatusinfo"
         }
         [[ -n $contactgroups ]] && {
-            t=`echo "$contactgroups" | tr " " ,`
+            t="${contactgroups// /,}"
             Echo "       contactgroups                 $t"
         }
         echo "}"
@@ -1708,15 +1710,13 @@ create_contacts()
     while read a; do 
         [[ -z $a || $a == "#"* ]] && continue
 
-        cname=`echo $a | cut -d, -f1`
-        use=`echo $a | cut -d, -f2`
-        members=`echo $a | cut -d, -f3`
+        IFS=, read cname use members < <(echo "$a")
 
         echo "define contactgroup {"
         Echo "       contactgroup_name             $cname"
         echo "       alias                         $use"
         [[ -n $members ]] && {
-            t=`echo "$members" | tr " " ,`
+            t="${members// /,}"
             Echo "       members                       $t"
         }
         echo "}"
@@ -1773,7 +1773,7 @@ create_timeperiods()
             done < <(echo "$exception,")
         }
         [[ -n $exclude ]] && {
-            t=`echo "$exclude" | tr " " ,`
+            t="${exclude// /,}"
             Echo "       exclude                       $t"
         }
         echo "}"
@@ -1874,11 +1874,11 @@ create_servicedeps()
         }
         [[ -n $execfailcriteria ]] && {
             echo -n "       execution_failure_criteria    "
-            echo "$execfailcriteria" | tr " " ,
+            echo "${execfailcriteria// /,}"
         }
         [[ -n $notiffailcriteria ]] && {
             echo -n "       notification_failure_criteria "
-            echo "$notiffailcriteria" | tr " " ,
+            echo "${notiffailcriteria// /,}"
         }
         [[ -n $period ]] && {
             Echo "       dependency_period             $period"
@@ -1941,11 +1941,11 @@ create_hostdeps()
         }
         [[ -n $execfailcriteria ]] && {
             echo -n "       execution_failure_criteria    "
-            echo "$execfailcriteria" | tr " " ,
+            echo "${execfailcriteria// /,}"
         }
         [[ -n $notiffailcriteria ]] && {
             echo -n "       notification_failure_criteria "
-            echo "$notiffailcriteria" | tr " " ,
+            echo "${notiffailcriteria// /,}"
         }
         [[ -n $period ]] && {
             Echo "       dependency_period             $period"
@@ -1995,16 +1995,16 @@ create_serviceesc()
         fi
         echo "       service_description  $svcdesc"
         [[ -n $contacts ]] && {
-            t=`echo "$contacts" | tr " " ,`
+            t="${contacts// /,}"
             Echo "       contacts             $t"
         }
         [[ -n $contactgroups ]] && {
-            t=`echo "$contactgroups" | tr " " ,`
+            t="${contactgroups// /,}"
             Echo "       contact_groups       $t"
         }
         [[ -n $escopts ]] && {
             echo -n "       escalation_options   "
-            echo "$escopts" | tr " " ,
+            echo "${escopts// /,}"
         }
         [[ -n $firstnotif ]] && {
             echo "       first_notification   $firstnotif"
@@ -2062,16 +2062,16 @@ create_hostesc()
             Echo "       hostgroup_name       $hostgroupname"
         fi
         [[ -n $contacts ]] && {
-            t=`echo "$contacts" | tr " " ,`
+            t="${contacts// /,}"
             Echo "       contacts             $t"
         }
         [[ -n $contactgroups ]] && {
-            t=`echo "$contactgroups" | tr " " ,`
+            t="${contactgroups// /,}"
             Echo "       contact_groups       $t"
         }
         [[ -n $escopts ]] && {
             echo -n "       escalation_options   "
-            echo "$escopts" | tr " " ,
+            echo "${escopts// /,}"
         }
         [[ -n $firstnotif ]] && {
             echo "       first_notification   $firstnotif"
