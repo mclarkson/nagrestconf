@@ -209,6 +209,8 @@ li {
 News
 ----
 
+14 Jan 2012 - New release with lots of enhancements and fixes. Packaging has changed: See <<X11, Install>>.
+
 7 Nov 2012 - All nagios object definitions are now supported in the REST api.
 
 22 Oct 2012 - Fixes made for Centos 5/6 and Debian packages.
@@ -309,6 +311,7 @@ Upgrade
 
 After the upgrade run `/usr/bin/upgrade_setup_files.sh'.
 
+[[X11]]
 Install
 -------
 
@@ -342,18 +345,28 @@ yum install nagrestconf-1.73-1.noarch.rpm
 +
 2. Configure the system:
 +
-The system should now be ready to configure using REST or by using the GUI.
+Use the two helper scripts nagrestconf_install and slc_configure. A sample
+configuration is also included in the system doc/ directories. For example:
++
+------------------------------------------------------------------
+cd /etc/
+mv nagios/ nagios.orig
+cp -a /usr/share/doc/nagrestconf-1*/initial-config/ nagios
+nagrestconf_install -a
+slc_configure --folder=local
+------------------------------------------------------------------
 +
 Test the installation with:
 +
 ------------------------------------------------------------------
 bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh
+htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin a_password
 ------------------------------------------------------------------
 +
 Then check that it can be seen and edited in the 'Nagrestconf' GUI by pointing
 a supported Web Browser at `http://localhost/nagrestconf'.
 +
-If something goes wrong then there are configuration files in
+If something goes wrong then there are configuration files in the directory
 '/etc/nagrestconf' that might need correcting.
 
 
@@ -520,11 +533,11 @@ http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html
 Listing of all Valid REST Options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The 'Column' number in the following tables relate to the column number in the
+The `Column' number in the following tables relate to the column number in the
 database files on the nagios server. These are comma delimited files used by
 'csv2nag' to create the nagios configuration files.
 
-Key for the 'Flags' column:
+Key for the `Flags' column:
 
  * \'U' - The option is Unimplemented.
  * \'R' - A required field.
@@ -535,8 +548,8 @@ Key for the 'Flags' column:
  * \'M' - Name mangling is applied to a passive-only nagios server. (Where the
           DCC variable is set to `1' in /etc/nagrestconf/csv2nag.conf.)
 
-The 'REST variable name' column lists the option names that can be used in the
-`json=' part of the query. These names are used in place of '<option>' shown
+The `REST variable name' column lists the option names that can be used in the
+`json=' part of the query. These names are used in place of `<option>' shown
 in the `Rest Commands' section above.
 
 NOTE: Many examples use `JSON.sh', which can be found here:

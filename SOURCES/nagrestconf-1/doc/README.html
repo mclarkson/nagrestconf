@@ -668,6 +668,7 @@ li {
 </div>
 <h2 id="_news">1. News</h2>
 <div class="sectionbody">
+<div class="paragraph"><p>14 Jan 2012 - New release with lots of enhancements and fixes. Packaging has changed: See <a href="#X11">Install</a>.</p></div>
 <div class="paragraph"><p>7 Nov 2012 - All nagios object definitions are now supported in the REST api.</p></div>
 <div class="paragraph"><p>22 Oct 2012 - Fixes made for Centos 5/6 and Debian packages.</p></div>
 <div class="paragraph"><p>4 Sep 2012 - Added more Nagios directives to the REST api. See the <a href="#X10">Upgrade</a> section below.</p></div>
@@ -874,7 +875,7 @@ cellspacing="0" cellpadding="4">
 <div class="sectionbody">
 <div class="paragraph"><p>After the upgrade run &#8216;/usr/bin/upgrade_setup_files.sh&#8217;.</p></div>
 </div>
-<h2 id="_install">8. Install</h2>
+<h2 id="X11">8. Install</h2>
 <div class="sectionbody">
 <h3 id="_prebuilt_packages">8.1. Prebuilt Packages</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Get the relevant RPM for Centos/Redhat from Sourceforge at:</p></div>
@@ -901,15 +902,25 @@ yum install nagrestconf-1.73-1.noarch.rpm</tt></pre>
 <p>
 Configure the system:
 </p>
-<div class="paragraph"><p>The system should now be ready to configure using REST or by using the GUI.</p></div>
+<div class="paragraph"><p>Use the two helper scripts nagrestconf_install and slc_configure. A sample
+configuration is also included in the system doc/ directories. For example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>cd /etc/
+mv nagios/ nagios.orig
+cp -a /usr/share/doc/nagrestconf-1*/initial-config/ nagios
+nagrestconf_install -a
+slc_configure --folder=local</tt></pre>
+</div></div>
 <div class="paragraph"><p>Test the installation with:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh</tt></pre>
+<pre><tt>bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh
+htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin a_password</tt></pre>
 </div></div>
 <div class="paragraph"><p>Then check that it can be seen and edited in the <em>Nagrestconf</em> GUI by pointing
 a supported Web Browser at &#8216;http://localhost/nagrestconf&#8217;.</p></div>
-<div class="paragraph"><p>If something goes wrong then there are configuration files in
+<div class="paragraph"><p>If something goes wrong then there are configuration files in the directory
 <em>/etc/nagrestconf</em> that might need correcting.</p></div>
 </li>
 </ol></div>
@@ -1540,10 +1551,10 @@ individual options in the following tables. It can be found at the following
 URL:</p></div>
 <div class="paragraph"><p><a href="http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html">http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html</a></p></div>
 <h3 id="_listing_of_all_valid_rest_options">12.1. Listing of all Valid REST Options</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The <em>Column</em> number in the following tables relate to the column number in the
+<div class="paragraph"><p>The &#8216;Column&#8217; number in the following tables relate to the column number in the
 database files on the nagios server. These are comma delimited files used by
 <em>csv2nag</em> to create the nagios configuration files.</p></div>
-<div class="paragraph"><p>Key for the <em>Flags</em> column:</p></div>
+<div class="paragraph"><p>Key for the &#8216;Flags&#8217; column:</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1582,8 +1593,8 @@ database files on the nagios server. These are comma delimited files used by
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>The <em>REST variable name</em> column lists the option names that can be used in the
-&#8216;json=&#8217; part of the query. These names are used in place of <em>&lt;option&gt;</em> shown
+<div class="paragraph"><p>The &#8216;REST variable name&#8217; column lists the option names that can be used in the
+&#8216;json=&#8217; part of the query. These names are used in place of &#8216;&lt;option&gt;&#8217; shown
 in the &#8216;Rest Commands&#8217; section above.</p></div>
 <div class="admonitionblock">
 <table><tr>
@@ -4996,7 +5007,7 @@ cellspacing="0" cellpadding="4">
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-01-11 08:50:46 BST
+Last updated 2013-01-14 13:42:09 BST
 </div>
 </div>
 </body>
