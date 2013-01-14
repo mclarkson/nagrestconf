@@ -209,7 +209,7 @@ li {
 News
 ----
 
-14 Jan 2012 - New release with lots of enhancements and fixes. Packaging has changed: See <<X11, Install>>.
+14 Jan 2013 - New release with lots of enhancements and fixes. Packaging has changed: See <<X11, Install>>.
 
 7 Nov 2012 - All nagios object definitions are now supported in the REST api.
 

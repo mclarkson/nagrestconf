@@ -1,3 +1,38 @@
+2013-01-14  mclarkson
+
+	* [r123] README, doc/README.html: Updated docs for new release
+	* [r122] doc/initial-config/nagios.cfg: comment out the broker
+	  module
+	* [r121] scripts/slc_configure: Allow null dccip
+
+2013-01-11  mclarkson
+
+	* [r120] README, doc/README.html, scripts/csv2nag: Name mangling,
+	  optimisations and bugfixes
+
+2013-01-10  mclarkson
+
+	* [r119] README, doc/README.html, scripts/csv2nag: Name mangling -
+	  in progress
+	* [r118] README, doc/README.html: Added nagios argument names
+	  column to tables
+	* [r117] scripts/csv2nag: Removed redundant code
+
+2013-01-08  mclarkson
+
+	* [r116] scripts/auto_reschedule_nagios_check: Belt and braces.
+
+2013-01-04  mclarkson
+
+	* [r113] debian/postinst, debian/prerm, scripts/nagctl,
+	  scripts/nagrestconf_install: Taken some configuration out of
+	  packaging and into nagrestconf_install.
+
+2012-12-31  mclarkson
+
+	* [r112] ChangeLog, debian/changelog, debian/control: Updated
+	  changelogs
+
 2012-12-19  mclarkson
 
 	* [r111] etc/nagrestconf/csv2nag.conf, scripts/csv2nag: Add the
