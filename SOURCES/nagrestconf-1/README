@@ -749,7 +749,7 @@ services
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
 | 1.     | Name                          | RK      | name                      | host_name
-| 2.     | Service template              | R       | template                  | use
+| 2.     | Service template              | RM      | template                  | use
 | 3.     | Service command               | RM      | command                   | check_command
 | 4.     | Service description           | RK      | svcdesc                   | service_description
 | 5.     | Service groups                | L       | svcgroup                  | servicegroups
@@ -887,7 +887,7 @@ servicetemplates
 [cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
-| 1.     | Name                          | RK      | name                      | name
+| 1.     | Name                          | RKM     | name                      | name
 | 2.     | Use                           | XM      | use                       | use
 | 3.     | Contacts                      | LM      | contacts                  | contacts
 | 4.     | Contact groups                | LM      | contactgroups             | contact_groups

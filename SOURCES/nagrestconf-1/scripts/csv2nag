@@ -947,7 +947,7 @@ create_service_entries()
 
             echo "define service {"
             echo "        host_name                       $hostname"
-            echo "        use                             $stemplate"
+            Echo "        use                             $stemplate"
             echo "        service_description             $sdescr"
             if [[ -n $freshness ]]; then 
                 sc=${scommand#$REMOTE_EXECUTOR!} ; sc=${sc%% *}
@@ -1194,7 +1194,7 @@ create_servicetemplates()
         [[ "$disable" == "1" ]] && continue
 
         echo "define service {"
-        echo "        name                            $name"
+        Echo "        name                            $name"
         [[ -n $use ]] && {
             Echo "       use                          $use"
         }
