@@ -2301,6 +2301,8 @@ main()
 {
     set_default_globals
 
+    parse_options
+
     if [[ -r $CONFIG ]]; then
         source $CONFIG
         [[ -z $DCC ]] && {
@@ -2311,8 +2313,6 @@ main()
         echo "ERROR: File does not exist, '$CONFIG'. Aborting"
         exit 1
     fi
-
-    parse_options
 
     setup_name_mangling
 
