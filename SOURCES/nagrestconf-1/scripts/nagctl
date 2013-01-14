@@ -3247,9 +3247,9 @@ restart_nagios()
             echo -n "NAGCTL ERROR: Config could not be saved. Nagios restart"
             echo -n " request not sent. Error was "
             head -1 /tmp/nagctl_err.$$
-            rm -f /tmp/nagctl_err.$$
             exit 1
         fi
+        rm -f /tmp/nagctl_err.$$
         echo -n "Config saved and Nagios restart request sent."
     else
         echo "NAGCTL ERROR: Config error. Nagios restart request not sent."
