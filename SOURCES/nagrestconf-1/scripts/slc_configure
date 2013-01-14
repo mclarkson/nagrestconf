@@ -416,8 +416,10 @@ main()
         exit 0
     }
 
-    # Do this yourself
-    [[ -z $G_DCCIP ]] && prompt_for_config_var "Enter DCC IP address" G_DCCIP
+    [[ $G_USEDCC -eq 1 ]] && {
+        [[ -z $G_DCCIP ]] && \
+            prompt_for_config_var "Enter DCC IP address" G_DCCIP
+    }
 
     setup_nagios_cfg
     [[ $G_USEDCC -eq 1 ]] && {
