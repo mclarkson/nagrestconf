@@ -629,8 +629,8 @@ hosts
 | 6.     | Contact                       | LM      | contact                   | contacts
 | 7.     | Contact Group                 | LM      | contactgroups             | contact_groups
 | 8.     | Active checks                 |         | activechecks              | active_checks_enabled
-| 9.     | Service Set                   |         | servicesets               | 
-| 10.    | Disable                       |         | disable                   |
+| 9.     | Service Set                   |         | servicesets               | N/A
+| 10.    | Disable [0|1|2]               |         | disable                   | N/A
 | 11.    | Display name                  |         | displayname               | display_name
 | 12.    | Parents                       | LXM     | parents                   | parents
 | 13.    | Check command                 | XM      | command                   | check_command

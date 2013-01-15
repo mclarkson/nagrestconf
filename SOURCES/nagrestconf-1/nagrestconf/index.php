@@ -1,7 +1,15 @@
 <?php
 /*
+ * Copyright(C) 2012 Mark Clarkson <mark.clarkson@smorg.co.uk>
+ *
+ *    This software is provided under the terms of the GNU
+ *    General Public License (GPL), as published at: 
+ *    http://www.gnu.org/licenses/gpl.html .
+ *
+ * File:    index.php
  * Author:  Mark Clarkson
- * Date: 23 Jan 2012
+ * Date:    23 Jan 2012
+ *
  */
     # ------------------------------------------------------------------------
     # USER MODIFIABLE GLOBALS
@@ -5495,7 +5503,10 @@
             if( $item['disable'] == "1" ) {
                 #$style = ' style="color: red;"';
                 $style = ' style="background-color: #F7DCC6;"';
-            }
+            } elseif( $item['disable'] == "2" ) {
+                #$style = ' style="color: red;"';
+                $style = ' style="background-color: #FFFC9E;"';
+            } 
 
             if( $num % 2 == 0 )
                 print "<tr class=shaded$style>";
@@ -5512,6 +5523,27 @@
             print "<td>".$item['template']."</td>";
             // Actions
             print "<td style=\"float: right\">";
+            if( $item['disable'] == 2 ) {
+                print "<a class=\"icon icon-testoff\" title=\"Switch Testing Mode Off\"";
+                print " onClick=\"".
+                  #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
+                  "$('#enablehostdlg').html('').". // Gets cached
+                  "load('/nagrestconf/".SCRIPTNAME."?enablehostdialog=true".
+                  "&amp;name=".$item['name']."').".
+                  "dialog('open'); ".
+                  "return false;".
+                  "\" href=\"\"></a>";
+            } else {
+                print "<a class=\"icon icon-test\" title=\"Switch Testing Mode On\"";
+                print " onClick=\"".
+                  #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
+                  "$('#testinghostdlg').html('').". // Gets cached
+                  "load('/nagrestconf/".SCRIPTNAME."?testinghostdialog=true".
+                  "&amp;name=".$item['name']."').".
+                  "dialog('open'); ".
+                  "return false;".
+                  "\" href=\"\"></a>";
+            }
             print "<a class=\"icon icon-clone\" title=\"Clone Host\"";
             print " onClick=\"".
               #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
@@ -5728,6 +5760,146 @@
             exit( 0 );
         }
 
+        print( json_encode( $retval ) );
+
+        exit( 0 );
+    }
+
+    /***********************************************************************
+     *
+     * TESTING MODE DIALOG
+     *
+     ***********************************************************************
+     */
+
+    # ------------------------------------------------------------------------
+    function show_testinghostdialog_buttons( $name ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to Disable a host
+
+        print '<form id="testinghostform" name="testinghostform" method="get"';
+        print ' action="/nagrestconf/'.SCRIPTNAME.'?testinghost=1';
+        print '">';
+        print '<h2>Host is about to enter testing mode:</h2>';
+        print '<h2 style="margin-left:60px;font-weight:bold;">'.$name.'</h2>';
+        print "<h2>Click 'Disable Host' to confirm or 'Close' to cancel.</h2>";
+        #print '<span class="errorlabel">Oops - it seems there are some';
+        #print ' errors! Please check and correct them.</span>';
+        # Hostname
+        print '<h2>';
+        print 'NOTE: All services for this host will also enter testing mode.';
+        print '</h2>';
+        print '<p>';
+        print '<input type="hidden" name="name" value="';
+        print $name;
+        print '"/>';
+        print '</p>';
+        print '</form>';
+        print '<div class="flash notice" style="display:none"></div>';
+        print '<div class="flash error" style="display:none"></div>';
+        print '<script>'.
+              '$(".ui-button:contains(Close)").focus()'.
+              '</script>';
+
+        exit( 0 );
+    }
+
+    # ------------------------------------------------------------------------
+    function show_testing_host_dlg_div( ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Host
+
+        # 'Add New Host' dialog box div
+        print "<div id=\"testinghostdlg\" title=\"Testing Host\"></div>";
+        print '<script>';
+        # Addhost button
+        print 'var testinghost = function() { ';
+        print ' $.getJSON( $("#testinghostform").attr("action"), '; # <- url
+        print ' $("#testinghostform").serialize(),';             # <- data
+        print ' function(response) {';                       # <- success
+        print '  var code = response.code;';
+        print '  var message = response.message;';
+        print '  if( code == 200 ) {';
+        print '    $(".flash.error").hide();';
+        print '    $(".flash.notice").html(""+message).show();';
+        $url = create_url( );
+        print '    $("#hoststable").html("").';
+        print '      load("'.$url.'&hoststable=true");';
+        print '  } else {';
+        print '    $(".flash.notice").hide();';
+        print '    $(".flash.error").html(""+message).show();';
+        print ' }});';
+        print '};';
+        # Cancel button
+        print 'var cancel = function() { $("#testinghostdlg").dialog("close"); };';
+        # Setup the dialog
+        print '$( "div#testinghostdlg" ).dialog( { ';
+        print 'autoOpen : false';
+        print ', width : 500';
+        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', buttons : { "Enable Testing Mode": testinghost, "Close": cancel }';
+        print ' } );';
+        print '</script>';
+    }
+
+    # ------------------------------------------------------------------------
+    function testing_host_using_REST( ) {
+    # ------------------------------------------------------------------------
+    # This is called by the 'Add New Host' dialog
+    # JSON is returned to the dialog.
+
+        # Create the query
+        parse_str( $_SERVER['QUERY_STRING'], $query_str );
+        unset( $query_str["testinghost"] );
+        $query_str["folder"] = FOLDER;
+
+        if( isset( $query_str["name"] ) ) {
+
+            $list = get_and_sort_services( $query_str["name"] );
+
+            $a = array();
+            $a["name"] = $query_str["name"];
+            $a["folder"] = FOLDER;
+            $a["disable"] = "2";
+
+            foreach( $list as $item ) {
+                $a["svcdesc"] = $item['svcdesc'];
+                $json = json_encode( $a );
+                $request2 = new RestRequest(
+                  RESTURL.'/modify/services',
+                  'POST',
+                  'json='.$json
+                );
+                set_request_options( $request2 );
+                $request2->execute();
+                $slist = json_decode( $request2->getResponseBody(), true );
+                ### Check $slist->http_code ###
+            }
+        } else {
+            $retval["message"] = "Internal error: name empty";
+            $retval["code"] = "400";
+            print( json_encode( $retval ) );
+            exit( 0 );
+        }
+
+        $query_str["disable"] = "2";
+        $json = json_encode( $query_str );
+
+        # Do the REST add host request
+        $request = new RestRequest(
+          RESTURL.'/modify/hosts',
+          'POST',
+          'json='.$json
+        );
+        set_request_options( $request );
+        $request->execute();
+        $slist = json_decode( $request->getResponseBody(), true );
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $slist;
+        $resp = $request->getResponseInfo();
+        $retval["code"] = $resp["http_code"];
         print( json_encode( $retval ) );
 
         exit( 0 );
@@ -6074,14 +6246,37 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?edithost=1';
         print '">';
         print '<fieldset>';
+
+        # Disabled
+        #print '<p>';
+        #print '<label for="edisabled">Disabled</label>';
+        #$checked="";
+        #if( $disable == "1" ) $checked="checked";
+        #print '<input class="field" type="checkbox" id="edisabled"';
+        #print ' name="disable" '.$checked.' />';
+        #print '</p>';
+
         # Disabled
         print '<p>';
-        print '<label for="edisabled">Disabled</label>';
+        print '<label for="sdisabled">Status</label>';
         $checked="";
-        if( $disable == "1" ) $checked="checked";
-        print '<input class="field" type="checkbox" id="edisabled"';
-        print ' name="disable" '.$checked.' />';
+        $checked1="";
+        $checked2="";
+        if( $disable == "2" ) {
+            $checked2="checked";
+        } elseif( $disable == "1" ) {
+            $checked1="checked";
+        } else {
+            $checked="checked";
+        }
+        print '<input type="radio" name="disable"';
+        print ' value="0" '.$checked.' />Enabled &nbsp;';
+        print '<input type="radio" name="disable"';
+        print ' value="1" '.$checked1.' />Disabled &nbsp;';
+        print '<input type="radio" name="disable"';
+        print ' value="2" '.$checked2.' />Testing';
         print '</p>';
+
         # Hostname
         print '<p>';
         print '<label for="ehostname">Host name *</label>';
@@ -6177,10 +6372,11 @@
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
         unset( $query_str["newhost"] );
         $query_str["folder"] = FOLDER;
-        if( isset( $query_str["disable"] ) )
-            $query_str["disable"] = "1";
-        else
-            $query_str["disable"] = "0";
+        if( isset( $query_str["disable"] ) ) {
+            if( $query_str["disable"] == "2" ) $query_str["disable"] = "2";
+            elseif( $query_str["disable"] == "1" ) $query_str["disable"] = "1";
+            else $query_str["disable"] = "0";
+        }
         if( isset( $query_str["activechecks"] ) )
             $query_str["activechecks"] = "1";
         else
@@ -6926,10 +7122,11 @@
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
         unset( $query_str["editsvc"] );
         $query_str["folder"] = FOLDER;
-        if( isset( $query_str["disable"] ) )
-            $query_str["disable"] = "1";
-        else
-            $query_str["disable"] = "0";
+        if( isset( $query_str["disable"] ) ) {
+            if( $query_str["disable"] == "2" ) $query_str["disable"] = "2";
+            elseif( $query_str["disable"] == "1" ) $query_str["disable"] = "1";
+            else $query_str["disable"] = "0";
+        }
         if( isset( $query_str["activechecks"] ) )
             $query_str["activechecks"] = "1";
         else
@@ -6993,14 +7190,37 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?editsvc=1';
         print '">';
         print '<fieldset>';
+
+        # Disabled
+        #print '<p>';
+        #print '<label for="sdisabled">Disabled</label>';
+        #$checked="";
+        #if( $disable == "1" ) $checked="checked";
+        #print '<input class="field" type="checkbox" id="sdisabled"';
+        #print ' name="disable" '.$checked.' />';
+        #print '</p>';
+
         # Disabled
         print '<p>';
-        print '<label for="sdisabled">Disabled</label>';
+        print '<label for="sdisabled">Status</label>';
         $checked="";
-        if( $disable == "1" ) $checked="checked";
-        print '<input class="field" type="checkbox" id="sdisabled"';
-        print ' name="disable" '.$checked.' />';
+        $checked1="";
+        $checked2="";
+        if( $disable == "2" ) {
+            $checked2="checked";
+        } elseif( $disable == "1" ) {
+            $checked1="checked";
+        } else {
+            $checked="checked";
+        }
+        print '<input type="radio" name="disable"';
+        print ' value="0" '.$checked.' />Enabled &nbsp;';
+        print '<input type="radio" name="disable"';
+        print ' value="1" '.$checked1.' />Disabled &nbsp;';
+        print '<input type="radio" name="disable"';
+        print ' value="2" '.$checked2.' />Testing';
         print '</p>';
+
         # Hostname
         print '<p>';
         print '<label for="hostname">Host name</label>';
@@ -7418,7 +7638,9 @@
             $style="";
             if( $item['disable'] == "1" ) {
                 $style = ' style="background-color: #F7DCC6;"';
-            }
+            } elseif( $item['disable'] == "2" ) {
+                $style = ' style="background-color: #FFFC9E;"';
+            } 
 
             if( $num % 2 == 0 )
                 print "<tr class=innershaded$style>";
@@ -7922,6 +8144,10 @@
 
             show_disablehostdialog_buttons( $query_str['name'] );
 
+        } else if( isset( $query_str['testinghostdialog'] )) {
+
+            show_testinghostdialog_buttons( $query_str['name'] );
+
         } else if( isset( $query_str['enablehostdialog'] )) {
 
             show_enablehostdialog_buttons( $query_str['name'] );
@@ -7962,6 +8188,10 @@
         } else if( isset( $query_str['disablehost'] )) {
 
             disable_host_using_REST( );
+
+        } else if( isset( $query_str['testinghost'] )) {
+
+            testing_host_using_REST( );
 
         } else if( isset( $query_str['enablehost'] )) {
 
@@ -8068,6 +8298,7 @@
                 show_clone_svc_dlg_div( );
                 show_clone_host_dlg_div( );
                 show_disable_host_dlg_div( );
+                show_testing_host_dlg_div( );
                 show_enable_host_dlg_div( );
                 break;
             # ---------------------------------------------------------------

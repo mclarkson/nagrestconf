@@ -938,9 +938,12 @@ item_merge()
 {
     local i newcsv= comma=
 
-    for i in `seq 1 "$1"`; do
-        oldcol=`echo "$2" | cut -d, -f$i`
-        newcol=`echo "$3" | cut -d, -f$i`
+    IFS=, read -a oldcols < <( echo "$2" )
+    IFS=, read -a newcols < <( echo "$3" )
+
+    for i in `seq 0 $(($1-1))`; do
+        oldcol=${oldcols[i]}
+        newcol=${newcols[i]}
         if [[ -n $newcol ]]; then
             [[ $newcol == "-" ]] && newcol=
             newcsv="$newcsv$comma$newcol"
@@ -1344,12 +1347,6 @@ modify_host_line()
 
     IFS=, read name x x template hostgroups contacts contactgroups \
         x x disable x x < <( echo "$gcsv" )
-    #name=`echo "$gcsv" | cut -d, -f1`
-    #template=`echo "$gcsv" | cut -d, -f4`
-    #hostgroups=`echo "$gcsv" | cut -d, -f5`
-    #contacts=`echo "$gcsv" | cut -d, -f6`
-    #contactgroups=`echo "$gcsv" | cut -d, -f7`
-    #disable=`echo "$gcsv" | cut -d, -f10`
 
     lockdir
     if ! item_exists 1 $FILE_HOSTS "$name"; then
@@ -1400,10 +1397,13 @@ modify_host_line()
         done
     }
 
-    [[ $disable == "1" ]] && {
+    : $((disable++)) ; : $((disable--))
+
+    if [[ $disable -eq 1 ]]; then
         while read line; do
             disabled=`echo $line | cut -d, -f11`
-            if [[ "$disabled" != "1" ]]; then
+            : $((disabled++)) ; : $((disabled--))
+            if [[ "$disabled" -ne 1 ]]; then
                 echo -n "NAGCTL ERROR: Host has one or more"
                 echo " enabled services. Will not disable."
                 unlockdir
@@ -1418,7 +1418,26 @@ modify_host_line()
             unlockdir
             exit 16
         fi
-    }
+    elif [[ $disable -eq 2 ]]; then
+        while read line; do
+            disabled=`echo $line | cut -d, -f11`
+            : $((disabled++)) ; : $((disabled--))
+            if [[ "$disabled" -eq 0 ]]; then
+                echo -n "NAGCTL ERROR: Host has one or more"
+                echo " enabled services. Will not disable."
+                unlockdir
+                exit 16
+            fi
+        done < <( item_search 1 $FILE_SERVICES "$name" )
+
+        if item_existsN "1" $FILE_HOSTEXTINFO "$name"
+        then
+            echo -n "NAGCTL ERROR: Host has"
+            echo " one or more hostextinfo entries. Will not disable."
+            unlockdir
+            exit 16
+        fi
+    fi
 
     olditem=`item_search 1 $FILE_HOSTS "$name"`
     item_merge ${gfile_ncols[$FILE_HOSTS]} "$olditem" "$gcsv"
@@ -1439,17 +1458,7 @@ modify_service_line()
     IFS=, read name template command svcdesc servicegroups \
         contacts contactgroups x x x disable x x < <( echo "$gcsv" )
 
-    #name=`echo "$gcsv" | cut -d, -f1`
-    #template=`echo "$gcsv" | cut -d, -f2`
-
     [[ -n $command ]] && command=`echo "$command" | grep -o '[-A-Za-z0-9_+]*'`
-
-    #command=`echo "$gcsv" | cut -d, -f3 | grep -o '[-A-Za-z0-9_+]*'`
-    #svcdesc=`echo "$gcsv" | cut -d, -f4`
-    #servicegroups=`echo "$gcsv" | cut -d, -f5`
-    #contacts=`echo "$gcsv" | cut -d, -f6`
-    #contactgroups=`echo "$gcsv" | cut -d, -f7`
-    #disable=`echo "$gcsv" | cut -d, -f11`
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
@@ -1520,11 +1529,15 @@ modify_service_line()
         done
     }
 
-    [[ $disable == "0" ]] && {
+    [[ $disable == "0" || $disable == "2" ]] && {
         a=`item_search 1 $FILE_HOSTS "$name"`
         a_disabled=`echo $a | cut -d, -f10`
         if [[ "$a_disabled" == "1" ]]; then
             echo -n "NAGCTL ERROR: Host is disabled. Will not enable."
+            unlockdir
+            exit 16
+        elif [[ "$disable" == "0" && "$a_disabled" == "2" ]]; then
+            echo -n "NAGCTL ERROR: Host is in Test mode. Will not enable."
             unlockdir
             exit 16
         fi
@@ -2304,14 +2317,7 @@ add_host_line()
     local name
 
     IFS=, read name x x template hostgroups contacts contactgroups \
-        x servicesets x < <( echo "$gcsv" )
-
-    #name=`echo "$gcsv" | cut -d, -f1`
-    #template=`echo "$gcsv" | cut -d, -f4`
-    #hostgroups=`echo "$gcsv" | cut -d, -f5`
-    #contacts=`echo "$gcsv" | cut -d, -f6`
-    #contactgroups=`echo "$gcsv" | cut -d, -f7`
-    #servicesets=`echo "$gcsv" | cut -d, -f9`
+        x servicesets disable x < <( echo "$gcsv" )
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
@@ -2324,6 +2330,15 @@ add_host_line()
         unlockdir
         exit 13
     fi
+
+    # For now don't allow creation in disabled state.
+    # User can create enabled then modify to disable.
+    [[ $disable -gt 0 ]] && {
+        echo -n "NAGCTL ERROR: Host cannot be created in a disabled state."
+        echo " Will not add host."
+        unlockdir
+        exit 13
+    }
 
     [[ -n $servicesets ]] && {
         for i in $servicesets; do
@@ -4247,13 +4262,13 @@ main()
     init
 
     case $gnaction in
-        $ACT_SHOW) action_show
+        $ACT_ADD) action_add
         ;;
         $ACT_MODIFY) action_modify
         ;;
         $ACT_DELETE) action_delete
         ;;
-        $ACT_ADD) action_add
+        $ACT_SHOW) action_show
         ;;
         $ACT_PIPECMD) action_pipecmd
         ;;

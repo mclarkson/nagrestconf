@@ -67,6 +67,8 @@ RewriteRule ^.*$ index.php
 
 define( 'NAGCTL_CMD', "/usr/bin/nagctl" );
 
+error_reporting(E_ALL ^ E_NOTICE);
+
 # ---------------------------------------------------------------------------
 class RestServer
 # ---------------------------------------------------------------------------

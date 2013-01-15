@@ -557,7 +557,8 @@ create_host_files()
             vrml_image statusmap_image coords2d coords3d action_url x \
             < <(echo "$a")
 
-        [[ "$disable" == "1" ]] && continue
+        [[ "$disable" == "1" || \
+           ( $DCC -eq 1 && "$disable" == "2" ) ]] && continue
 
         prihostgroup="${shostgroups%% *}"
 
@@ -905,7 +906,8 @@ create_service_entries()
 
         IFS=, read hostname x x x x x x x x disable x < <(echo "$a")
         
-        [[ "$disable" == "1" ]] && continue
+        [[ "$disable" == "1" || \
+           ( $DCC -eq 1 && "$disable" == "2" ) ]] && continue
 
         # Find the hostname.cfg file to append to in xxx-nodes directory
         hfile=`find $gconfigprefix-nodes -name $hostname.cfg`
@@ -939,7 +941,9 @@ create_service_entries()
                 vrml_image statusmap_image coords2d coords3d x \
                 < <(echo "$b")
 
-            [[ "$disable" == "1" ]] && continue
+            [[ "$disable" == "1" || \
+               ( $DCC -eq 1 && "$disable" == "2" ) ]] && continue
+
 
             [[ -n $customvars ]] && customvars="${customvars//\`/,}"
 

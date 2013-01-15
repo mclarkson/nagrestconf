@@ -19,6 +19,12 @@
 .icon-clone {
     background-image: url("images/clone.png");
 }
+.icon-test {
+    background-image: url("images/test.png");
+}
+.icon-testoff {
+    background-image: url("images/testoff.png");
+}
 .icon:hover {
     background-position: 50% 0%;
     background-color: #F6CFA7;
@@ -78,6 +84,14 @@ form fieldset select {
     display:block;
     margin-top: 0;
     padding-top: 0;
+}
+form fieldset input[type=radio] {
+    display:inline;
+    margin-top: 8px;
+    padding-top: 0;
+    margin-right: 3px;
+    width: auto;
+    vertical-align: text-bottom;
 }
 form fieldset input[type=checkbox] {
     display:block;
