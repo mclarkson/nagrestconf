@@ -67,7 +67,7 @@ serviceset[N]='\"check_ping!300.0,20%!800.0,60%\",\"svcdesc\":\"PING\"
 \"check_nt!CPULOAD! -l 5,80,90\",\"svcdesc\":\"CPU Load\"
 \"check_nt!MEMUSE! -w 80 -c 90\",\"svcdesc\":\"Memory Usage\"
 \"check_nt!UPTIME!\",\"svcdesc\":\"Uptime\"
-\"check_nt!CLIENTVERSION!\",\"svcdesc\":\"NSClient++ Version\"
+\"check_nt!CLIENTVERSION!\",\"svcdesc\":\"NSClient%2B%2B Version\"
 \"check_nt!USEDDISKSPACE! -l c -w 85 -c 95\",\"svcdesc\":\"C: System Drive\"
 \"check_nt!USEDDISKSPACE! -l d -w 85 -c 95\",\"svcdesc\":\"D: Drive\"
 \"check_nt!USEDDISKSPACE! -l e -w 85 -c 95\",\"svcdesc\":\"E: Drive\"
@@ -157,7 +157,7 @@ echo "-----------------------------------------------------------"
 echo
 
 curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_nrpe","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c $ARG1$"}' http://$IP/rest/add/commands
-curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_nrpe++","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c $ARG1$ -a \"$ARG2$\""}' http://$IP/rest/add/commands
+curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_nrpe%2B%2B","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c $ARG1$ -a \"$ARG2$\""}' http://$IP/rest/add/commands
 curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_any","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c check_any -a \"$ARG1$\""}' http://$IP/rest/add/commands
 curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_any2","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c check_any2 -a \"$ARG1$\" \"$ARG2$\" "}' http://$IP/rest/add/commands
 curl -knX POST -d 'json={"folder":"'$FOLDER'","name":"check_any3","command":"$USER1$/check_nrpe -H $HOSTADDRESS$ -t 60 -c check_any3 -a \"$ARG1$\" \"$ARG2$\" \"$ARG3$\" "}' http://$IP/rest/add/commands
