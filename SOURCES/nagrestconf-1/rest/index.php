@@ -2300,7 +2300,7 @@ class WriteCmd
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $template . ",";
         $this->newcmdline .= $command . ",";
-        $this->newcmdline .= $svcdesc . ",";
+        $this->newcmdline .= urlencode($svcdesc) . ",";
         $this->newcmdline .= $svcgroup . ",";
         $this->newcmdline .= $contacts . ",";
         $this->newcmdline .= $contactgroups . ",";
@@ -2919,7 +2919,7 @@ class WriteCmd
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $template . ",";
         $this->newcmdline .= $command . ",";
-        $this->newcmdline .= $svcdesc . ",";
+        $this->newcmdline .= urlencode($svcdesc) . ",";
         $this->newcmdline .= $svcgroup . ",";
         $this->newcmdline .= $contacts . ",";
         $this->newcmdline .= $contactgroups . ",";
