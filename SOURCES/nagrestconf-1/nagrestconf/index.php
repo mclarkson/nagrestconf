@@ -5290,6 +5290,9 @@
         unset( $query_str["tab"] );
         unset( $query_str["editcontactgroup"] );
         $query_str["folder"] = FOLDER;
+        # Handle deleting fields
+        if( empty( $query_str["members"] ) )
+            $query_str["members"] = "-";
         $json = json_encode( $query_str );
 
         # Do the REST edit contactgroup request

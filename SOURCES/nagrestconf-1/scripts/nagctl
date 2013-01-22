@@ -1687,13 +1687,15 @@ modify_contactgroups_line()
         exit 14
     fi
 
-    for i in $memberlist; do
-        if ! item_exists 1 $FILE_CONTACTS "$i"; then
-            echo "NAGCTL ERROR: Member '$i' not found. Cannot add item."
-            unlockdir
-            exit 13
-        fi
-    done
+    if [[ -n $memberlist && $memberlist != "-" ]]; then
+        for i in $memberlist; do
+            if ! item_exists 1 $FILE_CONTACTS "$i"; then
+                echo "NAGCTL ERROR: Member '$i' not found. Cannot add item."
+                unlockdir
+                exit 13
+            fi
+        done
+    fi
 
     olditem=`item_search 1 $FILE_CONTACTGROUPS "$name"`
     item_merge ${gfile_ncols[$FILE_CONTACTGROUPS]} "$olditem" "$gcsv"
