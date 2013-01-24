@@ -900,7 +900,7 @@ item_searchN()
 # Purpose:      Look for text in N columns and display the result.
 #               columns must be in numeric sort order.
 # Arguments:    $1 - space separated columns, $2 - FILE_XXX,
-#               $3 - comma separated text, $4 - optional prefix (for
+#               $3 - comma separated text
 #               matching empty fields)
 # Returns:      Outputs text
 {
@@ -1681,6 +1681,7 @@ modify_contactgroups_line()
     }
 
     lockdir
+
     if ! item_exists 1 $FILE_CONTACTGROUPS "$name"; then
         echo "NAGCTL ERROR: Item not found."
         unlockdir
@@ -2827,6 +2828,12 @@ add_servicedeps_line()
         unlockdir
         exit 13
     fi
+    [[ -n $dephostname && -n $hostname && \
+       ( "$svcdesc" == "$depsvcdesc" ) ]] && {
+            echo "NAGCTL ERROR: Circular dependency. Cannot add item."
+            unlockdir
+            exit 13
+    }
     [[ -n $dephostname ]] && {
         if ! item_exists2 1 4 $FILE_SERVICES "$dephostname" "$depsvcdesc"; then
             echo "NAGCTL ERROR: Dependent service not found. Cannot add item."
@@ -2845,7 +2852,7 @@ add_servicedeps_line()
     }
     [[ -n $hostname ]] && {
         if ! item_exists2 1 4 $FILE_SERVICES "$hostname" "$svcdesc"; then
-            echo "NAGCTL ERROR: Dependent service not found. Cannot add item."
+            echo "NAGCTL ERROR: Service not found. Cannot add item."
             unlockdir
             exit 13
         fi
@@ -3428,21 +3435,28 @@ delete_service_line()
 
     IFS=, read name x x svcdesc x < <( echo "$gcsv" )
 
-    #name=`echo "$gcsv" | cut -d, -f1`
-    #svcdesc=`echo "$gcsv" | cut -d, -f4`
-
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
         exit 13
     }
 
     lockdir
-    if item_exists2 1 4 $FILE_SERVICES "$name" "$svcdesc"; then
-        item_delete2 1 4 $FILE_SERVICES "$name" "$svcdesc"
-        echo "Success"
-    else
-        echo "NAGCTL ERROR: Service not found."
+    if item_existsN "1 3" $FILE_SERVICEDEPS "$name,$svcdesc"; then
+        echo -n "NAGCTL ERROR: Service dependency exists for this service."
+        echo " Will not delete."
         RETVAL=15
+    elif item_existsN "4 6" $FILE_SERVICEDEPS "$name,$svcdesc"; then
+        echo -n "NAGCTL ERROR: One or more services depend on this service."
+        echo " Will not delete."
+        RETVAL=15
+    else
+        if item_exists2 1 4 $FILE_SERVICES "$name" "$svcdesc"; then
+            item_delete2 1 4 $FILE_SERVICES "$name" "$svcdesc"
+            echo "Success"
+        else
+            echo "NAGCTL ERROR: Service not found."
+            RETVAL=15
+        fi
     fi
     unlockdir
 }
@@ -3515,7 +3529,7 @@ delete_servicegroups_line()
 delete_contacts_line()
 # ----------------------------------------------------------------------------
 {
-    local name
+    local name t
 
     IFS=, read name x < <( echo "$gcsv" )
 
@@ -3528,24 +3542,34 @@ delete_contacts_line()
 
     lockdir
     if item_exists 3 $FILE_CONTACTGROUPS ".*$name\>"; then
+        t=`item_search "3" $FILE_CONTACTGROUPS ".*$name\>" | head -1`
+        IFS=, read nname x < <( echo "$t" )
         echo -n "NAGCTL ERROR: Contact '$name' is referenced by one or more"
-        echo " Contact Groups. Will not delete."
+        echo " Contact Groups ($nname ...). Will not delete."
         RETVAL=15
     elif item_exists 3 $FILE_SERVICETEMPLATES ".*$name\>"; then
+        t=`item_search "3" $FILE_SERVICETEMPLATES ".*$name\>" | head -1`
+        IFS=, read nname x < <( echo "$t" )
         echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
-        echo " or more service templates. Will not delete."
+        echo " or more service templates ($nname ...). Will not delete."
         RETVAL=15
     elif item_exists 3 $FILE_HOSTTEMPLATES ".*$name\>"; then
+        t=`item_search "3" $FILE_HOSTTEMPLATES ".*$name\>" | head -1`
+        IFS=, read nname x < <( echo "$t" )
         echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
-        echo " or more host templates. Will not delete."
+        echo " or more host templates ($nname ...). Will not delete."
         RETVAL=15
     elif item_exists 6 $FILE_HOSTS ".*$name\>"; then
+        t=`item_search "6" $FILE_HOSTS ".*$name\>" | head -1`
+        IFS=, read nname x < <( echo "$t" )
         echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
-        echo " or more hosts. Will not delete."
+        echo " or more hosts ($nname ...). Will not delete."
         RETVAL=15
     elif item_exists 6 $FILE_SERVICES ".*$name\>"; then
+        t=`item_search "6" $FILE_SERVICES ".*$name\>" | head -1`
+        IFS=, read nname x x svcdesc x < <( echo "$t" )
         echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
-        echo " or more services. Will not delete."
+        echo " or more services ($nname:$svcdesc ...). Will not delete."
         RETVAL=15
     else
         if item_exists 1 $FILE_CONTACTS "$name"; then

@@ -1053,8 +1053,9 @@ servicedeps
 | 11.    | Disable                       | X       | disable                   | N/A
 |===========================================================================================================
 
-NOTE: Columns 1,2,4 and 5 are not lists in REST as they are in a
-Nagios configuration file.
+NOTE: Rows 1,2,4 and 5 are not lists in REST as they are in a
+Nagios configuration file. One of rows 1 and 2 plus one of rows 4 and 5
+are required.
 
 Examples
 ++++++++
@@ -1063,6 +1064,33 @@ Show all 'servicedeps' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/servicedeps?json=\{"folder":"local"\}' \
  | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+
+
+When a bunch of hosts go down the check latency and number of parallel running
+jobs increases due to failing checks taking longer to exit. To help alleviate
+this it might be worth making all services on all hosts depend on the PING
+service residing on each host. Note that this is a lengthy operation.
+
+ # Create a list of host names + services
+ curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
+ | JSON.sh | grep '\[[0-9]\+,0]' | sed 's/^.*:"\(.*\)".*/\1/' \
+ | sed '$!N;s/\n/ /' >list
+
+ # Exclude PING. (Not strictly necessary as REST will not allow adding the
+ # circular dependency.)
+ sed -i '/PING$/d' list
+
+ # Use the lists to create the dependencies
+ # Note that you can't use the much simpler "depsvcdesc":"* !PING", sorry.
+ while read HNAME SVC; do
+ curl -knX POST -d 'json={"folder":"local",
+        "hostname":"'$HNAME'",
+        "svcdesc":"PING",
+        "dephostname":"'$HNAME'",
+        "depsvcdesc":"'"$SVC"'",
+        "execfailcriteria":"w u c"}'
+        https://127.0.0.1/rest/add/servicedeps
+ done < list
 
 hostdeps
 ^^^^^^^^
