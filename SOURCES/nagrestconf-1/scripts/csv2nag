@@ -1856,6 +1856,10 @@ create_servicedeps()
 
         [[ "$disable" == "1" ]] && continue
 
+        # Don't use execfailcriteria on a dcc
+        [[ $DCC -eq 1 && -n "$execfailcriteria" && \
+           -z "$notiffailcriteria" ]] && continue
+
         echo "define servicedependency {"
         if [[ -n $dephostname ]]; then
             echo "       dependent_host_name           $dephostname"
@@ -1876,7 +1880,7 @@ create_servicedeps()
                 echo "       inherits_parent               0"
             fi
         }
-        [[ -n $execfailcriteria ]] && {
+        [[ $DCC -ne 1 && -n $execfailcriteria ]] && {
             echo -n "       execution_failure_criteria    "
             echo "${execfailcriteria// /,}"
         }
