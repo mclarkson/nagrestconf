@@ -29,6 +29,7 @@ NAG_DIR=/etc/nagios
 source /etc/nagrestconf/nagctl.conf
 source /etc/nagrestconf/restart_nagios.conf
 
+SSH=${SSH:=ssh}
 repos=$NAG_DIR/repos/
 
 # Restart nagios straight away.
@@ -58,16 +59,16 @@ do
         [[ $CHANGES -eq 1 ]] && {
             svn ci -m "Changes saved"
             [[ -n $dcc ]] && {
-                svnsync sync svn+ssh://svnsync@$dcc/$NAG_DIR/repos/$folder
-                ssh svnsync@$dcc "touch /tmp/nagios_update_$folder"
+                svnsync sync svn+$SSH://svnsync@$dcc/$NAG_DIR/repos/$folder
+                ssh $SSH_OPTS svnsync@$dcc "touch /tmp/nagios_update_$folder"
             }
         }
     else
         # versions/ does not exist so create it
         svn co file://$repos/$folder versions
         [[ -n $dcc ]] && {
-            svnsync sync svn+ssh://svnsync@$dcc/$NAG_DIR/repos/$folder
-            ssh svnsync@$dcc "touch /tmp/nagios_update_$folder"
+            svnsync sync svn+$SSH://svnsync@$dcc/$NAG_DIR/repos/$folder
+            ssh $SSH_OPTS svnsync@$dcc "touch /tmp/nagios_update_$folder"
         }
     fi
 done
