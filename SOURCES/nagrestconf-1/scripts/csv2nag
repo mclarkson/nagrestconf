@@ -1326,7 +1326,7 @@ create_servicetemplates()
             if [[ $retainnonstatusinfo == 0 ]]; then
                 echo "       retain_nonstatus_information 0"
             else
-                echo "       retain_nonstatus_information 0"
+                echo "       retain_nonstatus_information 1"
             fi
         }
         [[ -n $notifinter ]] && {
@@ -1469,11 +1469,13 @@ create_hosttemplates()
         else
             echo "       retain_status_information    1"
         fi
-        if [[ $retainnonstatusinfo == 0 ]]; then
-            echo "       retain_nonstatus_information 0"
-        else
-            echo "       retain_nonstatus_information 0"
-        fi
+        [[ -n $retainnonstatusinfo ]] && {
+            if [[ $retainnonstatusinfo == 0 ]]; then
+                echo "       retain_nonstatus_information 0"
+            else
+                echo "       retain_nonstatus_information 1"
+            fi
+        }
         [[ -n $use ]] && {
             Echo "       use                          $use"
         }
