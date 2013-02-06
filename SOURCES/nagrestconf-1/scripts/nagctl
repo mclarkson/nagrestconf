@@ -1838,7 +1838,7 @@ modify_commands_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read -r name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -1857,7 +1857,7 @@ modify_commands_line()
     olditem=`item_search 1 $FILE_COMMANDS "$name"`
     item_merge ${gfile_ncols[$FILE_COMMANDS]} "$olditem" "$gcsv"
     item_delete 1 $FILE_COMMANDS "$name"
-    echo "$gcsv" >>$SETUP_FILE
+    echo -E "$gcsv" >>$SETUP_FILE
     unlockdir
 
     echo "Success"
@@ -2774,7 +2774,7 @@ add_commands_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read -r name x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
 

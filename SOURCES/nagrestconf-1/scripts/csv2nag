@@ -1810,10 +1810,10 @@ create_commands()
 
     echo_warning_header
 
-    while read a; do 
+    while read -r a; do 
         [[ -z $a || $a == "#"* ]] && continue
 
-        IFS=, read name command disable x < <(echo "$a")
+        IFS=, read -r name command disable x < <(echo "$a")
 
         [[ -n $command ]] && command=$(echo "$command" | tr '`' ',')
 
