@@ -939,8 +939,8 @@ item_merge()
 {
     local i newcsv= comma=
 
-    IFS=, read -a oldcols < <( echo "$2" )
-    IFS=, read -a newcols < <( echo "$3" )
+    IFS=, read -ra oldcols < <( echo "$2" )
+    IFS=, read -ra newcols < <( echo "$3" )
 
     for i in `seq 0 $(($1-1))`; do
         oldcol=${oldcols[i]}

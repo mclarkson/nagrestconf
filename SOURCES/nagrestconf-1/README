@@ -209,6 +209,11 @@ li {
 News
 ----
 
+6 Feb 2013
+
+- New `testing' feature for distributed environments only. Lots of bug fixes.
+- Commands will need modifying: see the <<X10, Upgrade>> section below. 
+
 14 Jan 2013 - New release with lots of enhancements and fixes. Packaging has changed: See <<X11, Install>>.
 
 7 Nov 2012 - All nagios object definitions are now supported in the REST api.
@@ -310,6 +315,16 @@ Upgrade
 ---------
 
 After the upgrade run `/usr/bin/upgrade_setup_files.sh'.
+
+Version 1.144: Remove extra slashes. For example prior to 1.144 a notify-host-by-email
+command might have started as:
+
+ /usr/bin/printf "%b" "***** Nagios *****\\\\n\\\\nNotification Type: $NOTIF...
+
+But from 1.144 onwards it should be:
+
+ /usr/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIO...
+
 
 [[X11]]
 Install

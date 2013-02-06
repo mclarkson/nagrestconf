@@ -668,6 +668,19 @@ li {
 </div>
 <h2 id="_news">1. News</h2>
 <div class="sectionbody">
+<div class="paragraph"><p>6 Feb 2013</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+New &#8216;testing&#8217; feature for distributed environments only. Lots of bug fixes.
+</p>
+</li>
+<li>
+<p>
+Commands will need modifying: see the <a href="#X10">Upgrade</a> section below.
+</p>
+</li>
+</ul></div>
 <div class="paragraph"><p>14 Jan 2013 - New release with lots of enhancements and fixes. Packaging has changed: See <a href="#X11">Install</a>.</p></div>
 <div class="paragraph"><p>7 Nov 2012 - All nagios object definitions are now supported in the REST api.</p></div>
 <div class="paragraph"><p>22 Oct 2012 - Fixes made for Centos 5/6 and Debian packages.</p></div>
@@ -874,6 +887,17 @@ cellspacing="0" cellpadding="4">
 <h2 id="X10">7. Upgrade</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>After the upgrade run &#8216;/usr/bin/upgrade_setup_files.sh&#8217;.</p></div>
+<div class="paragraph"><p>Version 1.144: Remove extra slashes. For example prior to 1.144 a notify-host-by-email
+command might have started as:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>/usr/bin/printf "%b" "***** Nagios *****\\\\n\\\\nNotification Type: $NOTIF...</tt></pre>
+</div></div>
+<div class="paragraph"><p>But from 1.144 onwards it should be:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>/usr/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIO...</tt></pre>
+</div></div>
 </div>
 <h2 id="X11">8. Install</h2>
 <div class="sectionbody">
@@ -5039,7 +5063,7 @@ cellspacing="0" cellpadding="4">
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-01-24 14:28:42 BST
+Last updated 2013-02-06 11:18:29 BST
 </div>
 </div>
 </body>
