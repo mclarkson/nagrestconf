@@ -314,16 +314,25 @@ including Maemo, IPAD and Android versions.
 Upgrade
 ---------
 
-After the upgrade run `/usr/bin/upgrade_setup_files.sh'.
+.All versions
 
-Version 1.144: Remove extra slashes. For example prior to 1.144 a notify-host-by-email
+After the upgrade run `/usr/bin/upgrade_setup_files.sh'. It can be run any
+number of times and will not harm data if it is run unnecessarily.
+
+.Upgrading to version 1.144
+
+Remove extra slashes from command definitions. For example prior to 1.144 a notify-host-by-email
 command might have started as:
 
- /usr/bin/printf "%b" "***** Nagios *****\\\\n\\\\nNotification Type: $NOTIF...
+----
+/usr/bin/printf "%b" "***** Nagios *****\\\\n\\\\nNotification Type: $NOTIF...
+----
 
 But from 1.144 onwards it should be:
 
- /usr/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIO...
+----
+/usr/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIO...
+----
 
 
 [[X11]]
@@ -645,7 +654,7 @@ hosts
 | 7.     | Contact Group                 | LM      | contactgroups             | contact_groups
 | 8.     | Active checks                 |         | activechecks              | active_checks_enabled
 | 9.     | Service Set                   |         | servicesets               | N/A
-| 10.    | Disable [0|1|2]               |         | disable                   | N/A
+| 10.    | Disable [0,1,2]               |         | disable                   | N/A
 | 11.    | Display name                  |         | displayname               | display_name
 | 12.    | Parents                       | LXM     | parents                   | parents
 | 13.    | Check command                 | XM      | command                   | check_command
