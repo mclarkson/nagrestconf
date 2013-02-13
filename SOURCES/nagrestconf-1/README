@@ -576,8 +576,9 @@ The `REST variable name' column lists the option names that can be used in the
 `json=' part of the query. These names are used in place of `<option>' shown
 in the `Rest Commands' section above.
 
-NOTE: Many examples use `JSON.sh', which can be found here:
-https://github.com/dominictarr/JSON.sh
+NOTE: Many examples use a slightly modified `JSON.sh', which can be found here:
+https://github.com/mclarkson/JSON.sh (forked from
+\https://github.com/dominictarr/JSON.sh)
 
 contacts
 ^^^^^^^^
@@ -617,7 +618,7 @@ Examples
 Show all 'contacts' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/contacts?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 contactgroups
 ^^^^^^^^^^^^^
@@ -637,7 +638,7 @@ Examples
 Show all 'contactgroups' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/contactgroups?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 hosts
 ^^^^^
@@ -699,12 +700,12 @@ Examples
 Show all hosts and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 Show only the host names beginning with 'tx':
 
  curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local","filter":"tx.*"\}'
- | JSON.sh | grep '\[[0-9]\+,0]'
+ | JSON.sh -b | grep '\[[0-9]\+,0]'
 
 hosttemplates
 ^^^^^^^^^^^^^
@@ -758,7 +759,7 @@ Examples
 Show all 'hosttemplates' and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/hosttemplates?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 Set the action_url for the host template:
 
@@ -831,12 +832,12 @@ Examples
 Show all 'services' and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 Show all host names that have a 'Disks' service description (column 4)
 
  curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"local","column":"4","filter":"Disks"\}' \
- | JSON.sh | grep '\[[0-9]\+,0]'
+ | JSON.sh -b | grep '\[[0-9]\+,0]'
 
 servicesets
 ^^^^^^^^^^^
@@ -903,7 +904,7 @@ Examples
 Show all 'servicesets' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/servicesets?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b 
 
 servicetemplates
 ^^^^^^^^^^^^^^^^
@@ -967,7 +968,7 @@ Examples
 Show all 'servicetemplates' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/servicetemplates?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 commands
 ^^^^^^^^
@@ -986,7 +987,7 @@ Examples
 Show all 'commands' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/commands?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 hostgroups
 ^^^^^^^^^^
@@ -1010,7 +1011,7 @@ Examples
 Show all 'hostgroups' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/hostgroups?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 servicegroups
 ^^^^^^^^^^^^^
@@ -1034,7 +1035,7 @@ Examples
 Show all 'servicegroups' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/servicegroups?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 timeperiods
 ^^^^^^^^^^^
@@ -1056,7 +1057,7 @@ Examples
 Show all 'timeperiods' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/timeperiods?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 servicedeps
 ^^^^^^^^^^^
@@ -1087,7 +1088,7 @@ Examples
 Show all 'servicedeps' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/servicedeps?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 
 When a bunch of hosts go down the check latency and number of parallel running
@@ -1097,7 +1098,7 @@ service residing on each host. Note that this is a lengthy operation.
 
  # Create a list of host names + services
  curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,0]' | sed 's/^.*:"\(.*\)".*/\1/' \
+ | JSON.sh -b | grep '\[[0-9]\+,0]' | sed 's/^.*:"\(.*\)".*/\1/' \
  | sed '$!N;s/\n/ /' >list
 
  # Exclude PING. (Not strictly necessary as REST will not allow adding the
@@ -1142,7 +1143,7 @@ Examples
 Show all 'hostdeps' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/hostdeps?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 serviceescalation
 ^^^^^^^^^^^^^^^^^
@@ -1169,7 +1170,7 @@ Examples
 Show all 'serviceescalation' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/serviceescalation?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 hostescalation
 ^^^^^^^^^^^^^^
@@ -1195,7 +1196,7 @@ Examples
 Show all 'hostescalation' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/hostescalation?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 serviceextinfo
 ^^^^^^^^^^^^^^
@@ -1219,7 +1220,7 @@ Examples
 Show all 'serviceextinfo' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/serviceextinfo?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 hostextinfo
 ^^^^^^^^^^^
@@ -1246,7 +1247,7 @@ Examples
 Show all 'hostextinfo' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/hostextinfo?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,[0-9]\+]'
+ | JSON.sh -b
 
 Set action_url for a host:
 
@@ -1260,7 +1261,7 @@ to set the action_url in the host template or for each host.
 
  # Create a list of hosts
  curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
- | JSON.sh | grep '\[[0-9]\+,0]' | sed 's/^.*:"\(.*\)".*/\1/' >list1
+ | JSON.sh -b | grep '\[[0-9]\+,0]' | sed 's/^.*:"\(.*\)".*/\1/' >list1
 
  # Use the list to create hostextinfo entries
  while read HNAME x; do

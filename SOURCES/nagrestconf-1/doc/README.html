@@ -1670,8 +1670,9 @@ lmUMDQ1RKpXOm9EXvV6v1+tWr9eZnp5mZmaGWq1GjLHF62aiNZ+bnPfe45xrvTZzxMyYmZk56+LX
 zKjX661DvHOOJElIkoRSqYT3/vLvRlW15eHCa4VxzdvmpjZDfubzuXeb3vuzqCEixBhbo0NTkyS5
 PAr9L8j/96+U/w3yCoCXW14B8HLLvwDd67nwZIEPdgAAAABJRU5ErkJggg==" />
 </td>
-<td class="content">Many examples use &#8216;JSON.sh&#8217;, which can be found here:
-<a href="https://github.com/dominictarr/JSON.sh">https://github.com/dominictarr/JSON.sh</a></td>
+<td class="content">Many examples use a slightly modified &#8216;JSON.sh&#8217;, which can be found here:
+<a href="https://github.com/mclarkson/JSON.sh">https://github.com/mclarkson/JSON.sh</a> (forked from
+https://github.com/dominictarr/JSON.sh)</td>
 </tr></table>
 </div>
 <h4 id="_contacts">12.1.1. contacts</h4>
@@ -1870,7 +1871,7 @@ cellspacing="0" cellpadding="4">
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/contacts?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <h4 id="_contactgroups">12.1.2. contactgroups</h4>
 <div class="tableblock">
@@ -1928,7 +1929,7 @@ cellspacing="0" cellpadding="4">
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/contactgroups?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <h4 id="_hosts">12.1.3. hosts</h4>
 <div class="tableblock">
@@ -2280,13 +2281,13 @@ cellspacing="0" cellpadding="4">
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <div class="paragraph"><p>Show only the host names beginning with <em>tx</em>:</p></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local","filter":"tx.*"\}'
-| JSON.sh | grep '\[[0-9]\+,0]'</tt></pre>
+| JSON.sh -b | grep '\[[0-9]\+,0]'</tt></pre>
 </div></div>
 <h4 id="_hosttemplates">12.1.4. hosttemplates</h4>
 <div class="tableblock">
@@ -2589,7 +2590,7 @@ cellspacing="0" cellpadding="4">
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/hosttemplates?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <div class="paragraph"><p>Set the action_url for the host template:</p></div>
 <div class="literalblock">
@@ -2952,13 +2953,13 @@ to restrict to only setting the freshness_threshold.</p></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <div class="paragraph"><p>Show all host names that have a <em>Disks</em> service description (column 4)</p></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"local","column":"4","filter":"Disks"\}' \
-| JSON.sh | grep '\[[0-9]\+,0]'</tt></pre>
+| JSON.sh -b | grep '\[[0-9]\+,0]'</tt></pre>
 </div></div>
 <h4 id="_servicesets">12.1.6. servicesets</h4>
 <div class="tableblock">
@@ -3314,7 +3315,7 @@ to restrict to only setting the freshness_threshold.</p></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/servicesets?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <h4 id="_servicetemplates">12.1.7. servicetemplates</h4>
 <div class="tableblock">
@@ -3649,7 +3650,7 @@ to restrict to only setting the freshness_threshold.</p></div>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/servicetemplates?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <h4 id="_commands">12.1.8. commands</h4>
 <div class="tableblock">
@@ -3700,7 +3701,7 @@ cellspacing="0" cellpadding="4">
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/commands?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <h4 id="_hostgroups">12.1.9. hostgroups</h4>
 <div class="tableblock">
@@ -3786,7 +3787,7 @@ cellspacing="0" cellpadding="4">
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/hostgroups?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <h4 id="_servicegroups">12.1.10. servicegroups</h4>
 <div class="tableblock">
@@ -3872,7 +3873,7 @@ cellspacing="0" cellpadding="4">
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/servicegroups?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <h4 id="_timeperiods">12.1.11. timeperiods</h4>
 <div class="tableblock">
@@ -3944,7 +3945,7 @@ cellspacing="0" cellpadding="4">
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/timeperiods?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <h4 id="_servicedeps">12.1.12. servicedeps</h4>
 <div class="tableblock">
@@ -4105,7 +4106,7 @@ are required.</td>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/servicedeps?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <div class="paragraph"><p>When a bunch of hosts go down the check latency and number of parallel running
 jobs increases due to failing checks taking longer to exit. To help alleviate
@@ -4115,7 +4116,7 @@ service residing on each host. Note that this is a lengthy operation.</p></div>
 <div class="content">
 <pre><tt># Create a list of host names + services
 curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,0]' | sed 's/^.*:"\(.*\)".*/\1/' \
+| JSON.sh -b | grep '\[[0-9]\+,0]' | sed 's/^.*:"\(.*\)".*/\1/' \
 | sed '$!N;s/\n/ /' &gt;list</tt></pre>
 </div></div>
 <div class="literalblock">
@@ -4282,7 +4283,7 @@ Nagios configuration file.</td>
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/hostdeps?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <h4 id="_serviceescalation">12.1.14. serviceescalation</h4>
 <div class="tableblock">
@@ -4389,7 +4390,7 @@ cellspacing="0" cellpadding="4">
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/serviceescalation?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <h4 id="_hostescalation">12.1.15. hostescalation</h4>
 <div class="tableblock">
@@ -4489,7 +4490,7 @@ cellspacing="0" cellpadding="4">
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/hostescalation?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <h4 id="_serviceextinfo">12.1.16. serviceextinfo</h4>
 <div class="tableblock">
@@ -4575,7 +4576,7 @@ cellspacing="0" cellpadding="4">
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/serviceextinfo?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <h4 id="_hostextinfo">12.1.17. hostextinfo</h4>
 <div class="tableblock">
@@ -4682,7 +4683,7 @@ cellspacing="0" cellpadding="4">
 <div class="literalblock">
 <div class="content">
 <pre><tt>curl -kn 'https://127.0.0.1/rest/show/hostextinfo?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,[0-9]\+]'</tt></pre>
+| JSON.sh -b</tt></pre>
 </div></div>
 <div class="paragraph"><p>Set action_url for a host:</p></div>
 <div class="literalblock">
@@ -4698,7 +4699,7 @@ to set the action_url in the host template or for each host.</p></div>
 <div class="content">
 <pre><tt># Create a list of hosts
 curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
-| JSON.sh | grep '\[[0-9]\+,0]' | sed 's/^.*:"\(.*\)".*/\1/' &gt;list1</tt></pre>
+| JSON.sh -b | grep '\[[0-9]\+,0]' | sed 's/^.*:"\(.*\)".*/\1/' &gt;list1</tt></pre>
 </div></div>
 <div class="literalblock">
 <div class="content">
@@ -5064,7 +5065,7 @@ cellspacing="0" cellpadding="4">
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-02-06 14:50:37 BST
+Last updated 2013-02-13 11:05:39 BST
 </div>
 </div>
 </body>
