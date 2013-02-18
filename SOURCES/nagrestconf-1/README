@@ -576,9 +576,8 @@ The `REST variable name' column lists the option names that can be used in the
 `json=' part of the query. These names are used in place of `<option>' shown
 in the `Rest Commands' section above.
 
-NOTE: Many examples use a slightly modified `JSON.sh', which can be found here:
-https://github.com/mclarkson/JSON.sh (forked from
-\https://github.com/dominictarr/JSON.sh)
+NOTE: Many examples use `JSON.sh', which can be found here:
+      https://github.com/dominictarr/JSON.sh
 
 contacts
 ^^^^^^^^
