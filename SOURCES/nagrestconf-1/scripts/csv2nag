@@ -925,9 +925,9 @@ create_service_entries()
         exec 3>&1 >>$hfile
 
         # Now process all the entries in $gfnsvcsetup that match hostname
-        grep "^$hostname," $gfnsvcsetup | while read b; do
+        grep "^$hostname," $gfnsvcsetup | while read -r b; do
 
-            IFS=, read dummy stemplate scommand sdescr svcgroups contacts \
+            IFS=, read -r dummy stemplate scommand sdescr svcgroups contacts \
                 cgroups freshness active_checks customvars disable \
                 displayname isvolatile initialstate maxcheckattempts \
                 checkinterval retryinterval passivechecks checkperiod \
