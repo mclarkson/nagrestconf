@@ -45,6 +45,7 @@ ADD_USERGRP=0
 ADD_ROOT_CRONTAB=0
 ADD_SUDOERS_ENTRY=0
 RESTART_SERVICES=0
+DCC=0
 
 ME="$0"
 
@@ -63,7 +64,11 @@ main()
 
     [[ $ADD_USERGRP -eq 1 ]] && add_usergrp
 
-    [[ $ADD_ROOT_CRONTAB -eq 1 ]] && add_root_crontab
+    if [[ $ADD_ROOT_CRONTAB -eq 1 && $DCC -eq 1 ]]; then
+        add_root_crontab_dcc
+    elif [[ $ADD_ROOT_CRONTAB -eq 1 ]]; then
+        add_root_crontab
+    fi
 
     [[ $ADD_SUDOERS_ENTRY -eq 1 ]] && add_sudoers_entry
 
@@ -85,6 +90,20 @@ add_usergrp()
     echo "Attempting to add $WWWUSER to the nagiocmd group."
     echo "usermod -a -G nagiocmd apache"
     usermod -a -G nagiocmd apache
+}
+
+# ---------------------------------------------------------------------------
+add_root_crontab_dcc()
+# ---------------------------------------------------------------------------
+{
+    # Add crontab
+    echo "Attempting to delete any existing crontab entry."
+    sed -i '/update_nagios/d' /var/spool/cron/root
+    echo "Appending crontab entry:"
+    cat >>/var/spool/cron/root <<EnD
+* * * * * /usr/bin/update_nagios
+EnD
+    touch /var/spool/cron/
 }
 
 # ---------------------------------------------------------------------------
@@ -147,7 +166,7 @@ usage()
     echo
     echo "`basename $ME` - Modify the environment so nagrestconf will work."
     echo
-    echo "Usage: `basename $ME` [-h] [-v] [-a] [-n] [-o] [-p] [-q] [-r]"
+    echo "Usage: `basename $ME` [-h] [-v] [-a] [-n] [-o] [-p] [-q] [-r] [--dcc]"
     echo
     echo " -h       :  Display this help text."
     echo " -v       :  Display the program version string."
@@ -157,6 +176,7 @@ usage()
     echo " -p       :  Modify crontab only."
     echo " -q       :  Modify sudoers only."
     echo " -r       :  Restart services only."
+    echo " --dcc    :  Configure as a collector."
     echo
 }
 
@@ -198,6 +218,8 @@ parse_options()
             ;;
             -r) RESTART_SERVICES=1
                 atleastone=1
+            ;;
+            --dcc) DCC=1
             ;;
             ?*) echo "ERROR: Unknown program option. Aborting."
                 exit 1
