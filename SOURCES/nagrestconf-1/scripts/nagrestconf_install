@@ -96,11 +96,6 @@ add_root_crontab()
     sed -i '/nagios_restart_request/d' /var/spool/cron/root
     echo "Appending crontab entry:"
     cat >>/var/spool/cron/root <<EnD
-
-        * * * * * /usr/bin/test -e /tmp/nagios_restart_request && \
-        ( /bin/rm /tmp/nagios_restart_request; /usr/bin/restart_nagios; )
-EnD
-    cat >>/var/spool/cron/root <<EnD
 * * * * * /usr/bin/test -e /tmp/nagios_restart_request && ( /bin/rm /tmp/nagios_restart_request; /usr/bin/restart_nagios; )
 EnD
     touch /var/spool/cron/
