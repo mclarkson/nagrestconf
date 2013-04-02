@@ -112,7 +112,7 @@ including Maemo, IPAD and Android versions.
 [[X10]]
 
 Upgrade
----------
+-------
 
 .All versions
 
@@ -136,6 +136,7 @@ But from 1.144 onwards it should be:
 
 
 [[X11]]
+
 Install
 -------
 
