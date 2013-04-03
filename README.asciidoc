@@ -8,7 +8,9 @@ Nagrestconf README
 News
 ----
 
-6 Feb 2013 New `testing' feature for distributed environments only. Lots of bug fixes.
+3 Apr 2013 Bug fixes. Moved code to github.
+
+3 Feb 2013 New `testing' feature for distributed environments only.
 
 14 Jan 2013 - New release with lots of enhancements and fixes. Packaging has changed: See `Install'.
 
@@ -158,7 +160,7 @@ freshly installing the Operating System with a minimal set of packages.
 gdebi nagrestconf_1.0_all.deb
 
 # On Centos/Redhat:
-yum install nagrestconf-1.73-1.noarch.rpm
+yum install nagrestconf-1.146-1.noarch.rpm
 ----------------------------------------------------------
 +
 2. Configure the system:
