@@ -4,7 +4,7 @@
 
 #RELEASE="2"
 PWD=`pwd`
-BASE=$PWD/trunk
+BASE=$PWD
 
 if [ -n "${BUILD_NUMBER}" ]; then
     POINTRELEASE="${BUILD_NUMBER}"
