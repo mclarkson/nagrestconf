@@ -95,11 +95,14 @@ for PKG in `( cd SPECS; ls *.spec )`; do
 		exit 2
 	}
 
-    SVN_REV=`svn info SOURCES | sed -n '/Revision:/ { s/Revision: //p }'`
+    #SVN_REV=`svn info SOURCES | sed -n '/Revision:/ { s/Revision: //p }'`
 
-	echo "Subversion Revision: $SVN_REV"
+	#echo "Subversion Revision: $SVN_REV"
 
-    POINTRELEASE=$SVN_REV
+    #POINTRELEASE=$SVN_REV
+
+    # Use the debian version number from the changelog
+    POINTRELEASE=`head -1 ./SOURCES/nagrestconf-1/debian/changelog | sed 's/^.*(1\.//;s/).*//'`
 
 	echo "Package Release: $RELEASE"
 	echo "New Version No.: $VERSION.${POINTRELEASE}"
