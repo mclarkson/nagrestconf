@@ -8,24 +8,10 @@ Nagrestconf README
 THIS IS ALPHA SOFTWARE. Although it works great for me, there are extra features I think need
 adding and there are few known users.
 
-News
-----
+Latest News
+-----------
 
 3 Apr 2013 Bug fixes. Moved code to github.
-
-3 Feb 2013 New `testing' feature for distributed environments only.
-
-14 Jan 2013 - New release with lots of enhancements and fixes. Packaging has changed: See `Install'.
-
-7 Nov 2012 - All nagios object definitions are now supported in the REST api.
-
-22 Oct 2012 - Fixes made for Centos 5/6 and Debian packages.
-
-4 Sep 2012 - Added more Nagios directives to the REST api. See the `Upgrade' section below. 
-
-21 Jul 2012 - http://blogger.smorg.co.uk/2012/07/nagrestconf-on-raspberry-pi.html[Nagrestconf on Raspberry PI]
-
-20 Jul 2012 - https://sourceforge.net/projects/nagrestconf/files/Debian/[Debian package released to sourceforge]
 
 License
 -------
