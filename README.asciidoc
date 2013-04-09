@@ -5,8 +5,7 @@ Nagrestconf README
 :icons:
 :numbered:
 
-THIS IS ALPHA SOFTWARE. Although it works great for me, there are extra features I think need
-adding and there are few known users.
+CAUTION: THIS IS ALPHA SOFTWARE. Testers required.
 
 Latest News
 -----------
