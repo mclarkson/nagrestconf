@@ -91,7 +91,7 @@ will appear in the master nagios.
 services are defined, and later this definition can be used when creating new
 hosts. This allows new servers to be added to monitoring using a single REST
 command.
-* Many Things can be disabled:
+* Many things can be disabled:
 ** Service checks can be temporarily disabled.
 ** Entire servers can be temporarily disabled.
 * Configurations are versioned using subversion.
