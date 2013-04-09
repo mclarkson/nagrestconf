@@ -79,8 +79,8 @@ services are defined, and later this definition can be used when creating new
 hosts. This allows new servers to be added to monitoring using a single REST
 command.
 * Many things can be disabled:
-** Service checks can be temporarily disabled.
-** Entire servers can be temporarily disabled.
+** Service checks can be disabled.
+** Entire servers can be disabled.
 * Configurations are versioned using subversion.
 * Ability to revert to the last-known-good configuration. Useful if lots of changes
 have been made but the user then decides to back out.
