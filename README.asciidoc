@@ -95,6 +95,7 @@ command.
 ** Service checks can be temporarily disabled.
 ** Entire servers can be temporarily disabled.
 * Configurations are versioned using subversion.
+* Ability to revert to the last-known-good configuration.
 
 How does it work?
 -----------------
