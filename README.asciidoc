@@ -100,6 +100,7 @@ have been made but the user then decides to back out.
 * Multi-user. Many people or scripts can make changes and apply configurations simultaneously.
 This is achieved partly by ensuring that every REST POST command creates a valid configuration,
 so at any point the configuration can be applied and nagios won't be broken.
+* No database required.
 
 How does it work?
 -----------------
@@ -111,6 +112,8 @@ checks general syntax and options, creates a nagctl command line
 then runs the `nagctl' script using this command line.
 
 `Nagctl' writes comma delimited format files that will be read by `csv2nag'.
+It is safe (but not recommended) to edit the `csv' files if the directory is
+locked first and it is also safe to run `csv2nag' by hand, from the command line.
 `Nagctl' makes a number of checks and cross-checks to try to ensure a valid
 nagios configuration will be created by csv2nag. All the real checks are done
 here and any errors are passed back to `rest/index.php'.
