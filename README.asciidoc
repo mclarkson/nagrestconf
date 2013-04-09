@@ -8,12 +8,12 @@ Nagrestconf README
 CAUTION: THIS IS ALPHA SOFTWARE. Testers required.
 
 Latest News
------------
+~~~~~~~~~~~
 
 3 Apr 2013 Bug fixes. Moved code to github.
 
 License
--------
+~~~~~~~
 
 ----
     This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ License
 ----
 
 Screenshot
-----------
+~~~~~~~~~~
 
 ++++
 <img src="http://www.smorg.co.uk/images/nagrestconfgui.png"
@@ -40,7 +40,7 @@ alt="Nagrestconf GUI Screenshot" style="float:none" width="500px" />
 
 
 What is Nagrestconf?
---------------------
+~~~~~~~~~~~~~~~~~~~~
 
 'Nagrestconf' is a REST interface and configuration GUI for Nagios.
 
@@ -62,7 +62,7 @@ It can be useful for:
 * Distributed monitoring (using mod_gearman).
 
 Features
---------
+~~~~~~~~
 
 * Supports distributed monitoring with mod_gearman.
 ** Supports all mod_gearman
@@ -91,7 +91,7 @@ so at any point the configuration can be applied and nagios won't be broken.
 * A configuration GUI is included.
 
 How does it work?
------------------
+~~~~~~~~~~~~~~~~~
 
 *The REST interface*
 
@@ -130,7 +130,7 @@ hence can be run on a different machine if required.
 |===========================================================================================================
 
 Requirements
-------------
+~~~~~~~~~~~~
 
 For the Web GUI the following Browsers work: Firefox, Opera, Chrome, Safari.
 The Web GUI also works on Maemo, iPad and Android devices.
@@ -151,7 +151,7 @@ The Web GUI also works on Maemo, iPad and Android devices.
 |===========================================================================================================
 
 Upgrade
--------
+~~~~~~~
 
 .All versions
 
@@ -175,10 +175,10 @@ But from 1.144 onwards it should be:
 
 
 Install
--------
+~~~~~~~
 
 Prebuilt Packages
-~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^
 
 Get the relevant RPM for Centos/Redhat from Sourceforge at:
 
@@ -187,7 +187,7 @@ https://sourceforge.net/projects/nagrestconf/files/
 Debian install packages are also available.
 
 Install Using Prebuilt Packages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .*DEBIAN, CENTOS & REDHAT*
 
@@ -237,7 +237,7 @@ Install From Source
 Refer to the debian or redhat packaging files.
 
 REST Examples
--------------
+~~~~~~~~~~~~~
 
 Please look at the 'REST_setup_local.sh' script located in the +bulk-loading/+
 document directory. This script shows how a complete monitoring configuration can
@@ -248,7 +248,7 @@ Options' below.
 
 [[X20]]
 Status
-------
+~~~~~~
 
 All nagios directives are now implemented in the REST interface. A smaller set of nagios directives are supported in the Web GUI.
 
