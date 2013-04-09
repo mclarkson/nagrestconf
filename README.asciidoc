@@ -1,9 +1,12 @@
 Nagrestconf README
-==================
+------------------
 
 :toc:
 :icons:
 :numbered:
+
+THIS IS ALPHA SOFTWARE. Although it works great for me, there are extra features I think need
+adding and there are few known users.
 
 News
 ----
@@ -92,7 +95,11 @@ command.
 ** Service checks can be temporarily disabled.
 ** Entire servers can be temporarily disabled.
 * Configurations are versioned using subversion.
-* Ability to revert to the last-known-good configuration.
+* Ability to revert to the last-known-good configuration. Useful if lots of changes
+have been made but the user then decides to back out.
+* Multi-user. Many people or scripts can make changes and apply configurations simultaneously.
+This is achieved partly by ensuring that every REST POST command creates a valid configuration,
+so at any point the configuration can be applied and nagios won't be broken.
 
 How does it work?
 -----------------
