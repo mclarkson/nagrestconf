@@ -77,10 +77,8 @@ Features
 * Supports distributed monitoring with mod_gearman.
 ** Supports all mod_gearman
 https://github.com/sni/mod_gearman#common-scenarios[Common Scenarios]
-including the advanced
-distributed setup.
-** When using the mod_gearman scenario
-https://github.com/sni/mod_gearman#distributed-setup-with-remote-scheduler[Distributed Setup With Remote Scheduler]:
+including the advanced distributed setup.
+** When using the mod_gearman scenario https://github.com/sni/mod_gearman#distributed-setup-with-remote-scheduler[Distributed Setup With Remote Scheduler]:
 *** Nagrestconf provides the `configuration sync' component.
 *** `Testing mode' becomes possible. Testing mode is
 where some service checks are only visible on the slave worker. When testing is
