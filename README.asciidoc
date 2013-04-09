@@ -107,7 +107,7 @@ nagios configuration will be created by csv2nag. All the real checks are done
 here and any errors are passed back to `rest/index.php'.
 
 One REST call, `apply/nagiosconfig', runs the csv2nag script. The only purpose
-of this script is to read the comma delimited files moade by `nagctl' and write
+of this script is to read the comma delimited files made by `nagctl' and write
 the nagios configuration. `Csv2nag' does not check for a valid nagios
 configuration since that is done by `nagctl'.
 
