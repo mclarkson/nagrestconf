@@ -69,12 +69,58 @@ It can be useful for:
 * Automation
 * Catching common configuration mistakes
 * Configuration Delegation (using additional tools)
-* Distributed monitoring (using additional tools)
+* Distributed monitoring (using mod_gearman)
 
 Not all of the Nagios directives are implemented, refer to the <<X20, Status>> section.
 
+Features
+--------
+
+* Supports distributed monitoring:
+** Supports all mod_gearman
+https://github.com/sni/mod_gearman#common-scenarios[Common Scenarios]
+including the advanced
+distributed setup.
+** When using the mod_gearman scenario
+https://github.com/sni/mod_gearman#distributed-setup-with-remote-scheduler[Distributed
+Setup With Remote Scheduler], `Testing mode' becomes possible. Testing mode is
+where some service checks are only visible on the slave worker. When testing is
+complete, testing-mode can be turned off and the check will appear in the
+master nagios.
+* A new concept, service-sets, is introduced. This is where a number of
+services are defined, and later this definition can be used when creating new
+hosts. This allows new servers to be added to monitoring using a single REST
+command.
+* Many Things can be disabled:
+** Service checks can be temporarily disabled.
+** Entire servers can be temporarily disabled.
+* Configurations are versioned using subversion.
+
 How does it work?
 -----------------
+
+*The REST interface*
+
+REST queries are received by a PHP script, +rest/index.php+. This script
+checks general syntax and options, creates a nagctl command line
+then runs the `nagctl' script using this command line.
+
+`Nagctl' writes comma delimited format files that will be read by `csv2nag'.
+`Nagctl' makes a number of checks and cross-checks to try to ensure a valid
+nagios configuration will be created by csv2nag. All the real checks are done
+here and any errors are passed back to `rest/index.php'.
+
+One REST call, `apply/nagiosconfig', runs the csv2nag script. The only purpose
+of this script is to read a bunch of comma delimited files and write a valid
+nagios configuration. `Csv2nag' does not check for a valid nagios
+configuration since that is done by `nagctl'.
+
+*The configuration GUI*
+
+The configuration GUI relies entirely on the REST interface to operate, and
+hence can be run on a different machine if required.
+
+*Nagrestconf components*
 
 [cols="<,^,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
@@ -90,8 +136,8 @@ How does it work?
 Requirements
 ------------
 
-For the Web GUI the following Browsers work: Firefox, Opera, Chrome, Safari -
-including Maemo, IPAD and Android versions.
+For the Web GUI the following Browsers work: Firefox, Opera, Chrome, Safari.
+The Web GUI also works on Maemo, IPAD and Android.
 
 [cols="<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
@@ -119,7 +165,7 @@ number of times and will not harm data if it is run unnecessarily.
 .Upgrading to version 1.144
 
 Remove extra slashes from command definitions. For example prior to 1.144 a notify-host-by-email
-command might have started as:
+command might have started as the following as viewed in the Web GUI:
 
 ----
 /usr/bin/printf "%b" "***** Nagios *****\\\\n\\\\nNotification Type: $NOTIF...
@@ -134,7 +180,6 @@ But from 1.144 onwards it should be:
 
 Install
 -------
-
 
 Prebuilt Packages
 ~~~~~~~~~~~~~~~~~
@@ -211,29 +256,11 @@ Status
 
 All nagios directives are now implemented in the REST interface. A smaller set of nagios directives are supported in the Web GUI.
 
-.Currently implemented directives
-[cols="<,^,^,>",frame="topbot",options="header,autowidth"]
-|===========================================================================================================
-| Definition | No. in Nagios | No. in Nagrestconf | %
-| Contacts | 17 | 17 | 100%
-| Contact Groups | 3 | 3 | 100%
-| Hosts | 43 | 43 | 100% 
-| Host Groups | 7 | 7 | 100%
-| Services | 39 | 39 | 100%
-| Service Groups | 7 | 7 | 100%
-| Service Sets | N/A | 10 | N/A
-| Time Periods | 5 | 5 | 100%
-| Commands | 2 | 2 | 100%
-| Host Dependency | 8 | 8 | 100%
-| Host Escalation | 9 | 9 | 100%
-| Service Dependency | 10 | 10 | 100%
-| Service Escalation | 10 | 10 | 100%
-| Hostextinfo | 10 | 10 | 100%
-| Serviceextinfo | 7 | 7 | 100%
-|===========================================================================================================
+REFERENCE
+---------
 
 REST Commands
--------------
+~~~~~~~~~~~~~
 The URL is in the general form 'https://<HOST>/rest/<COMMAND>/<COMMANDARG>'.
 
 Valid COMMANDS are check, show, add, delete, modify, restart, apply and
@@ -342,7 +369,7 @@ POST requests are for operations that might modify data or state.
 
 
 Object Definitions and Options
-------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Refer to the Nagios object definitions documentation for more information about
 individual options in the following tables. It can be found at the following
@@ -350,8 +377,8 @@ URL:
 
 http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html
 
-Listing of all Valid REST Options
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Listings of all Valid REST Options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The `Column' number in the following tables relate to the column number in the
 database files on the nagios server. These are comma delimited files used by
