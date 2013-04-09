@@ -71,8 +71,6 @@ It can be useful for:
 * Configuration Delegation. This is coarse delegation - per environment.
 * Distributed monitoring (using mod_gearman).
 
-Not all of the Nagios directives are implemented, refer to the <<X20, Status>> section.
-
 Features
 --------
 
