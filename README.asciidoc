@@ -131,7 +131,7 @@ Requirements
 ------------
 
 For the Web GUI the following Browsers work: Firefox, Opera, Chrome, Safari.
-The Web GUI also works on Maemo, iPad and Android.
+The Web GUI also works on Maemo, iPad and Android devices.
 
 [cols="<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
