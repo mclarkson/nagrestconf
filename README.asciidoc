@@ -89,6 +89,7 @@ have been made but the user then decides to back out.
 This is achieved partly by ensuring that every REST POST command creates a valid configuration,
 so at any point the configuration can be applied and nagios won't be broken.
 * No database required.
+* A configuration GUI is included.
 
 How does it work?
 -----------------
