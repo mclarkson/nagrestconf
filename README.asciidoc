@@ -120,6 +120,9 @@ hence can be run on a different machine if required.
 
 Nagios configurations are stored on each worker and synchronised 'up' to the Nagios Master.
 
+If a configuration needs to be rolled back then it must be done on the nagios slave worker
+from the command line and applied, then the configuration will be subversion mirrored 'up'.
+
 ----
                                   ____
             +---------+         _(    )_       +--------+
