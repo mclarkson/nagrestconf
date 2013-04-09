@@ -116,6 +116,28 @@ configuration since that is done by `nagctl'.
 The configuration GUI relies entirely on the REST interface to operate, and
 hence can be run on a different machine if required.
 
+*Configuration Synchronisation*
+
+Nagios configurations are stored on each worker and synchronised 'up' to the Nagios Master.
+
+----
+                                  ____
+            +---------+         _(    )_       +--------+
+            | Nagios  |       _(  Corp  )_     | Nagios |
+            | Master  |<-----(_-  -  -  -_)----| Worker |
+            |         |    \   (_  Net _)      +--------+
+            +---------+     \    (____)            /\
+                 ^       svn+ssh                   ||
+                 |        \                       REST
+                 |         \    +---------+      
+                 '--------------| Nagios  |
+                                | Worker  |
+                                +---------+
+                                    /\
+                                    || 
+                                   REST
+----
+
 *Nagrestconf components*
 
 [cols="<,^,<",frame="topbot",options="header,autowidth"]
