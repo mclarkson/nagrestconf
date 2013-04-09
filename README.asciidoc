@@ -68,8 +68,8 @@ It can be useful for:
 * Bulk editing
 * Automation
 * Catching common configuration mistakes
-* Configuration Delegation (using additional tools)
-* Distributed monitoring (using mod_gearman)
+* Configuration Delegation. This is coarse delegation - per environment.
+* Distributed monitoring (using mod_gearman).
 
 Not all of the Nagios directives are implemented, refer to the <<X20, Status>> section.
 
