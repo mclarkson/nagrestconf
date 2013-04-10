@@ -1,5 +1,38 @@
 #!/bin/bash
 # Restart nagios and update DCC
+# Use crontab to check, e.g.
+#     * * * * * /usr/bin/test -e /tmp/nagios_restart_request && ( /bin/rm /tmp/nagios_restart_request; /usr/bin/restart_nagios; )
+
+PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin
+PIDFILE=/var/tmp/restart_nagios.pid
+ME="$0"
+
+# ---------------------------------------------------------------------------
+quit()
+# ---------------------------------------------------------------------------
+{
+    rm -f $PIDFILE
+}
+
+# ---------------------------------------------------------------------------
+write_pid_or_exit()
+# ---------------------------------------------------------------------------
+{
+    local me=`basename $ME`
+
+    if test -e $PIDFILE; then
+        pid=`cat $PIDFILE`
+        # Stale pid?
+        if ps ax | grep -qs "^$pid.*$me"; then
+            exit 0
+        fi
+    fi
+
+    echo "$$" >$PIDFILE
+    trap quit EXIT
+}
+
+write_pid_or_exit
 
 VERSION="1.0"
 
