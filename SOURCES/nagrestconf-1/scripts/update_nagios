@@ -6,6 +6,15 @@ PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin
 PIDFILE=/var/tmp/update_nagios.pid
 ME="$0"
 
+# Need proc in a chroot/container etc.
+[[ -r /proc/self/fd ]] || {
+    mount -t proc proc /proc
+    [[ -r /proc/self/fd ]] || {
+        echo "Could not mount /proc"
+        exit 1
+    }
+}
+
 # ---------------------------------------------------------------------------
 quit()
 # ---------------------------------------------------------------------------
