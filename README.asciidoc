@@ -282,6 +282,32 @@ Status
 
 All nagios directives are now implemented in the REST interface. A smaller set of nagios directives are supported in the Web GUI.
 
+WALK-THROUGHS
+-------------
+
+Single Server from Scratch
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+Distributed Monitoring from Scratch
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO - Nagrestconf with mod_gearman advanced setup.
+
+Puppet Integration
+~~~~~~~~~~~~~~~~~~
+
+TODO - For ideas see: https://github.com/mclarkson/nagrestconf-from-puppet-yaml[nagrestconf-from-puppet-yaml]
+
+TROUBLE-SHOOTING
+----------------
+
+Gotchas
+~~~~~~~
+
+TODO - GUI won't allow some changes to the nagios configuration where dependencies are used - have to remove them using REST first.
+
 REFERENCE
 ---------
 
