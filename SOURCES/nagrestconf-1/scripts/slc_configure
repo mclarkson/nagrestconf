@@ -426,7 +426,7 @@ main()
 
     setup_nagios_cfg
     [[ $G_USEDCC -eq 1 ]] && {
-        configure_ssh
+        #configure_ssh #<--admin should do this manually
         configure_restart_nagios_script
         configure_mod_gearman
     }
