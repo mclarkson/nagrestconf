@@ -494,6 +494,29 @@ Show all 'contacts' entries and attributes:
  curl -kn 'https://127.0.0.1/rest/show/contacts?json=\{"folder":"local"\}' \
  | JSON.sh -b
 
+Add a number of contacts at once:
+
+----
+CONTACTS="
+user1,User One,user.one@company.tld
+user2,User Two,user.two@company.tld
+"
+echo "$CONTACTS" | \
+while IFS="," read name alias emailaddr; do
+curl -knX POST \
+  -d "json={\"folder\":\"local\",
+         \"name\":\"$name\", 
+         \"alias\":\"$alias\",
+         \"emailaddr\":\"$emailaddr\",
+         \"svcnotifperiod\":\"24x7\",
+         \"svcnotifopts\":\"w u c r\",
+         \"svcnotifcmds\":\"notify-service-by-email\",
+         \"hstnotifperiod\":\"24x7\",
+         \"hstnotifopts\":\"d u r\",
+         \"hstnotifcmds\":\"notify-host-by-email\",
+https://127.0.0.1/rest/add/contacts
+----
+
 contactgroups
 ^^^^^^^^^^^^^
 
