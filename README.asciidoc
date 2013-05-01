@@ -494,7 +494,11 @@ Show all 'contacts' entries and attributes:
  curl -kn 'https://127.0.0.1/rest/show/contacts?json=\{"folder":"local"\}' \
  | JSON.sh -b
 
-Add a number of contacts at once:
+Delete ALL contacts (contacts that are referenced elsewhere in the configuration will not be deleted):
+
+ curl -knX POST -d 'json={"folder":"local","name":".*"}' https://127.0.0.1/rest/delete/contacts
+
+Use a loop to add a number of contacts:
 
 ----
 CONTACTS="
@@ -514,7 +518,9 @@ curl -knX POST \
          \"hstnotifperiod\":\"24x7\",
          \"hstnotifopts\":\"d u r\",
          \"hstnotifcmds\":\"notify-host-by-email\",
+         \"cansubmitcmds\":\"\"}" \
 https://127.0.0.1/rest/add/contacts
+done
 ----
 
 contactgroups
