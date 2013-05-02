@@ -740,7 +740,22 @@ Show all 'services' and attributes:
 Show all host names that have a 'Disks' service description (column 4)
 
  curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"local","column":"4","filter":"Disks"\}' \
- | JSON.sh -b | grep '\[[0-9]\+,0]'
+ | JSON.sh -b | grep '\[[0-9]\+,0,'
+
+Change a service attribute for every host:
+
+ # Create a list of hosts
+ curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
+ | JSON.sh -b | grep '\[[0-9]\+,0,' | sed 's/^[^ ]\+][[:space:]]*//' | tr -d \" >list1
+
+ # Modify the attribute on each host in a loop
+ # All key fields must be supplied - there are two key fields for the 'services' table,
+ # name and svcdesc (the host name and service description).
+ # In this example the `command' is changed for every host
+ cat list1 | while read host; do curl -knX POST -d 'json={"folder":"local",
+   "name":"'$host'","svcdesc":"Disk space",
+   "command":"check_disk -e -X tmpfs -x /misc -w 10% -c 5%"}' \
+ https://127.0.0.1/rest/modify/services; done
 
 servicesets
 ^^^^^^^^^^^
@@ -1164,7 +1179,7 @@ to set the action_url in the host template or for each host.
 
  # Create a list of hosts
  curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
- | JSON.sh -b | grep '\[[0-9]\+,0]' | sed 's/^.*:"\(.*\)".*/\1/' >list1
+ | JSON.sh -b | grep '\[[0-9]\+,0,' | sed 's/^[^ ]\+][[:space:]]*//' | tr -d \" >list1
 
  # Use the list to create hostextinfo entries
  while read HNAME x; do
