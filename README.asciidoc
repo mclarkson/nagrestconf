@@ -608,7 +608,7 @@ Show all hosts and attributes:
 Show only the host names beginning with 'tx':
 
  curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local","filter":"tx.*"\}'
- | JSON.sh -b | grep '\[[0-9]\+,0]'
+ | JSON.sh -b | grep '\[[0-9]\+,0,'
 
 hosttemplates
 ^^^^^^^^^^^^^
@@ -1015,8 +1015,8 @@ this it might be worth making all services on all hosts depend on the PING
 service residing on each host. Note that this is a lengthy operation.
 
  # Create a list of host names + services
- curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
- | JSON.sh -b | grep '\[[0-9]\+,0]' | sed 's/^.*:"\(.*\)".*/\1/' \
+ curl -kn 'https://127.0.0.1/rest/show/services?json=\{"folder":"local"\}' \
+ | JSON.sh -b | grep '\[[0-9]\+,[03],' | sed 's/^[^ ]\+][[:space:]]*//' | tr -d \" \
  | sed '$!N;s/\n/ /' >list
 
  # Exclude PING. (Not strictly necessary as REST will not allow adding the
