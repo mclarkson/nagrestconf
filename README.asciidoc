@@ -744,6 +744,7 @@ Show all host names that have a 'Disks' service description (column 4)
 
 Change a service attribute for every host:
 
+----
  # Create a list of hosts
  curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
   | JSON.sh -b \
@@ -758,6 +759,7 @@ Change a service attribute for every host:
    "name":"'$host'","svcdesc":"Disk space",
    "command":"check_disk!10%!5%"}' \
  https://127.0.0.1/rest/modify/services; done
+----
 
 servicesets
 ^^^^^^^^^^^
@@ -835,6 +837,7 @@ Show only the name of all 'servicesets':
 
 Change a service attribute for every serviceset:
 
+----
  # Create a list of 'servicesets'
  curl -kn 'https://127.0.0.1/rest/show/servicesets?json=\{"folder":"local"\}' \
   | JSON.sh -b \
@@ -850,6 +853,7 @@ Change a service attribute for every serviceset:
   "command":"check_disk!10%!5%"}' \
   https://127.0.0.1/rest/modify/servicesets; \
  done
+----
 
 servicetemplates
 ^^^^^^^^^^^^^^^^
