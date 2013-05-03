@@ -746,7 +746,9 @@ Change a service attribute for every host:
 
  # Create a list of hosts
  curl -kn 'https://127.0.0.1/rest/show/hosts?json=\{"folder":"local"\}' \
- | JSON.sh -b | grep '\[[0-9]\+,0,' | sed 's/^[^ ]\+][[:space:]]*//' | tr -d \" >list1
+  | JSON.sh -b \
+  | sed -n 's/\[[0-9]\+,0,.*][[:space:]]*["]*\([^"]*\).*/\1/p \
+  >list1
 
  # Modify the attribute on each host in a loop
  # All key fields must be supplied - there are two key fields for the 'services' table,
@@ -754,7 +756,7 @@ Change a service attribute for every host:
  # In this example the `command' is changed for every host
  cat list1 | while read host; do curl -knX POST -d 'json={"folder":"local",
    "name":"'$host'","svcdesc":"Disk space",
-   "command":"check_disk -e -X tmpfs -x /misc -w 10% -c 5%"}' \
+   "command":"check_disk!10%!5%"}' \
  https://127.0.0.1/rest/modify/services; done
 
 servicesets
@@ -822,7 +824,32 @@ Examples
 Show all 'servicesets' entries and attributes:
 
  curl -kn 'https://127.0.0.1/rest/show/servicesets?json=\{"folder":"local"\}' \
- | JSON.sh -b 
+ | JSON.sh -b
+
+Show only the name of all 'servicesets':
+
+ curl -kn 'https://127.0.0.1/rest/show/servicesets?json=\{"folder":"local"\}' \
+  | JSON.sh -b \
+  | sed -n 's/\[[0-9]\+,0,.*][[:space:]]*["]*\([^"]*\).*/\1/p' \
+  | sort -u
+
+Change a service attribute for every serviceset:
+
+ # Create a list of 'servicesets'
+ curl -kn 'https://127.0.0.1/rest/show/servicesets?json=\{"folder":"local"\}' \
+  | JSON.sh -b \
+  | sed -n 's/\[[0-9]\+,0,.*][[:space:]]*["]*\([^"]*\).*/\1/p' \
+  | sort -u \
+  >list1
+
+ # Modify the attribute on each serviceset in a loop
+ # In this example the `command' is changed for every serviceset
+ cat ~/list1 | while read name; do curl -knX POST -d 'json={"folder":"local",
+  "name":"'$name'",
+  "svcdesc":"Disk space",
+  "command":"check_disk!10%!5%"}' \
+  https://127.0.0.1/rest/modify/servicesets; \
+ done
 
 servicetemplates
 ^^^^^^^^^^^^^^^^
