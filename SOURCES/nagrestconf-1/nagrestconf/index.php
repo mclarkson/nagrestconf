@@ -391,7 +391,44 @@
     }
 
     # ------------------------------------------------------------------------
-    function get_and_sort_servicesets( ) {
+    function get_and_sort_servicesets( $name ) {
+    # ------------------------------------------------------------------------
+
+        $request2 = new RestRequest(
+          RESTURL.'/show/servicesets?json='.
+          '{"folder":"'.FOLDER.'","filter":"'.urlencode($name).'"}', 'GET');
+        set_request_options( $request2 );
+        $request2->execute();
+        $slist = json_decode( $request2->getResponseBody(), true );
+
+        $c=array();
+        foreach( $slist as $slistitem ) {
+            foreach( $slistitem as $line2 ) {
+                extract( $line2 );
+            }
+            $d['svcdesc']=$svcdesc;
+            $d['command']=$command;
+            $d['template']=$template;
+            $d['disable']=$disable;
+            $d["name"] = $name;
+            $d["svcgroup"] = $svcgroup;
+            $d["contacts"] = $contacts;
+            $d["contactgroups"] = $contactgroups;
+            $d["freshnessthresh"] = $freshnessthresh;
+            $d["activechecks"] = $activechecks;
+            $d["customvars"] = $customvars;
+            $c[]=$d;
+        }
+        usort($c, function ($c,$d) {
+            return $c['svcdesc']>$d['svcdesc'];
+        }
+        );
+
+        return $c;
+    }
+
+    # ------------------------------------------------------------------------
+    function get_and_sort_servicesets_unique( ) {
     # ------------------------------------------------------------------------
 
         $request = new RestRequest(
@@ -883,11 +920,11 @@
         print "<h1 class=\"titletext\">Nagios REST Configurator</h1>";
         #print "<h2 class=\"pghdr\">Nagios REST Configurator</h2>";
 
-        #print "<div id=$tab1>";
-        #if( $g_tab != 1 ) print "<a href=\"index.php?tab=1\">";
-        #print "User Admin";
-        #if( $g_tab != 1 ) print "</a>";
-        #print "</div>";
+        print "<div id=$tab1>";
+        if( $g_tab != 1 ) print "<a href=\"index.php?tab=1\">";
+        print "Service Sets";
+        if( $g_tab != 1 ) print "</a>";
+        print "</div>";
 
         print "<div id=$tab2>";
         if( $g_tab != 2 ) print "<a href=\"index.php?tab=2\">";
@@ -5327,6 +5364,1243 @@
 
     /**********************************************************************
      *
+     * SERVICESETS TAB
+     *
+     ***********************************************************************
+     */
+
+    # ------------------------------------------------------------------------
+    function show_servicesets_page( ) {
+    # ------------------------------------------------------------------------
+
+        global $g_tab;
+
+        $url = create_url( );
+
+        # Not so nice, disable Enter key.
+        print "<script>".
+              "$(document).ready(function() {".
+              "  $(document).keydown(function(event){".
+              "      if(event.keyCode == 13) {".
+              "        event.preventDefault();".
+              "      return false;".
+              "      }".
+              "    });".
+              # Load the right pane
+              #'$("#hoststable").html("").'.
+              '$("#svcsetstable").'.
+              'load("'.$url.'&svcsetstable=true");'.
+              "  });".
+              "</script>";
+
+        print "<div id=pageheader>";
+        show_pageheader();
+        print "</div>";
+
+        # To find out how the layout works see:
+        # http://matthewjamestaylor.com/blog/equal-height-columns-cross-
+        # browser-css-no-hacks
+
+        print "<div class=\"colmask leftmenu\">";
+        print "<div class=\"colright\">";
+        print "<div class=\"col1wrap\">";
+        print "<div class=\"col1\">";
+        #show_hosts_tab_right_pane( );
+        print '<div id="svcsetstable">'.
+              #'<img src="/nagrestconf/images/loadingAnimation.gif" />'.
+              '<p>Loading</p>'.
+              '</div>';
+        print "</div>";
+        print "</div>";
+        print "<div class=\"col2\">";
+        show_servicesets_tab_left_pane( );
+        print "</div>";
+        print "</div>";
+        print "</div>";
+
+    }
+
+    # ------------------------------------------------------------------------
+    function show_servicesets_tab_left_pane( ) {
+    # ------------------------------------------------------------------------
+
+        show_revert_and_apply_buttons( );
+    }
+
+    # ------------------------------------------------------------------------
+    function show_servicesets_tab_right_pane( ) {
+    # ------------------------------------------------------------------------
+
+        $s = get_and_sort_servicesets_unique( );
+        print "<p>".count($s)." servicesets.</p>";
+        print "<table><thead><tr>";
+
+        # Sort by host name
+        $g_sort_new = "name";
+        $url = create_url( );
+        print "<td><a href='".$url."'><span class=black>Name </span>";
+        print "<img width=8 src=/nagrestconf/images/ArrowDown.svg.png".
+              " alt=\"arrow\"></a></td>";
+
+        # Controls
+        print "<td style=\"text-align:right;\">";
+        print "<a class=\"icon icon-add\" title=\"Add New Service Set\" onClick=\"".
+              #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
+              "$('#newsvcsetdlg').html('').". // Gets cached
+              "load('/nagrestconf/".SCRIPTNAME."?tab=1&newsvcsetdialog=true').".
+              "dialog('open'); ".
+              "return false;".
+              "\" href=\"\">";
+        print "</a></td>";
+
+        #print "<td></td>";
+        print "</tr></thead><tbody>";
+
+        $num=1;
+        foreach( $s as $item ) {
+            if( $num % 2 == 0 )
+                print "<tr class=shaded>";
+            else
+                print "<tr>";
+
+            // NAME
+            print "<td><span id=\"$num\" class=link> + ".$item."</span></td>";
+            // Actions
+            print "<td style=\"float: right\">";
+            print "<a class=\"icon icon-clone\" title=\"Clone Service Set\"";
+            print " onClick=\"".
+              #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
+              "$('#clonesvcsetdlg').html('').". // Gets cached
+              "load('/nagrestconf/".SCRIPTNAME."?tab=1&clonesvcsetdialog=true".
+              "&amp;name=".$item."').".
+              "dialog('open'); ".
+              "return false;".
+              "\" href=\"\"></a>";
+            print "<a class=\"icon icon-delete\" title=\"Delete Service Set\"";
+            print " onClick=\"".
+              #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
+              "$('#delsvcsetdlg').html('').". // Gets cached
+              "load('/nagrestconf/".SCRIPTNAME."?tab=1&delsvcsetdialog=true".
+              "&amp;name=".$item."').".
+              "dialog('open'); ".
+              "return false;".
+              "\" href=\"\"></a>";
+            print "</tr>";
+            // SERVICES FOR THIS SERVICESET - HIDDEN
+            print "<tr id='hid$num' class=hidden>";
+            print "<td colspan=\"5\">".
+                  #'<img src="/nagrestconf/images/loadingAnimation.gif" />'.
+                  "Loading...".
+                  "</td></tr>";
+            # Save in names array for later 'bind'.
+            $names[$num]=$item;
+            ++$num;
+        }
+        print "</tbody>";
+        print "</table>";
+
+        print "<script>";
+        for( $x=1 ; $x<$num ; $x++ ) {
+            print "$('#$x').bind('click', function() {";
+            print " $.get('/nagrestconf/".SCRIPTNAME."?tab=1&fragment1id=";
+            print $names[$x];
+            print "', function(data) {";
+            print " $('#hid$x').html(data);";
+            #print ' alert(data);';
+            print " }); ";
+            print " $('#hid$x').toggleClass(\"hidden\"); });";
+            print "$('#$x').bind('mouseenter mouseleave', function(event){";
+            print " $(this).toggleClass(\"linkover\");});";
+        }
+        print "</script>";
+    }
+
+    /***********************************************************************
+     *
+     * DELETE SERVICESET DIALOG
+     *
+     ***********************************************************************
+     */
+
+    # ------------------------------------------------------------------------
+    function show_delsvcsetdialog_buttons( $name ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Service Set
+
+        print '<form id="delsvcsetform" name="delsvcsetform" method="get"';
+        print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=1&delsvcset=1';
+        print '">';
+        print '<h2>About to <b>DELETE</b> svcset:</h2>';
+        print '<h2 style="margin-left:60px;font-weight:bold;">'.$name.'</h2>';
+        print "<h2>Click 'Delete Service Set' to confirm or 'Close' to cancel.</h2>";
+        #print '<span class="errorlabel">Oops - it seems there are some';
+        #print ' errors! Please check and correct them.</span>';
+        # Hostname
+        print '<p>';
+        print '<input class="field" type="checkbox" id="delsvcsetservices"';
+        print ' name="delsvcsetservices" value="1" />';
+        print '<label for="delsvcsetservices">Click to confirm deletion of all';
+        print ' services in this service set.</label>';
+        print '</p>';
+        print '<p>';
+        print '<input type="hidden" name="name" value="';
+        print $name;
+        print '"/>';
+        print '</p>';
+        print '</form>';
+        print '<div class="flash notice" style="display:none"></div>';
+        print '<div class="flash error" style="display:none"></div>';
+        print '<script>'.
+              '$(".ui-button:contains(Close)").focus()'.
+              '</script>';
+
+        exit( 0 );
+    }
+
+    # ------------------------------------------------------------------------
+    function show_delete_svcset_dlg_div( ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Service Set
+
+        # 'Add New Service Set' dialog box div
+        print "<div id=\"delsvcsetdlg\" title=\"Delete Service Set\"></div>";
+        print '<script>';
+        # Addsvcset button
+        print 'var delsvcset = function() { ';
+        print ' $.getJSON( $("#delsvcsetform").attr("action"), '; # <- url
+        print ' $("#delsvcsetform").serialize(),';             # <- data
+        print ' function(response) {';                       # <- success
+        print '  var code = response.code;';
+        print '  var message = response.message;';
+        print '  if( code == 200 ) {';
+        print '    $(".flash.error").hide();';
+        print '    $(".flash.notice").html(""+message).show();';
+        $url = create_url( );
+        print '    $("#svcsetstable").html("").';
+        print '      load("'.$url.'&svcsetstable=true");';
+        print '  } else {';
+        print '    $(".flash.notice").hide();';
+        print '    $(".flash.error").html(""+message).show();';
+        print ' }});';
+        print '};';
+        # Cancel button
+        print 'var cancel = function() { $("#delsvcsetdlg").dialog("close"); };';
+        # Setup the dialog
+        print '$( "div#delsvcsetdlg" ).dialog( { ';
+        print 'autoOpen : false';
+        print ', width : 500';
+        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', buttons : { "Delete Service Set": delsvcset, "Close": cancel }';
+        print ' } );';
+        print '</script>';
+    }
+
+    # ------------------------------------------------------------------------
+    function delete_svcset_using_REST( ) {
+    # ------------------------------------------------------------------------
+    # This is called by the 'Add New Host' dialog
+    # JSON is returned to the dialog.
+
+        # Create the query
+        parse_str( $_SERVER['QUERY_STRING'], $query_str );
+        unset( $query_str["delsvcset"] );
+        $query_str["folder"] = FOLDER;
+        if( isset( $query_str["delsvcsetservices"] ) ) {
+            unset( $query_str["delsvcsetservices"] );
+            if( isset( $query_str["name"] ) ) {
+                $a = array();
+                $a["name"] = $query_str["name"];
+                $a["svcdesc"] = '.*';
+                $a["folder"] = FOLDER;
+                $json = json_encode( $a );
+                $request2 = new RestRequest(
+                  RESTURL.'/delete/servicesets',
+                  'POST',
+                  'json='.$json
+                );
+                set_request_options( $request2 );
+                $request2->execute();
+                $slist = json_decode( $request2->getResponseBody(), true );
+                ### Check $slist->http_code ###
+            } else {
+                $retval["message"] = "Internal error: name empty";
+                $retval["code"] = "400";
+                print( json_encode( $retval ) );
+                exit( 0 );
+            }
+        } else {
+                $retval["message"] = "Error: Deletion was not confirmed.";
+                $retval["code"] = "400";
+                print( json_encode( $retval ) );
+                exit( 0 );
+        }
+
+        #$json = json_encode( $query_str );
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $slist;
+        $resp = $request2->getResponseInfo();
+        $retval["code"] = $resp["http_code"];
+        print( json_encode( $retval ) );
+
+        exit( 0 );
+    }
+
+    /***********************************************************************
+     *
+     * ADD NEW SERVICSET DIALOG
+     *
+     ***********************************************************************
+     */
+
+    # ------------------------------------------------------------------------
+    function show_new_svcset_dlg_div( ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Service Set
+
+        # 'Add New Service Set' dialog box div
+        print "<div id=\"newsvcsetdlg\" title=\"Add New Service Set\"></div>";
+        print '<script>';
+        # Addsvcset button
+        print 'var addsvcset = function() { ';
+        print ' $.getJSON( $("#newsvcsetform").attr("action"), '; # <- url
+        print ' $("#newsvcsetform").serialize(),';             # <- data
+        print ' function(response) {';                       # <- success
+        print '  var code = response.code;';
+        print '  var message = response.message;';
+        print '  if( code == 200 ) {';
+        print '    $(".flash.error").hide();';
+        print '    $(".flash.notice").html(""+message).show();';
+        $url = create_url( );
+        print '    $("#svcsetstable").html("").';
+        print '      load("'.$url.'&svcsetstable=true");';
+        print '  } else {';
+        print '    $(".flash.notice").hide();';
+        print '    $(".flash.error").html(""+message).show();';
+        print ' }});';
+        print '};';
+        # Cancel button
+        print 'var cancel = function() { $("#newsvcsetdlg").dialog("close"); };';
+        # Setup the dialog
+        print '$( "div#newsvcsetdlg" ).dialog( { ';
+        print 'autoOpen : false';
+        print ', width : 500';
+        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', buttons : { "Add Service Set": addsvcset, "Close": cancel }';
+        print ' } );';
+        print '</script>';
+    }
+
+    # ------------------------------------------------------------------------
+    function show_newsvcsetdialog_buttons( ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Service Set
+
+        print '<form id="newsvcsetform" name="newsvcsetform" method="get"';
+        print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=1&newsvcset=1';
+        print '">';
+        print '<fieldset>';
+        print '<p>A new service set can be added by creating a new ';
+        print 'service in the service sets table. Type the name of the ';
+        print 'new service set below, and a PING check will be created ';
+        print 'to initialise the service set.</p>';
+        print '<p style="font-weight:bold;">';
+        print "$name</p>";
+        # Hostname
+        print '<p>';
+        print '<label for="csvcsetname">New service set name *</label>';
+        print '<input class="field" type="text" id="csvcsetname" name="newname"'.
+              ' required="required" />';
+        print '</p>';
+        print "<p>Click 'Add Service Set' to confirm or 'Close' to cancel.</p>";
+        print '<input type="hidden" name="name" value="';
+        print $name;
+        print '"/>';
+        print '</fieldset>';
+        print '</form>';
+        print '<div class="flash notice" style="display:none"></div>';
+        print '<div class="flash error" style="display:none"></div>';
+        print '<script>'.
+              '$(".ui-button:contains(Close)").focus()'.
+              '</script>';
+
+        exit( 0 );
+    }
+
+    # ------------------------------------------------------------------------
+    function add_new_svcset_using_REST( ) {
+    # ------------------------------------------------------------------------
+    # This is called by the 'Add New Service Set' dialog
+    # JSON is returned to the dialog.
+
+        $a = get_and_sort_servicetemplates();
+
+        # Create the query
+        parse_str( $_SERVER['QUERY_STRING'], $query_str );
+        unset( $query_str["newsvcset"] );
+        $query_str["folder"] = FOLDER;
+        $query_str["template"] = $a[0]["name"];
+        $query_str["name"] = $query_str["newname"];
+        $query_str["command"] = "check_ping!100.0,20%!500.0,60%";
+        $query_str["svcdesc"] = "PING";
+        unset( $query_str["newsvcset"] );
+        $json = json_encode( $query_str );
+
+        # Do the REST add svcset request
+        $request = new RestRequest(
+          RESTURL.'/add/servicesets',
+          'POST',
+          'json='.$json
+        );
+        set_request_options( $request );
+        $request->execute();
+        $slist = json_decode( $request->getResponseBody(), true );
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $slist;
+        $resp = $request->getResponseInfo();
+        $retval["code"] = $resp["http_code"];
+        print( json_encode( $retval ) );
+
+        exit( 0 );
+    }
+
+    /***********************************************************************
+     *
+     * CLONE SERVICSET DIALOG
+     *
+     ***********************************************************************
+     */
+
+    # ------------------------------------------------------------------------
+    function show_clone_svcset_dlg_div( ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Host
+
+        # 'Add New Host' dialog box div
+        print "<div id=\"clonesvcsetdlg\" title=\"Clone Service Set\"></div>";
+        print '<script>';
+        # Addhost button
+        print 'var clonesvcset = function() { ';
+        print ' $.getJSON( $("#clonesvcsetform").attr("action"), '; # <- url
+        print ' $("#clonesvcsetform").serialize(),';             # <- data
+        print ' function(response) {';                       # <- success
+        print '  var code = response.code;';
+        print '  var message = response.message;';
+        print '  if( code == 200 ) {';
+        print '    $(".flash.error").hide();';
+        print '    $(".flash.notice").html(""+message).show();';
+        $url = create_url( );
+        print '    $("#svcsetstable").html("").';
+        print '      load("'.$url.'&svcsetstable=true");';
+        print '  } else {';
+        print '    $(".flash.notice").hide();';
+        print '    $(".flash.error").html(""+message).show();';
+        print ' }});';
+        print '};';
+        # Cancel button
+        print 'var cancel = function() { $("#clonesvcsetdlg").dialog("close"); };';
+        # Setup the dialog
+        print '$( "div#clonesvcsetdlg" ).dialog( { ';
+        print 'autoOpen : false';
+        print ', width : 500';
+        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', buttons : { "Clone Service Set": clonesvcset, "Close": cancel }';
+        print ' } );';
+        print '</script>';
+    }
+
+    # ------------------------------------------------------------------------
+    function show_clonesvcsetdialog_buttons( $name ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Host
+
+        print '<form id="clonesvcsetform" name="clonesvcsetform" method="get"';
+        print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=1&clonesvcset=1';
+        print '">';
+        print '<fieldset>';
+        print '<p>Clone service set:</p>';
+        print '<p style="font-weight:bold;">';
+        print "$name</p>";
+        # Hostname
+        print '<p>';
+        print '<label for="csvcsetname">New service set name *</label>';
+        print '<input class="field" type="text" id="csvcsetname" name="copyto"'.
+              ' required="required" />';
+        print '</p>';
+        print "<p>Click 'Clone Service Set' to confirm or 'Close' to cancel.</p>";
+        print '<input type="hidden" name="name" value="';
+        print $name;
+        print '"/>';
+        print '</fieldset>';
+        print '</form>';
+        print '<div class="flash notice" style="display:none"></div>';
+        print '<div class="flash error" style="display:none"></div>';
+        print '<script>'.
+              '$(".ui-button:contains(Close)").focus()'.
+              '</script>';
+
+        exit( 0 );
+    }
+
+    # ------------------------------------------------------------------------
+    function clone_svcset_using_REST( ) {
+    # ------------------------------------------------------------------------
+    # This is called by the 'Clone Service' dialog
+    # JSON is returned to the dialog.
+
+        # Create the query
+        parse_str( $_SERVER['QUERY_STRING'], $query_str );
+
+        # Sanity checks
+        if( ! isset( $query_str["name"] ) ) {
+            $retval["message"] = "Internal error: name or svcdesc empty";
+            $retval["code"] = "400";
+            print( json_encode( $retval ) );
+            exit( 0 );
+        } else if( ! isset( $query_str["copyto"] )
+                   || empty( $query_str["copyto"] ) ) {
+            $retval["message"] = "A required field is empty.";
+            $retval["code"] = "400";
+            print( json_encode( $retval ) );
+            exit( 0 );
+        } else if( strchr( $query_str["copyto"],"*" ) ) {
+            $retval["message"] = "Wildcard not allowed.";
+            $retval["code"] = "400";
+            print( json_encode( $retval ) );
+            exit( 0 );
+        }
+        
+        $tohost = trim( $query_str["copyto"] );
+        $fromhost = $query_str["name"];
+
+        # Clone the host
+
+        # Get service details from original host from REST
+        unset( $request );
+        $request = new RestRequest(
+        RESTURL.'/show/servicesets?json={"folder":"'.FOLDER.'",'.
+        '"column":"1","filter":"'.urlencode($fromhost).'"}', 'GET');
+        set_request_options( $request );
+        $request->execute();
+        $hlist = json_decode( $request->getResponseBody(), true );
+
+        foreach( $hlist as $svc ) {
+            foreach( $svc as $item ) extract( $item );
+
+            $newservice["folder"] = FOLDER;
+            $newservice["name"] = $tohost;
+            $newservice["template"] = $template;
+            $newservice["command"] =  $command;
+            $newservice["svcdesc"] = $svcdesc;
+            $newservice["svcgroup"] = $svcgroup;
+            $newservice["contacts"] = $contacts;
+            $newservice["contactgroups"] = $contactgroups;
+            $newservice["freshnessthresh"] = $freshnessthresh;
+            $newservice["activechecks"] = $activechecks;
+            $newservice["customvars"] = $customvars;
+            $json = json_encode( $newservice );
+            $request = new RestRequest(
+              RESTURL.'/add/servicesets',
+              'POST',
+              'json='.$json
+            );
+            set_request_options( $request );
+            $request->execute();
+            $slist = json_decode( $request->getResponseBody(), true );
+
+            # Return json
+            $retval = array();
+            $retval["message"] = $slist;
+            $resp = $request->getResponseInfo();
+            $retval["code"] = $resp["http_code"];
+            if( $retval["code"] != 200 ) {
+                print( json_encode( $retval ) );
+                exit( 0 );
+            }
+        }
+
+        $retval["message"] = "Success. Service set cloned.";
+        $retval["code"] = 200;
+        print( json_encode( $retval ) );
+
+        exit( 0 );
+    }
+
+    /***********************************************************************
+     *
+     * CLONE SERVICESET SERVICE DIALOG
+     *
+     ***********************************************************************
+     */
+
+    # ------------------------------------------------------------------------
+    function show_clone_svcset_svc_dlg_div( ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Host
+
+        # 'Add New Host' dialog box div
+        print "<div id=\"clonesvcsetsvcdlg\" title=\"Clone Service\"></div>";
+        print '<script>';
+        # Addhost button
+        print 'var clonesvcsetsvc = function() { ';
+        print ' $.getJSON( $("#clonesvcsetsvcform").attr("action"), '; # <- url
+        print ' $("#clonesvcsetsvcform").serialize(),';             # <- data
+        print ' function(response) {';                       # <- success
+        print '  var code = response.code;';
+        print '  var message = response.message;';
+        print '  if( code == 200 ) {';
+        print '    $(".flash.error").hide();';
+        print '    $(".flash.notice").html(""+message).show();';
+        $url = create_url( );
+        print '    $("#svcsetstable").html("").';
+        print '      load("'.$url.'&svcsetstable=true");';
+        print '  } else {';
+        print '    $(".flash.notice").hide();';
+        print '    $(".flash.error").html(""+message).show();';
+        print ' }});';
+        print '};';
+        # Cancel button
+        print 'var cancel = function() { $("#clonesvcsetsvcdlg").dialog("close"); };';
+        # Setup the dialog
+        print '$( "div#clonesvcsetsvcdlg" ).dialog( { ';
+        print 'autoOpen : false';
+        print ', width : 500';
+        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', buttons : { "Clone Service": clonesvcsetsvc, "Close": cancel }';
+        print ' } );';
+        print '</script>';
+    }
+
+    # ------------------------------------------------------------------------
+    function show_clonesvcsetsvcdialog_buttons( $name, $svcdesc ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Host
+
+        print '<form id="clonesvcsetsvcform" name="clonesvcform" method="get"';
+        print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=1&clonesvcsetsvc=1';
+        print '">';
+        print '<fieldset>';
+        print '<p>Clone service:</p>';
+        print '<p style="font-weight:bold;">';
+        print "&quot;$svcdesc&quot; in <br>$name</p>";
+        # Hostname
+        print '<p>';
+        print '<label for="chostname">Copy to service set *</label>';
+        print '<input class="field" type="text" id="chostname" name="copyto"'.
+              ' required="required" />';
+        print '</p>';
+        print "<p>Click 'Clone Service' to confirm or 'Close' to cancel.</p>";
+        print '<input type="hidden" name="name" value="';
+        print $name;
+        print '"/>';
+        print '<input type="hidden" name="svcdesc" value="';
+        print $svcdesc;
+        print '"/>';
+        print '</fieldset>';
+        print '</form>';
+        print '<div class="flash notice" style="display:none"></div>';
+        print '<div class="flash error" style="display:none"></div>';
+        print '<script>'.
+              '$(".ui-button:contains(Close)").focus()'.
+              '</script>';
+
+        exit( 0 );
+    }
+
+    # ------------------------------------------------------------------------
+    function clone_svcset_svc_using_REST( ) {
+    # ------------------------------------------------------------------------
+    # This is called by the 'Clone Service' dialog
+    # JSON is returned to the dialog.
+
+        # Create the query
+        parse_str( $_SERVER['QUERY_STRING'], $query_str );
+
+        # Sanity checks
+        if( ! ( isset( $query_str["name"] )
+              && isset( $query_str["svcdesc"] )
+            ) ) {
+            $retval["message"] = "Internal error: name or svcdesc empty";
+            $retval["code"] = "400";
+            print( json_encode( $retval ) );
+            exit( 0 );
+        } else if( ! isset( $query_str["copyto"] )
+                   || empty( $query_str["copyto"] ) ) {
+            $retval["message"] = "A required field is empty.";
+            $retval["code"] = "400";
+            print( json_encode( $retval ) );
+            exit( 0 );
+        } 
+        
+        $copyto = $query_str["copyto"];
+        # Does the copyto host exist?
+        $a = get_and_sort_servicesets( $copyto );
+        $itemfound = 0;
+        foreach( $a as $item ) {
+            if( isset($item["name"]) && $item["name"]==$copyto )
+                $itemfound = 1;
+        }
+        if( $itemfound == 0 ) {
+            $retval["message"] = "Serviceset '".$copyto."' not found.";
+            $retval["code"] = 400;
+            print( json_encode( $retval ) );
+            exit( 0 );
+        }
+
+        # Rely on fact that "name" is always the first item in the list
+        # returned from any REST request.
+        $tohost = $a[0]["name"];
+
+        $fromhost = $query_str["name"];
+        $fromsvc = $query_str["svcdesc"];
+
+        # Get service details from REST
+        unset( $request );
+        $request = new RestRequest(
+        RESTURL.'/show/servicesets?json={"folder":"'.FOLDER.'",'.
+        '"column":"1","filter":"'.urlencode($fromhost).'"}', 'GET');
+        set_request_options( $request );
+        $request->execute();
+        $hlist = json_decode( $request->getResponseBody(), true );
+
+        # Can't search for specific service check using the REST interface.
+        # Have to ask for all services for the host (above) and search it:
+        foreach( $hlist as $svc ) {
+            foreach( $svc as $item ) extract( $item );
+            if( $svcdesc == $fromsvc ) break;
+        }
+
+        $newservice["folder"] = FOLDER;
+        $newservice["name"] = $tohost;
+        $newservice["template"] = $template;
+        $newservice["command"] =  $command;
+        $newservice["svcdesc"] = $svcdesc;
+        $newservice["svcgroup"] = $svcgroup;
+        $newservice["contacts"] = $contacts;
+        $newservice["contactgroups"] = $contactgroups;
+        $newservice["freshnessthresh"] = $freshnessthresh;
+        $newservice["activechecks"] = $activechecks;
+        $newservice["customvars"] = $customvars;
+        $json = json_encode( $newservice );
+        $request = new RestRequest(
+          RESTURL.'/add/servicesets',
+          'POST',
+          'json='.$json
+        );
+        set_request_options( $request );
+        $request->execute();
+        $slist = json_decode( $request->getResponseBody(), true );
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $slist;
+        $resp = $request->getResponseInfo();
+        $retval["code"] = $resp["http_code"];
+        print( json_encode( $retval ) );
+
+        exit( 0 );
+    }
+
+    /***********************************************************************
+     *
+     * DELETE SERVICESET SERVICE DIALOG
+     *
+     ***********************************************************************
+     */
+
+    # ------------------------------------------------------------------------
+    function show_delete_svcset_svc_dlg_div( ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Host
+
+        # 'Add New Host' dialog box div
+        print "<div id=\"delsvcsetsvcdlg\" title=\"Delete Service\"></div>";
+        print '<script>';
+        # Addhost button
+        print 'var delsvcsetsvc = function() { ';
+        print ' $.getJSON( $("#delsvcsetsvcform").attr("action"), '; # <- url
+        print ' $("#delsvcsetsvcform").serialize(),';             # <- data
+        print ' function(response) {';                       # <- success
+        print '  var code = response.code;';
+        print '  var message = response.message;';
+        print '  if( code == 200 ) {';
+        print '    $(".flash.error").hide();';
+        print '    $(".flash.notice").html(""+message).show();';
+        $url = create_url( );
+        print '    $("#svcsetstable").html("").';
+        print '      load("'.$url.'&svcsetstable=true");';
+        print '  } else {';
+        print '    $(".flash.notice").hide();';
+        print '    $(".flash.error").html(""+message).show();';
+        print ' }});';
+        print '};';
+        # Cancel button
+        print 'var cancel = function() { $("#delsvcsetsvcdlg").dialog("close"); };';
+        # Setup the dialog
+        print '$( "div#delsvcsetsvcdlg" ).dialog( { ';
+        print 'autoOpen : false';
+        print ', width : 500';
+        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', buttons : { "Delete Service": delsvcsetsvc, "Close": cancel }';
+        print ' } );';
+        print '</script>';
+    }
+
+    # ------------------------------------------------------------------------
+    function show_delsvcsetsvcdialog_buttons( $name, $svcdesc ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Host
+
+        print '<form id="delsvcsetsvcform" name="delsvcsetsvcform" method="get"';
+        print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=1&delsvcsetsvc=1';
+        print '">';
+        print '<h2>About to delete service:</h2>';
+        print '<h2 style="margin-left:60px;font-weight:bold;">';
+        print " &quot;$svcdesc&quot; in <br>$name</h2>";
+        print "<h2>Click 'Delete Service' to confirm or 'Close' to cancel.</h2>";
+        # Hostname
+        print '<input type="hidden" name="name" value="';
+        print $name;
+        print '"/>';
+        print '<input type="hidden" name="svcdesc" value="';
+        print $svcdesc;
+        print '"/>';
+        print '</form>';
+        print '<div class="flash notice" style="display:none"></div>';
+        print '<div class="flash error" style="display:none"></div>';
+        print '<script>'.
+              '$(".ui-button:contains(Close)").focus()'.
+              '</script>';
+
+        exit( 0 );
+    }
+
+    # ------------------------------------------------------------------------
+    function delete_svcset_svc_using_REST( ) {
+    # ------------------------------------------------------------------------
+    # This is called by the 'Add New Host' dialog
+    # JSON is returned to the dialog.
+
+        # Create the query
+        parse_str( $_SERVER['QUERY_STRING'], $query_str );
+        unset( $query_str["delsvcsetsvc"] );
+        $query_str["folder"] = FOLDER;
+
+        if( ! isset( $query_str["name"] ) && ! isset( $query_str["svcdesc"] ) ) {
+            $retval["message"] = "Internal error: name or svcdesc empty";
+            $retval["code"] = "400";
+            print( json_encode( $retval ) );
+            exit( 0 );
+        }
+
+        $a = array();
+        $a["name"] = $query_str["name"];
+        $a["svcdesc"] = $query_str["svcdesc"];
+        $a["folder"] = FOLDER;
+        $json = json_encode( $a );
+        $request = new RestRequest(
+          RESTURL.'/delete/servicesets',
+          'POST',
+          'json='.$json
+        );
+        set_request_options( $request );
+        $request->execute();
+        $slist = json_decode( $request->getResponseBody(), true );
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $slist;
+        $resp = $request->getResponseInfo();
+        $retval["code"] = $resp["http_code"];
+        print( json_encode( $retval ) );
+
+        exit( 0 );
+    }
+
+    /***********************************************************************
+     *
+     * EDIT SERVICESET SERVICE DIALOG
+     *
+     ***********************************************************************
+     */
+
+    # ------------------------------------------------------------------------
+    function show_edit_svcset_svc_dlg_div( ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Host
+
+        print "<div id=\"editsvcsetsvcdlg\" title=\"Edit Service\"></div>";
+        print '<script>';
+        print 'var editsvcsetsvc = function() { ';
+        print ' $.getJSON( $("#editsvcsetsvcform").attr("action"), '; # <- url
+        print ' $("#editsvcsetsvcform").serialize(),';             # <- data
+        print ' function(response) {';                       # <- success
+        print '  var code = response.code;';
+        print '  var message = response.message;';
+        print '  if( code == 200 ) {';
+        print '    $(".flash.error").hide();';
+        print '    $(".flash.notice").html(""+message).show();';
+        $url = create_url( );
+        print '    $("#svcsetstable").html("").';
+        print '      load("'.$url.'&svcsetstable=true");';
+        print '  } else {';
+        print '    $(".flash.notice").hide();';
+        print '    $(".flash.error").html(""+message).show();';
+        print ' }});';
+        print '};';
+        # Cancel button
+        print 'var cancel = function() { $("#editsvcsetsvcdlg").dialog("close"); };';
+        # Setup the dialog
+        print '$( "div#editsvcsetsvcdlg" ).dialog( { ';
+        print 'autoOpen : false';
+        print ', width : 500';
+        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', buttons : { "Apply Changes": editsvcsetsvc, "Close": cancel }';
+        print ' } );';
+        print '</script>';
+    }
+
+    # ------------------------------------------------------------------------
+    function show_editsvcsetsvcdialog_buttons( $name, $svcdesc_in ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to edit a host
+
+        $a = get_and_sort_servicesets( $name );
+
+        # Can't search for specific service check using the REST interface.
+        # Have to ask for all services for the host (above) and search it:
+        foreach( $a as $svcset ) {
+            extract( $svcset );
+            if( $svcdesc == $svcdesc_in ) break;
+        }
+
+        print '<form id="editsvcsetsvcform" name="editsvcsetsvcform" method="get"';
+        print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=1&editsvcsetsvc=1';
+        print '">';
+        print '<fieldset>';
+
+        # Hostname
+        print '<p>';
+        print '<label for="svcsetname">Service Set Name</label>';
+        print '<input class="field" type="text" id="svcsetname" name="name"';
+        print ' value="'.$name.'" readonly="readonly" />';
+        print '</p>';
+        # Service Template
+        $st = get_and_sort_servicetemplates( );
+        print '<p>';
+        print '<label for="svctemplate">Service Template *</label>';
+        print '<select class="field" id="svctemplate" name="template"';
+        print ' required="required">';
+        foreach( $st as $item ) {
+            $selected = "";
+            if( $item["name"] == $template ) $selected = " selected";
+            print '<option value="'.$item["name"].'"'.$selected.'>'
+              .$item["name"].'</option>';
+        }
+        print '</select>';
+        print '</p>';
+
+        # Command
+        # Allow both types of speech marks as input value
+        $newcmd = strtr( $command, array("\""=>"\\\"") );
+        print '<p>';
+        print '<label for="escommand">Command *</label>';
+        print '<input class="field" type="text" id="escommand" name="command"';
+              # Using <.. value="\"" ..> does not work so...
+        print ' required="required" />';
+              # ...have to use javascript to set the value:
+        print '<script>$("#escommand").val("'.$newcmd.'");</script>';
+        print '</p>';
+
+        # Service Description
+        print '<p>';
+        print '<label for="svcdesc">Description</label>';
+        print '<input class="field" type="text" id="svcdesc" name="svcdesc"';
+        print ' value="'.$svcdesc.'" readonly="readonly" />';
+        print '</p>';
+        # Service Groups
+        print '<p>';
+        print '<label for="svcgroup">Service Groups</label>';
+        print '<input class="field" type="text" id="svcgroup"';
+        print ' value="'.$svcgroup.'" name="svcgroup">';
+        print '</p>';
+        # Contact
+        print '<p>';
+        print '<label for="contacts">Contacts</label>';
+        print '<input class="field" type="text" id="contacts"';
+        print ' value="'.$contacts.'" name="contacts">';
+        print '</p>';
+        # Contact Group
+        print '<p>';
+        print '<label for="contactgroup">Contact Groups</label>';
+        print '<input class="field" type="text" id="contactgroup"';
+        print ' value="'.$contactgroups.'" name="contactgroups">';
+        print '</p>';
+        # Custom Variables
+        print '<p>';
+        print '<label for="customvars">Custom Variables</label>';
+        print '<input class="field" type="text" id="customvars"';
+        print ' value="'.$customvars.'" name="customvars">';
+        print '</p>';
+        # Freshness Threshold
+        print '<p>';
+        print '<label for="freshnessthresh">Freshness Threshold</label>';
+        print '<input class="field" type="text" id="contactgroup"';
+        print ' value="'.$freshnessthresh.'" name="freshnessthresh">';
+        print '</p>';
+        # Active Checks
+        print '<p>';
+        print '<label for="sactivechecks">Active Check</label>';
+        $checked="checked";
+        if( $activechecks == "0" ) $checked="";
+        print '<input class="field" type="checkbox" id="sactivechecks"';
+        print ' name="activechecks" '.$checked.' />';
+        print '</p>';
+        print '</fieldset>';
+        print '</form>';
+        print '<div class="flash notice" style="display:none"></div>';
+        print '<div class="flash error" style="display:none"></div>';
+        print '<script>'.
+              '$(".ui-button:contains(Close)").focus()'.
+              '</script>';
+
+        exit( 0 );
+    }
+
+    # ------------------------------------------------------------------------
+    function edit_svcset_svc_using_REST( ) {
+    # ------------------------------------------------------------------------
+    # This is called by the 'Add New Host' dialog
+    # JSON is returned to the dialog.
+
+        # Create the query
+        parse_str( $_SERVER['QUERY_STRING'], $query_str );
+        unset( $query_str["editsvcsetsvc"] );
+        $query_str["folder"] = FOLDER;
+        #if( isset( $query_str["disable"] ) ) {
+        #    if( $query_str["disable"] == "2" ) $query_str["disable"] = "2";
+        #    elseif( $query_str["disable"] == "1" ) $query_str["disable"] = "1";
+        #    else $query_str["disable"] = "0";
+        #}
+        if( isset( $query_str["activechecks"] ) )
+            $query_str["activechecks"] = "1";
+        else
+            $query_str["activechecks"] = "0";
+        # Handle deleting fields
+        if( empty( $query_str["contacts"] ) )
+            $query_str["contacts"] = "-";
+        if( empty( $query_str["contactgroups"] ) )
+            $query_str["contactgroups"] = "-";
+        if( empty( $query_str["customvars"] ) )
+            $query_str["customvars"] = "-";
+        if( empty( $query_str["freshnessthresh"] ) )
+            $query_str["freshnessthresh"] = "-";
+        if( empty( $query_str["svcgroup"] ) )
+            $query_str["svcgroup"] = "-";
+        $json = json_encode( $query_str );
+
+        # Do the REST add host request
+        $request = new RestRequest(
+          RESTURL.'/modify/servicesets',
+          'POST',
+          'json='.$json
+        );
+        set_request_options( $request );
+        $request->execute();
+        $slist = json_decode( $request->getResponseBody(), true );
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $slist;
+        $resp = $request->getResponseInfo();
+        $retval["code"] = $resp["http_code"];
+        print( json_encode( $retval ) );
+
+        exit( 0 );
+    }
+
+    /***********************************************************************
+     *
+     * ADD NEW SERVICSET SERVICE DIALOG
+     *
+     ***********************************************************************
+     */
+
+    # ------------------------------------------------------------------------
+    function show_new_svcset_svc_dlg_div( ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Host
+
+        # 'Add New Host' dialog box div
+        print "<div id=\"newsvcsetsvcdlg\" title=\"Add New Service\"></div>";
+        print '<script>';
+        # Addhost button
+        print 'var addsvcsetsvc = function() { ';
+        print ' $.getJSON( $("#newsvcsetsvcform").attr("action"), '; # <- url
+        print ' $("#newsvcsetsvcform").serialize(),';             # <- data
+        print ' function(response) {';                       # <- success
+        print '  var code = response.code;';
+        print '  var message = response.message;';
+        print '  if( code == 200 ) {';
+        print '    $(".flash.error").hide();';
+        print '    $(".flash.notice").html(""+message).show();';
+        $url = create_url( );
+        print '    $("#svcsetstable").html("").';
+        print '      load("'.$url.'&svcsetstable=true");';
+        print '  } else {';
+        print '    $(".flash.notice").hide();';
+        print '    $(".flash.error").html(""+message).show();';
+        print ' }});';
+        print '};';
+        # Cancel button
+        print 'var cancel = function() { $("#newsvcsetsvcdlg").dialog("close"); };';
+        # Setup the dialog
+        print '$( "div#newsvcsetsvcdlg" ).dialog( { ';
+        print 'autoOpen : false';
+        print ', width : 500';
+        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', buttons : { "Create Service": addsvcsetsvc, "Close": cancel }';
+        print ' } );';
+        print '</script>';
+    }
+
+    # ------------------------------------------------------------------------
+    function show_newsvcsetsvcdialog_buttons( $svcsetname ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Host
+
+        print '<form id="newsvcsetsvcform" name="newsvcsetsvcform" method="get"';
+        print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=1&newsvcsetsvc=1';
+        print '">';
+        print '<fieldset>';
+        # Hostname
+        print '<p>';
+        print '<label for="svcsetname">Service Set Name</label>';
+        print '<input class="field" type="text" id="svcsetname" name="name"';
+        print ' value="'.$svcsetname.'" readonly="readonly" />';
+        print '</p>';
+        # Service Template
+        $st = get_and_sort_servicetemplates( );
+        print '<p>';
+        print '<label for="svctemplate">Service Template *</label>';
+        print '<select class="field" id="svctemplate" name="template"';
+        print ' required="required">';
+        foreach( $st as $item ) {
+            print '<option value="'.$item["name"].'">'.$item["name"]
+              .'</option>';
+        }
+        print '</select>';
+        print '</p>';
+        # Command
+        print '<p>';
+        print '<label for="command">Command *</label>';
+        print '<input class="field" type="text" id="command" name="command"';
+        print ' required="required" />';
+        print '</p>';
+        # Service Description
+        print '<p>';
+        print '<label for="svcdesc">Description *</label>';
+        print '<input class="field" type="text" id="svcdesc" name="svcdesc"';
+        print ' required="required" />';
+        print '</p>';
+        # Service Groups
+        print '<p>';
+        print '<label for="svcgroup">Service Groups</label>';
+        print '<input class="field" type="text" id="svcgroup"';
+        print ' name="svcgroup">';
+        print '</p>';
+        # Contact
+        print '<p>';
+        print '<label for="contacts">Contacts</label>';
+        print '<input class="field" type="text" id="contacts"';
+        print ' name="contacts">';
+        print '</p>';
+        # Contact Group
+        print '<p>';
+        print '<label for="contactgroup">Contact Groups</label>';
+        print '<input class="field" type="text" id="contactgroup"';
+        print ' name="contactgroups">';
+        print '</p>';
+        # Custom Variables
+        print '<p>';
+        print '<label for="customvars">Custom Variables</label>';
+        print '<input class="field" type="text" id="customvars"';
+        print ' name="customvars">';
+        print '</p>';
+        # Freshness Threshold
+        print '<p>';
+        print '<label for="freshnessthresh">Freshness Threshold</label>';
+        print '<input class="field" type="text" id="contactgroup"';
+        print ' name="freshnessthresh">';
+        print '</p>';
+        # Active Checks
+        print '<p>';
+        print '<label for="sactivechecks">Active Check</label>';
+        print '<input class="field" type="checkbox" id="sactivechecks"';
+        print ' name="activechecks" checked />';
+        print '</p>';
+        print '</fieldset>';
+        print '</form>';
+        print '<div class="flash notice" style="display:none"></div>';
+        print '<div class="flash error" style="display:none"></div>';
+        print '<script>'.
+              '$(".ui-button:contains(Close)").focus()'.
+              '</script>';
+
+        exit( 0 );
+    }
+
+    # ------------------------------------------------------------------------
+    function add_new_svcset_svc_using_REST( ) {
+    # ------------------------------------------------------------------------
+    # This is called by the 'Add New Host' dialog
+    # JSON is returned to the dialog.
+
+        # Create the query
+        parse_str( $_SERVER['QUERY_STRING'], $query_str );
+        unset( $query_str["newsvcsetsvc"] );
+        $query_str["folder"] = FOLDER;
+        if( isset( $query_str["activechecks"] ) )
+            $query_str["activechecks"] = "1";
+        else
+            $query_str["activechecks"] = "0";
+        $json = json_encode( $query_str );
+
+        # Do the REST add service request
+        $request = new RestRequest(
+          RESTURL.'/add/servicesets',
+          'POST',
+          'json='.$json
+        );
+        set_request_options( $request );
+        $request->execute();
+        $slist = json_decode( $request->getResponseBody(), true );
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $slist;
+        $resp = $request->getResponseInfo();
+        $retval["code"] = $resp["http_code"];
+        print( json_encode( $retval ) );
+
+        exit( 0 );
+    }
+
+    /*
+
+       ===================================================================
+
+                             END OF SERVICESETS TAB
+
+       ===================================================================
+
+     */
+
+    /**********************************************************************
+     *
      * HOSTS TAB
      *
      ***********************************************************************
@@ -5398,13 +6672,6 @@
             $hfilter=$query_str['hfilter'];
         }
 
-        $request = new RestRequest(
-        RESTURL.'/show/hostgroups?json={"folder":"'.FOLDER.'"'.
-        '}', 'GET');
-        set_request_options( $request );
-        $request->execute();
-        $slist = json_decode( $request->getResponseBody(), true );
-
         #print "<span id=\"applyconf\">";
         $g_hfilter = 0; # <-- don't include hfilter
         $url = create_url( );
@@ -5427,11 +6694,9 @@
               "window.location='$url'+'&amp;hgfilter='+a".
               ";\">";
         print "<option value=\"all\">All</option>";
-        foreach( $slist as $item ) {
-            foreach( $item as $line2 ) {
-                #echo $line2;
-                extract( $line2 );
-            }
+        $a =  get_and_sort_hostgroups();
+        foreach( $a as $item ) {
+            $name = $item['name'];
             if( $name == $hgfilter ) {
                 print "<option value=\"$name\" selected>$name</option>";
             } else {
@@ -5614,7 +6879,7 @@
         print "<script>";
         for( $x=1 ; $x<$num ; $x++ ) {
             print "$('#$x').bind('click', function() {";
-            print " $.get('/nagrestconf/".SCRIPTNAME."?fragment1id=";
+            print " $.get('/nagrestconf/".SCRIPTNAME."?tab=2&fragment1id=";
             print $names[$x];
             print "', function(data) {";
             print " $('#hid$x').html(data);";
@@ -6336,8 +7601,8 @@
         print '<input class="field" type="text" id="econtactgroup"';
         print ' value="'.$contactgroups.'" name="contactgroups">';
         print '</p>';
-        # Service Set - DON'T SHOW SERVICE SETS WHEN EDITING
-        #$hgs = get_and_sort_servicesets( );
+        # Service Set - DON'T SHOW SERVICESETS WHEN EDITING
+        #$hgs = get_and_sort_servicesets_unique( );
         #print '<p>';
         #print '<label for="serviceset">Service Set</label>';
         #print '<select class="field" id="serviceset" name="servicesets">';
@@ -6547,7 +7812,7 @@
         print '<input class="field" type="text" id="contactgroup" name="contactgroups">';
         print '</p>';
         # Service Set
-        $hgs = get_and_sort_servicesets( );
+        $hgs = get_and_sort_servicesets_unique( );
         print '<p>';
         print '<label for="serviceset">Service Set</label>';
         print '<select class="field" id="serviceset" name="servicesets">';
@@ -7614,6 +8879,79 @@
     }
 
     # ------------------------------------------------------------------------
+    function show_svcset_service_fragment( $name ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html fragment to display service info
+
+        print "<td colspan=\"5\">";
+        print "<table style=\"float:right;width:95%;margin-right:30px;\">";
+        print "<thead><tr style='font-weight: normal;'>";
+        print "<td>Service Description</td>";
+        print "<td>Service Template</td>";
+        print "<td>Command</td>";
+        print "<td style=\"text-align: right\">";
+        print "<a class=\"icon icon-add\" title=\"Add New Service\" onClick=\"".
+              "$('#newsvcsetsvcdlg').html('').". // Gets cached
+              "load('/nagrestconf/".SCRIPTNAME."?tab=1&newsvcsetsvcdialog=true".
+              "&amp;hostname=".$name."').".
+              "dialog('open'); ".
+              "return false;".
+              "\" href=\"\">";
+        print "</a></td>";
+        print "</tr></thead><tbody>";
+
+        $a = get_and_sort_servicesets( $name );
+        $num=1;
+        foreach( $a as $item ) {
+            $style="";
+            if( $item['disable'] == "1" ) {
+                $style = ' style="background-color: #F7DCC6;"';
+            } elseif( $item['disable'] == "2" ) {
+                $style = ' style="background-color: #FFFC9E;"';
+            } 
+
+            if( $num % 2 == 0 )
+                print "<tr class=innershaded$style>";
+            else
+                print "<tr$style>";
+
+            print "<td>".$item['svcdesc']."</td>";
+            print "<td>".$item['template']."</td>";
+            print "<td>".$item['command']."</td>";
+            // Actions
+            print "<td style=\"float:right;\">";
+            print "<a class=\"icon icon-clone\" title=\"Clone service to other".
+                  " serviceset\" onClick=\"$('#clonesvcsetsvcdlg').html('').". // Gets cached
+                  "load('/nagrestconf/".SCRIPTNAME."?tab=1&clonesvcsetsvcdialog=true".
+                  "&amp;hostname=".$name."&amp;svcdesc=".urlencode($item['svcdesc'])."').".
+                  "dialog('open'); ".
+                  "return false;".
+                  "\" href=\"\"></a>";
+            print "<a class=\"icon icon-edit\" title=\"Edit Service\"".
+                  " onClick=\"$('#editsvcsetsvcdlg').html('').". // Gets cached
+                  "load('/nagrestconf/".SCRIPTNAME."?tab=1&editsvcsetsvcdialog=true".
+                  "&amp;hostname=".$name."&amp;svcdesc=".urlencode($item['svcdesc'])."').".
+                  "dialog('open'); ".
+                  "return false;".
+                  "\" href=\"\"></a>";
+            print "<a class=\"icon icon-delete\" title=\"Delete Service\"".
+                  " onClick=\"$('#delsvcsetsvcdlg').html('').". // Gets cached
+                  "load('/nagrestconf/".SCRIPTNAME."?tab=1&delsvcsetsvcdialog=true".
+                  "&amp;hostname=".$name."&amp;svcdesc=".urlencode($item['svcdesc'])."').".
+                  "dialog('open'); ".
+                  "return false;".
+                  "\" href=\"\"></a>";
+            print "</td>";
+            print "</tr>";
+            ++$num;
+        }
+        print "</table>";
+        print "</td>";
+
+        exit( 0 );
+    }
+
+    # ------------------------------------------------------------------------
     function show_service_fragment( $name ) {
     # ------------------------------------------------------------------------
     # Outputs a html fragment to display service info
@@ -8086,6 +9424,116 @@
     }
 
     # ------------------------------------------------------------------------
+    function servicesets_page_actions( $query_str ) {
+    # ------------------------------------------------------------------------
+    # Check for options that return html fragments or JSON
+
+        global $g_sort, $g_hgfilter;
+
+        # Options that display a new page
+
+        if( isset( $query_str['svcsetstable'] )) {
+
+            $g_sort = "hostgroup";
+            if( isset( $query_str['sort'] )) {
+                $g_sort = $query_str['sort'];
+            }
+            if( isset( $query_str['hgfilter'] )) {
+                $g_hgfilter = $query_str['hgfilter'];
+            } else {
+                $g_hgfilter = "";
+            }
+
+            # Shows the servicesets table html fragment
+            show_servicesets_tab_right_pane( );
+            exit( 0 );
+
+        } else if( isset( $query_str['revert'] )) {
+
+            show_html_header();
+            revert_to_last_known_good( );
+            exit( 0 );
+
+        } else if( isset( $query_str['apply'] )) {
+
+            show_html_header();
+            apply_configuration( );
+            restart_nagios( );
+            exit( 0 );
+
+        }
+
+        # HTML Fragments
+
+        if( isset( $query_str['fragment1id'] )) {
+
+            show_svcset_service_fragment( $query_str['fragment1id'] );
+
+        } else if( isset( $query_str['newsvcsetdialog'] )) {
+
+            show_newsvcsetdialog_buttons( );
+ 
+        } else if( isset( $query_str['delsvcsetdialog'] )) {
+
+            show_delsvcsetdialog_buttons( $query_str['name'] );
+
+        } else if( isset( $query_str['clonesvcsetdialog'] )) {
+
+            show_clonesvcsetdialog_buttons( $query_str['name'] );
+
+        } else if( isset( $query_str['newsvcsetsvcdialog'] )) {
+
+            show_newsvcsetsvcdialog_buttons( $query_str['hostname'] );
+
+        } else if( isset( $query_str['editsvcsetsvcdialog'] )) {
+
+            show_editsvcsetsvcdialog_buttons( $query_str['hostname'],
+                                        $query_str['svcdesc'] );
+
+        } else if( isset( $query_str['delsvcsetsvcdialog'] )) {
+
+            show_delsvcsetsvcdialog_buttons( $query_str['hostname'],
+                                        $query_str['svcdesc'] );
+
+        } else if( isset( $query_str['clonesvcsetsvcdialog'] )) {
+
+            show_clonesvcsetsvcdialog_buttons( $query_str['hostname'],
+                                        $query_str['svcdesc'] );
+
+        # Configure the server using REST
+
+        } else if( isset( $query_str['newsvcset'] )) {
+
+            add_new_svcset_using_REST( );
+
+        } else if( isset( $query_str['delsvcset'] )) {
+
+            delete_svcset_using_REST( );
+
+        } else if( isset( $query_str['clonesvcset'] )) {
+
+            clone_svcset_using_REST( );
+
+        } else if( isset( $query_str['newsvcsetsvc'] )) {
+
+            add_new_svcset_svc_using_REST( );
+
+        } else if( isset( $query_str['delsvcsetsvc'] )) {
+
+            delete_svcset_svc_using_REST( );
+
+        } else if( isset( $query_str['editsvcsetsvc'] )) {
+
+            edit_svcset_svc_using_REST( );
+
+        } else if( isset( $query_str['clonesvcsetsvc'] )) {
+
+            clone_svcset_svc_using_REST( );
+
+        }
+    }
+
+    # ------------------------------------------------------------------------
     function hosts_page_actions( $query_str ) {
     # ------------------------------------------------------------------------
     # Check for options that return html fragments or JSON
@@ -8096,7 +9544,7 @@
 
         if( isset( $query_str['hoststable'] )) {
 
-            $g_sort = "hostgroup";
+            $g_sort = "name";
             if( isset( $query_str['sort'] )) {
                 $g_sort = $query_str['sort'];
             }
@@ -8273,11 +9721,22 @@
 
         switch( $g_tab ) {
             # ---------------------------------------------------------------
-            case 1: # User Admin Tab
+            case 1: # Service Sets Tab
             # ---------------------------------------------------------------
                 #session_start( );
+                servicesets_page_actions( $query_str );
+
                 show_html_header();
-                #show_hosts_page( );
+
+                show_servicesets_page( );
+
+                show_delete_svcset_dlg_div( );
+                show_new_svcset_dlg_div( );
+                show_clone_svcset_dlg_div( );
+                show_clone_svcset_svc_dlg_div( );
+                show_delete_svcset_svc_dlg_div( );
+                show_edit_svcset_svc_dlg_div( );
+                show_new_svcset_svc_dlg_div( );
                 break;
             # ---------------------------------------------------------------
             case 2: # Hosts Tab

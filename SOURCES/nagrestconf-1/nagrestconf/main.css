@@ -121,6 +121,8 @@ form fieldset label {
 #delhostgroupform h2,
 #delsvcgroupform h2,
 #delhostform h2,
+#delsvcsetform h2,
+#delsvcsetsvcform h2,
 #deltimeperiodform h2,
 #delcommandform h2,
 #delhosttemplateform h2,
@@ -134,6 +136,12 @@ form fieldset label {
 #clonesvcform h2 {
     font-weight: normal;
     font-size: 12px;
+}
+#delsvcsetform input {
+    margin-right: 5px;
+    margin-top: 8px;
+    margin-left: 20px;
+    padding-top: 0px;
 }
 #delhostform input {
     margin-right: 5px;
@@ -245,7 +253,7 @@ h2.pghdr {
      Parent must have 'position: relative', and leaving top and left
      values off for the parent causes parent to be positioned in its
      normal place. */
-    right: 454px;
+    right: 476px;
     position: absolute;
 }
 
@@ -257,7 +265,7 @@ h2.pghdr {
     height: 16px;
     padding-top: 5px;
     bottom: 0px;
-    right: 476px;
+    right: 584px;
     font-weight: bold;
     font-size: 12px;
     padding-left: 8px;
@@ -366,7 +374,7 @@ h2.pghdr {
     border-left: 1px solid black;
     border-right: 1px solid black;
     bottom: -1px;
-    right: 454px;
+    right: 476px;
     font-weight: bold;
     font-size: 12px;
     height: 16px;
@@ -382,7 +390,7 @@ h2.pghdr {
     border-left: 1px solid black;
     border-right: 1px solid black;
     bottom: -1px;
-    right: 476px;
+    right: 584px;
     font-weight: bold;
     font-size: 12px;
     height: 16px;
