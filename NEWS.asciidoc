@@ -1,6 +1,8 @@
 News
 ----
 
+27 May 2013 Added Service Sets page to GUI.
+
 3 Apr 2013 Bug fixes. Moved code to github.
 
 3 Feb 2013 New `testing' feature for distributed environments only.

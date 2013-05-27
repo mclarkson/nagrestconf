@@ -10,7 +10,7 @@ CAUTION: THIS IS ALPHA SOFTWARE. Testers required.
 Latest News
 ~~~~~~~~~~~
 
-3 Apr 2013 Bug fixes. Moved code to github.
+27 May 2013 Added Service Sets page to GUI.
 
 License
 ~~~~~~~
@@ -767,17 +767,17 @@ servicesets
 [cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
-| 1.     | Serviceset name               | XRK     | name                      | N/A      
-| 2.     | Service template              | XR      | template                  | use
-| 3.     | Service command               | XR      | command                   | check_command
-| 4.     | Service description           | XRK     | svcdesc                   | service_description
-| 5.     | Service groups                | XL      | svcgroup                  | servicegroups
-| 6.     | Contacts                      | XL      | contacts                  | contacts
-| 7.     | Contact groups                | XL      | contactgroups             | contact_groups
-| 8.     | Freshness threshold (auto)*   | X       | freshnessthresh           | N/A
-| 9.     | Active checks                 | X       | activechecks              | active_checks_enabled
-| 10.    | Custom variables              | XC      | customvars                | N/A
-| 11.    | Disable                       | XU      | disable                   | 
+| 1.     | Serviceset name               | RK      | name                      | N/A      
+| 2.     | Service template              | R       | template                  | use
+| 3.     | Service command               | R       | command                   | check_command
+| 4.     | Service description           | RK      | svcdesc                   | service_description
+| 5.     | Service groups                | L       | svcgroup                  | servicegroups
+| 6.     | Contacts                      | L       | contacts                  | contacts
+| 7.     | Contact groups                | L       | contactgroups             | contact_groups
+| 8.     | Freshness threshold (auto)*   |         | freshnessthresh           | N/A
+| 9.     | Active checks                 |         | activechecks              | active_checks_enabled
+| 10.    | Custom variables              | C       | customvars                | N/A
+| 11.    | Disable                       | U       | disable                   | 
 | 12.    | Display name                  | X       | displayname               | display_name
 | 13.    | Is volatile                   | X       | isvolatile                | is_volatile
 | 14.    | Initial state                 | X       | initialstate              | initial_state
