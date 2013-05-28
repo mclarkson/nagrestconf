@@ -35,7 +35,7 @@ Screenshot
 
 ++++
 <img src="http://www.smorg.co.uk/images/nagrestconfgui.png"
-alt="Nagrestconf GUI Screenshot" style="float:none" width="500px" />
+alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
 ++++
 
 
