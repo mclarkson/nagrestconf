@@ -309,6 +309,18 @@ Then it worked - and the working service command looks like this:
 
 Not great but the workaround works.
 
+NOTE: Steps 1 and 3 can be omitted by moving the speech marks to the command definition.
+
+For example this:
+
+  $USER1$/check_https.sh -u $ARG1$ -s $ARG2$ -w $ARG3$ -c $ARG4$
+
+Becomes this:
+
+  $USER1$/check_https.sh -u "$ARG1$" -s "$ARG2$" -w "$ARG3$" -c "$ARG4$"
+
+Then only Step 2, url encoding, is required.
+
 Single Server from Scratch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
