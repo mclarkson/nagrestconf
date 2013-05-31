@@ -285,6 +285,30 @@ All nagios directives are now implemented in the REST interface. A smaller set o
 WALK-THROUGHS
 -------------
 
+Escaping
+--------
+
+I needed add the following service check, using the nagrestconf GUI, but it refused to do it:
+
+  check_ssl_http!"https://$HOSTADDRESS$/dm3/gw/search/rest/query/pqs?q=jjpnm&f=&o=0
+  &n=20&qt=t&hh=t&d=&s=&c=&fl=&bb=t&km=c&ks=&ke=&kf=pv_first_publication_date"!
+  "c208asdfasdc-dfs3-27b8-e040"!3000000!10000000
+  
+This is how to do it:
+
+1. Take any surrounding speech marks out
+2. url-encode the text (I used http://www.w3schools.com/tags/ref_urlencode.asp)
+3. Add the speech marks back in.
+
+Then it worked - and the working service command looks like this:
+
+  check_ssl_http%21"https%3A%2F%2F%24HOSTADDRESS%24%2Fdm3%2Fgw%2Fsearch%2Frest%2Fquery
+  %2Fpqs%3Fq%3Djjpnm%26f%3D%26o%3D0%26n%3D20%26qt%3Dt%26hh%3Dt%26d%3D%26s%3D%26c%3D%26
+  fl%3D%26bb%3Dt%26km%3Dc%26ks%3D%26ke%3D%26kf%3Dpv_first_publication_date"%21
+  "c208asdfasdc-dfs3-27b8-e040"%213000000%2110000000
+
+Not great but the workaround works.
+
 Single Server from Scratch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
