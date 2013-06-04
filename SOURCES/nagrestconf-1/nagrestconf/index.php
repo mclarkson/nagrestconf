@@ -5467,6 +5467,7 @@
             print "<td><span id=\"$num\" class=link> + ".$item."</span></td>";
             // Actions
             print "<td style=\"float: right\">";
+            /* TODO Temporarily disable clone - until I have time to fix
             print "<a class=\"icon icon-clone\" title=\"Clone Service Set\"";
             print " onClick=\"".
               #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
@@ -5476,6 +5477,7 @@
               "dialog('open'); ".
               "return false;".
               "\" href=\"\"></a>";
+            */
             print "<a class=\"icon icon-delete\" title=\"Delete Service Set\"";
             print " onClick=\"".
               #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
@@ -5985,7 +5987,7 @@
         print '<fieldset>';
         print '<p>Clone service:</p>';
         print '<p style="font-weight:bold;">';
-        print "&quot;$svcdesc&quot; in <br>$name</p>";
+        print "&quot;".urldecode($svcdesc)."&quot; in <br>$name</p>";
         # Hostname
         print '<p>';
         print '<label for="chostname">Copy to service set *</label>';
@@ -5997,7 +5999,7 @@
         print $name;
         print '"/>';
         print '<input type="hidden" name="svcdesc" value="';
-        print $svcdesc;
+        print urldecode($svcdesc);
         print '"/>';
         print '</fieldset>';
         print '</form>';
@@ -6077,7 +6079,7 @@
         $newservice["name"] = $tohost;
         $newservice["template"] = $template;
         $newservice["command"] =  $command;
-        $newservice["svcdesc"] = $svcdesc;
+        $newservice["svcdesc"] = urlencode($svcdesc);
         $newservice["svcgroup"] = $svcgroup;
         $newservice["contacts"] = $contacts;
         $newservice["contactgroups"] = $contactgroups;
@@ -6196,6 +6198,11 @@
             exit( 0 );
         }
 
+        if( isset( $query_str["svcdesc"] ) ) {
+            $query_str["svcdesc"] = strtr( $query_str["svcdesc"], 
+                                           array( '"' => '\"',) );
+            $query_str["svcdesc"] = urlencode($query_str["svcdesc"]);
+        }
         $a = array();
         $a["name"] = $query_str["name"];
         $a["svcdesc"] = $query_str["svcdesc"];
@@ -6305,7 +6312,8 @@
 
         # Command
         # Allow both types of speech marks as input value
-        $newcmd = strtr( $command, array("\""=>"\\\"") );
+        $newcmd = urldecode( $command );
+        $newcmd = strtr( $newcmd, array("\""=>"\\\"") );
         print '<p>';
         print '<label for="escommand">Command *</label>';
         print '<input class="field" type="text" id="escommand" name="command"';
@@ -6319,7 +6327,7 @@
         print '<p>';
         print '<label for="svcdesc">Description</label>';
         print '<input class="field" type="text" id="svcdesc" name="svcdesc"';
-        print ' value="'.$svcdesc.'" readonly="readonly" />';
+        print ' value="'.urldecode($svcdesc).'" readonly="readonly" />';
         print '</p>';
         # Service Groups
         print '<p>';
@@ -6379,12 +6387,18 @@
         # Create the query
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
         unset( $query_str["editsvcsetsvc"] );
+        unset( $query_str["tab"] );
         $query_str["folder"] = FOLDER;
         #if( isset( $query_str["disable"] ) ) {
         #    if( $query_str["disable"] == "2" ) $query_str["disable"] = "2";
         #    elseif( $query_str["disable"] == "1" ) $query_str["disable"] = "1";
         #    else $query_str["disable"] = "0";
         #}
+        if( isset( $query_str["command"] ) ) {
+            $query_str["command"] = strtr( $query_str["command"], 
+                                           array( '"' => '\"',) );
+            $query_str["command"] = urlencode($query_str["command"]);
+        }
         if( isset( $query_str["activechecks"] ) )
             $query_str["activechecks"] = "1";
         else
@@ -6562,7 +6576,18 @@
         # Create the query
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
         unset( $query_str["newsvcsetsvc"] );
+        unset( $query_str["tab"] );
         $query_str["folder"] = FOLDER;
+        if( isset( $query_str["svcdesc"] ) ) {
+            $query_str["svcdesc"] = strtr( $query_str["svcdesc"], 
+                                           array( '"' => '\"',) );
+            $query_str["svcdesc"] = urlencode($query_str["svcdesc"]);
+        }
+        if( isset( $query_str["command"] ) ) {
+            $query_str["command"] = strtr( $query_str["command"], 
+                                           array( '"' => '\"',) );
+            $query_str["command"] = urlencode($query_str["command"]);
+        }
         if( isset( $query_str["activechecks"] ) )
             $query_str["activechecks"] = "1";
         else
@@ -6812,6 +6837,7 @@
                   "return false;".
                   "\" href=\"\"></a>";
             }
+            /* TODO Temporarily disable clone - until I have time to fix
             print "<a class=\"icon icon-clone\" title=\"Clone Host\"";
             print " onClick=\"".
               #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
@@ -6821,6 +6847,7 @@
               "dialog('open'); ".
               "return false;".
               "\" href=\"\"></a>";
+            */
             print "<a class=\"icon icon-edit\" title=\"Edit Host\"";
             print " onClick=\"".
               #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
@@ -8311,6 +8338,11 @@
             exit( 0 );
         }
 
+        if( isset( $query_str["svcdesc"] ) ) {
+            $query_str["svcdesc"] = strtr( $query_str["svcdesc"], 
+                                           array( '"' => '\"',) );
+            $query_str["svcdesc"] = urlencode($query_str["svcdesc"]);
+        }
         $a = array();
         $a["name"] = $query_str["name"];
         $a["svcdesc"] = $query_str["svcdesc"];
@@ -8394,6 +8426,11 @@
             if( $query_str["disable"] == "2" ) $query_str["disable"] = "2";
             elseif( $query_str["disable"] == "1" ) $query_str["disable"] = "1";
             else $query_str["disable"] = "0";
+        }
+        if( isset( $query_str["command"] ) ) {
+            $query_str["command"] = strtr( $query_str["command"], 
+                                           array( '"' => '\"',) );
+            $query_str["command"] = urlencode($query_str["command"]);
         }
         if( isset( $query_str["activechecks"] ) )
             $query_str["activechecks"] = "1";
@@ -8512,7 +8549,8 @@
 
         # Command
         # Allow both types of speech marks as input value
-        $newcmd = strtr( $command, array("\""=>"\\\"") );
+        $newcmd = urldecode( $command );
+        $newcmd = strtr( $newcmd, array("\""=>"\\\"") );
         print '<p>';
         print '<label for="escommand">Command *</label>';
         print '<input class="field" type="text" id="escommand" name="command"';
@@ -8526,7 +8564,7 @@
         print '<p>';
         print '<label for="svcdesc">Description</label>';
         print '<input class="field" type="text" id="svcdesc" name="svcdesc"';
-        print ' value="'.$svcdesc.'" readonly="readonly" />';
+        print ' value="'.urldecode($svcdesc).'" readonly="readonly" />';
         print '</p>';
         # Service Groups
         print '<p>';
@@ -8632,6 +8670,16 @@
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
         unset( $query_str["newsvc"] );
         $query_str["folder"] = FOLDER;
+        if( isset( $query_str["svcdesc"] ) ) {
+            $query_str["svcdesc"] = strtr( $query_str["svcdesc"], 
+                                           array( '"' => '\"',) );
+            $query_str["svcdesc"] = urlencode($query_str["svcdesc"]);
+        }
+        if( isset( $query_str["command"] ) ) {
+            $query_str["command"] = strtr( $query_str["command"], 
+                                           array( '"' => '\"',) );
+            $query_str["command"] = urlencode($query_str["command"]);
+        }
         if( isset( $query_str["activechecks"] ) )
             $query_str["activechecks"] = "1";
         else
@@ -8915,11 +8963,12 @@
             else
                 print "<tr$style>";
 
-            print "<td>".$item['svcdesc']."</td>";
+            print "<td>".urldecode($item['svcdesc'])."</td>";
             print "<td>".$item['template']."</td>";
-            print "<td>".$item['command']."</td>";
+            print "<td>".urldecode($item['command'])."</td>";
             // Actions
             print "<td style=\"float:right;\">";
+            /* TODO Temporarily disable clone - until I have time to fix
             print "<a class=\"icon icon-clone\" title=\"Clone service to other".
                   " serviceset\" onClick=\"$('#clonesvcsetsvcdlg').html('').". // Gets cached
                   "load('/nagrestconf/".SCRIPTNAME."?tab=1&clonesvcsetsvcdialog=true".
@@ -8927,6 +8976,7 @@
                   "dialog('open'); ".
                   "return false;".
                   "\" href=\"\"></a>";
+            */
             print "<a class=\"icon icon-edit\" title=\"Edit Service\"".
                   " onClick=\"$('#editsvcsetsvcdlg').html('').". // Gets cached
                   "load('/nagrestconf/".SCRIPTNAME."?tab=1&editsvcsetsvcdialog=true".
@@ -8988,11 +9038,12 @@
             else
                 print "<tr$style>";
 
-            print "<td>".$item['svcdesc']."</td>";
+            print "<td>".urldecode($item['svcdesc'])."</td>";
             print "<td>".$item['template']."</td>";
-            print "<td>".$item['command']."</td>";
+            print "<td>".urldecode($item['command'])."</td>";
             // Actions
             print "<td style=\"float:right;\">";
+            /* TODO Temporarily disable clone - until I have time to fix
             print "<a class=\"icon icon-clone\" title=\"Clone service to other".
                   " host\" onClick=\"$('#clonesvcdlg').html('').". // Gets cached
                   "load('/nagrestconf/".SCRIPTNAME."?clonesvcdialog=true".
@@ -9000,6 +9051,7 @@
                   "dialog('open'); ".
                   "return false;".
                   "\" href=\"\"></a>";
+            */
             print "<a class=\"icon icon-edit\" title=\"Edit Service\"".
                   " onClick=\"$('#editsvcdlg').html('').". // Gets cached
                   "load('/nagrestconf/".SCRIPTNAME."?editsvcdialog=true".

@@ -2299,7 +2299,7 @@ class WriteCmd
 
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $template . ",";
-        $this->newcmdline .= $command . ",";
+        $this->newcmdline .= urlencode($command) . ",";
         $this->newcmdline .= urlencode($svcdesc) . ",";
         $this->newcmdline .= $svcgroup . ",";
         $this->newcmdline .= $contacts . ",";

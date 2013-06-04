@@ -1,6 +1,9 @@
 News
 ----
 
+04 Jun 2013 The `servicedesc' and `command' fields are now urlencoded.
+Cloning hosts and services is temporarily disabled!
+
 27 May 2013 Added Service Sets page to GUI.
 
 3 Apr 2013 Bug fixes. Moved code to github.

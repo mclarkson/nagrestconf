@@ -282,9 +282,9 @@ parse_options()
     #done
 
     # Strip spaces and urldecode (TODO: more decode)
-    gcsv=`echo "$gcsv" | sed 's/[[:space:]]*$//;s/,[[:space:]]*/,/g;
-        s/[[:space:]]*,/,/g;s/%2a/*/gi;s/+/ /g;s/%20/ /g;s/%2b/+/gi;
-        s/%3a/:/gi;'`
+    #gcsv=`echo "$gcsv" | sed 's/[[:space:]]*$//;s/,[[:space:]]*/,/g;
+    #    s/[[:space:]]*,/,/g;s/%2a/*/gi;s/+/ /g;s/%20/ /g;s/%2b/+/gi;
+    #    s/%3a/:/gi;'`
 
     [[ -z $gservice || -z $gaction || -z $gfile || -z $gcsv ]] && {
         echo "NAGCTL ERROR: Syntax error."

@@ -129,6 +129,34 @@ user_is_sure=$FALSE
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
+urldecode() {
+# ---------------------------------------------------------------------------
+# http://blogs.gnome.org/shaunm/2009/12/05/urlencode-and-urldecode-in-sh/
+
+  local j arg c0 c1 c2
+
+  arg="$1"
+  j="0"
+  while [[ "$j" -lt ${#arg} ]]; do
+    c0=${arg:$j:1}
+    if [[ "x$c0" = "x%" ]]; then
+     c1=${arg:$((j+1)):1}
+     c2=${arg:$((j+2)):1}
+     #printf "\x$c1$c2"
+     echo -en "\x$c1$c2"
+     j=$((j+3))
+    else
+     if [[ $c0 == "+" ]]; then
+         echo -n " "
+     else
+         echo -n "$c0"
+     fi
+     j=$((j+1))
+   fi
+  done
+}
+
+# ---------------------------------------------------------------------------
 init_data()
 # ---------------------------------------------------------------------------
 # Purpose:      Sets global data structures
@@ -944,16 +972,21 @@ create_service_entries()
             [[ "$disable" == "1" || \
                ( $DCC -eq 1 && "$disable" == "2" ) ]] && continue
 
-
             [[ -n $customvars ]] && customvars="${customvars//\`/,}"
 
             [[ $DCC -eq 1 && -z $freshness ]] && freshness=600
 
+            #scommand=`urldecode "$scommand"`
+            #sdescr=`urldecode "$sdescr"`
+
             echo "define service {"
             echo "        host_name                       $hostname"
             Echo "        use                             $stemplate"
-            echo "        service_description             $sdescr"
-            if [[ -n $freshness ]]; then 
+            #echo "        service_description             $sdescr"
+            echo -n "        service_description             "
+            urldecode "$sdescr"
+            echo
+            if [[ -n $freshness && $active_checks -eq 0 ]]; then 
                 sc=${scommand#$REMOTE_EXECUTOR!} ; sc=${sc%% *}
                 sc="$FRESHNESS_CHECK_COMMAND!$sc"
                 Echo "        check_command                   $sc" do_replace
@@ -965,8 +998,11 @@ create_service_entries()
                 echo "$freshness"
                 echo "        check_freshness                 1"
             else
-                scommand="${scommand//\`/,}"
-                echo "        check_command                   $scommand"
+                #scommand="${scommand//\`/,}"
+                #echo "        check_command                   $scommand"
+                echo -n "        check_command                   "
+		urldecode "$scommand"
+                echo
                 [[ -n $active_checks ]] && {
                     if [[ $active_checks == 0 ]]; then
                         echo "        active_checks_enabled           0"
@@ -988,10 +1024,13 @@ create_service_entries()
                         echo "        check_freshness                 0"
                     fi
                 }
-                [[ -n $manfreshnessthresh ]] && {
+                if [[ -n $freshness ]]; then
+                        echo -n "        check_freshness                 "
+                        echo "$freshness"
+                elif [[ -n $manfreshnessthresh ]]; then
                         echo -n "        check_freshness                 "
                         echo "$manfreshnessthresh"
-                }
+                fi
             fi
             [[ -n $svcgroups ]] && {
                 exec 1>&3 3>&-

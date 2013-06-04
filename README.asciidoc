@@ -10,7 +10,11 @@ CAUTION: THIS IS ALPHA SOFTWARE. Testers required.
 Latest News
 ~~~~~~~~~~~
 
+04 Jun 2013 The `servicedesc' and `command' fields are now urlencoded.
+Cloning hosts and services is temporarily disabled!
+
 27 May 2013 Added Service Sets page to GUI.
+
 
 License
 ~~~~~~~
@@ -183,15 +187,25 @@ The Web GUI also works on Maemo, iPad and Android devices.
 Upgrade
 ~~~~~~~
 
+The `command' and `svcdesc' fields are now urlencoded so the `.setup' files need to be converted. Take a backup then do the following, changing the FOLDER variable if necessary.
+
+----
+# Define this function (copy and paste everything)
+urlencode() { arg="$1"; i="0"; while [ "$i" -lt ${#arg} ]; do c=${arg:$i:1}; if [[ "$c" =~ '[0-9a-zA-Z/!:_\.\-]' ]]; then echo -n "$c"; elif [[ "$c" = " " ]]; then echo -n "+"; else echo -n "%"; printf "%X" "'$c'"; fi; i=$((i+1)); done; }
+
+FOLDER="local"; FILE="servicesets";
+while IFS=, read c1 c2 c3 c4 c5; do echo -n "$c1,$c2,"; urlencode "$c3"; echo -n ","; urlencode "$c4"; echo ",$c5"; done </etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup >/tmp/${FOLDER}_${FILE}.setup
+sed -i "s/%60/%2C/g" /tmp/${FOLDER}_${FILE}.setup
+
+FOLDER="local"; FILE="services";
+while IFS=, read c1 c2 c3 c4 c5; do echo -n "$c1,$c2,"; urlencode "$c3"; echo -n ","; urlencode "$c4"; echo ",$c5"; done </etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup >/tmp/${FOLDER}_${FILE}.setup
+sed -i "s/%60/%2C/g" /tmp/${FOLDER}_${FILE}.setup
+----
+
 .All versions
 
 After the upgrade run `/usr/bin/upgrade_setup_files.sh'. It can be run any
 number of times and will not harm data if it is run unnecessarily.
-
-.Upgrading to version 1.144
-
-Remove extra slashes from command definitions. For example prior to 1.144 a notify-host-by-email
-command might have started as the following as viewed in the Web GUI:
 
 ----
 /usr/bin/printf "%b" "***** Nagios *****\\\\n\\\\nNotification Type: $NOTIF...
@@ -284,42 +298,6 @@ All nagios directives are now implemented in the REST interface. A smaller set o
 
 WALK-THROUGHS
 -------------
-
-Escaping
---------
-
-I needed add the following service check, using the nagrestconf GUI, but it refused to do it:
-
-  check_ssl_http!"https://$HOSTADDRESS$/dm3/gw/search/rest/query/pqs?q=jjpnm&f=&o=0
-  &n=20&qt=t&hh=t&d=&s=&c=&fl=&bb=t&km=c&ks=&ke=&kf=pv_first_publication_date"!
-  "c208asdfasdc-dfs3-27b8-e040"!3000000!10000000
-  
-This is how to do it:
-
-1. Take any surrounding speech marks out
-2. url-encode the text (I used http://www.w3schools.com/tags/ref_urlencode.asp)
-3. Add the speech marks back in.
-
-Then it worked - and the working service command looks like this:
-
-  check_ssl_http%21"https%3A%2F%2F%24HOSTADDRESS%24%2Fdm3%2Fgw%2Fsearch%2Frest%2Fquery
-  %2Fpqs%3Fq%3Djjpnm%26f%3D%26o%3D0%26n%3D20%26qt%3Dt%26hh%3Dt%26d%3D%26s%3D%26c%3D%26
-  fl%3D%26bb%3Dt%26km%3Dc%26ks%3D%26ke%3D%26kf%3Dpv_first_publication_date"%21
-  "c208asdfasdc-dfs3-27b8-e040"%213000000%2110000000
-
-Not great but the workaround works.
-
-NOTE: Steps 1 and 3 can be omitted by moving the speech marks to the command definition.
-
-For example this:
-
-  $USER1$/check_https.sh -u $ARG1$ -s $ARG2$ -w $ARG3$ -c $ARG4$
-
-Becomes this:
-
-  $USER1$/check_https.sh -u "$ARG1$" -s "$ARG2$" -w "$ARG3$" -c "$ARG4$"
-
-Then only Step 2, url encoding, is required.
 
 Single Server from Scratch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
