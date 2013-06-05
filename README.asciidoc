@@ -10,6 +10,8 @@ CAUTION: THIS IS ALPHA SOFTWARE. Testers required.
 Latest News
 ~~~~~~~~~~~
 
+05 Jun 2013 Added ability to 'clone' to a new service name.
+
 04 Jun 2013 The `servicedesc' and `command' fields are now urlencoded.
 
 27 May 2013 Added Service Sets page to GUI.
