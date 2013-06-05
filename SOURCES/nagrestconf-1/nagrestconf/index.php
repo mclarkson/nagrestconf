@@ -6000,6 +6000,11 @@
         print '<input class="field" type="text" id="chostname" name="copyto"'.
               ' required="required" />';
         print '</p>';
+        print '<p>';
+        print '<label for="csvcdesc">New service name *</label>';
+        print '<input class="field" type="text" id="csvcdesc" name="newsvcdesc"'.
+              ' required="required" value="'.urldecode($svcdesc).'" />';
+        print '</p>';
         print "<p>Click 'Clone Service' to confirm or 'Close' to cancel.</p>";
         print '<input type="hidden" name="name" value="';
         print $name;
@@ -6041,6 +6046,12 @@
             $retval["code"] = "400";
             print( json_encode( $retval ) );
             exit( 0 );
+        } else if( ! isset( $query_str["newsvcdesc"] )
+                   || empty( $query_str["newsvcdesc"] ) ) {
+            $retval["message"] = "A required field is empty.";
+            $retval["code"] = "400";
+            print( json_encode( $retval ) );
+            exit( 0 );
         } 
         
         $copyto = $query_str["copyto"];
@@ -6078,7 +6089,7 @@
         # Have to ask for all services for the host (above) and search it:
         foreach( $hlist as $svc ) {
             foreach( $svc as $item ) extract( $item );
-            if( $svcdesc == $fromsvc ) break;
+            if( $svcdesc == urlencode($fromsvc) ) break;
         }
 
         # Change " to \". otherwise we get 'folder not found'
@@ -6088,12 +6099,15 @@
         if( isset( $command ) ) {
             $command = strtr( $command, array( '%22' => '%5C%22',) );
         }
+        #if( isset( $query_str("newsvcdesc") ) ) {
+        #    $newsvcdesc = strtr( $newsvcdesc, array( '%22' => '%5C%22',) );
+        #}
 
         $newservice["folder"] = FOLDER;
         $newservice["name"] = $tohost;
         $newservice["template"] = $template;
         $newservice["command"] =  $command;
-        $newservice["svcdesc"] = urlencode($svcdesc);
+        $newservice["svcdesc"] = $query_str["newsvcdesc"];
         $newservice["svcgroup"] = $svcgroup;
         $newservice["contacts"] = $contacts;
         $newservice["contactgroups"] = $contactgroups;
@@ -8150,12 +8164,17 @@
         print '<input class="field" type="text" id="chostname" name="copyto"'.
               ' required="required" />';
         print '</p>';
+        print '<p>';
+        print '<label for="csvcdesc">New service name *</label>';
+        print '<input class="field" type="text" id="csvcdesc" name="newsvcdesc"'.
+              ' required="required" value="'.urldecode($svcdesc).'" />';
+        print '</p>';
         print "<p>Click 'Clone Service' to confirm or 'Close' to cancel.</p>";
         print '<input type="hidden" name="name" value="';
         print $name;
         print '"/>';
         print '<input type="hidden" name="svcdesc" value="';
-        print $svcdesc;
+        print urldecode($svcdesc);
         print '"/>';
         print '</fieldset>';
         print '</form>';
@@ -8187,6 +8206,12 @@
             exit( 0 );
         } else if( ! isset( $query_str["copyto"] )
                    || empty( $query_str["copyto"] ) ) {
+            $retval["message"] = "A required field is empty.";
+            $retval["code"] = "400";
+            print( json_encode( $retval ) );
+            exit( 0 );
+        } else if( ! isset( $query_str["newsvcdesc"] )
+                   || empty( $query_str["newsvcdesc"] ) ) {
             $retval["message"] = "A required field is empty.";
             $retval["code"] = "400";
             print( json_encode( $retval ) );
@@ -8232,7 +8257,7 @@
         # Have to ask for all services for the host (above) and search it:
         foreach( $hlist as $svc ) {
             foreach( $svc as $item ) extract( $item );
-            if( $svcdesc == $fromsvc ) break;
+            if( $svcdesc == urlencode($fromsvc) ) break;
         }
 
         # Change " to \". otherwise we get 'folder not found'
@@ -8247,7 +8272,7 @@
         $newservice["name"] = $tohost;
         $newservice["template"] = $template;
         $newservice["command"] =  $command;
-        $newservice["svcdesc"] = $svcdesc;
+        $newservice["svcdesc"] = $query_str["newsvcdesc"];
         $newservice["svcgroup"] = $svcgroup;
         $newservice["contacts"] = $contacts;
         $newservice["contactgroups"] = $contactgroups;
