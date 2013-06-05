@@ -1,6 +1,8 @@
 News
 ----
 
+05 Jun 2013 Cloning is back.
+
 04 Jun 2013 The `servicedesc' and `command' fields are now urlencoded.
 Cloning hosts and services is temporarily disabled!
 

@@ -5467,7 +5467,6 @@
             print "<td><span id=\"$num\" class=link> + ".$item."</span></td>";
             // Actions
             print "<td style=\"float: right\">";
-            /* TODO Temporarily disable clone - until I have time to fix
             print "<a class=\"icon icon-clone\" title=\"Clone Service Set\"";
             print " onClick=\"".
               #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
@@ -5477,7 +5476,6 @@
               "dialog('open'); ".
               "return false;".
               "\" href=\"\"></a>";
-            */
             print "<a class=\"icon icon-delete\" title=\"Delete Service Set\"";
             print " onClick=\"".
               #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
@@ -5892,6 +5890,14 @@
         foreach( $hlist as $svc ) {
             foreach( $svc as $item ) extract( $item );
 
+            # Change " to \". otherwise we get 'folder not found'
+            if( isset( $svcdesc ) ) {
+                $svcdesc = strtr( $svcdesc, array( '%22' => '%5C%22',) );
+            }
+            if( isset( $command ) ) {
+                $command = strtr( $command, array( '%22' => '%5C%22',) );
+            }
+
             $newservice["folder"] = FOLDER;
             $newservice["name"] = $tohost;
             $newservice["template"] = $template;
@@ -6075,6 +6081,14 @@
             if( $svcdesc == $fromsvc ) break;
         }
 
+        # Change " to \". otherwise we get 'folder not found'
+        if( isset( $svcdesc ) ) {
+            $svcdesc = strtr( $svcdesc, array( '%22' => '%5C%22',) );
+        }
+        if( isset( $command ) ) {
+            $command = strtr( $command, array( '%22' => '%5C%22',) );
+        }
+
         $newservice["folder"] = FOLDER;
         $newservice["name"] = $tohost;
         $newservice["template"] = $template;
@@ -6161,7 +6175,7 @@
         print '">';
         print '<h2>About to delete service:</h2>';
         print '<h2 style="margin-left:60px;font-weight:bold;">';
-        print " &quot;$svcdesc&quot; in <br>$name</h2>";
+        print " &quot;".urldecode($svcdesc)."&quot; in <br>$name</h2>";
         print "<h2>Click 'Delete Service' to confirm or 'Close' to cancel.</h2>";
         # Hostname
         print '<input type="hidden" name="name" value="';
@@ -6837,7 +6851,6 @@
                   "return false;".
                   "\" href=\"\"></a>";
             }
-            /* TODO Temporarily disable clone - until I have time to fix
             print "<a class=\"icon icon-clone\" title=\"Clone Host\"";
             print " onClick=\"".
               #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
@@ -6847,7 +6860,6 @@
               "dialog('open'); ".
               "return false;".
               "\" href=\"\"></a>";
-            */
             print "<a class=\"icon icon-edit\" title=\"Edit Host\"";
             print " onClick=\"".
               #"if( confirm('Are you sure ?') ) {alert( 'hello' );}; return false;".
@@ -8028,6 +8040,14 @@
         foreach( $hlist as $svc ) {
             foreach( $svc as $item ) extract( $item );
 
+            # Change " to \". otherwise we get 'folder not found'
+            if( isset( $svcdesc ) ) {
+                $svcdesc = strtr( $svcdesc, array( '%22' => '%5C%22',) );
+            }
+            if( isset( $command ) ) {
+                $command = strtr( $command, array( '%22' => '%5C%22',) );
+            }
+
             $newservice["folder"] = FOLDER;
             $newservice["name"] = $tohost;
             $newservice["template"] = $template;
@@ -8123,7 +8143,7 @@
         print '<fieldset>';
         print '<p>Clone service:</p>';
         print '<p style="font-weight:bold;">';
-        print "&quot;$svcdesc&quot; on <br>$name</p>";
+        print "&quot;".urldecode($svcdesc)."&quot; on <br>$name</p>";
         # Hostname
         print '<p>';
         print '<label for="chostname">Copy to host *</label>';
@@ -8215,6 +8235,14 @@
             if( $svcdesc == $fromsvc ) break;
         }
 
+        # Change " to \". otherwise we get 'folder not found'
+        if( isset( $svcdesc ) ) {
+            $svcdesc = strtr( $svcdesc, array( '%22' => '%5C%22',) );
+        }
+        if( isset( $command ) ) {
+            $command = strtr( $command, array( '%22' => '%5C%22',) );
+        }
+
         $newservice["folder"] = FOLDER;
         $newservice["name"] = $tohost;
         $newservice["template"] = $template;
@@ -8263,7 +8291,7 @@
         print '">';
         print '<h2>About to delete service:</h2>';
         print '<h2 style="margin-left:60px;font-weight:bold;">';
-        print " &quot;$svcdesc&quot; on <br>$name</h2>";
+        print " &quot;".urldecode($svcdesc)."&quot; on <br>$name</h2>";
         print "<h2>Click 'Delete Service' to confirm or 'Close' to cancel.</h2>";
         # Hostname
         print '<input type="hidden" name="name" value="';
@@ -8968,7 +8996,6 @@
             print "<td>".urldecode($item['command'])."</td>";
             // Actions
             print "<td style=\"float:right;\">";
-            /* TODO Temporarily disable clone - until I have time to fix
             print "<a class=\"icon icon-clone\" title=\"Clone service to other".
                   " serviceset\" onClick=\"$('#clonesvcsetsvcdlg').html('').". // Gets cached
                   "load('/nagrestconf/".SCRIPTNAME."?tab=1&clonesvcsetsvcdialog=true".
@@ -8976,7 +9003,6 @@
                   "dialog('open'); ".
                   "return false;".
                   "\" href=\"\"></a>";
-            */
             print "<a class=\"icon icon-edit\" title=\"Edit Service\"".
                   " onClick=\"$('#editsvcsetsvcdlg').html('').". // Gets cached
                   "load('/nagrestconf/".SCRIPTNAME."?tab=1&editsvcsetsvcdialog=true".
@@ -9043,7 +9069,6 @@
             print "<td>".urldecode($item['command'])."</td>";
             // Actions
             print "<td style=\"float:right;\">";
-            /* TODO Temporarily disable clone - until I have time to fix
             print "<a class=\"icon icon-clone\" title=\"Clone service to other".
                   " host\" onClick=\"$('#clonesvcdlg').html('').". // Gets cached
                   "load('/nagrestconf/".SCRIPTNAME."?clonesvcdialog=true".
@@ -9051,7 +9076,6 @@
                   "dialog('open'); ".
                   "return false;".
                   "\" href=\"\"></a>";
-            */
             print "<a class=\"icon icon-edit\" title=\"Edit Service\"".
                   " onClick=\"$('#editsvcdlg').html('').". // Gets cached
                   "load('/nagrestconf/".SCRIPTNAME."?editsvcdialog=true".
