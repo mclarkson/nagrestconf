@@ -5,7 +5,7 @@ Nagrestconf README
 :icons:
 :numbered:
 
-CAUTION: THIS IS ALPHA SOFTWARE. Testers required.
+CAUTION: THIS SOFTWARE IS IN THE ALPHA STAGE.
 
 Latest News
 ~~~~~~~~~~~
@@ -43,6 +43,10 @@ Screenshot
 <img src="http://www.smorg.co.uk/images/nagrestconfgui.png"
 alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
 ++++
+
+More screen shots can be seen in the Nagios Exchange Gallery at:
+
+http://exchange.nagios.org/directory/Addons/APIs/Nagrestconf/gallery
 
 
 What is Nagrestconf?
