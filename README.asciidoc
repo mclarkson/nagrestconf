@@ -5,7 +5,7 @@ Nagrestconf README
 :icons:
 :numbered:
 
-CAUTION: THIS SOFTWARE IS IN THE ALPHA STAGE.
+CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_life_cycle#Alpha[ALPHA STAGE].
 
 Latest News
 ~~~~~~~~~~~
