@@ -1,3 +1,12 @@
+nagrestconf (1.149) UNRELEASED; urgency=low
+
+  * New 'Apply and Restart' window shows output.
+  * New 'Service Sets' tab added.
+  * Can now change the service name when cloning.
+  * Service and serviceset commands can now contain any text.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 06 Jun 2013 12:42:00 +0000
+
 nagrestconf (1.148) UNRELEASED; urgency=low
 
   * Broker location change to reflect later mod_gearman.
