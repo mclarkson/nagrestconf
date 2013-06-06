@@ -982,8 +982,13 @@
         print '<input id="apply" type="button" value="Apply Changes" />';
         print '<script>';
         print ' $("#apply").bind("click", function() {';
-        print ' var ans = confirm( "Apply the current configuration?" );';
-        print ' if( ans ) window.location="'.$url.'&apply=true";';
+        #print ' var ans = confirm( "Apply the current configuration?" );';
+        #print ' if( ans ) window.location="'.$url.'&apply=true";';
+        #
+        print "$('#applyconfigdlg').html('').". // Gets cached
+              "load('/nagrestconf/".SCRIPTNAME."?applyconfig=true').".
+              "dialog('open'); ";
+        #
         print '} );';
         print '</script>';
         print "<hr />";
@@ -8863,8 +8868,163 @@
      */
 
     # ------------------------------------------------------------------------
+    function show_applyconfiguration_dlg_div( ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Host
+
+        # 'Add New Host' dialog box div
+        print "<div id=\"applyconfigdlg\" ".
+              " title=\"Apply and Restart\"></div>";
+        print '<script>';
+        # Addtimeperiod button
+        print 'var applyconfigvar = function() { ';
+        # Disable button
+        print '$( ".ui-button:contains(Apply Configuration)" )';
+        print '.button( "option", "disabled", true );';
+        # Show spinner
+        print '$("#applyconfigtextarea").css("background-image",';
+        print "\"url('images/working.gif')\");";
+        # Do REST stuff
+        print ' $.getJSON( $("#applyconfigform").attr("action"), '; # <- url
+        print ' $("#applyconfigform").serialize(),';             # <- data
+        print ' function(response) {';                       # <- success
+        print '  var code = response.code;';
+        print '  var message = response.message;';
+        print '  if( code == 200 ) {';
+        print '    $(".flash.error").hide();';
+        print '    $(".flash.notice").html("Success").show();';
+        print '    $("#applyconfigtextarea").html(""+message).show();';
+        print '  } else {';
+        print '    $(".flash.notice").hide();';
+        print '    $(".flash.error").html("Fail").show();';
+        print '    $("#applyconfigtextarea").html(""+message).show();';
+        print '  }';
+        # Enable button
+        print '$( ".ui-button:contains(Apply Configuration)" )';
+        print '.button( "option", "disabled", false );';
+        # Disable spinner
+        print ' $("#applyconfigtextarea").css("background-image","none");';
+        # Scroll to bottom
+        print ' var a = $("#applyconfigtextarea");';
+        print ' a.scrollTop( a[0].scrollHeight - a.height() );';
+        print ' });';
+        print '};';
+        # Cancel button
+        print 'var cancel = function() { '.
+              '$("#applyconfigdlg").dialog("close"); };';
+        # Setup the dialog
+        print '$( "div#applyconfigdlg" ).dialog( { ';
+        print 'autoOpen : false';
+        print ', width : 500';
+        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', buttons : { "Apply Configuration": applyconfigvar, "Close": cancel }';
+        print ', modal : true';
+        print ', resizable : true';
+        print ' } );';
+        print '</script>';
+    }
+
+    # ------------------------------------------------------------------------
+    function show_applyconfiguration_dialog_buttons( ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Hostgroup
+
+        print '<form id="applyconfigform" '.
+              'name="applyconfigform" method="get"';
+        print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=6&apply=1';
+        print '">';
+        print '<fieldset>';
+        print '</fieldset>';
+        print '</form>';
+        print '<p>Log output:</p>';
+        print '<textarea id="applyconfigtextarea" wrap="logical"';
+        print 'readonly="true" >';
+        print '</textarea>';
+        print "<p>Click 'Apply Configuration' to apply and restart nagios"; 
+        print ", or click 'Close' to cancel.</p>";
+        print '<div class="flash notice" style="display:none"></div>';
+        print '<div class="flash error" style="display:none"></div>';
+        print '<script>'.
+              '$(".ui-button:contains(Close)").focus()'.
+              '</script>';
+
+        exit( 0 );
+    }
+
+    # ------------------------------------------------------------------------
+    function apply_configuration_using_REST( ) {
+    # ------------------------------------------------------------------------
+    # This is called by the 'Add New Host' dialog
+    # JSON is returned to the dialog.
+
+        # Apply the configuration
+        $request = new RestRequest(
+          RESTURL.'/apply/nagiosconfig',
+          'POST',
+          'json={"folder":"'.FOLDER.'","verbose":"true"}'
+        );
+        set_request_options( $request );
+        $request->execute();
+        $slist_raw = json_decode( $request->getResponseBody(), true );
+ 
+        # Check the configuration
+        $request = new RestRequest(
+          RESTURL.'/check/nagiosconfig?json='.
+          '{"folder":"'.FOLDER.'","verbose":"true"}',
+          'GET'
+        );
+        set_request_options( $request );
+        $request->execute();
+        $slist_raw2 = json_decode( $request->getResponseBody(), true );
+
+        # Restart Nagios
+        $request = new RestRequest(
+          RESTURL.'/restart/nagios',
+          'POST',
+          'json={"folder":"'.FOLDER.'","verbose":"true"}'
+        );
+        set_request_options( $request );
+        $request->execute();
+        $slist_raw3 = json_decode( $request->getResponseBody(), true );
+
+        # Add newlines
+        $slist="";
+        $slist.="--------------------------------------------------";
+        $slist.="--------------------------------------------------\n";
+        $slist.="- APPLYING NAGIOS CONFIGURATION (csv2nag -y all)\n";
+        $slist.="--------------------------------------------------";
+        $slist.="--------------------------------------------------\n\n";
+        foreach( $slist_raw as $slist_item )
+            $slist.="$slist_item\n";
+        $slist.="\n--------------------------------------------------";
+        $slist.="--------------------------------------------------\n";
+        $slist.="- NAGIOS CONFIGURATION CHECK (nagios -v /etc/nagios/nagios.cfg)\n";
+        $slist.="--------------------------------------------------";
+        $slist.="--------------------------------------------------\n\n";
+        foreach( $slist_raw2 as $slist_item )
+            $slist.="$slist_item\n";
+        $slist.="\n--------------------------------------------------";
+        $slist.="--------------------------------------------------\n";
+        $slist.="- SCHEDULING NAGIOS RESTART\n";
+        $slist.="--------------------------------------------------";
+        $slist.="--------------------------------------------------\n\n";
+        foreach( $slist_raw3 as $slist_item )
+            $slist.="$slist_item\n";
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $slist;
+        $resp = $request->getResponseInfo();
+        $retval["code"] = $resp["http_code"];
+        print( json_encode( $retval ) );
+
+        exit( 0 );
+    }
+
+    # ------------------------------------------------------------------------
     function apply_configuration( ) {
     # ------------------------------------------------------------------------
+    # TODO: This function is not used any more
     # Revert to last-known-good configuration using REST.
 
         print '<h2>Applying the Nagios configuration</h2>';
@@ -8903,6 +9063,7 @@
     # ------------------------------------------------------------------------
     function restart_nagios( ) {
     # ------------------------------------------------------------------------
+    # TODO: This function is not used any more
     # Revert to last-known-good configuration using REST.
 
         print '<h2>Restarting Nagios</h2>';
@@ -9158,9 +9319,9 @@
 
         } else if( isset( $query_str['apply'] )) {
 
-            show_html_header();
-            apply_configuration( );
-            restart_nagios( );
+            apply_configuration_using_REST( );
+            #show_html_header();
+            #restart_nagios( );
             exit( 0 );
 
         }
@@ -9222,9 +9383,9 @@
 
         } else if( isset( $query_str['apply'] )) {
 
-            show_html_header();
-            apply_configuration( );
-            restart_nagios( );
+            apply_configuration_using_REST( );
+            #show_html_header();
+            #restart_nagios( );
             exit( 0 );
 
         }
@@ -9286,11 +9447,10 @@
 
         } else if( isset( $query_str['apply'] )) {
 
-            show_html_header();
-            apply_configuration( );
-            restart_nagios( );
+            apply_configuration_using_REST( );
+            #show_html_header();
+            #restart_nagios( );
             exit( 0 );
-
         }
 
         # HTML Fragments
@@ -9374,9 +9534,9 @@
 
         } else if( isset( $query_str['apply'] )) {
 
-            show_html_header();
-            apply_configuration( );
-            restart_nagios( );
+            apply_configuration_using_REST( );
+            #show_html_header();
+            #restart_nagios( );
             exit( 0 );
 
         }
@@ -9462,9 +9622,9 @@
 
         } else if( isset( $query_str['apply'] )) {
 
-            show_html_header();
-            apply_configuration( );
-            restart_nagios( );
+            apply_configuration_using_REST( );
+            #show_html_header();
+            #restart_nagios( );
             exit( 0 );
 
         }
@@ -9557,9 +9717,9 @@
 
         } else if( isset( $query_str['apply'] )) {
 
-            show_html_header();
-            apply_configuration( );
-            restart_nagios( );
+            apply_configuration_using_REST( );
+            #show_html_header();
+            #restart_nagios( );
             exit( 0 );
 
         }
@@ -9667,9 +9827,9 @@
 
         } else if( isset( $query_str['apply'] )) {
 
-            show_html_header();
-            apply_configuration( );
-            restart_nagios( );
+            apply_configuration_using_REST( );
+            #show_html_header();
+            #restart_nagios( );
             exit( 0 );
 
         }
@@ -9680,6 +9840,10 @@
 
             show_service_fragment( $query_str['fragment1id'] );
 
+        } else if( isset( $query_str['applyconfig'] )) {
+
+            show_applyconfiguration_dialog_buttons( );
+ 
         } else if( isset( $query_str['newhostdialog'] )) {
 
             show_newhostdialog_buttons( );
@@ -9957,6 +10121,8 @@
             default:
             # ---------------------------------------------------------------
         }
+
+        show_applyconfiguration_dlg_div( );
 
         print "\n</BODY>";
         print "\n</HTML>";

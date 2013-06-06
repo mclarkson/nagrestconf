@@ -10,11 +10,12 @@ CAUTION: THIS IS ALPHA SOFTWARE. Testers required.
 Latest News
 ~~~~~~~~~~~
 
-05 Jun 2013 Added ability to 'clone' to a new service name.
+06 Jun 2013 New version 1.149
 
-04 Jun 2013 The `servicedesc' and `command' fields are now urlencoded.
-
-27 May 2013 Added Service Sets page to GUI.
+* New `Apply and Restart' window shows output.
+* New `Service Sets' tab added.
+* Can now change the service name when cloning.
+* Service and serviceset commands can now contain any text.
 
 
 License

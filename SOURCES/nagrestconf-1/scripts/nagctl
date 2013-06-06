@@ -41,7 +41,7 @@ source /etc/nagrestconf/nagctl.conf
 VERSION="1.0"
 
 # Debugging
-#echo "$@" >>/tmp/nagctl_debug.log
+echo "$@" >>/tmp/nagctl_debug.log
 
 RETVAL=0
 
@@ -3300,7 +3300,7 @@ check_nagiosconfig()
 # Arguments:    None
 # Returns:      Nothing
 {
-    local a b c
+    local a b c tmp="/var/tmp/nagctl.output.tmp"
 
     eval "$gcsv" 2>/dev/null
 
@@ -3310,7 +3310,14 @@ check_nagiosconfig()
             [[ $a == "Total Errors"* ]] && c=$a
         done < <( sudo $NAGIOSBIN -v $NAG_CONFIG )
     else
-        sudo $NAGIOSBIN -v $NAG_CONFIG
+        sudo $NAGIOSBIN -v $NAG_CONFIG | tee $tmp
+        if grep -qs "Total Warnings" $tmp; then
+            b=`grep "Total Warnings" $tmp`
+        fi
+        if grep -qs "Total Errors" $tmp; then
+            c=`grep "Total Errors" $tmp`
+        fi
+        echo
     fi
 
     if [[ -n $b && -n $c ]]; then
