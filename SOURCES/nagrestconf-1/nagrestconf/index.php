@@ -6234,7 +6234,7 @@
         if( isset( $query_str["svcdesc"] ) ) {
             $query_str["svcdesc"] = strtr( $query_str["svcdesc"], 
                                            array( '"' => '\"',) );
-            $query_str["svcdesc"] = urlencode($query_str["svcdesc"]);
+            #$query_str["svcdesc"] = urlencode($query_str["svcdesc"]);
         }
         $a = array();
         $a["name"] = $query_str["name"];
@@ -8399,7 +8399,7 @@
         if( isset( $query_str["svcdesc"] ) ) {
             $query_str["svcdesc"] = strtr( $query_str["svcdesc"], 
                                            array( '"' => '\"',) );
-            $query_str["svcdesc"] = urlencode($query_str["svcdesc"]);
+            #$query_str["svcdesc"] = urlencode($query_str["svcdesc"]);
         }
         $a = array();
         $a["name"] = $query_str["name"];

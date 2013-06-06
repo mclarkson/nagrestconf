@@ -227,14 +227,14 @@ class RestServer
             $this->setData(json_decode($data['json']));
             $this->jadata = json_decode($data['json'],True);
 
-            foreach( $this->jadata as &$item ) {
-               $item = strtr( $item, array(
-                              #"\\" => "\\\\",
-                              "`" => "`",
-                              "," => "`",
-                              #'"' => '"'
-                              ) );
-            }
+            #foreach( $this->jadata as &$item ) {
+            #   $item = strtr( $item, array(
+            #                  #"\\" => "\\\\",
+            #                  "`" => "`",
+            #                  "," => "`",
+            #                  #'"' => '"'
+            #                  ) );
+            #}
         }
     }
 
@@ -1516,8 +1516,11 @@ class WriteCmd
 
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $template . ",";
-        $this->newcmdline .= $command . ",";
-        $this->newcmdline .= $svcdesc . ",";
+        $this->newcmdline .= urlencode($command) . ",";
+        # Allow mass deletions
+        $this->newcmdline .= 
+		strtr( urlencode($svcdesc), array( '%2A' => '*',) )
+                . ",";
         $this->newcmdline .= $svcgroup . ",";
         $this->newcmdline .= $contacts . ",";
         $this->newcmdline .= $contactgroups . ",";
@@ -1681,8 +1684,11 @@ class WriteCmd
 
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $template . ",";
-        $this->newcmdline .= $command . ",";
-        $this->newcmdline .= $svcdesc . ",";
+        $this->newcmdline .= urlencode($command) . ",";
+        # Allow mass deletions
+        $this->newcmdline .= 
+		strtr( urlencode($svcdesc), array( '%2A' => '*',) )
+                . ",";
         $this->newcmdline .= $svcgroup . ",";
         $this->newcmdline .= $contacts . ",";
         $this->newcmdline .= $contactgroups . ",";
@@ -2134,8 +2140,8 @@ class WriteCmd
 
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $template . ",";
-        $this->newcmdline .= $command . ",";
-        $this->newcmdline .= $svcdesc . ",";
+        $this->newcmdline .= urlencode($command) . ",";
+        $this->newcmdline .= urlencode($svcdesc) . ",";
         $this->newcmdline .= $svcgroup . ",";
         $this->newcmdline .= $contacts . ",";
         $this->newcmdline .= $contactgroups . ",";
@@ -2753,8 +2759,8 @@ class WriteCmd
 
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $template . ",";
-        $this->newcmdline .= $command . ",";
-        $this->newcmdline .= $svcdesc . ",";
+        $this->newcmdline .= urlencode($command) . ",";
+        $this->newcmdline .= urlencode($svcdesc) . ",";
         $this->newcmdline .= $svcgroup . ",";
         $this->newcmdline .= $contacts . ",";
         $this->newcmdline .= $contactgroups . ",";
@@ -2918,7 +2924,7 @@ class WriteCmd
 
         $this->newcmdline .= $name . ",";
         $this->newcmdline .= $template . ",";
-        $this->newcmdline .= $command . ",";
+        $this->newcmdline .= urlencode($command) . ",";
         $this->newcmdline .= urlencode($svcdesc) . ",";
         $this->newcmdline .= $svcgroup . ",";
         $this->newcmdline .= $contacts . ",";
