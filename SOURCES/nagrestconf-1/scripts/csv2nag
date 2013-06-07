@@ -987,7 +987,7 @@ create_service_entries()
             urldecode "$sdescr"
             echo
             if [[ -n $freshness && $active_checks -eq 0 ]]; then 
-		sc=`urldecode "$scommand"`
+                sc=`urldecode "$scommand"`
                 sc="${sc#$REMOTE_EXECUTOR!}" ; sc="${sc%% *}"
                 sc="$FRESHNESS_CHECK_COMMAND!$sc"
                 Echo "        check_command                   $sc" do_replace
@@ -1001,7 +1001,7 @@ create_service_entries()
             else
                 #scommand="${scommand//\`/,}"
                 #echo "        check_command                   $scommand"
-		sc=`urldecode "$scommand"`
+                sc=`urldecode "$scommand"`
                 Echo "        check_command                   $sc"
                 [[ -n $active_checks ]] && {
                     if [[ $active_checks == 0 ]]; then
