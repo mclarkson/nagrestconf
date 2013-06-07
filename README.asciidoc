@@ -210,10 +210,16 @@ urlencode() { arg="$1"; i="0"; while [ "$i" -lt ${#arg} ]; do c=${arg:$i:1}; if 
 FOLDER="local"; FILE="servicesets";
 while IFS=, read c1 c2 c3 c4 c5; do echo -n "$c1,$c2,"; urlencode "$c3"; echo -n ","; urlencode "$c4"; echo ",$c5"; done </etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup >/tmp/${FOLDER}_${FILE}.setup
 sed -i "s/%60/%2C/g" /tmp/${FOLDER}_${FILE}.setup
+#
+# Sanity check then move:
+mv /tmp/${FOLDER}_${FILE}.setup /etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup
 
 FOLDER="local"; FILE="services";
 while IFS=, read c1 c2 c3 c4 c5; do echo -n "$c1,$c2,"; urlencode "$c3"; echo -n ","; urlencode "$c4"; echo ",$c5"; done </etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup >/tmp/${FOLDER}_${FILE}.setup
 sed -i "s/%60/%2C/g" /tmp/${FOLDER}_${FILE}.setup
+#
+# Sanity check then move:
+mv /tmp/${FOLDER}_${FILE}.setup /etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup
 ----
 
 .All versions
