@@ -12,9 +12,9 @@ Latest News
 
 06 Jun 2013 New version 1.149
 
-* New `Apply and Restart' window shows output.
+* New `Apply and Restart' window shows output from `csv2nag' and `nagios -v'.
 * New `Service Sets' tab added.
-* Can now change the service name when cloning.
+* Can now change the service name when cloning a service.
 * Service and serviceset commands can now contain any text.
 
 
