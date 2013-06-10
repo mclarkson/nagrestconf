@@ -1,3 +1,9 @@
+nagrestconf (1.150) UNRELEASED; urgency=low
+
+  * Bug fixes
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 10 Jun 2013 13:48:00 +0000
+
 nagrestconf (1.149) UNRELEASED; urgency=low
 
   * New 'Apply and Restart' window shows output.
