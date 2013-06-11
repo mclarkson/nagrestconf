@@ -2037,7 +2037,7 @@
                 print "<tr$style>";
 
             // NAME
-            print "<td>".$item['name']."</td>";
+            print "<td>".urldecode($item['name'])."</td>";
             // COMMAND
             print "<td>".substr($item['command'],0,100);
             if( strlen($item['command'])>100 ) print "...";
@@ -2164,6 +2164,8 @@
         unset( $query_str["tab"] );
         unset( $query_str["newcommand"] );
         $query_str["folder"] = FOLDER;
+        if( ! empty( $query_str["name"] ) )
+            $query_str["name"] = urlencode($query_str["name"]);
         $json = json_encode( $query_str );
 
         # Do the REST new command request
@@ -2203,7 +2205,8 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=7&delcommand=1';
         print '">';
         print '<h2>About to <b>DELETE</b> Command:</h2>';
-        print '<h2 style="margin-left:60px;font-weight:bold;">'.$name.'</h2>';
+        print '<h2 style="margin-left:60px;font-weight:bold;">';
+        print urldecode($name).'</h2>';
         print "<h2>Click 'Delete Command' to confirm ".
               "or 'Close' to cancel.</h2>";
         print '<p>';
@@ -2328,7 +2331,7 @@
         print '<label for="name">Command Name *</label>';
         print '<input class="field" type="text" id="name" ';
         print ' readonly="readonly" name="name" required="required" ';
-        print ' value="'.$name.'" />';
+        print ' value="'.urldecode($name).'" />';
         print '</p>';
         # Command
         $newcmd = strtr( $command, array("\""=>"\\\"","\\"=>"\\\\") );
@@ -2401,6 +2404,8 @@
         unset( $query_str["tab"] );
         unset( $query_str["editcommand"] );
         $query_str["folder"] = FOLDER;
+        if( ! empty( $query_str["name"] ) )
+            $query_str["name"] = urlencode($query_str["name"]);
         # Handle deleting fields
         if( empty( $query_str["exclude"] ) )
             $query_str["exclude"] = "-";

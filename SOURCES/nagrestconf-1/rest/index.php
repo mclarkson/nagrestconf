@@ -1765,8 +1765,9 @@ class WriteCmd
 
         # TODO urlencodes:
         # urlencode should be done for all and urldecode expanded in nagctl.
-        $this->newcmdline .= urlencode($name) . ",";
-        $this->newcmdline .= $command;
+        $this->newcmdline .= 
+		strtr( urlencode($name), array( '%2A' => '*',) );
+        $this->newcmdline .= ",".$command;
         $this->newcmdline .= ",".$disable;
 
         $this->newcmdline .= "'";

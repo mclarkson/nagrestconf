@@ -1858,6 +1858,7 @@ create_commands()
         [[ -n $command ]] && command=$(echo "$command" | tr '`' ',')
 
         echo "define command {"
+        name=`urldecode "$name"`
         Echo "       command_name $name"
         echo "       command_line $command"
         echo "}"
