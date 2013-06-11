@@ -10,6 +10,10 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
+06 Jun 2013 New version 1.151
+
+* Bug fixes.
+
 06 Jun 2013 New version 1.149
 
 * New `Apply and Restart' window shows output from `csv2nag' and `nagios -v'.
