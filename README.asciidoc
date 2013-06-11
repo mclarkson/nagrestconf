@@ -10,7 +10,7 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-06 Jun 2013 New version 1.151
+11 Jun 2013 New version 1.152
 
 * Bug fixes.
 
