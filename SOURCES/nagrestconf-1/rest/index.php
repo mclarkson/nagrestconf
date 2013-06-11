@@ -227,14 +227,10 @@ class RestServer
             $this->setData(json_decode($data['json']));
             $this->jadata = json_decode($data['json'],True);
 
-            #foreach( $this->jadata as &$item ) {
-            #   $item = strtr( $item, array(
-            #                  #"\\" => "\\\\",
-            #                  "`" => "`",
-            #                  "," => "`",
-            #                  #'"' => '"'
-            #                  ) );
-            #}
+            # TODO: Eventually this should go...
+            foreach( $this->jadata as &$item ) {
+               $item = strtr( $item, array( "," => "`") );
+            }
         }
     }
 
@@ -3952,7 +3948,9 @@ function csv2array( $output, $subcmd )
         $items = explode( ",", $output[$i] );
         for( $j=0; $j < sizeof($items); ++$j ) {
             $inner[] = array($cols[$subcmd][$j+1] =>
-                           strtr( $items[$j], '`', ',' ));
+                           strtr( $items[$j], array(
+                                  '`'=>',',
+                                  '%60'=>'%2C' ) ));
         }
         $jsoutput[] = $inner;
     }
