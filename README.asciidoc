@@ -309,6 +309,75 @@ Status
 
 All nagios directives are now implemented in the REST interface. A smaller set of nagios directives are supported in the Web GUI.
 
+COOK BOOK
+---------
+
+Using CURL
+~~~~~~~~~~
+
+TODO
+
+Interesting curl options:
+
+* --key KEY
+* --socks4 IP:PORT
+* -u USER:PASS
+
+A minimal `.conf' file to be read in by scripts:
+
+----
+# CURL OPTS
+OPTS=""
+
+# IP: The ip address of the remote service line container
+IP=127.0.0.1
+
+# FOLDER: the folder name to work in on the remote service line container
+FOLDER="local"
+----
+
+TODO
+
+Export Service Sets
+~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+Service sets can be really useful for automation but there is no `import' or
+`export' feature. It's easy to create service sets in the GUI, but how can
+they be exported.
+
+*Solution 1: Copy the `.setup' file*
+
+This will work but bypasses REST and introduces the risk of making mistakes,
+such as incorrect file permissions, or accidental overwrites etc.
+
+*Solution 2: Export to a file and use REST*
+
+This has the additional benefit of being able to update many servers from
+a central location, is easier, less risky and is what will be added to the
+GUI or REST interface later.
+
+*Steps:*
+
+Run the following command on the nagios worker that needs to be exported from,
+changing the FOLDER variable only:
+
+----
+FOLDER="local"; FILE="/etc/nagios/objects/$FOLDER/setup/${FOLDER}_servicesets.setup"; \
+( echo "N=-1"; cat $FILE | while IFS=, read a b c d e; do echo $a; done | sort -u | \
+while read a; do echo -en "serviceset_name[++N]=\"$a\"\nserviceset_svctemplate[N]="; \
+echo -e "\"std_stmpl\"\nserviceset[N]='"; grep "^$a," $FILE | while IFS=, read a1 b1 c1 \
+d1 e1; do echo '\"'"$c1"'\",\"svcdesc\":\"'"$d1"'\",\"template\":\"'"$b1"'\"'; done; echo "'"; \
+done ) | sed 's/%22/%5C%22/g' >~/script_vars
+----
+
+Copy ~/script_vars to a linux box with curl on it.
+
+Create a configuration file. TODO
+
+
+
 WALK-THROUGHS
 -------------
 
