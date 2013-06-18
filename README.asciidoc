@@ -104,6 +104,13 @@ so at any point the configuration can be applied and nagios won't be broken.
 * No database required.
 * A configuration GUI is included.
 
+TODO
+~~~~
+
+* Add ALL nagios options supported by REST to the GUI. 
+
+* Add urlencoding to the `Commands' page.
+
 How does it work?
 ~~~~~~~~~~~~~~~~~
 
