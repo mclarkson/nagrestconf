@@ -4721,7 +4721,7 @@
         print '">';
         print '<h2>About to <b>DELETE</b> contact:</h2>';
         print '<h2 style="margin-left:60px;font-weight:bold;">'.$name.'</h2>';
-        print "<h2>Click 'Delete Contact Group' to confirm ".
+        print "<h2>Click 'Delete Contact' to confirm ".
               "or 'Close' to cancel.</h2>";
         print '<p>';
         print '<input type="hidden" name="name" value="';
@@ -7139,7 +7139,7 @@
         print '">';
         print '<h2>Host is about to enter testing mode:</h2>';
         print '<h2 style="margin-left:60px;font-weight:bold;">'.$name.'</h2>';
-        print "<h2>Click 'Disable Host' to confirm or 'Close' to cancel.</h2>";
+        print "<h2>Click 'Enable Testing Mode' to confirm or 'Close' to cancel.</h2>";
         #print '<span class="errorlabel">Oops - it seems there are some';
         #print ' errors! Please check and correct them.</span>';
         # Hostname
@@ -7746,7 +7746,7 @@
         print '<p>';
         print '<label for="ernsi">Retain nonstatus info</label>';
         $checked="checked";
-        if( $retainnonstatusinfo == "0" ) $checked="";
+        if( $retainnonstatusinfo == "1" ) $checked="";
         print '<input class="field" type="checkbox" id="ernsi"';
         print ' name="retainnonstatusinfo" '.$checked.' />';
         print '</p>';
