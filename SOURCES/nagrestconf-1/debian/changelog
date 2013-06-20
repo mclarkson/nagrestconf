@@ -1,3 +1,9 @@
+nagrestconf (1.153) UNRELEASED; urgency=low
+
+  * Jquery, theme and ui updates.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Thu, 20 Jun 2013 20:28:00 +0000
+
 nagrestconf (1.152) UNRELEASED; urgency=low
 
   * Bug fixes
