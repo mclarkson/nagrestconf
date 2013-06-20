@@ -10,12 +10,13 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
+20 Jun 2013 New version 1.153 (unreleased)
+
+* Jquery and theme update. Started adding tabs to dialogs to support extra options.
+
 11 Jun 2013 New version 1.152
 
-* Bug fixes.
-
-06 Jun 2013 New version 1.149
-
+* Bug fixes
 * New `Apply and Restart' window shows output from `csv2nag' and `nagios -v'.
 * New `Service Sets' tab added.
 * Can now change the service name when cloning a service.
@@ -666,7 +667,7 @@ hosts
 | 12.    | Parents                       | LXM     | parents                   | parents
 | 13.    | Check command                 | XM      | command                   | check_command
 | 14.    | Initial state                 | X       | initialstate              | initial_state
-| 15.    | Max check attempts            | X       | maxcheckattempts          | max_check_attempts
+| 15.    | Max check attempts            |         | maxcheckattempts          | max_check_attempts
 | 16.    | Check interval                | X       | checkinterval             | check_interval
 | 17.    | Retry interval                | X       | retryinterval             | retry_interval
 | 18.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
@@ -681,8 +682,8 @@ hosts
 | 27.    | Flap detection enabled        | X       | flapdetectionenabled      | flap_detection_enabled
 | 28.    | Flap detection options        | LX      | flapdetectionoptions      | flap_detection_options
 | 29.    | Process perf data             | X       | processperfdata           | process_perf_data
-| 30.    | Retain status information     | X       | retainstatusinfo          | retain_status_information
-| 31.    | Retain nonstatus information  | X       | retainnonstatusinfo       | retain_nonstatus_information
+| 30.    | Retain status information     |         | retainstatusinfo          | retain_status_information
+| 31.    | Retain nonstatus information  |         | retainnonstatusinfo       | retain_nonstatus_information
 | 32.    | Notification interval         | X       | notifinterval             | notification_interval
 | 33.    | First notification delay      | X       | firstnotifdelay           | first_notifdelay
 | 34.    | Notification period           | XM      | notifperiod               | notification_period
