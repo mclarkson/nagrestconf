@@ -500,7 +500,8 @@ container {
 }
 
 #pageheader {
-    background-color: #A3D1FF;
+    background: url("css/redmond/images/ui-bg_gloss-wave_55_5c9ccc_500x100.png") repeat-x scroll 50% 50% rgb(92, 156, 204);
+    /* background-color: #A3D1FF; */
     border-bottom-width: 1px;
     border-bottom: 1px solid black;
     height: 60px;

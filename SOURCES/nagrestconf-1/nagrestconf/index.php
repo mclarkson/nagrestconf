@@ -877,10 +877,10 @@
 <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="main.css">
-<script src = js/jquery-1.7.2.min.js></script>
-<script src = js/jquery-ui-1.8.20.custom.min.js></script>
+<script src = js/jquery-1.9.1.js></script>
+<script src = js/jquery-ui-1.10.3.custom.min.js></script>
 <link rel=stylesheet type=text/css
-    href=css/myblue/jquery-ui-1.8.20.custom.css />
+    href=css/redmond/jquery-ui.css />
 </HEAD>
 <BODY>
         ';
@@ -1316,7 +1316,8 @@
         print '$( "div#editsvcgroupdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Edit Servicegroup": editsvcgroup, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -1424,7 +1425,8 @@
         print '$( "div#newsvcgroupdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Create Servicegroup": addsvcgroup, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -1531,7 +1533,8 @@
         print '$( "div#delsvcgroupdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Delete Servicegroup": delsvcgroup, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -1653,7 +1656,8 @@
         print '$( "div#edithostgroupdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Edit Hostgroup": edithostgroup, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -1761,7 +1765,8 @@
         print '$( "div#newhostgroupdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Create Hostgroup": addhostgroup, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -1868,7 +1873,8 @@
         print '$( "div#delhostgroupdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Delete Hostgroup": delhostgroup, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -2148,7 +2154,8 @@
         print '$( "div#newcommanddlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Create Command": newcommand, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -2258,8 +2265,8 @@
         print '$( "div#delcommanddlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : '.
-              '{ my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : '.
               '{ "Delete Command": delcommand, "Close": cancel }';
         print ' } );';
@@ -2387,7 +2394,8 @@
         print '$( "div#editcommanddlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Edit Command": editcommand, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -2693,7 +2701,8 @@
         print '$( "div#newtimeperioddlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Create Timeperiod": newtimeperiod, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -2800,8 +2809,8 @@
         print '$( "div#deltimeperioddlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : '.
-              '{ my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : '.
               '{ "Delete Timeperiod": deltimeperiod, "Close": cancel }';
         print ' } );';
@@ -2937,7 +2946,8 @@
         print '$( "div#edittimeperioddlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Edit Timeperiod": edittimeperiod, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -3444,7 +3454,8 @@
         print '$( "div#newhosttemplatedlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Create Host Template": newhosttemplate, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -3551,8 +3562,8 @@
         print '$( "div#delhosttemplatedlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : '.
-              '{ my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : '.
               '{ "Delete Host Template": delhosttemplate, "Close": cancel }';
         print ' } );';
@@ -3738,7 +3749,8 @@
         print '$( "div#edithosttemplatedlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Edit Host Template": edithosttemplate, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -3912,7 +3924,8 @@
         print '$( "div#newsvctemplatedlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Create Service Template": newsvctemplate, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -4019,8 +4032,8 @@
         print '$( "div#delsvctemplatedlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : '.
-              '{ my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : '.
               '{ "Delete Service Template": delsvctemplate, "Close": cancel }';
         print ' } );';
@@ -4199,7 +4212,8 @@
         print '$( "div#editsvctemplatedlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Edit Service Template": editsvctemplate, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -4649,7 +4663,8 @@
         print '$( "div#newcontactdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Create Contact": newcontact, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -4757,8 +4772,8 @@
         print '$( "div#delcontactdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : '.
-              '{ my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : '.
               '{ "Delete Contact": delcontact, "Close": cancel }';
         print ' } );';
@@ -4945,7 +4960,8 @@
         print '$( "div#editcontactdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Edit Contact": editcontact, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -5083,7 +5099,8 @@
         print '$( "div#newcontactgroupdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Create Contact Group": newcontactgroup, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -5190,8 +5207,8 @@
         print '$( "div#delcontactgroupdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : '.
-              '{ my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : '.
               '{ "Delete Contact Group": delcontactgroup, "Close": cancel }';
         print ' } );';
@@ -5320,7 +5337,8 @@
         print '$( "div#editcontactgroupdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Edit Contact Group": editcontactgroup, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -5599,7 +5617,8 @@
         print '$( "div#delsvcsetdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Delete Service Set": delsvcset, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -5696,7 +5715,8 @@
         print '$( "div#newsvcsetdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Add Service Set": addsvcset, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -5816,7 +5836,8 @@
         print '$( "div#clonesvcsetdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Clone Service Set": clonesvcset, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -5986,7 +6007,8 @@
         print '$( "div#clonesvcsetsvcdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Clone Service": clonesvcsetsvc, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -6183,7 +6205,8 @@
         print '$( "div#delsvcsetsvcdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Delete Service": delsvcsetsvc, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -6302,7 +6325,8 @@
         print '$( "div#editsvcsetsvcdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Apply Changes": editsvcsetsvc, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -6513,7 +6537,8 @@
         print '$( "div#newsvcsetsvcdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Create Service": addsvcsetsvc, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -7026,7 +7051,8 @@
         print '$( "div#enablehostdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Enable Host": enablehost, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -7167,7 +7193,8 @@
         print '$( "div#testinghostdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Enable Testing Mode": testinghost, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -7307,7 +7334,8 @@
         print '$( "div#disablehostdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Disable Host": disablehost, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -7450,7 +7478,8 @@
         print '$( "div#delhostdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Delete Host": delhost, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -7551,7 +7580,8 @@
         print '$( "div#edithostdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Apply Changes": edithost, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -7778,7 +7808,8 @@
         print '$( "div#newhostdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Create Host": addhost, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -7940,7 +7971,8 @@
         print '$( "div#clonehostdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Clone Host": clonehost, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -8150,7 +8182,8 @@
         print '$( "div#clonesvcdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Clone Service": clonesvc, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -8377,7 +8410,8 @@
         print '$( "div#delsvcdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Delete Service": delsvc, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -8469,7 +8503,8 @@
         print '$( "div#editsvcdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Apply Changes": editsvc, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -8717,7 +8752,8 @@
         print '$( "div#newsvcdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Create Service": addsvc, "Close": cancel }';
         print ' } );';
         print '</script>';
@@ -8921,10 +8957,12 @@
         print '$( "div#applyconfigdlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
-        print ', position : { my: "center top", at: "center top", offset: "0 60" }';
+        print ', resizable : false';
+        print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Apply Configuration": applyconfigvar, "Close": cancel }';
         print ', modal : true';
-        print ', resizable : true';
+        # TODO print ', resizable : true';
+        print ', resizable : false';
         print ' } );';
         print '</script>';
     }
