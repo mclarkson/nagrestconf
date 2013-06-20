@@ -7738,15 +7738,15 @@
         # Max check attempts
         print '<p>';
         print '<label for="ersi">Retain status info</label>';
-        $checked="";
-        if( $retainstatusinfo == "1" ) $checked="checked";
+        $checked="checked";
+        if( $retainstatusinfo == "0" ) $checked="";
         print '<input class="field" type="checkbox" id="ersi"';
         print ' name="retainstatusinfo" '.$checked.' />';
         print '</p>';
         print '<p>';
         print '<label for="ernsi">Retain nonstatus info</label>';
-        $checked="";
-        if( $retainnonstatusinfo == "1" ) $checked="checked";
+        $checked="checked";
+        if( $retainnonstatusinfo == "0" ) $checked="";
         print '<input class="field" type="checkbox" id="ernsi"';
         print ' name="retainnonstatusinfo" '.$checked.' />';
         print '</p>';
