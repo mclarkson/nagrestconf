@@ -7608,14 +7608,14 @@
         print '">';
         print '<fieldset>';
 
-        # Disabled
-        #print '<p>';
-        #print '<label for="edisabled">Disabled</label>';
-        #$checked="";
-        #if( $disable == "1" ) $checked="checked";
-        #print '<input class="field" type="checkbox" id="edisabled"';
-        #print ' name="disable" '.$checked.' />';
-        #print '</p>';
+        ###:TAB1
+        print '<div id="edithosttabs">';
+        print '<ul>';
+        print '<li><a href="#fragment-1"><span>Standard</span></a></li>';
+        print '<li><a href="#fragment-2"><span>Additional</span></a></li>';
+        print '<li><a href="#fragment-3"><span>Advanced</span></a></li>';
+        print '</ul>';
+        print '<div id="fragment-1">';
 
         # Disabled
         print '<p>';
@@ -7637,6 +7637,15 @@
         print '<input type="radio" name="disable"';
         print ' value="2" '.$checked2.' />Testing';
         print '</p>';
+
+        # Disabled
+        #print '<p>';
+        #print '<label for="edisabled">Disabled</label>';
+        #$checked="";
+        #if( $disable == "1" ) $checked="checked";
+        #print '<input class="field" type="checkbox" id="edisabled"';
+        #print ' name="disable" '.$checked.' />';
+        #print '</p>';
 
         # Hostname
         print '<p>';
@@ -7712,6 +7721,43 @@
         print '<input class="field" type="checkbox" id="eactivechecks"';
         print ' name="activechecks" '.$checked.' />';
         print '</p>';
+
+        ###:TAB2
+        print '</div>';
+        print '<div id="fragment-2">';
+        # Max check attempts
+        print '<p>';
+        print '<label for="emaxcheckattempts">Max check attempts</label>';
+        print '<input class="field" type="text" id="emaxcheckattempts"';
+        print ' value="'.$maxcheckattempts.'" name="maxcheckattempts">';
+        print '</p>';
+        print '</div>';
+
+        ###:TAB3
+        print '<div id="fragment-3">';
+        # Max check attempts
+        print '<p>';
+        print '<label for="ersi">Retain status info</label>';
+        $checked="";
+        if( $retainstatusinfo == "1" ) $checked="checked";
+        print '<input class="field" type="checkbox" id="ersi"';
+        print ' name="retainstatusinfo" '.$checked.' />';
+        print '</p>';
+        print '<p>';
+        print '<label for="ernsi">Retain nonstatus info</label>';
+        $checked="";
+        if( $retainnonstatusinfo == "1" ) $checked="checked";
+        print '<input class="field" type="checkbox" id="ernsi"';
+        print ' name="retainnonstatusinfo" '.$checked.' />';
+        print '</p>';
+        print '</div>';
+        print '</div>';
+        print '<script>';
+        #print '$( "#edithosttabs" ).tabs({heightStyle: "fill"});';
+        print '$( "#edithosttabs" ).tabs();';
+        print '</script>';
+        ###:TABEND
+
         print '</fieldset>';
         print '</form>';
         print '<div class="flash notice" style="display:none"></div>';
@@ -7738,10 +7784,14 @@
             elseif( $query_str["disable"] == "1" ) $query_str["disable"] = "1";
             else $query_str["disable"] = "0";
         }
-        if( isset( $query_str["activechecks"] ) )
-            $query_str["activechecks"] = "1";
+        if( isset( $query_str["retainstatusinfo"] ) )
+            $query_str["retainstatusinfo"] = "1";
         else
-            $query_str["activechecks"] = "0";
+            $query_str["retainstatusinfo"] = "0";
+        if( isset( $query_str["retainnonstatusinfo"] ) )
+            $query_str["retainnonstatusinfo"] = "1";
+        else
+            $query_str["retainnonstatusinfo"] = "0";
         # Handle deleting fields
         if( empty( $query_str["contact"] ) )
             $query_str["contact"] = "-";
