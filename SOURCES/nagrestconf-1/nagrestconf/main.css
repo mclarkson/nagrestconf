@@ -1,6 +1,8 @@
 /* Tab modifications */
 
-#edithosttabs .ui-tabs-nav,
+#editservicetabs .ui-tabs-nav,
+#edithosttabs .ui-corner-br,
+#editservicetabs .ui-tabs-nav,
 #edithosttabs .ui-corner-br
 {
     background-color: white;
@@ -11,7 +13,8 @@
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
 }
-.ui-corner-all#edithosttabs
+.ui-corner-all#edithosttabs,
+.ui-corner-all#editservicetabs
 {
     border-top: 0px;
     border-right: 0px;
