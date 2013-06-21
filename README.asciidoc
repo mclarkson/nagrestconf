@@ -108,13 +108,15 @@ so at any point the configuration can be applied and nagios won't be broken.
 TODO
 ~~~~
 
-* Add more nagios options, supported by REST, to the GUI. (In progress)
+* Add more nagios options, which are supported by REST, to the GUI. (In progress)
 
 * Add urlencoding to the GUI `Commands' page.
 
 * Add bulk editing to the GUI.
 
 * Support rollback using subversion in the GUI.
+
+* Only create/overwrite host files for those that have been added/edited.
 
 How does it work?
 ~~~~~~~~~~~~~~~~~
@@ -799,13 +801,13 @@ services
 | 13.    | Is volatile                   | X       | isvolatile                | is_volatile
 | 14.    | Initial state                 | X       | initialstate              | initial_state
 | 15.    | Max check attempts            |         | maxcheckattempts          | max_check_attempts
-| 16.    | Check interval                | X       | checkinterval             | check_interval
-| 17.    | Retry interval                | X       | retryinterval             | retry_interval
-| 18.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
+| 16.    | Check interval                |         | checkinterval             | check_interval
+| 17.    | Retry interval                |         | retryinterval             | retry_interval
+| 18.    | Passive checks enabled        |         | passivechecks             | passive_checks_enabled
 | 19.    | Check period                  | XM      | checkperiod               | check_period
 | 20.    | Obsess over service           | X       | obsessoverservice         | obsess_over_service
-| 21.    | Freshness threshold (manual)  | X       | manfreshnessthresh        | freshness_threshold
-| 22.    | Check Freshness               | X       | checkfreshness            | check_freshness
+| 21.    | Freshness threshold (manual)  |         | manfreshnessthresh        | freshness_threshold
+| 22.    | Check Freshness               |         | checkfreshness            | check_freshness
 | 23.    | Event handler                 | X       | eventhandler              | event_handler
 | 24.    | Event handler enabled         | X       | eventhandlerenabled       | event_handler_enabled
 | 25.    | Low flap threshold            | X       | lowflapthresh             | low_flap_threshold

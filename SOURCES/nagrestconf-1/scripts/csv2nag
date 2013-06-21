@@ -987,6 +987,11 @@ create_service_entries()
             urldecode "$sdescr"
             echo
             if [[ -n $freshness && $active_checks -eq 0 ]]; then 
+                # If freshnessthresh(auto) has been set (this is always
+                # set on the dcc/collector) AND active_checks are disabled
+                # - i.e. set to 0 (i.e. not 1 or unset)
+                # THEN set the service up for freshness checking.
+                # This is to get passive checks working on the worker.
                 sc=`urldecode "$scommand"`
                 sc="${sc//\`/,}"
                 sc="${sc#$REMOTE_EXECUTOR!}" ; sc="${sc%% *}"
@@ -1026,10 +1031,10 @@ create_service_entries()
                     fi
                 }
                 if [[ -n $freshness ]]; then
-                        echo -n "        check_freshness                 "
+                        echo -n "        freshness_threshold             "
                         echo "$freshness"
                 elif [[ -n $manfreshnessthresh ]]; then
-                        echo -n "        check_freshness                 "
+                        echo -n "        freshness_threshold             "
                         echo "$manfreshnessthresh"
                 fi
             fi

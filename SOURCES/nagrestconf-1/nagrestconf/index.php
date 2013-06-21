@@ -8708,11 +8708,45 @@
         ###:TAB2
         print '</div>';
         print '<div id="fragment-2">';
+        # Check interval
+        print '<p>';
+        print '<label for="echeckinterval">Check Interval</label>';
+        print '<input class="field" type="text" id="echeckinterval"';
+        print ' value="'.$checkinterval.'" name="checkinterval">';
+        print '</p>';
+        # Retry interval
+        print '<p>';
+        print '<label for="eretryinterval">Retry Interval</label>';
+        print '<input class="field" type="text" id="eretryinterval"';
+        print ' value="'.$retryinterval.'" name="retryinterval">';
+        print '</p>';
         # Max check attempts
         print '<p>';
-        print '<label for="emaxcheckattempts">Max check attempts</label>';
+        print '<label for="emaxcheckattempts">Max Check Attempts</label>';
         print '<input class="field" type="text" id="emaxcheckattempts"';
         print ' value="'.$maxcheckattempts.'" name="maxcheckattempts">';
+        print '</p>';
+        # Freshness threshold manual
+        print '<p>';
+        print '<label for="emfta">Freshness threshold (manual)</label>';
+        print '<input class="field" type="text" id="emfta"';
+        print ' value="'.$manfreshnessthresh.'" name="manfreshnessthresh">';
+        print '</p>';
+        # Passive Checks
+        print '<p>';
+        print '<label for="spassivechecks">Passive Checks Enabled</label>';
+        $checked="checked";
+        if( $passivechecks == "0" ) $checked="";
+        print '<input class="field" type="checkbox" id="spassivechecks"';
+        print ' name="passivechecks" '.$checked.' />';
+        print '</p>';
+        # Check Freshness
+        print '<p>';
+        print '<label for="scheckfreshness">Check Freshness</label>';
+        $checked="";
+        if( $checkfreshness == "1" ) $checked="checked";
+        print '<input class="field" type="checkbox" id="scheckfreshness"';
+        print ' name="checkfreshness" '.$checkfreshness.' />';
         print '</p>';
         print '</div>';
 
@@ -8761,6 +8795,14 @@
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
         unset( $query_str["editsvc"] );
         $query_str["folder"] = FOLDER;
+        if( isset( $query_str["checkfreshness"] ) )
+            $query_str["checkfreshness"] = "1";
+        else
+            $query_str["checkfreshness"] = "0";
+        if( isset( $query_str["passivechecks"] ) )
+            $query_str["passivechecks"] = "1";
+        else
+            $query_str["passivechecks"] = "0";
         if( isset( $query_str["retainstatusinfo"] ) )
             $query_str["retainstatusinfo"] = "1";
         else
@@ -8784,6 +8826,16 @@
         else
             $query_str["activechecks"] = "0";
         # Handle deleting fields
+        if( empty( $query_str["retryinterval"] ) )
+            $query_str["retryinterval"] = "-";
+        if( empty( $query_str["checkinterval"] ) )
+            $query_str["checkinterval"] = "-";
+        if( empty( $query_str["maxcheckattempts"] ) )
+            $query_str["maxcheckattempts"] = "-";
+        if( empty( $query_str["manfreshnessthresh"] ) )
+            $query_str["manfreshnessthresh"] = "-";
+        if( empty( $query_str["freshnessthresh"] ) )
+            $query_str["freshnessthresh"] = "-";
         if( empty( $query_str["contacts"] ) )
             $query_str["contacts"] = "-";
         if( empty( $query_str["contactgroups"] ) )
