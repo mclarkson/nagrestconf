@@ -108,9 +108,13 @@ so at any point the configuration can be applied and nagios won't be broken.
 TODO
 ~~~~
 
-* Add ALL nagios options supported by REST to the GUI. 
+* Add more nagios options, supported by REST, to the GUI. (In progress)
 
-* Add urlencoding to the `Commands' page.
+* Add urlencoding to the GUI `Commands' page.
+
+* Add bulk editing to the GUI.
+
+* Support rollback using subversion in the GUI.
 
 How does it work?
 ~~~~~~~~~~~~~~~~~
