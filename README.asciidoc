@@ -10,9 +10,9 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-20 Jun 2013 New version 1.153 (unreleased)
+20 Jun 2013 New version 1.154 (unreleased)
 
-* Jquery and theme update. Started adding tabs to dialogs to support extra options.
+* Jquery and theme update. Adding tabs to edit dialogs to support extra options.
 
 11 Jun 2013 New version 1.152
 
