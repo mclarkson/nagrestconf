@@ -1,8 +1,8 @@
 /* Tab modifications */
 
 #editservicetabs .ui-tabs-nav,
-#edithosttabs .ui-corner-br,
-#editservicetabs .ui-tabs-nav,
+#edithosttabs .ui-tabs-nav,
+#editservicetabs .ui-corner-br,
 #edithosttabs .ui-corner-br
 {
     background-color: white;
