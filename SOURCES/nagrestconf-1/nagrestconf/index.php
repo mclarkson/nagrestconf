@@ -4721,7 +4721,7 @@
         print '">';
         print '<h2>About to <b>DELETE</b> contact:</h2>';
         print '<h2 style="margin-left:60px;font-weight:bold;">'.$name.'</h2>';
-        print "<h2>Click 'Delete Contact' to confirm ".
+        print "<h2>Click 'Delete Contact Group' to confirm ".
               "or 'Close' to cancel.</h2>";
         print '<p>';
         print '<input type="hidden" name="name" value="';
@@ -7139,7 +7139,7 @@
         print '">';
         print '<h2>Host is about to enter testing mode:</h2>';
         print '<h2 style="margin-left:60px;font-weight:bold;">'.$name.'</h2>';
-        print "<h2>Click 'Enable Testing Mode' to confirm or 'Close' to cancel.</h2>";
+        print "<h2>Click 'Disable Host' to confirm or 'Close' to cancel.</h2>";
         #print '<span class="errorlabel">Oops - it seems there are some';
         #print ' errors! Please check and correct them.</span>';
         # Hostname
@@ -7746,7 +7746,7 @@
         print '<p>';
         print '<label for="ernsi">Retain nonstatus info</label>';
         $checked="checked";
-        if( $retainnonstatusinfo == "1" ) $checked="";
+        if( $retainnonstatusinfo == "0" ) $checked="";
         print '<input class="field" type="checkbox" id="ernsi"';
         print ' name="retainnonstatusinfo" '.$checked.' />';
         print '</p>';
@@ -8561,63 +8561,6 @@
     }
 
     # ------------------------------------------------------------------------
-    function edit_svc_using_REST( ) {
-    # ------------------------------------------------------------------------
-    # This is called by the 'Add New Host' dialog
-    # JSON is returned to the dialog.
-
-        # Create the query
-        parse_str( $_SERVER['QUERY_STRING'], $query_str );
-        unset( $query_str["editsvc"] );
-        $query_str["folder"] = FOLDER;
-        if( isset( $query_str["disable"] ) ) {
-            if( $query_str["disable"] == "2" ) $query_str["disable"] = "2";
-            elseif( $query_str["disable"] == "1" ) $query_str["disable"] = "1";
-            else $query_str["disable"] = "0";
-        }
-        if( isset( $query_str["command"] ) ) {
-            $query_str["command"] = strtr( $query_str["command"], 
-                                           array( '"' => '\"',) );
-            $query_str["command"] = urlencode($query_str["command"]);
-        }
-        if( isset( $query_str["activechecks"] ) )
-            $query_str["activechecks"] = "1";
-        else
-            $query_str["activechecks"] = "0";
-        # Handle deleting fields
-        if( empty( $query_str["contacts"] ) )
-            $query_str["contacts"] = "-";
-        if( empty( $query_str["contactgroups"] ) )
-            $query_str["contactgroups"] = "-";
-        if( empty( $query_str["customvars"] ) )
-            $query_str["customvars"] = "-";
-        if( empty( $query_str["freshnessthresh"] ) )
-            $query_str["freshnessthresh"] = "-";
-        if( empty( $query_str["svcgroup"] ) )
-            $query_str["svcgroup"] = "-";
-        $json = json_encode( $query_str );
-
-        # Do the REST add host request
-        $request = new RestRequest(
-          RESTURL.'/modify/services',
-          'POST',
-          'json='.$json
-        );
-        set_request_options( $request );
-        $request->execute();
-        $slist = json_decode( $request->getResponseBody(), true );
-
-        # Return json
-        $retval = array();
-        $retval["message"] = $slist;
-        $resp = $request->getResponseInfo();
-        $retval["code"] = $resp["http_code"];
-        print( json_encode( $retval ) );
-
-        exit( 0 );
-    }
-
-    # ------------------------------------------------------------------------
     function show_editsvcdialog_buttons( $name, $svcdesc ) {
     # ------------------------------------------------------------------------
     # Outputs a html form fragment to edit a host
@@ -8643,6 +8586,15 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?editsvc=1';
         print '">';
         print '<fieldset>';
+
+        ###:TAB1
+        print '<div id="editservicetabs">';
+        print '<ul>';
+        print '<li><a href="#fragment-1"><span>Standard</span></a></li>';
+        print '<li><a href="#fragment-2"><span>Additional</span></a></li>';
+        print '<li><a href="#fragment-3"><span>Advanced</span></a></li>';
+        print '</ul>';
+        print '<div id="fragment-1">';
 
         # Disabled
         #print '<p>';
@@ -8752,6 +8704,42 @@
         print '<input class="field" type="checkbox" id="sactivechecks"';
         print ' name="activechecks" '.$checked.' />';
         print '</p>';
+
+        ###:TAB2
+        print '</div>';
+        print '<div id="fragment-2">';
+        # Max check attempts
+        print '<p>';
+        print '<label for="emaxcheckattempts">Max check attempts</label>';
+        print '<input class="field" type="text" id="emaxcheckattempts"';
+        print ' value="'.$maxcheckattempts.'" name="maxcheckattempts">';
+        print '</p>';
+        print '</div>';
+
+        ###:TAB3
+        print '<div id="fragment-3">';
+        # Max check attempts
+        print '<p>';
+        print '<label for="ersi">Retain status info</label>';
+        $checked="checked";
+        if( $retainstatusinfo == "0" ) $checked="";
+        print '<input class="field" type="checkbox" id="ersi"';
+        print ' name="retainstatusinfo" '.$checked.' />';
+        print '</p>';
+        print '<p>';
+        print '<label for="ernsi">Retain nonstatus info</label>';
+        $checked="checked";
+        if( $retainnonstatusinfo == "0" ) $checked="";
+        print '<input class="field" type="checkbox" id="ernsi"';
+        print ' name="retainnonstatusinfo" '.$checked.' />';
+        print '</p>';
+        print '</div>';
+        print '</div>';
+        print '<script>';
+        print '$( "#editservicetabs" ).tabs();';
+        print '</script>';
+        ###:TABEND
+
         print '</fieldset>';
         print '</form>';
         print '<div class="flash notice" style="display:none"></div>';
@@ -8759,6 +8747,71 @@
         print '<script>'.
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
+
+        exit( 0 );
+    }
+
+    # ------------------------------------------------------------------------
+    function edit_svc_using_REST( ) {
+    # ------------------------------------------------------------------------
+    # This is called by the 'Add New Host' dialog
+    # JSON is returned to the dialog.
+
+        # Create the query
+        parse_str( $_SERVER['QUERY_STRING'], $query_str );
+        unset( $query_str["editsvc"] );
+        $query_str["folder"] = FOLDER;
+        if( isset( $query_str["retainstatusinfo"] ) )
+            $query_str["retainstatusinfo"] = "1";
+        else
+            $query_str["retainstatusinfo"] = "0";
+        if( isset( $query_str["retainnonstatusinfo"] ) )
+            $query_str["retainnonstatusinfo"] = "1";
+        else
+            $query_str["retainnonstatusinfo"] = "0";
+        if( isset( $query_str["disable"] ) ) {
+            if( $query_str["disable"] == "2" ) $query_str["disable"] = "2";
+            elseif( $query_str["disable"] == "1" ) $query_str["disable"] = "1";
+            else $query_str["disable"] = "0";
+        }
+        if( isset( $query_str["command"] ) ) {
+            $query_str["command"] = strtr( $query_str["command"], 
+                                           array( '"' => '\"',) );
+            $query_str["command"] = urlencode($query_str["command"]);
+        }
+        if( isset( $query_str["activechecks"] ) )
+            $query_str["activechecks"] = "1";
+        else
+            $query_str["activechecks"] = "0";
+        # Handle deleting fields
+        if( empty( $query_str["contacts"] ) )
+            $query_str["contacts"] = "-";
+        if( empty( $query_str["contactgroups"] ) )
+            $query_str["contactgroups"] = "-";
+        if( empty( $query_str["customvars"] ) )
+            $query_str["customvars"] = "-";
+        if( empty( $query_str["freshnessthresh"] ) )
+            $query_str["freshnessthresh"] = "-";
+        if( empty( $query_str["svcgroup"] ) )
+            $query_str["svcgroup"] = "-";
+        $json = json_encode( $query_str );
+
+        # Do the REST add host request
+        $request = new RestRequest(
+          RESTURL.'/modify/services',
+          'POST',
+          'json='.$json
+        );
+        set_request_options( $request );
+        $request->execute();
+        $slist = json_decode( $request->getResponseBody(), true );
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $slist;
+        $resp = $request->getResponseInfo();
+        $retval["code"] = $resp["http_code"];
+        print( json_encode( $retval ) );
 
         exit( 0 );
     }
