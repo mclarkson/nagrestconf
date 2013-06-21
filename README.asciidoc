@@ -798,7 +798,7 @@ services
 | 12.    | Display name                  | X       | displayname               | display_name
 | 13.    | Is volatile                   | X       | isvolatile                | is_volatile
 | 14.    | Initial state                 | X       | initialstate              | initial_state
-| 15.    | Max check attempts            | X       | maxcheckattempts          | max_check_attempts
+| 15.    | Max check attempts            |         | maxcheckattempts          | max_check_attempts
 | 16.    | Check interval                | X       | checkinterval             | check_interval
 | 17.    | Retry interval                | X       | retryinterval             | retry_interval
 | 18.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
@@ -813,8 +813,8 @@ services
 | 27.    | Flap detection enabled        | X       | flapdetectionenabled      | flap_detection_enabled
 | 28.    | Flap detection options        | LX      | flapdetectionoptions      | flap_detection_options
 | 29.    | Process perf data             | X       | processperfdata           | process_perf_data
-| 30.    | Retain status information     | X       | retainstatusinfo          | retain_status_information
-| 31.    | Retain nonstatus information  | X       | retainnonstatusinfo       | retain_nonstatus_information
+| 30.    | Retain status information     |         | retainstatusinfo          | retain_status_information
+| 31.    | Retain nonstatus information  |         | retainnonstatusinfo       | retain_nonstatus_information
 | 32.    | Notification interval         | X       | notifinterval             | notification_interval
 | 33.    | First notification delay      | X       | firstnotifdelay           | first_notifdelay
 | 34.    | Notification period           | XM      | notifperiod               | notification_period
