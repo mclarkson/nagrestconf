@@ -7735,20 +7735,28 @@
 
         ###:TAB3
         print '<div id="fragment-3">';
-        # Max check attempts
         print '<p>';
-        print '<label for="ersi">Retain status info</label>';
-        $checked="checked";
-        if( $retainstatusinfo == "0" ) $checked="";
-        print '<input class="field" type="checkbox" id="ersi"';
-        print ' name="retainstatusinfo" '.$checked.' />';
+        print '<label for="srsi">Retain Status Info</label>';
+        print '<select name="retainstatusinfo" id="srsi" class="field">';
+        $selected=""; if( ! strlen($retainstatusinfo) ) $selected="selected";
+        print '<option value="" '.$selected.'>From template</option>';
+        $selected=""; if( $retainstatusinfo == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $retainstatusinfo == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
         print '</p>';
         print '<p>';
-        print '<label for="ernsi">Retain nonstatus info</label>';
-        $checked="checked";
-        if( $retainnonstatusinfo == "0" ) $checked="";
-        print '<input class="field" type="checkbox" id="ernsi"';
-        print ' name="retainnonstatusinfo" '.$checked.' />';
+        print '<label for="srnsi">Retain Nonstatus Info</label>';
+        print '<select name="retainnonstatusinfo" id="srnsi" class="field">';
+        $selected=""; if( ! strlen($retainnonstatusinfo) ) $selected="selected";
+        print '<option value="" '.$selected.'>From template</option>';
+        $selected=""; if( $retainnonstatusinfo == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $retainnonstatusinfo == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
         print '</p>';
         print '</div>';
         print '</div>';
@@ -7784,15 +7792,11 @@
             elseif( $query_str["disable"] == "1" ) $query_str["disable"] = "1";
             else $query_str["disable"] = "0";
         }
-        if( isset( $query_str["retainstatusinfo"] ) )
-            $query_str["retainstatusinfo"] = "1";
-        else
-            $query_str["retainstatusinfo"] = "0";
-        if( isset( $query_str["retainnonstatusinfo"] ) )
-            $query_str["retainnonstatusinfo"] = "1";
-        else
-            $query_str["retainnonstatusinfo"] = "0";
         # Handle deleting fields
+        if( ! strlen( $query_str["retainstatusinfo"] ) )
+            $query_str["retainstatusinfo"] = "-";
+        if( ! strlen( $query_str["retainnonstatusinfo"] ) )
+            $query_str["retainnonstatusinfo"] = "-";
         if( empty( $query_str["contact"] ) )
             $query_str["contact"] = "-";
         if( empty( $query_str["contactgroups"] ) )
@@ -8760,7 +8764,6 @@
 
         ###:TAB3
         print '<div id="fragment-3">';
-        # Max check attempts
         print '<p>';
         print '<label for="srsi">Retain Status Info</label>';
         print '<select name="retainstatusinfo" id="srsi" class="field">';
