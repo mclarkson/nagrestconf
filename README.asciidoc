@@ -398,7 +398,73 @@ WALK-THROUGHS
 Single Server from Scratch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+These instructions are for creating a single, stand-alone, nagios server that
+will be configured using nagrestconf. On modest hardware it should be able to
+monitor up to around 500 servers.
+
+The server can be created in a partitioned system using a
+chroot/systemd-nspawn/lxc environment if necessary, for production or test
+purposes.
+
+First, install the operating system. The following instructions were tested on
+RedHat 5.8.
+
+If this is a partitioned system then run the following:
+
+----
+ln -s /proc/self/fd /dev/fd
+cd /dev
+MAKEDEV stdin
+MAKEDEV stdout
+MAKEDEV stderr
+----
+
+Set up Yum:
+
+----
+wget -O - http://www.smorg.co.uk/repo/stable/rhel5/smorg.repo > /etc/yum.repos.d/smorg.repo
+rpm -ivh http://mirror.bytemark.co.uk/fedora/epel/5/i386/epel-release-5-4.noarch.rpm
+----
+
+Install all required software:
+
+----
+yum install nagrestconf smorg-gearmand-server mod_gearman nagios-www \
+            smorg-nagios-plugins smorg-nagios-plugins-extra \
+            smorg-nrpe smorg-nrpe-plugin
+----
+
+Create the base nagios configuration:
+
+----
+cd /etc/
+mv nagios/ nagios.dist
+cp -a /usr/share/doc/nagrestconf-1*/initial-config/ nagios
+nagrestconf_install -a
+slc_configure --folder=local
+----
+
+Create a test configuration using REST:
+
+----
+bash /usr/share/doc/nagrestconf-1.*/bulk-loading/REST_setup_local.sh
+----
+
+Manually restart nagios (in case crond is not running):
+
+----
+rm /tmp/nagios_restart_request
+/usr/bin/restart_nagios
+----
+
+Create a nagios password:
+
+----
+htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin nagiosadmin
+/etc/init.d/httpd restart
+----
+
+Now connect to http://127.0.0.1/nagrestconf and configure the server. Use ssh port forwarding to connect to the nagrestconf GUI if necessary, or configure Apache in `/etc/httpd/conf.d/nagrestconf.conf'.
 
 Distributed Monitoring from Scratch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
