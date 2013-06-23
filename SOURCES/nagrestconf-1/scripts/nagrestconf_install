@@ -85,11 +85,11 @@ add_usergrp()
 {
     # Perform tasks to prepare for the initial installation
     echo "Attempting to add $WWWUSER to the nagios group."
-    echo "usermod -a -G nagios apache"
-    usermod -a -G nagios apache
+    echo "usermod -a -G nagios $WWWUSER"
+    usermod -a -G nagios $WWWUSER
     echo "Attempting to add $WWWUSER to the nagiocmd group."
-    echo "usermod -a -G nagiocmd apache"
-    usermod -a -G nagiocmd apache
+    echo "usermod -a -G nagiocmd $WWWUSER"
+    usermod -a -G nagiocmd $WWWUSER
 }
 
 # ---------------------------------------------------------------------------
@@ -131,11 +131,11 @@ add_sudoers_entry()
     echo "Appending sudoers entry:"
     cat <<EnD
         Defaults:%nagios !requiretty
-        %nagios ALL = NOPASSWD: /usr/sbin/nagios -v *, /usr/bin/csv2nag -y all
+        %nagios ALL = NOPASSWD: $NAGIOSBIN -v *, /usr/bin/csv2nag -y all
 EnD
     cat >>/etc/sudoers <<EnD
 Defaults:%nagios !requiretty
-%nagios ALL = NOPASSWD: /usr/sbin/nagios -v *, /usr/bin/csv2nag -y all
+%nagios ALL = NOPASSWD: $NAGIOSBIN -v *, /usr/bin/csv2nag -y all
 
 EnD
 }
@@ -253,13 +253,13 @@ modify_nagios_cfg()
 
     echo "Attempting to modify $NAG_CONFIG."
 
-    if ! grep -qs "<SERVICE_LINE_CFG_ENTRY>" /etc/nagios/nagios.cfg; then
+    if ! grep -qs "<SERVICE_LINE_CFG_ENTRY>" $NAG_CONFIG; then
         cp $NAG_CONFIG $NAG_CONFIG.nagrestconf-saved
-        %{__sed} -i '/SERVICE_LINE_CFG_ENTRY/d' $NAG_CONFIG
+        sed -i '/SERVICE_LINE_CFG_ENTRY/d' $NAG_CONFIG
         echo "## Next line added by nagrestconf"  >>$NAG_CONFIG
         echo "<SERVICE_LINE_CFG_ENTRY>" >>$NAG_CONFIG
         # Comment out cfg_ lines in nagios.cfg
-        %{__sed} -i \
+        sed -i \
             's/^[[:space:]]*cfg_/# - commented out by nagrestconf - cfg_/' \
             $NAG_CONFIG
     else

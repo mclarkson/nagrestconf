@@ -1,3 +1,103 @@
+2013-06-21  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* README.asciidoc: Doc update
+
+2013-06-21  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* SOURCES/nagrestconf-1/nagrestconf/index.php: Changed check-boxes
+	to tri-state
+
+2013-06-21  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* README.asciidoc: Doc update
+
+2013-06-21  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* SOURCES/nagrestconf-1/debian/changelog: Version bump
+
+2013-06-21  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* SOURCES/nagrestconf-1/nagrestconf/index.php: Added extra fields to
+	'Edit Service'
+
+2013-06-21  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* README.asciidoc, SOURCES/nagrestconf-1/nagrestconf/index.php,
+	SOURCES/nagrestconf-1/scripts/csv2nag: Added more options to
+	'Additional' edit services tab
+
+2013-06-21  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* README.asciidoc: Doc update
+
+2013-06-21  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* SOURCES/nagrestconf-1/nagrestconf/main.css: Corrected tab
+	backgrounds
+
+2013-06-21  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* README.asciidoc: Doc update
+
+2013-06-21  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* SOURCES/nagrestconf-1/nagrestconf/main.css: Added services tabs
+
+2013-06-21  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* SOURCES/nagrestconf-1/nagrestconf/index.php: Added services tabs
+
+2013-06-21  mclarkson <mark.clarkson@smorg.co.uk>
+
+	*
+	SOURCES/nagrestconf-1/nagrestconf/css/myblue/jquery-ui-1.8.20.custo
+	m.css, SOURCES/nagrestconf-1/nagrestconf/css/redmond/jquery-ui.css,
+	SOURCES/nagrestconf-1/nagrestconf/css/redmond/jquery-ui.min.css,
+	SOURCES/nagrestconf-1/nagrestconf/css/redmond/jquery.ui.theme.css: 
+	Added the redmond theme
+
+2013-06-20  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* SOURCES/nagrestconf-1/nagrestconf/index.php: Text corrections
+
+2013-06-20  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* SOURCES/nagrestconf-1/nagrestconf/index.php: Host retainstatusinfo
+	defaults to 'on'
+
+2013-06-20  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* : commit d108bafdfb0acf2022e6e0fc0b05344dbde0ee86 Author:
+	mclarkson <mark.clarkson@smorg.co.uk> Date:   Thu Jun 20 20:30:24
+	2013 +0100
+
+2013-06-20  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* README.asciidoc: Doc update.
+
+2013-06-20  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* SOURCES/nagrestconf-1/nagrestconf/index.php,
+	SOURCES/nagrestconf-1/nagrestconf/main.css: Added Tabs to Edit Host
+	dialog.
+
+2013-06-20  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* : commit 58c94fb6f81f6071684a83215308851e6d7abb95 Author:
+	mclarkson <mark.clarkson@smorg.co.uk> Date:   Thu Jun 20 14:54:43
+	2013 +0100
+
+2013-06-18  mclarkson <mark.clarkson@smorg.co.uk>
+
+	* : commit 3faeb0ccf2c3bd11df842238bf1fd1f54e144db7 Author:
+	mclarkson <mark.clarkson@smorg.co.uk> Date:   Tue Jun 18 13:06:32
+	2013 +0100
+
+2013-06-14  root <root@deb6.(none)>
+
+	* SOURCES/nagrestconf-1/ChangeLog,
+	SOURCES/nagrestconf-1/debian/rules: Packaging updates
+
 2013-06-12  mclarkson <mark.clarkson@smorg.co.uk>
 
 	* README.asciidoc: Doc update .. unfinished
@@ -12,8 +112,14 @@
 	* SOURCES/nagrestconf-1/nagrestconf/index.php,
 	SOURCES/nagrestconf-1/rest/index.php,
 	SOURCES/nagrestconf-1/scripts/csv2nag: Bug fixes for 'commands'
+
+2013-06-11  mclarkson <mark.clarkson@smorg.co.uk>
+
 	* README.asciidoc, SOURCES/nagrestconf-1/debian/changelog: Version
 	bump
+
+2013-06-11  mclarkson <mark.clarkson@smorg.co.uk>
+
 	* SOURCES/nagrestconf-1/rest/index.php,
 	SOURCES/nagrestconf-1/scripts/csv2nag: Put backtick remapping back -
 	removed too early
@@ -25,21 +131,45 @@
 2013-06-07  mclarkson <mark.clarkson@smorg.co.uk>
 
 	* SOURCES/nagrestconf-1/scripts/csv2nag: DCC fix
+
+2013-06-07  mclarkson <mark.clarkson@smorg.co.uk>
+
 	* : commit d49f1135786d5497c7f06366c314053921151d44 Author:
 	mclarkson <mark.clarkson@smorg.co.uk> Date:   Fri Jun 7 14:20:13
 	2013 +0100
+
+2013-06-07  Mark Clarkson <mark.clarkson@smorg.co.uk>
+
 	* README.asciidoc: Update README.asciidoc
+
+2013-06-07  Mark Clarkson <mark.clarkson@smorg.co.uk>
+
 	* README.asciidoc: Update README.asciidoc
+
+2013-06-07  mclarkson <mark.clarkson@smorg.co.uk>
+
 	* README.asciidoc: Urlencoding fixes
 
 2013-06-06  mclarkson <mark.clarkson@smorg.co.uk>
 
 	* README.asciidoc: Doc update
+
+2013-06-06  mclarkson <mark.clarkson@smorg.co.uk>
+
 	* README.asciidoc: Doc update
+
+2013-06-06  mclarkson <mark.clarkson@smorg.co.uk>
+
 	* SOURCES/nagrestconf-1/nagrestconf/index.php,
 	SOURCES/nagrestconf-1/rest/index.php,
 	SOURCES/nagrestconf-1/scripts/nagctl: Urlencoding fixes
+
+2013-06-06  mclarkson <mark.clarkson@smorg.co.uk>
+
 	* SOURCES/nagrestconf-1/debian/changelog: Packaging
+
+2013-06-06  mclarkson <mark.clarkson@smorg.co.uk>
+
 	* NEWS.asciidoc, README.asciidoc,
 	SOURCES/nagrestconf-1/nagrestconf/index.php,
 	SOURCES/nagrestconf-1/nagrestconf/main.css,
@@ -49,11 +179,20 @@
 
 	* NEWS.asciidoc, README.asciidoc: Added ability to 'clone' to a new
 	service name.
+
+2013-06-05  mclarkson <mark.clarkson@smorg.co.uk>
+
 	* SOURCES/nagrestconf-1/nagrestconf/index.php: Added ability to
 	'clone' to a new service name.
+
+2013-06-05  mclarkson <mark.clarkson@smorg.co.uk>
+
 	* : commit 37149334128a94c06f3dbf408e2b463c622fa7ff Author:
 	mclarkson <mark.clarkson@smorg.co.uk> Date:   Wed Jun 5 11:54:40
 	2013 +0100
+
+2013-06-05  Mark Clarkson <mark.clarkson@smorg.co.uk>
+
 	* README.asciidoc: Update README.asciidoc
 
 2013-06-04  mclarkson <mark.clarkson@smorg.co.uk>

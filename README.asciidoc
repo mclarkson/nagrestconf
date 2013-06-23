@@ -10,8 +10,9 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-20 Jun 2013 New version 1.154 (unreleased)
+24 Jun 2013 New version 1.154
 
+* Debian packaging fixes. Tested install procedure in debian 6.
 * Jquery and theme update. Adding tabs to edit dialogs to support extra options.
 
 11 Jun 2013 New version 1.152
@@ -269,7 +270,8 @@ freshly installing the Operating System with a minimal set of packages.
 +
 ----------------------------------------------------------
 # On Debian:
-gdebi nagrestconf_1.0_all.deb
+apt-get update
+gdebi nagrestconf_1.154_all.deb
 
 # On Centos/Redhat:
 yum install nagrestconf-1.146-1.noarch.rpm
@@ -281,9 +283,12 @@ Use the two helper scripts nagrestconf_install and slc_configure. A sample
 configuration is also included in the system doc/ directories. For example:
 +
 ------------------------------------------------------------------
+# On Centos/Redhat
 cd /etc/
 mv nagios/ nagios.orig
 cp -a /usr/share/doc/nagrestconf-1*/initial-config/ nagios
+
+# On Centos/Redhat/Debian
 nagrestconf_install -a
 slc_configure --folder=local
 ------------------------------------------------------------------
@@ -291,8 +296,11 @@ slc_configure --folder=local
 Test the installation with:
 +
 ------------------------------------------------------------------
-bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh
+# On Centos/Redhat
 htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin a_password
+
+# On Centos/Redhat/Debian
+bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh
 ------------------------------------------------------------------
 +
 Then check that it can be seen and edited in the 'Nagrestconf' GUI by pointing
@@ -429,9 +437,8 @@ rpm -ivh http://mirror.bytemark.co.uk/fedora/epel/5/i386/epel-release-5-4.noarch
 Install all required software:
 
 ----
-yum install nagrestconf smorg-gearmand-server mod_gearman nagios-www \
-            smorg-nagios-plugins smorg-nagios-plugins-extra \
-            smorg-nrpe smorg-nrpe-plugin
+yum install nagrestconf nagios-www smorg-nagios-plugins \
+            smorg-nagios-plugins-extra smorg-nrpe smorg-nrpe-plugin
 ----
 
 Create the base nagios configuration:
