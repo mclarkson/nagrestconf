@@ -13,7 +13,7 @@ Latest News
 24 Jun 2013 New version 1.154
 
 * Debian packaging fixes. Tested install procedure in debian 6.
-* Jquery and theme update. Adding tabs to edit dialogs to support extra options.
+* Jquery and theme update. Added tabs to edit dialogs to support extra options.
 
 11 Jun 2013 New version 1.152
 
