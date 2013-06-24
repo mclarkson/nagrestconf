@@ -219,26 +219,29 @@ The `command' and `svcdesc' fields are now urlencoded so the `.setup' files need
 NOTE: Only run the following commands ONCE when upgrading to 1.149, otherwise your data will be double-urlencoded!
 
 ----
-# Define this function (copy and paste everything)
+# Change the FOLDER then copy-paste the rest to the target server.
+FOLDER="local"
+
+# Backup the FOLDER
+mkdir ~/delme
+cp -a /etc/nagios/objects/${FOLDER} ~/delme/
+
+# Set up urlencoding function
 urlencode() { arg="$1"; i="0"; while [ "$i" -lt ${#arg} ]; do c=${arg:$i:1}; if [[ "$c" =~ [0-9a-zA-Z_.-] ]]; then echo -n "$c"; elif [[ "$c" = " " ]]; then echo -n "+"; else echo -n "%"; printf "%X" "'$c'"; fi; i=$((i+1)); done; }
 
-#
-# Only do the next lines once (and once only!)
-#
-
-FOLDER="local"; FILE="servicesets";
+# Update the .setup files
+FILE="servicesets"
 while IFS=, read c1 c2 c3 c4 c5; do echo -n "$c1,$c2,"; urlencode "$c3"; echo -n ","; urlencode "$c4"; echo ",$c5"; done </etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup >/tmp/${FOLDER}_${FILE}.setup
 sed -i "s/%60/%2C/g" /tmp/${FOLDER}_${FILE}.setup
-#
-# Sanity check then move:
-mv /tmp/${FOLDER}_${FILE}.setup /etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup
-
-FOLDER="local"; FILE="services";
+mv -f /tmp/${FOLDER}_${FILE}.setup /etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup
+chown apache: /etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup
+FILE="services"
 while IFS=, read c1 c2 c3 c4 c5; do echo -n "$c1,$c2,"; urlencode "$c3"; echo -n ","; urlencode "$c4"; echo ",$c5"; done </etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup >/tmp/${FOLDER}_${FILE}.setup
 sed -i "s/%60/%2C/g" /tmp/${FOLDER}_${FILE}.setup
-#
-# Sanity check then move:
-mv /tmp/${FOLDER}_${FILE}.setup /etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup
+mv -f /tmp/${FOLDER}_${FILE}.setup /etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup
+chown apache: /etc/nagios/objects/${FOLDER}/setup/${FOLDER}_${FILE}.setup
+
+# Now update nagrestconf
 ----
 
 .All versions
