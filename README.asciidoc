@@ -212,7 +212,7 @@ The Web GUI also works on Maemo, iPad and Android devices.
 Upgrade
 ~~~~~~~
 
-.Upgrading to version 1.149
+.Upgrading from a version < 1.149 to a version >= 1.149
 
 The `command' and `svcdesc' fields are now urlencoded so the `.setup' files need to be converted. Take a backup then do the following, changing the FOLDER variable if necessary.
 
