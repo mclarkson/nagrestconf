@@ -1,3 +1,9 @@
+nagrestconf (1.155) UNRELEASED; urgency=low
+
+  * Filter by hostgroup GUI not updating fix.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Thu, 24 Jun 2013 20:28:00 +0000
+
 nagrestconf (1.154) UNRELEASED; urgency=low
 
   * Jquery, theme and ui updates.
