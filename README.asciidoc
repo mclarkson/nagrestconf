@@ -277,7 +277,7 @@ apt-get update
 gdebi nagrestconf_1.154_all.deb
 
 # On Centos/Redhat:
-yum install nagrestconf-1.146-1.noarch.rpm
+yum install nagrestconf-1.154-1.noarch.rpm
 ----------------------------------------------------------
 +
 2. Configure the system:
