@@ -954,17 +954,19 @@ chkconfig nagios on
 chkconfig httpd on
 ----
 
-Point the worker at the master nagios - 10.173.21.113 in Dev.
+Point the worker at the master nagios.
 
 ----
-sed -i 's/\(^#dupserver=.*\)/\1\ndupserver=10.173.21.113:4730/' /etc/mod_gearman/mod_gearman_worker.conf
-sed -i 's/\(^#dcc=.*\)/\1\ndcc=10.173.21.113/' /etc/nagrestconf/restart_nagios.conf
+MASTER_IP_ADDR=10.1.1.45
+sed -i 's/\(^#dupserver=.*\)/\1\ndupserver=$MASTER_IP_ADDR:4730/' /etc/mod_gearman/mod_gearman_worker.conf
+sed -i 's/\(^#dcc=.*\)/\1\ndcc=$MASTER_IP_ADDR/' /etc/nagrestconf/restart_nagios.conf
 /etc/init.d/mod_gearman_worker restart
 ----
 
-Enable allow svn and ssh to use the chroot port.
+If the Master nagios is *running in a chroot* allow svn and ssh to use the chroot port.
 
 ----
+# ONLY DO THIS IF THE MASTER IS IN A CHROOT
 # Add 'tun1 = ssh -p 2222' to the '[tunnels]' section in '~/.subversion/config'.
 cat <<EnD >>/etc/nagrestconf/restart_nagios.conf
 SSH=tun1
@@ -977,12 +979,12 @@ should be allowed to be executed using the svnsync account on the nagios
 master.
 
 ----
-ssh -p 2222 svnsync@10.173.21.113 ls /
+ssh -p 2222 svnsync@10.1.1.45 ls /
 ----
 
 A root directory listing MUST succeed before running slc_configure below.
 
-Log into 10.173.21.113 normally as root now and run the following code,
+*Log into 10.1.1.45* normally as root now and run the following code,
 supplying the new folder name when asked, then log out.
 
 ----
@@ -991,7 +993,7 @@ sed -i 's/\(<Location.*\/thruk>\)/\1\n    SSLOptions +FakeBasicAuth +StdEnvVars\
     /var/nagios/etc/httpd/conf.d/thruk.conf
 ----
 
-*On the new nagios host.*
+*Back On the new nagios host.*
 
 Add the new environment supplying the new folder name when asked.
 
