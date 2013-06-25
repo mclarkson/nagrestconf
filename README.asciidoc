@@ -494,24 +494,25 @@ Building the Master Nagios
 The backup and high-availability features of a virtual infrastructure could allow for a single Master Nagios.
 
 ----
-                      IP x                  IP x
-                       /                      \
-                  |___/                        \___|
-                  |                                |     results are sent to the master nagios
-                  |   Thruk GUI could be used to   |     servers using the mod_gearman protocol
-                  |   provide an enhanced but      |             /
-                  |   familiar nagios GUI          |       |    /
-   Client   ==>   |              \                 |       +---<-----< nagios worker 1 >
-   access   ==>   |        +--------------+        |       |
-   to the   ==>   |        | Master       |        |       +---<-----< nagios worker 2 >
-   Web GUI  ==>   |--->----| Nagios       |        |---<---|
-                  |        |              |        |       +---<-----< nagios worker .. >
-                  |        |              |---<----|       |
-                  |        +--------------+        |       +---<-----< nagios worker N >
-                  |                                |       |       \
-                  |                                |                \                       
-                  |                                |            nagrestconf sends configuration to master
-                  |                                |            nagios using subversion mirroring
+                  IP x                  IP x
+                    /                      \
+               |___/                        \___|
+               |                                |  results are sent to the master nagios
+               |   Thruk GUI could be used to   |  servers using the gearman protocol
+               |   provide an enhanced but      |             /
+               |   familiar nagios GUI          |       |    /
+ Client   ==>  |              \                 |       +---<-----< nagios worker 1 >
+ access   ==>  |        +--------------+        |       |
+ to the   ==>  |        | Master       |        |       +---<-----< nagios worker 2 >
+ Web GUI  ==>  |--->----| Nagios       |        |---<---|
+               |        |              |        |       +---<-----< nagios worker .. >
+               |        |              |---<----|       |
+               |        +--------------+        |       +---<-----< nagios worker N >
+               |                                |       |       \
+               |                                |                \                       
+               |                                |   nagrestconf sends configuration to
+               |                                |   master nagios using subversion
+                                                    mirroring.
 ----
 
 TODO
