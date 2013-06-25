@@ -472,6 +472,8 @@ Now connect to http://127.0.0.1/nagrestconf and configure the server. Use ssh po
 Distributed Monitoring from Scratch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+TODO - incomplete...
+
 In this scenario, nagrestconf provides the `configuration sync' component
 mentioned in the mod_gearman documentation,
 https://github.com/sni/mod_gearman#distributed-setup-with-remote-scheduler[Distributed
@@ -572,8 +574,6 @@ TODO
 Building the Worker Nagios (Redhat/Centos 5)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TODO - incomplete...
-
 Consists of five main steps:
 
 1. Install software
@@ -581,7 +581,8 @@ Consists of five main steps:
 3. Configure Apache
 4. Configure the system
 
-1. Install software
+Install software
+++++++++++++++++
 
 Set up Yum to use the EPEL and smorg repositories:
 
@@ -600,7 +601,8 @@ yum install nagrestconf smorg-gearmand-server mod_gearman nagios-www \
             smorg-nrpe smorg-nrpe-plugin MySQL-shared-compat
 ----
 
-2. Test the Installed Software
+Test the Installed Software
++++++++++++++++++++++++++++
 
 Don't skip this step as it also sets up some files ready for the `real' install later on.
 
@@ -639,7 +641,8 @@ Connect to \http://NEWSERVER/nagios and check that it works, using the user nagi
 
 Once nagios and nagrestconf are verified working continue to the next section.
 
-3. Configure Apache
+Configure Apache
+++++++++++++++++
 
 This is an example HTTP daemon configuration to restrict access to secure
 HTTP with Basic authentication only.
@@ -732,7 +735,8 @@ Activate the new httpd configuration
 /etc/init.d/httpd restart
 ----
 
-4. Configure the system
+Configure the system
+++++++++++++++++++++
 
 TODO
 
