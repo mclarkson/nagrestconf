@@ -367,7 +367,7 @@ Deleting Environments
 
 There is no way to delete an entire environment using the REST interface. An environment is initially added using 'slc_configure' on the Worker Nagios, and 'dcc_configure' on the Master Nagios.
 
-To disable an environment, or 'Folder', so it disappears from nagios:
+To disable an environment, or `Folder', so it disappears from nagios:
 
 1. Stop the Worker server.
 +
@@ -403,7 +403,7 @@ TODO
 
 Service sets can be really useful for automation but there is no `import' or
 `export' feature. It's easy to create service sets in the GUI, but how can
-they be exported.
+they be exported?
 
 *Solution 1: Copy the `.setup' file*
 
@@ -418,8 +418,8 @@ GUI or REST interface later.
 
 *Steps:*
 
-Run the following command on the nagios worker that needs to be exported from,
-changing the FOLDER variable only:
+Run the following command on the nagios worker that holds the service sets that
+need exporting, changing the FOLDER variable only:
 
 ----
 FOLDER="local"; FILE="/etc/nagios/objects/$FOLDER/setup/${FOLDER}_servicesets.setup"; \
@@ -430,11 +430,111 @@ d1 e1; do echo '\"'"$c1"'\",\"svcdesc\":\"'"$d1"'\",\"template\":\"'"$b1"'\"'; d
 done ) | sed 's/%22/%5C%22/g' >~/script_vars
 ----
 
-Copy ~/script_vars to a linux box with curl on it.
+The bash command above creates configuration variables that can appended to a
+configuration script so copy `~/script_vars' to a linux box.
 
-Create a configuration file. TODO
+On the linux box create a configuration file and append `~/script_vars' to it:
 
+----
+# Go to the home directory
+cd
 
+# Create a configuration stub
+cat <<EnD >worker.conf
+# CURL OPTS
+OPTS="-u nagrestconf:a_password"
+
+# IP: The ip address of the remote worker
+IP=10.1.1.45
+
+# FOLDER: the folder name to work in on the remote worker
+FOLDER="pvlive"
+
+# DELETE: 1 - delete existing config, 0 - don't
+DELETE=1
+
+EnD
+
+# Append the generated service set config
+cat ~/script_vars >>worker.conf
+----
+
+Now apply the configuration to the remote nagios worker using a script:
+
+----
+cat <<EnD >replace_servicesets.sh
+#!/bin/bash
+# Uncomment the following line to show the commands without running them.
+#curl() { :; }
+[[ -z $1 ]] && {
+    echo "Usage: `basename $0` CONFFILE"
+    exit 0
+}
+[[ ! -r $1 ]] && {
+    echo "$1 unreadable."
+    exit 0
+}
+. $1
+if [[ $DELETE -eq 1 ]]; then
+echo "-----------------------------------------------------------"
+echo "- Delete EVERYTHING"
+echo "-----------------------------------------------------------"
+echo
+    echo curl $OPTS  -knX POST \
+        -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\",
+                  \"svcdesc\":\".*\"}'" \
+        https://${IP}/rest/delete/servicesets
+    curl $OPTS  -knX POST \
+        -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\",
+                  \"svcdesc\":\".*\"}" \
+        https://${IP}/rest/delete/servicesets
+    echo
+fi
+echo
+echo "-----------------------------------------------------------"
+echo "- Add Service Sets"
+echo "-----------------------------------------------------------"
+echo
+for i in `seq 0 $((${#serviceset[*]}-1))`; do
+    while read j; do
+        [[ -z $j || $j == "#"* ]] && continue
+        # Allow use of a custom service template
+        if ( echo "$i" | grep -qs "template\":" ); then
+        echo curl $OPTS  -knX POST \
+            -d "'json={\"folder\":\"$FOLDER\",
+            \"name\":\"${serviceset_name[$i]}\",
+            \"command\":$j}'" https://${IP}/rest/add/servicesets
+        curl $OPTS  -knX POST \
+            -d "json={\"folder\":\"$FOLDER\",
+            \"name\":\"${serviceset_name[$i]}\",
+            \"command\":$j}" https://${IP}/rest/add/servicesets
+        else
+        echo curl $OPTS  -knX POST \
+            -d "'json={\"folder\":\"$FOLDER\",
+            \"name\":\"${serviceset_name[$i]}\",
+            \"template\":\"${serviceset_svctemplate[$i]}\",
+            \"command\":$j}'" https://${IP}/rest/add/servicesets
+        curl $OPTS  -knX POST \
+            -d "json={\"folder\":\"$FOLDER\",
+            \"name\":\"${serviceset_name[$i]}\",
+            \"template\":\"${serviceset_svctemplate[$i]}\",
+            \"command\":$j}" https://${IP}/rest/add/servicesets
+        fi
+        echo
+    done < <( echo "${serviceset[$i]}" | sed "s/qUoTe/'/g" )
+done
+echo
+EnD
+
+# Make it runnable
+chmod +x replace_servicesets.sh
+
+# And, run it...
+./replace_servicesets.sh worker.conf
+----
+
+The progress can be watched by refreshing the `Service Sets' page in the
+nagrestconf GUI on the remote worker.
 
 WALK-THROUGHS
 -------------
