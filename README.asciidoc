@@ -12,16 +12,15 @@ Latest News
 
 24 Jun 2013 New version 1.154
 
-* Debian packaging fixes. Tested install procedure in debian 6.
-* Jquery and theme update. Added tabs to edit dialogs to support extra options.
-
-11 Jun 2013 New version 1.152
-
 * Bug fixes
-* New `Apply and Restart' window shows output from `csv2nag' and `nagios -v'.
-* New `Service Sets' tab added.
-* Can now change the service name when cloning a service.
-* Service and serviceset commands can now contain any text.
+* Debian packaging fixes - tested in debian 6.
+* Jquery and theme updates.
+* Added tabs to Host and Service edit dialogs.
+* Added `Apply and Restart' dialog.
+* Added `Service Sets' main page tab.
+* Added `service name' to the clone dialog.
+* Fixed inability to use many characters in commands (fixed for services
+  and servicesets only).
 
 
 License
@@ -406,8 +405,8 @@ Create a configuration file. TODO
 WALK-THROUGHS
 -------------
 
-Single Server from Scratch
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Single Server from Scratch (Redhat/Centos 5)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These instructions are for creating a single, stand-alone, nagios server that
 will be configured using nagrestconf. On modest hardware it should be able to
@@ -417,20 +416,9 @@ The server can be created in a partitioned system using a
 chroot/systemd-nspawn/lxc environment if necessary, for production or test
 purposes.
 
-First, install the operating system. The following instructions were tested on
-RedHat 5.8.
+First, install the operating system.
 
-If this is a partitioned system then run the following:
-
-----
-ln -s /proc/self/fd /dev/fd
-cd /dev
-MAKEDEV stdin
-MAKEDEV stdout
-MAKEDEV stderr
-----
-
-Set up Yum:
+Set up Yum to use the EPEL and smorg repositories:
 
 ----
 wget -O - http://www.smorg.co.uk/repo/stable/rhel5/smorg.repo > /etc/yum.repos.d/smorg.repo
@@ -440,11 +428,16 @@ rpm -ivh http://mirror.bytemark.co.uk/fedora/epel/5/i386/epel-release-5-4.noarch
 Install all required software:
 
 ----
-yum install nagrestconf nagios-www smorg-nagios-plugins \
-            smorg-nagios-plugins-extra smorg-nrpe smorg-nrpe-plugin
+yum install nagrestconf nagios-www 
 ----
 
-Create the base nagios configuration:
+Optionally bulk-install plugins (with the check_any patch included):
+
+----
+yum install smorg-nagios-plugins smorg-nagios-plugins-extra smorg-nrpe smorg-nrpe-plugin
+----
+
+Create the base nagios configuration from the nagrestconf sample:
 
 ----
 cd /etc/
@@ -470,7 +463,7 @@ rm /tmp/nagios_restart_request
 Create a nagios password:
 
 ----
-htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin nagiosadmin
+htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin a_decent_password
 /etc/init.d/httpd restart
 ----
 
@@ -488,6 +481,20 @@ TODO - For ideas see: https://github.com/mclarkson/nagrestconf-from-puppet-yaml[
 
 TROUBLE-SHOOTING
 ----------------
+
+Using in Linux Containers, Systemd-nspawn or Chroots
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Ensure some dev files exist:
+
+----
+ln -s /proc/self/fd /dev/fd
+cd /dev
+MAKEDEV stdin
+MAKEDEV stdout
+MAKEDEV stderr
+----
+
 
 Gotchas
 ~~~~~~~
