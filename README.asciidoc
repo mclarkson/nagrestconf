@@ -362,6 +362,40 @@ FOLDER="local"
 
 TODO
 
+Deleting Environments
+~~~~~~~~~~~~~~~~~~~~~
+
+There is no way to delete an entire environment using the REST interface. An environment is initially added using 'slc_configure' on the Worker Nagios, and 'dcc_configure' on the Master Nagios.
+
+To disable an environment, or 'Folder', so it disappears from nagios:
+
+1. Stop the Worker server.
++
+Either shutdown the server or stop nagios and associated services.
++
+2. Edit `/etc/nagios/nagios.cfg' on the Master.
+* Find the `cfg_dir=' line containing the folder name and comment it out.
+* Restart nagios with `/etc/init.d/nagios restart'.
+
+At this point the environment is disabled and will no longer show in the Master Nagios GUI.
+
+It may be necessary to completely delete an environment. Maybe due to:
+
+* An aborted/erroneous Worker installation.
+* To reinstall from scratch.
+* Because it is no longer required.
+
+To completely delete:
+
+1. On the Worker.
+* Either shutdown the server or stop nagios and associated services.
+* Delete the `/etc/nagios' directory.
+2. On the Master.
+* Find the `cfg_dir=' line, in `/etc/nagios/nagios.cfg', containing the folder name and delete it.
+* Restart nagios with `/etc/init.d/nagios restart'.
+* Delete the similarly named directory in `/etc/nagios/repos/_folder_name_' and
+  `/etc/nagios/objects/_folder_name_'.
+
 Export Service Sets
 ~~~~~~~~~~~~~~~~~~~
 
@@ -738,7 +772,165 @@ Activate the new httpd configuration
 Configure the system
 ++++++++++++++++++++
 
-TODO
+Delete the 'local' configuration created previously and copy the nagrestconf example configuration again.
+
+----
+/etc/init.d/nagios stop
+cd /etc
+rm -rf nagios
+cp -av /usr/share/doc/nagrestconf-1*/initial-config/ nagios
+----
+
+Create a new /etc/nagios/cgi.cfg
+
+----
+cat >/etc/nagios/cgi.cfg <<EnD
+main_config_file=/etc/nagios/nagios.cfg
+physical_html_path=/usr/share/nagios
+url_html_path=/nagios
+show_context_help=0
+use_pending_states=1
+use_authentication=1
+use_ssl_authentication=0
+authorized_for_system_information=nagiosadmin
+authorized_for_configuration_information=nagiosadmin
+authorized_for_system_commands=nagiosadmin
+authorized_for_all_services=*
+authorized_for_all_hosts=*
+authorized_for_all_service_commands=*
+authorized_for_all_host_commands=*
+authorized_for_read_only=nagios
+default_statusmap_layout=5
+default_statuswrl_layout=4
+ping_syntax=/bin/ping -n -U -c 5 $HOSTADDRESS$
+refresh_rate=90
+result_limit=100
+escape_html_tags=0
+action_url_target=_blank
+notes_url_target=_blank
+lock_author_names=1
+EnD
+----
+
+Comment out existing broker_module lines and append new lines.
+
+----
+# LIVESTATUS
+sed -i 's/\(broker_module=.*livestatus\.o.*\)/#\1/' /etc/nagios/nagios.cfg
+# MOD_GEARMAN
+sed -i 's/\(broker_module=.*mod_gearman\.o.*\)/#\1/' /etc/nagios/nagios.cfg
+echo 'broker_module=/usr/lib64/mod_gearman/mod_gearman.o config=/etc/mod_gearman/mod_gearman_neb.conf' \
+    >>/etc/nagios/nagios.cfg
+# PNP4NAGIOS
+sed -i 's/\(broker_module=.*npcdmod\.o.*\)/#\1/' /etc/nagios/nagios.cfg
+----
+
+Mod_gearman adjustments (Change 'key1' to the correct key).
+
+----
+sed -i 's/^key=.*/key=key1/' \
+    /etc/mod_gearman/mod_gearman_neb.conf \
+    /etc/mod_gearman/mod_gearman_worker.conf
+----
+
+Add the initial users.
+
+----
+htpasswd -bc /etc/nagios/rest.users nagrestconf see_pw_list
+htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin see_pw_list
+htpasswd -c /etc/nagios/nagrestconf.users your_userid
+----
+
+
+Make sure things are set to start up.
+
+----
+chkconfig nrpe on
+chkconfig gearmand on
+chkconfig mod_gearman_worker on
+chkconfig nagios on
+chkconfig httpd on
+----
+
+Point the worker at the master nagios - 10.173.21.113 in Dev.
+
+----
+sed -i 's/\(^#dupserver=.*\)/\1\ndupserver=10.173.21.113:4730/' /etc/mod_gearman/mod_gearman_worker.conf
+sed -i 's/\(^#dcc=.*\)/\1\ndcc=10.173.21.113/' /etc/nagrestconf/restart_nagios.conf
+/etc/init.d/mod_gearman_worker restart
+----
+
+Enable allow svn and ssh to use the chroot port.
+
+----
+# Add 'tun1 = ssh -p 2222' to the '[tunnels]' section in '~/.subversion/config'.
+cat <<EnD >>/etc/nagrestconf/restart_nagios.conf
+SSH=tun1
+SSH_OPTS="-p 2222"
+EnD
+----
+
+Make sure auto-login works. For security, only a limited number of commands
+should be allowed to be executed using the svnsync account on the nagios
+master.
+
+----
+ssh -p 2222 svnsync@10.173.21.113 ls /
+----
+
+A root directory listing MUST succeed before running slc_configure below.
+
+Log into 10.173.21.113 normally as root now and run the following code,
+supplying the new folder name when asked, then log out.
+
+----
+chroot /var/nagios dcc_configure
+sed -i 's/\(<Location.*\/thruk>\)/\1\n    SSLOptions +FakeBasicAuth +StdEnvVars\n    SSLRequireSSL/' \
+    /var/nagios/etc/httpd/conf.d/thruk.conf
+----
+
+*On the new nagios host.*
+
+Add the new environment supplying the new folder name when asked.
+
+----
+slc_configure --usedcc
+----
+
+Set up all the custom service-sets, contacts, etc. in a customised `REST_setup_local.sh' script then run it.
+A few variables at the top of the script will need changing now that extra security has been added.
+
+----
+cd
+bash ./REST_setup_local.sh
+----
+
+Restart everything.
+
+----
+/etc/init.d/httpd restart
+/etc/init.d/gearmand restart
+/etc/init.d/mod_gearman_worker restart
+/etc/init.d/nagios restart
+----
+
+*Final Steps*
+
+Due to the change in security settings the nagrestconf GUI will not work, and '/etc/nagrestconf/nagrestconf.ini' will need editing. Edit 'nagrestconf.ini' and check that the nagrestconf GUI works.
+
+Check that the following crontabs are present using 'crontab -l'.
+
+----
+* * * * * /usr/bin/test -e /tmp/nagios_restart_request && ( /bin/rm /tmp/nagios_restart_request; /usr/bin/restart_nagios; )
+*/10 * * * * /usr/bin/auto_reschedule_nagios_check
+----
+
+Ensure the RPM added the extra sudoers entries to /etc/sudoers:
+
+----
+Defaults:%nagios !requiretty
+%nagios ALL = NOPASSWD: /usr/sbin/nagios -v *, /usr/bin/csv2nag -y all
+----
 
 Puppet Integration
 ~~~~~~~~~~~~~~~~~~
@@ -760,7 +952,6 @@ MAKEDEV stdin
 MAKEDEV stdout
 MAKEDEV stderr
 ----
-
 
 Gotchas
 ~~~~~~~
