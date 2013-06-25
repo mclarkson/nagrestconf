@@ -1,6 +1,24 @@
 News
 ----
 
+25 Jun 2013 New version 1.155
+
+* Bug fixes
+*   Fix for the 'Filter by hostgroup' box not updating the UI.
+
+24 Jun 2013 New version 1.154
+
+* Debian packaging fixes. Tested install procedure in debian 6.
+* Jquery and theme update. Added tabs to edit dialogs to support extra options.
+
+11 Jun 2013 New version 1.152
+
+* Bug fixes
+* New `Apply and Restart' window shows output from `csv2nag' and `nagios -v'.
+* New `Service Sets' tab added.
+* Can now change the service name when cloning a service.
+* Service and serviceset commands can now contain any text.
+
 06 Jun 2013 Show output from 'Apply Changes'
 
 05 Jun 2013 Added ability to 'clone' to a new service name.
