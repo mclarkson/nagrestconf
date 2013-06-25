@@ -416,7 +416,7 @@ The server can be created in a partitioned system using a
 chroot/systemd-nspawn/lxc environment if necessary, for production or test
 purposes.
 
-First, install the operating system.
+First, install the Centos/RedHat 5.x operating system, then:
 
 Set up Yum to use the EPEL and smorg repositories:
 
@@ -472,7 +472,103 @@ Now connect to http://127.0.0.1/nagrestconf and configure the server. Use ssh po
 Distributed Monitoring from Scratch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO - Nagrestconf with mod_gearman advanced setup.
+In this scenario, nagrestconf provides the `configuration sync' component
+mentioned in the mod_gearman documentation,
+https://github.com/sni/mod_gearman#distributed-setup-with-remote-scheduler[Distributed
+Setup With Remote Scheduler], using the dup_server option. For historical reference the
+dup_server option was originally added to mod_gearman by the author of nagrestconf.
+
+Setting up a distributed environment involves:
+
+1. Building the Master Nagios.
+** Building the Master Nagios.
++
+OR
++
+** Building the Master Nagios in a Chroot
+2. Building the Worker Nagios (repeat as necessary).
+
+Building the Master Nagios
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The backup and high-availability features of a virtual infrastructure could allow for a single Master Nagios.
+
+----
+                      IP x                  IP x
+                       /                      \
+                  |___/                        \___|
+                  |                                |     results are sent to the master nagios
+                  |   Thruk GUI could be used to   |     servers using the mod_gearman protocol
+                  |   provide an enhanced but      |             /
+                  |   familiar nagios GUI          |       |    /
+   Client   ==>   |              \                 |       +---<-----< nagios worker 1 >
+   access   ==>   |        +--------------+        |       |
+   to the   ==>   |        | Master       |        |       +---<-----< nagios worker 2 >
+   Web GUI  ==>   |--->----| Nagios       |        |---<---|
+                  |        |              |        |       +---<-----< nagios worker .. >
+                  |        |              |---<----|       |
+                  |        +--------------+        |       +---<-----< nagios worker N >
+                  |                                |       |       \
+                  |                                |                \                       
+                  |                                |            nagrestconf sends configuration to master
+                  |                                |            nagios using subversion mirroring
+----
+
+TODO
+
+Building the Master Nagios in a Chroot
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When installed on physical hardware, a `chroot'ed system could simplify
+high-availability failover for the Master Nagios.
+
+----
+                        +------+
+               /     +-------+ |
+         .--<-|   +--------+ | |   Worker Nagios servers
+         |     \  | Worker | |-+   at other Data Centres.
+         |        | Nagios |-+               
+         |        +--------+                
+         |              
+         | check results
+         |
+    ~~~~~|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                                / 
+         |                     NOC        \                       Another DC
+         V                                 \
+    ____________________________ IP x      /
+                                          /
+              _.-----._                  /
+            .- shared  -.               /
+            |-_ disk  _-|               \
+            `._~-----~_.'                \
+              |"-----"|                   \
+              |       X                   /
+    +----------+    +----------+         /
+    | Master   |    | Failover |        /
+    | Nagios   |----| Partner  |        \
+    |          |    |          |         \
+    +----------+    +----------+         /
+    ____________________________ IP x   /
+        ^   ^                          /                 
+      check results                   /                                       
+        |   '-------------.           \                
+        |                 |            \
+        |  +---------+    |            /                 +---------+
+        |  | Slave   |    |           /                  | Slave   |
+        '--| Nagios  |    '-<-------------------<--------| Nagios  |
+           |         |              /                    |         |
+           +---------+              \                    +---------+
+
+   IP x - An IP address for use by the Master or Failover
+----
+
+TODO
+
+Building the Worker Nagios
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TODO
 
 Puppet Integration
 ~~~~~~~~~~~~~~~~~~
