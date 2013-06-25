@@ -6777,7 +6777,7 @@
         $url = create_url( );
         print "<p>Filter by hostgroup:<br>";
         print "<select id=\"hgsel\" name=\"Hostgroup\" onChange=\"".
-              "var a=$('select.#hgsel option:selected').val();".
+              "var a=$('select#hgsel option:selected').val();".
               #"alert( 'hello '+a );".
               "window.location='$url'+'&amp;hgfilter='+a".
               ";\">";
