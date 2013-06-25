@@ -377,15 +377,13 @@ Either shutdown the server or stop nagios and associated services.
 * Find the `cfg_dir=' line containing the folder name and comment it out.
 * Restart nagios with `/etc/init.d/nagios restart'.
 
-At this point the environment is disabled and will no longer show in the Master Nagios GUI.
-
-It may be necessary to completely delete an environment. Maybe due to:
+At this point the environment is disabled and will no longer show in the Master Nagios GUI, but it can be easily re-enabled. However, It may be necessary to completely delete an environment. This could be due to:
 
 * An aborted/erroneous Worker installation.
 * To reinstall from scratch.
 * Because it is no longer required.
 
-To completely delete:
+To completely delete an environment:
 
 1. On the Worker.
 * Either shutdown the server or stop nagios and associated services.
@@ -655,6 +653,9 @@ The backup and high-availability features of a virtual infrastructure could allo
 
 TODO
 
+Continue on to `Building the Worker Nagios (Redhat/Centos 5)' below to complete
+the configuration.
+
 Building the Master Nagios in a Chroot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -707,10 +708,14 @@ high-availability failover for the Master Nagios.
 
 TODO
 
+Continue on to `Building the Worker Nagios (Redhat/Centos 5)' below to complete
+the configuration.
+
 Building the Worker Nagios (Redhat/Centos 5)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Consists of five main steps:
+The Worker Nagios, which sends the service check results to the Master Nagios,
+needs to be created. Building the Worker consists of four main steps:
 
 1. Install software
 2. Test the installed software
