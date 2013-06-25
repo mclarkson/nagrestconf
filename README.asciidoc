@@ -399,8 +399,6 @@ To completely delete:
 Export Service Sets
 ~~~~~~~~~~~~~~~~~~~
 
-TODO
-
 Service sets can be really useful for automation but there is no `import' or
 `export' feature. It's easy to create service sets in the GUI, but how can
 they be exported?
@@ -409,6 +407,10 @@ they be exported?
 
 This will work but bypasses REST and introduces the risk of making mistakes,
 such as incorrect file permissions, or accidental overwrites etc.
+
+*Steps:*
+
+TODO
 
 *Solution 2: Export to a file and use REST*
 
