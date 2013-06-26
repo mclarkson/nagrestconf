@@ -433,7 +433,8 @@ done ) | sed 's/%22/%5C%22/g' >~/script_vars
 The bash command above creates configuration variables that can appended to a
 configuration script so copy `~/script_vars' to a linux box.
 
-On the linux box create a configuration file and append `~/script_vars' to it:
+On the linux box create a configuration file and append `~/script_vars' to it,
+but change `MASTER_NAGIOS_IP' to the IP address of the Master Nagios:
 
 ----
 # Go to the home directory
@@ -445,7 +446,7 @@ cat <<EnD >worker.conf
 OPTS="-u nagrestconf:a_password"
 
 # IP: The ip address of the remote worker
-IP=10.1.1.45
+IP=MASTER_NAGIOS_IP
 
 # FOLDER: the folder name to work in on the remote worker
 FOLDER="pvlive"
@@ -960,11 +961,11 @@ chkconfig nagios on
 chkconfig httpd on
 ----
 
-Point the worker at the master nagios. Change 10.1.1.45 to the IP address of
+Point the worker at the master nagios. Change `MASTER_NAGIOS_IP' to the IP address of
 the Master nagios.
 
 ----
-MASTER_IP_ADDR=10.1.1.45
+MASTER_IP_ADDR=MASTER_NAGIOS_IP
 sed -i 's/\(^#dupserver=.*\)/\1\ndupserver=$MASTER_IP_ADDR:4730/' /etc/mod_gearman/mod_gearman_worker.conf
 sed -i 's/\(^#dcc=.*\)/\1\ndcc=$MASTER_IP_ADDR/' /etc/nagrestconf/restart_nagios.conf
 /etc/init.d/mod_gearman_worker restart
@@ -986,12 +987,12 @@ should be allowed to be executed using the svnsync account on the nagios
 master.
 
 ----
-ssh -p 2222 svnsync@10.1.1.45 ls /
+ssh -p 2222 svnsync@MASTER_NAGIOS ls /
 ----
 
 A root directory listing MUST succeed before running slc_configure below.
 
-*Log into 10.1.1.45* normally as root now and run the following code,
+*Log onto the Master Nagios* normally as root now and run the following code,
 supplying the new folder (environment) name when asked, then log out.
 
 ----
