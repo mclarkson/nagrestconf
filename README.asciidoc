@@ -88,7 +88,7 @@ including the advanced distributed setup.
 *** `Testing mode' becomes possible. Testing mode is
 where some service checks are only visible on the slave worker. When testing is
 complete, testing-mode can be turned off for that service check and the check
-will appear in the master nagios.
+will appear in the Master Nagios.
 * A new concept, service-sets, is introduced. This is where a number of
 services are defined, and later this definition can be used when creating new
 hosts. This allows new servers to be added to monitoring using a single REST
@@ -101,14 +101,14 @@ command.
 have been made but the user then decides to back out.
 * Multi-user. Many people or scripts can make changes and apply configurations simultaneously.
 This is achieved partly by ensuring that every REST POST command creates a valid configuration,
-so at any point the configuration can be applied and nagios won't be broken.
+so at any point the configuration can be applied and Nagios won't be broken.
 * No database required.
 * A configuration GUI is included.
 
 TODO
 ~~~~
 
-* Add more nagios options, which are supported by REST, to the GUI. (In progress)
+* Add more Nagios options, which are supported by REST, to the GUI. (In progress)
 
 * Add urlencoding to the GUI `Commands' page.
 
@@ -131,12 +131,12 @@ then runs the `nagctl' script using this command line.
 It is safe (but not recommended) to edit the `csv' files if the directory is
 locked first and it is also safe to run `csv2nag' by hand, from the command line.
 `Nagctl' makes a number of checks and cross-checks to try to ensure a valid
-nagios configuration will be created by csv2nag. All the real checks are done
+Nagios configuration will be created by csv2nag. All the real checks are done
 here and any errors are passed back to `rest/index.php'.
 
 One REST call, `apply/nagiosconfig', runs the csv2nag script. The only purpose
 of this script is to read the comma delimited files made by `nagctl' and write
-the nagios configuration. `Csv2nag' does not check for a valid nagios
+the Nagios configuration. `Csv2nag' does not check for a valid Nagios
 configuration since that is done by `nagctl'.
 
 *The configuration GUI*
@@ -148,12 +148,12 @@ hence can be run on a different machine if required.
 
 Nagios configurations are stored on each worker and synchronised `up' to the Nagios master.
 When the Nagios master notices that a subversion repository has changed it will remake the
-nagios configuration files for that environment. Many of the configuration items will be
+Nagios configuration files for that environment. Many of the configuration items will be
 `mangled' to stop name collisions. However, note that host names are _not_ `mangled'. It
 is a requirement that host names are unique accross all Nagios workers. This should be
 enforced through naming convention - using full DNS names as host names is recommended.
 
-If a configuration needs to be rolled back then it must be done on the nagios slave worker
+If a configuration needs to be rolled back then it must be done on the Nagios slave worker
 from the command line and applied, then the configuration will be subversion mirrored 'up'.
 
 ----
@@ -331,7 +331,7 @@ Options' below.
 Status
 ~~~~~~
 
-All nagios directives are now implemented in the REST interface. A smaller set of nagios directives are supported in the Web GUI.
+All Nagios directives are now implemented in the REST interface. A smaller set of Nagios directives are supported in the Web GUI.
 
 COOK BOOK
 ---------
@@ -367,15 +367,15 @@ Deleting Environments
 
 There is no way to delete an entire environment using the REST interface. An environment is initially added using 'slc_configure' on the Worker Nagios, and 'dcc_configure' on the Master Nagios.
 
-To disable an environment, or `Folder', so it disappears from nagios:
+To disable an environment, or `Folder', so it disappears from Nagios:
 
 1. Stop the Worker server.
 +
-Either shutdown the server or stop nagios and associated services.
+Either shutdown the server or stop Nagios and associated services.
 +
 2. Edit `/etc/nagios/nagios.cfg' on the Master.
 * Find the `cfg_dir=' line containing the folder name and comment it out.
-* Restart nagios with `/etc/init.d/nagios restart'.
+* Restart Nagios with `/etc/init.d/nagios restart'.
 
 At this point the environment is disabled and will no longer show in the Master Nagios GUI, but it can be easily re-enabled. However, It may be necessary to completely delete an environment. This could be due to:
 
@@ -386,11 +386,11 @@ At this point the environment is disabled and will no longer show in the Master 
 To completely delete an environment:
 
 1. On the Worker.
-* Either shutdown the server or stop nagios and associated services.
+* Either shutdown the server or stop Nagios and associated services.
 * Delete the `/etc/nagios' directory.
 2. On the Master.
 * Find the `cfg_dir=' line, in `/etc/nagios/nagios.cfg', containing the folder name and delete it.
-* Restart nagios with `/etc/init.d/nagios restart'.
+* Restart Nagios with `/etc/init.d/nagios restart'.
 * Delete the similarly named directory in `/etc/nagios/repos/_folder_name_' and
   `/etc/nagios/objects/_folder_name_'.
 
@@ -418,7 +418,7 @@ GUI or REST interface later.
 
 *Steps:*
 
-Run the following command on the nagios worker that holds the service sets that
+Run the following command on the Nagios Worker that holds the service sets that
 need exporting, changing the FOLDER variable only:
 
 ----
@@ -460,7 +460,7 @@ EnD
 cat ~/script_vars >>worker.conf
 ----
 
-Now apply the configuration to the remote nagios worker using a script:
+Now apply the configuration to the remote Nagios Worker using a script:
 
 ----
 cat <<EnD >replace_servicesets.sh
@@ -543,7 +543,7 @@ WALK-THROUGHS
 Single Server from Scratch (Redhat/Centos 5)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-These instructions are for creating a single, stand-alone, nagios server that
+These instructions are for creating a single, stand-alone, Nagios server that
 will be configured using nagrestconf. On modest hardware it should be able to
 monitor up to around 500 servers.
 
@@ -572,7 +572,7 @@ Optionally bulk-install plugins (with the check_any patch included):
 yum install smorg-nagios-plugins smorg-nagios-plugins-extra smorg-nrpe smorg-nrpe-plugin
 ----
 
-Create the base nagios configuration from the nagrestconf sample:
+Create the base Nagios configuration from the nagrestconf sample:
 
 ----
 cd /etc/
@@ -588,14 +588,14 @@ Create a test configuration using REST:
 bash /usr/share/doc/nagrestconf-1.*/bulk-loading/REST_setup_local.sh
 ----
 
-Manually restart nagios (in case crond is not running):
+Manually restart Nagios (in case crond is not running):
 
 ----
 rm /tmp/nagios_restart_request
 /usr/bin/restart_nagios
 ----
 
-Create a nagios password:
+Create a Nagios password:
 
 ----
 htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin a_decent_password
@@ -733,7 +733,7 @@ wget -O - http://www.smorg.co.uk/repo/stable/rhel5/smorg.repo > /etc/yum.repos.d
 rpm -ivh http://mirror.bytemark.co.uk/fedora/epel/5/i386/epel-release-5-4.noarch.rpm
 ----
 
-Log on to the new nagios virtual machine and install the software.
+Log on to the new Nagios virtual machine and install the software.
 
 ----
 ssh user@$NEWSERVER
@@ -748,7 +748,7 @@ Test the Installed Software
 
 Don't skip this step as it also sets up some files ready for the `real' install later on.
 
-Make a brand new nagios configuration using the nagrestconf sample.
+Make a brand new Nagios configuration using the nagrestconf sample.
 
 ----
 cd /etc/
@@ -961,8 +961,8 @@ chkconfig nagios on
 chkconfig httpd on
 ----
 
-Point the worker at the master nagios. Change `MASTER_NAGIOS_IP' to the IP address of
-the Master nagios.
+Point the worker at the Master Nagios. Change `MASTER_NAGIOS_IP' to the IP address of
+the Master Nagios.
 
 ----
 MASTER_IP_ADDR=MASTER_NAGIOS_IP
@@ -971,7 +971,7 @@ sed -i 's/\(^#dcc=.*\)/\1\ndcc=$MASTER_IP_ADDR/' /etc/nagrestconf/restart_nagios
 /etc/init.d/mod_gearman_worker restart
 ----
 
-*Optional* - If the Master nagios is running in a chroot allow svn and ssh to use the chroot port.
+*Optional* - If the Master Nagios is running in a chroot allow svn and ssh to use the chroot port.
 
 ----
 # ONLY DO THIS IF THE MASTER IS IN A CHROOT
@@ -983,8 +983,8 @@ EnD
 ----
 
 Make sure auto-login works. For security, only a limited number of commands
-should be allowed to be executed using the svnsync account on the nagios
-master.
+should be allowed to be executed using the svnsync account on the Nagios
+Master.
 
 ----
 ssh -p 2222 svnsync@MASTER_NAGIOS ls /
@@ -1001,7 +1001,7 @@ sed -i 's/\(<Location.*\/thruk>\)/\1\n    SSLOptions +FakeBasicAuth +StdEnvVars\
     /var/nagios/etc/httpd/conf.d/thruk.conf
 ----
 
-*Back On the new nagios host.*
+*Go back to the new Nagios Worker.*
 
 Add the new environment supplying the new folder (environment) name when asked.
 
@@ -1071,7 +1071,7 @@ MAKEDEV stderr
 Gotchas
 ~~~~~~~
 
-TODO - GUI won't allow some changes to the nagios configuration where dependencies are used - have to remove them using REST first.
+TODO - GUI won't allow some changes to the Nagios configuration where dependencies are used - have to remove them using REST first.
 
 REFERENCE
 ---------
