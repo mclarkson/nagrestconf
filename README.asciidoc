@@ -617,13 +617,20 @@ dup_server option was originally added to mod_gearman by the author of nagrestco
 
 Setting up a distributed environment involves:
 
-1. Building the Master Nagios.
+1. Choosing short `folder' names for each environment.
++
+Each Nagios Worker will host a single environment in a single `folder'.
+The Nagios Master will prefix many items with the `folder' name, for example,
+all host group names will be prefixed with the `folder' name, and this will
+be shown in the Nagios GUI on the Master Nagios.
++
+2. Building the Master Nagios.
 ** Building the Master Nagios.
 +
 OR
 +
 ** Building the Master Nagios in a Chroot
-2. Building the Worker Nagios (repeat as necessary).
+3. Building the Worker Nagios (repeat as necessary).
 
 Building the Master Nagios
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
