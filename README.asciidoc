@@ -888,7 +888,9 @@ rm -rf nagios
 cp -av /usr/share/doc/nagrestconf-1*/initial-config/ nagios
 ----
 
-Create a new /etc/nagios/cgi.cfg
+*Optionally* create a new `/etc/nagios/cgi.cfg' - this allows any authenticated
+to use the gui in read/write mode, except the `nagios' user, who has read-only
+access.
 
 ----
 cat >/etc/nagios/cgi.cfg <<EnD
@@ -932,10 +934,10 @@ echo 'broker_module=/usr/lib64/mod_gearman/mod_gearman.o config=/etc/mod_gearman
 sed -i 's/\(broker_module=.*npcdmod\.o.*\)/#\1/' /etc/nagios/nagios.cfg
 ----
 
-Mod_gearman adjustments (Change 'key1' to the correct key).
+Mod_gearman adjustments (Change 'the_shared_key' to the correct key).
 
 ----
-sed -i 's/^key=.*/key=key1/' \
+sed -i 's/^key=.*/key=the_shared_key/' \
     /etc/mod_gearman/mod_gearman_neb.conf \
     /etc/mod_gearman/mod_gearman_worker.conf
 ----
@@ -943,13 +945,12 @@ sed -i 's/^key=.*/key=key1/' \
 Add the initial users.
 
 ----
-htpasswd -bc /etc/nagios/rest.users nagrestconf see_pw_list
-htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin see_pw_list
+htpasswd -bc /etc/nagios/rest.users nagrestconf
+htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin
 htpasswd -c /etc/nagios/nagrestconf.users your_userid
 ----
 
-
-Make sure things are set to start up.
+Make sure things are set to start up on initial boot.
 
 ----
 chkconfig nrpe on
@@ -959,7 +960,8 @@ chkconfig nagios on
 chkconfig httpd on
 ----
 
-Point the worker at the master nagios.
+Point the worker at the master nagios. Change 10.1.1.45 to the IP address of
+the Master nagios.
 
 ----
 MASTER_IP_ADDR=10.1.1.45
@@ -968,7 +970,7 @@ sed -i 's/\(^#dcc=.*\)/\1\ndcc=$MASTER_IP_ADDR/' /etc/nagrestconf/restart_nagios
 /etc/init.d/mod_gearman_worker restart
 ----
 
-If the Master nagios is *running in a chroot* allow svn and ssh to use the chroot port.
+*Optional* - If the Master nagios is running in a chroot allow svn and ssh to use the chroot port.
 
 ----
 # ONLY DO THIS IF THE MASTER IS IN A CHROOT
@@ -990,7 +992,7 @@ ssh -p 2222 svnsync@10.1.1.45 ls /
 A root directory listing MUST succeed before running slc_configure below.
 
 *Log into 10.1.1.45* normally as root now and run the following code,
-supplying the new folder name when asked, then log out.
+supplying the new folder (environment) name when asked, then log out.
 
 ----
 chroot /var/nagios dcc_configure
@@ -1000,14 +1002,15 @@ sed -i 's/\(<Location.*\/thruk>\)/\1\n    SSLOptions +FakeBasicAuth +StdEnvVars\
 
 *Back On the new nagios host.*
 
-Add the new environment supplying the new folder name when asked.
+Add the new environment supplying the new folder (environment) name when asked.
 
 ----
 slc_configure --usedcc
 ----
 
-Set up all the custom service-sets, contacts, etc. in a customised `REST_setup_local.sh' script then run it.
-A few variables at the top of the script will need changing now that extra security has been added.
+Set up all the custom service-sets, contacts, etc. in a customised
+`REST_setup_local.sh' script then run it.  A few variables at the top of the
+script will need changing now that extra security has been added.
 
 ----
 cd
@@ -1025,7 +1028,9 @@ Restart everything.
 
 *Final Steps*
 
-Due to the change in security settings the nagrestconf GUI will not work, and '/etc/nagrestconf/nagrestconf.ini' will need editing. Edit 'nagrestconf.ini' and check that the nagrestconf GUI works.
+Due to the change in security settings the nagrestconf GUI will not work, and
+'/etc/nagrestconf/nagrestconf.ini' will need editing. Edit 'nagrestconf.ini'
+and check that the nagrestconf GUI works.
 
 Check that the following crontabs are present using 'crontab -l'.
 
