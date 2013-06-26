@@ -622,7 +622,8 @@ Setting up a distributed environment involves:
 Each Nagios Worker will host a single environment in a single `folder'.
 The Nagios Master will prefix many items with the `folder' name, for example,
 all host group names will be prefixed with the `folder' name, and this will
-be shown in the Nagios GUI on the Master Nagios.
+be shown in the Nagios GUI on the Master Nagios. For this reason try to keep
+`folder' names as short as possible.
 +
 2. Building the Master Nagios.
 ** Building the Master Nagios.
