@@ -10174,6 +10174,43 @@
     }
 
     # ------------------------------------------------------------------------
+    function check_REST_connection( $request ) {
+    # ------------------------------------------------------------------------
+        # This query should return a JSON empty list '[]'.
+        $request = new RestRequest(
+          RESTURL.'/show/hosts?json='.
+          '{"folder":"'.FOLDER.'","filter":"ThIsWoNtMaTcH"}',
+          'GET');
+        set_request_options( $request );
+        $request->execute();
+        $resp = $request->getResponseInfo();
+        $test=$request->getResponseBody();
+        if( trim($test) == "null" || strlen($test) < 2 ) {
+            echo "<h1><br />&nbsp;&nbsp;Could not execute query using ";
+            echo "REST.<br />";
+            echo "&nbsp;&nbsp;Please check system settings.</h1>";
+            exit( 1 );
+        }
+        if( $resp["http_code"] != 200 ) {
+            echo "<h1><br />&nbsp;&nbsp;Could not execute query using ";
+            echo "REST.<br />";
+            echo "&nbsp;&nbsp;Please check system settings.<br /><br />";
+            echo "&nbsp;&nbsp;REST return code: ".$resp["http_code"];
+            if( $resp["http_code"] == 401 )
+                echo " (Unauthorized)";
+            if( $resp["http_code"] == 403 )
+                echo " (Forbidden)";
+            echo "<br /><br />";
+            if( strlen(json_decode($test)) > 2 ) {
+                echo "&nbsp;&nbsp;Error was:<br /><br />";
+                echo "&nbsp;&nbsp;".json_decode($test);
+            }
+            echo "</h1>";
+            exit( 1 );
+        }
+    }
+
+    # ------------------------------------------------------------------------
     function main( ) {
     # ------------------------------------------------------------------------
         global $g_tab;
@@ -10202,6 +10239,8 @@
 
                 show_html_header();
 
+                check_REST_connection();
+
                 show_servicesets_page( );
 
                 show_delete_svcset_dlg_div( );
@@ -10220,6 +10259,8 @@
 
                 #session_start( );
                 show_html_header();
+
+                check_REST_connection();
 
                 # Write the whole page if we get this far
                 show_hosts_page( );
@@ -10246,6 +10287,8 @@
                 #session_start( );
                 show_html_header();
 
+                check_REST_connection();
+
                 show_hostgroups_page( );
 
                 # Output divs to contain dialog boxes
@@ -10264,6 +10307,8 @@
 
                 #session_start( );
                 show_html_header();
+
+                check_REST_connection();
 
                 show_contacts_page( );
 
@@ -10284,6 +10329,8 @@
                 #session_start( );
                 show_html_header();
 
+                check_REST_connection();
+
                 show_templates_page( );
 
                 # Output divs to contain dialog boxes
@@ -10303,6 +10350,8 @@
                 #session_start( );
                 show_html_header();
 
+                check_REST_connection();
+
                 show_timeperiods_page( );
 
                 # Output divs to contain dialog boxes
@@ -10318,6 +10367,8 @@
 
                 #session_start( );
                 show_html_header();
+
+                check_REST_connection();
 
                 show_commands_page( );
 
