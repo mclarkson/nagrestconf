@@ -360,11 +360,33 @@ machine 1.2.3.4 login nagrestconf password thepassword
 EnD
 
 cat <EnD >>env1.conf
-# EXAMPLE - Set the OPTS,IP and FOLDER variables:
 OPTS="-n"
 IP=1.2.3.4
 FOLDER="env1"
 EnD
+----
+
+*Method 2: Don't Use a `.netrc' file*
+
+----
+cat <EnD >>env1.conf
+OPTS="-u nagrestconf:thepassword"
+IP=1.2.3.4
+FOLDER="env1"
+EnD
+----
+
+*Test*
+
+----
+# Load the conf file made above
+source env1.conf
+
+# RAW output
+curl $OPTS -kn https://$IP/rest/show/hosts'?json=\{"folder":"'$FOLDER'"\}'
+
+# PRETTY output
+curl $OPTS -kn https://$IP/rest/show/hosts'?json=\{"folder":"'$FOLDER'"\}' | JSON.sh -b | grep ',"name"'
 ----
 
 TODO
