@@ -13,7 +13,7 @@ Latest News
 UNRELEASED version 1.156
 
 * Fix for the `Filter by hostgroup' box not updating the UI.
-* Show an error message when GUI can not retrieve using REST.
+* Show an error message when the GUI can not retrieve its data using REST.
 
 24 Jun 2013 New version 1.154
 
