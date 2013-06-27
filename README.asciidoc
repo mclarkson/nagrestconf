@@ -905,11 +905,11 @@ EnD
 
 Comment out existing livestatus broker_module line and add a new one.                                                                                                            
                                                                                                                                                                                    
-{code}                                                                                                                                                                           
+----
 sed -n 's/\(broker_module=.*livestatus\.o.*\)/#\1/p' /etc/nagios/nagios.cfg                                                                                                      
 echo 'broker_module=/usr/lib64/mk-livestatus/livestatus.o /var/log/nagios/rw/live' \                                                                                             
     >>/etc/nagios/nagios.cfg                                                                                                                                                     
-{code}
+----
 
 Comment out existing broker_module lines and append new lines.
 
@@ -957,9 +957,9 @@ chkconfig mod_gearman_worker off
 
 Configure as a Nagios Master.                                                                                                                                                    
   
-{code}
+----
 sed -i 's/\(^#*DCC=.*\)/\DCC=1/' /etc/nagrestconf/csv2nag.conf                                                                                                                   
-{code}
+----
 
 Restart everything.
 
