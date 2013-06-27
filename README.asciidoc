@@ -640,7 +640,7 @@ Now connect to http://127.0.0.1/nagrestconf and configure the server. Use ssh po
 Distributed Monitoring from Scratch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO - incomplete...
+TODO - incomplete/unchecked...
 
 In this scenario, nagrestconf provides the `configuration sync' component
 mentioned in the mod_gearman documentation,
@@ -669,6 +669,8 @@ OR
 Building the Master Nagios
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+TODO - incomplete/unchecked...
+
 The backup and high-availability features of a virtual infrastructure could allow for a single Master Nagios.
 
 ----
@@ -693,7 +695,300 @@ The backup and high-availability features of a virtual infrastructure could allo
                                                     mirroring.
 ----
 
-TODO
+The Worker Nagios, which sends the service check results to the Master Nagios,
+needs to be created. Building the Worker consists of four main steps:
+
+1. Install software
+2. Test the installed software
+3. Configure Apache
+4. Configure the system
+
+Install software
+++++++++++++++++
+
+Set up Yum to use the EPEL and smorg repositories:
+
+----
+wget -O - http://www.smorg.co.uk/repo/stable/rhel5/smorg.repo > /etc/yum.repos.d/smorg.repo
+rpm -ivh http://mirror.bytemark.co.uk/fedora/epel/5/i386/epel-release-5-4.noarch.rpm
+----
+
+Log on to the new Nagios virtual machine and install the software.
+
+----
+ssh user@$NEWSERVER
+sudo su -
+yum install nagrestconf smorg-gearmand mod_gearman nagios-www \
+            smorg-nagios-plugins smorg-nagios-plugins-extra \
+            smorg-nrpe smorg-nrpe-plugin nsca pnp4nagios \                                                                                                                       
+            php53-gd mk-livestatus                                                                                                                               
+----
+
+Test the Installed Software
++++++++++++++++++++++++++++
+
+Don't skip this step as it also sets up some files ready for the `real' install later on.
+
+Make a brand new Nagios configuration using the nagrestconf sample.
+
+----
+cd /etc/
+mv nagios/ nagios.dist
+cp -a /usr/share/doc/nagrestconf-1*/initial-config/ nagios
+nagrestconf_install -a --dcc
+slc_configure --folder=local
+----
+
+Create a simple test configuration using REST from the example in the nagrestconf docs.
+
+----
+bash /usr/share/doc/nagrestconf-1.*/bulk-loading/REST_setup_local.sh
+----
+
+Add a nagiosadmin user with password set to nagiosadmin. This is just for testing.
+
+----
+htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin nagiosadmin
+----
+
+And now allow anyone to connect without authenticating.
+
+----
+sed -i 's/\([[:space:]]*\)\(Allow from .*\)/\1#\2\n\1Allow from all/' /etc/httpd/conf.d/nagrestconf.conf
+/etc/init.d/httpd restart
+----
+
+Connect to \http://NEWSERVER/nagrestconf/ using a Web Browser and the nagrestconf GUI should be shown with two server entries and a fully working test configuration.
+
+Connect to \http://NEWSERVER/nagios and check that it works, using the user nagiosadmin with password nagiosadmin.
+
+Once nagios and nagrestconf are verified working continue to the next section.
+
+Configure Apache
+++++++++++++++++
+
+This is an example HTTP daemon configuration to restrict access to secure
+HTTP with Basic authentication only.
+
+----
+cat >/etc/httpd/conf.d/nagios.conf <<EnD
+ScriptAlias /nagios/cgi-bin "/usr/lib64/nagios/cgi"
+
+<Directory "/usr/lib64/nagios/cgi">
+   SSLRequireSSL
+   Options ExecCGI
+   AllowOverride None
+   Order allow,deny
+   Allow from all
+#  Order deny,allow
+#  Deny from all
+#  Allow from 127.0.0.1
+   AuthName "Nagios Access"
+   AuthType Basic
+   AuthUserFile /etc/nagios/htpasswd.users
+   Require valid-user
+</Directory>
+
+Alias /nagios "/usr/share/nagios"
+
+<Directory "/usr/share/nagios">
+   SSLRequireSSL
+   Options None
+   AllowOverride None
+   Order allow,deny
+   Allow from all
+#  Order deny,allow
+#  Deny from all
+#  Allow from 127.0.0.1
+   AuthName "Nagios Access"
+   AuthType Basic
+   AuthUserFile /etc/nagios/htpasswd.users
+   Require valid-user
+</Directory>
+EnD
+cat >/etc/httpd/conf.d/nagrestconf.conf <<EnD
+Alias /nagrestconf "/usr/share/nagrestconf/htdocs/nagrestconf"
+
+<Directory /usr/share/nagrestconf/htdocs/nagrestconf/>
+
+  SSLRequireSSL
+
+  # Only allow from the local host
+  #Order deny,allow
+  #Deny from all
+  #Allow from 127.0.0.1
+
+  AllowOverride All
+
+  # Require authentication
+  AuthName "Nagrestconf Access"
+  AuthType Basic
+  AuthUserFile /etc/nagios/nagrestconf.users
+  Require valid-user
+
+</Directory>
+EnD
+cat >/etc/httpd/conf.d/rest.conf <<EnD
+Alias /rest /usr/share/nagrestconf/htdocs/rest
+
+<Directory /usr/share/nagrestconf/htdocs/rest/>
+
+  SSLRequireSSL
+
+  # Only allow from the local host
+  #Order deny,allow
+  #Deny from all
+  #Allow from 127.0.0.1
+
+  AllowOverride All
+
+  # Require authentication
+  AuthName "REST Access"
+  AuthType Basic
+  AuthUserFile /etc/nagios/rest.users
+  Require valid-user
+
+</Directory>
+EnD
+----
+
+Activate the new httpd configuration
+
+----
+/etc/init.d/httpd restart
+----
+
+Configure the system
+++++++++++++++++++++
+
+Delete the 'local' configuration created previously and copy the nagrestconf example configuration again.
+
+----
+/etc/init.d/nagios stop
+cd /etc
+rm -rf nagios
+cp -av /usr/share/doc/nagrestconf-1*/initial-config.dcc/ nagios
+----
+
+*Optionally* create a new `/etc/nagios/cgi.cfg' - this allows any authenticated
+to use the gui in read/write mode, except the `nagios' user, who has read-only
+access.
+
+----
+cat >/etc/nagios/cgi.cfg <<EnD
+main_config_file=/etc/nagios/nagios.cfg
+physical_html_path=/usr/share/nagios
+url_html_path=/nagios
+show_context_help=0
+use_pending_states=1
+use_authentication=1
+use_ssl_authentication=0
+authorized_for_system_information=nagiosadmin
+authorized_for_configuration_information=nagiosadmin
+authorized_for_system_commands=nagiosadmin
+authorized_for_all_services=*
+authorized_for_all_hosts=*
+authorized_for_all_service_commands=*
+authorized_for_all_host_commands=*
+authorized_for_read_only=nagios
+default_statusmap_layout=5
+default_statuswrl_layout=4
+ping_syntax=/bin/ping -n -U -c 5 $HOSTADDRESS$
+refresh_rate=90
+result_limit=100
+escape_html_tags=0
+action_url_target=_blank
+notes_url_target=_blank
+lock_author_names=1
+EnD
+----
+
+Comment out existing livestatus broker_module line and add a new one.                                                                                                            
+                                                                                                                                                                                   
+{code}                                                                                                                                                                           
+sed -n 's/\(broker_module=.*livestatus\.o.*\)/#\1/p' /etc/nagios/nagios.cfg                                                                                                      
+echo 'broker_module=/usr/lib64/mk-livestatus/livestatus.o /var/log/nagios/rw/live' \                                                                                             
+    >>/etc/nagios/nagios.cfg                                                                                                                                                     
+{code}
+
+Comment out existing broker_module lines and append new lines.
+
+----
+# LIVESTATUS
+sed -i 's/\(broker_module=.*livestatus\.o.*\)/#\1/' /etc/nagios/nagios.cfg
+# MOD_GEARMAN
+sed -i 's/\(broker_module=.*mod_gearman\.o.*\)/#\1/' /etc/nagios/nagios.cfg
+echo 'broker_module=/usr/lib64/mod_gearman/mod_gearman.o config=/etc/mod_gearman/mod_gearman_neb.conf' \
+    >>/etc/nagios/nagios.cfg
+----
+
+Mod_gearman adjustments (Change 'the_shared_key' to the correct key).
+
+----
+sed -i 's/^key=.*/key=the_shared_key/' \
+    /etc/mod_gearman/mod_gearman_neb.conf \
+    /etc/mod_gearman/mod_gearman_worker.conf
+sed -i 's/^eventhandler=.*/eventhandler=no/' \
+    /etc/mod_gearman/mod_gearman_neb.conf
+sed -i 's/^services=.*/services=no/' \
+    /etc/mod_gearman/mod_gearman_neb.conf
+sed -i 's/^hosts=.*/hosts=no/' \
+    /etc/mod_gearman/mod_gearman_neb.conf
+----
+
+Add the initial users.
+
+----
+htpasswd -c /etc/nagios/rest.users nagrestconf
+htpasswd -c /etc/nagios/htpasswd.users nagiosadmin
+htpasswd -b /etc/nagios/htpasswd.users nagios nagios
+htpasswd -c /etc/nagios/nagrestconf.users your_userid
+----
+
+Make sure things are set to start up on initial boot.
+
+----
+chkconfig nrpe on
+chkconfig gearmand on
+chkconfig nagios on
+chkconfig httpd on
+chkconfig mod_gearman_worker off
+----
+
+Configure as a Nagios Master.                                                                                                                                                    
+  
+{code}
+sed -i 's/\(^#*DCC=.*\)/\DCC=1/' /etc/nagrestconf/csv2nag.conf                                                                                                                   
+{code}
+
+Restart everything.
+
+----
+/etc/init.d/httpd restart
+/etc/init.d/gearmand restart
+/etc/init.d/mod_gearman_worker stop
+/etc/init.d/nagios restart
+----
+
+*Final Steps*
+
+Due to the change in security settings the nagrestconf GUI will not work, and
+'/etc/nagrestconf/nagrestconf.ini' will need editing. Edit 'nagrestconf.ini'
+and check that the nagrestconf GUI works.
+
+Check that the following crontabs are present using 'crontab -l'.
+
+----
+* * * * * /usr/bin/update_nagios
+*/10 * * * * /usr/bin/auto_reschedule_nagios_check
+----
+
+Ensure the RPM added the extra sudoers entries to /etc/sudoers:
+
+----
+Defaults:%nagios !requiretty
+%nagios ALL = NOPASSWD: /usr/sbin/nagios -v *, /usr/bin/csv2nag -y all
+----
 
 Continue on to `Building the Worker Nagios (Redhat/Centos 5)' below to complete
 the configuration.
@@ -702,24 +997,10 @@ Building the Master Nagios in a Chroot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When installed on physical hardware, a `chroot'ed system could simplify
-high-availability failover for the Master Nagios.
+high-availability failover for the Master Nagios - A shared disk, or
+DRBD, could be used to protect against hardware failure.
 
 ----
-                        +------+
-               /     +-------+ |
-         .--<-|   +--------+ | |   Worker Nagios servers
-         |     \  | Worker | |-+   at other Data Centres.
-         |        | Nagios |-+               
-         |        +--------+                
-         |              
-         | check results
-         |
-    ~~~~~|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |
-         |                     MAIN DC
-         V 
-    ____________________________ IP x
-
               _.-----._
             .- shared  -.
             |-_ disk  _-|
@@ -733,16 +1014,14 @@ high-availability failover for the Master Nagios.
     +----------+    +----------+
     ____________________________ IP x
         ^
+        |
    check results
-        |
-        |
-        |  +---------+
-        |  | Worker  |
-        '--| Nagios  |
-           |         |
-           +---------+
-
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        |              +------+
+        |     /     +-------+ |
+        '--<-|   +--------+ | |   Worker Nagios servers
+              \  | Worker | |-+   at other Data Centres.
+                 | Nagios |-+               
+                 +--------+                
 
    IP x - An IP address for use by the Master or Failover
 
@@ -987,8 +1266,9 @@ sed -i 's/^key=.*/key=the_shared_key/' \
 Add the initial users.
 
 ----
-htpasswd -bc /etc/nagios/rest.users nagrestconf
-htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin
+htpasswd -c /etc/nagios/rest.users nagrestconf
+htpasswd -c /etc/nagios/htpasswd.users nagiosadmin
+htpasswd -b /etc/nagios/htpasswd.users nagios nagios
 htpasswd -c /etc/nagios/nagrestconf.users your_userid
 ----
 
