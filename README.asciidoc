@@ -10,23 +10,10 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-UNRELEASED version 1.156
+02 Jul 2013 New version 1.156
 
 * Fix for the `Filter by hostgroup' box not updating the UI.
 * Show an error message when the GUI can not retrieve its data using REST.
-
-24 Jun 2013 New version 1.154
-
-* Bug fixes
-* Debian packaging fixes - tested in debian 6.
-* Jquery and theme updates.
-* Added tabs to Host and Service edit dialogs.
-* Added `Apply and Restart' dialog.
-* Added `Service Sets' main page tab.
-* Added `service name' to the clone dialog.
-* Fixed inability to use many characters in commands (fixed for services
-  and servicesets only).
-
 
 License
 ~~~~~~~
@@ -278,10 +265,10 @@ freshly installing the Operating System with a minimal set of packages.
 ----------------------------------------------------------
 # On Debian:
 apt-get update
-gdebi nagrestconf_1.154_all.deb
+gdebi nagrestconf_1.156_all.deb
 
 # On Centos/Redhat:
-yum install nagrestconf-1.154-1.noarch.rpm
+yum install nagrestconf-1.156-1.noarch.rpm
 ----------------------------------------------------------
 +
 2. Configure the system:
