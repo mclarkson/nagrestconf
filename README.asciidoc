@@ -10,7 +10,7 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-02 Jul 2013 New version 1.157
+03 Jul 2013 New version 1.157
 
 * Fixes to get GUI working in Internet Explorer 8.
 
