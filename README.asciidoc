@@ -191,8 +191,8 @@ from the command line and applied, then the configuration will be subversion mir
 Requirements
 ~~~~~~~~~~~~
 
-For the Web GUI the following Browsers work: Firefox, Opera, Chrome, Safari.
-The Web GUI also works on Maemo, iPad and Android devices.
+For the Web GUI the following Browsers work: Firefox, Opera, Chrome, Internet
+Explorer 8, Safari and also the Browsers on Maemo, iPad and Android devices.
 
 [cols="<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
