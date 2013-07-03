@@ -188,6 +188,7 @@ form fieldset label {
 .field {
     overflow:auto;
     margin:5px 0px;
+    overflow: hidden;
 }
 /*
  * BODY ETC
@@ -635,6 +636,7 @@ table.results {
 
 img {
     padding-top: 14px;
+    border-color: white;
 }
 
 .table_data {

@@ -8708,9 +8708,9 @@
         print '<input class="field" type="checkbox" id="sactivechecks"';
         print ' name="activechecks" '.$checked.' />';
         print '</p>';
+        print '</div>';
 
         ###:TAB2
-        print '</div>';
         print '<div id="fragment-2">';
         # Check interval
         print '<p>';
@@ -8737,7 +8737,7 @@
         print ' value="'.$manfreshnessthresh.'" name="manfreshnessthresh">';
         print '</p>';
         # Passive Checks
-        print '<p>';
+        print '<p style="margin-top: 12px;">';
         print '<label for="spassivechecks">Passive Checks Enabled</label>';
         print '<select name="passivechecks" id="spassivechecks" class="field">';
         $selected=""; if( ! strlen($passivechecks) ) $selected="selected";
@@ -9100,11 +9100,13 @@
         print '  if( code == 200 ) {';
         print '    $(".flash.error").hide();';
         print '    $(".flash.notice").html("Success").show();';
-        print '    $("#applyconfigtextarea").html(""+message).show();';
+        print '    $("#applyconfigtextarea").val(message);';
+        print '    $("#applyconfigtextarea").show();';
         print '  } else {';
         print '    $(".flash.notice").hide();';
         print '    $(".flash.error").html("Fail").show();';
-        print '    $("#applyconfigtextarea").html(""+message).show();';
+        print '    $("#applyconfigtextarea").val(message);';
+        print '    $("#applyconfigtextarea").show();';
         print '  }';
         # Enable button
         print '$( ".ui-button:contains(Apply Configuration)" )';
@@ -10229,6 +10231,10 @@
 
         if( ! empty($query_str['name']) ) 
 		$query_str['name'] = urlencode( $query_str['name'] );
+
+        header('Cache-Control: no-cache, no-store, must-revalidate'); // HTTP 1.1.
+        header('Pragma: no-cache'); // HTTP 1.0.
+        header('Expires: 0'); // Proxies.
 
         switch( $g_tab ) {
             # ---------------------------------------------------------------
