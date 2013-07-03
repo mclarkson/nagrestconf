@@ -151,19 +151,24 @@ from the command line and applied, then the configuration will be subversion mir
 ----
                                   ____
             +---------+         _(    )_       +--------+
-            | Nagios  |       _(  Corp  )_     | Nagios |
+            | Nagios  |       _(        )_     | Nagios |
             | Master  |<-----(_-  -  -  -_)----| Worker |
-            |         |    \   (_  Net _)      +--------+
+            |         |    \   (_ WAN  _)      +--------+
             +---------+     \    (____)            /\
                  ^       svn+ssh                   ||
-                 |        \                       REST
-                 |         \    +---------+      
-                 '--------------| Nagios  |
-                                | Worker  |
-                                +---------+
-                                    /\
-                                    || 
-                                   REST
+                 |        \                   REST interface
+                 |         \    +---------+        /\   /\
+                 '--------------| Nagios  |        ||   ||
+                   /            | Worker  |        ||   Web GUI
+                  /             +---------+        ||
+           Configuration            /\         Automation
+           is sent to the           || 
+           Master Nagios      REST interface
+                                    /\   /\
+                                    ||   ||
+                                    ||   Web GUI
+                                    ||
+                                Automation
 ----
 
 *Nagrestconf components*
