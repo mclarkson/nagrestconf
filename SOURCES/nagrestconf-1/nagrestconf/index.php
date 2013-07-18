@@ -16,7 +16,7 @@
     # ------------------------------------------------------------------------
 
     define( "SCRIPTNAME", "index.php" );
-    define( "VERSION", "v1.157" );
+    define( "VERSION", "v1.158" );
 
     # ------------------------------------------------------------------------
     # DON'T TOUCH ANYTHING BELOW
@@ -900,7 +900,8 @@
         global $g_tab, $g_tab_names;
 
         print '<div id="pagetabs">';
-        print '<ul> Nagrestconf '.VERSION;
+        print '<ul> <span style="font-size: 1.3em; color: black;"> ';
+        print 'Nagrestconf '.VERSION.'</span>';
         
         ksort( $g_tab_names );
 
