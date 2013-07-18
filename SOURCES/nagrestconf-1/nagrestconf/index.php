@@ -16,6 +16,7 @@
     # ------------------------------------------------------------------------
 
     define( "SCRIPTNAME", "index.php" );
+    define( "VERSION", "v1.157" );
 
     # ------------------------------------------------------------------------
     # DON'T TOUCH ANYTHING BELOW
@@ -896,71 +897,31 @@
     function show_pageheader( ) {
     # ------------------------------------------------------------------------
 
-        global $g_tab;
+        global $g_tab, $g_tab_names;
 
-        $tab1="taboff1";
-        $tab2="taboff2";
-        $tab3="taboff3";
-        $tab4="taboff4";
-        $tab5="taboff5";
-        $tab6="taboff6";
-        $tab7="taboff7";
-        switch( $g_tab ) {
-            case 1: $tab1="tabon1"; break;
-            case 2: $tab2="tabon2"; break;
-            case 3: $tab3="tabon3"; break;
-            case 4: $tab4="tabon4"; break;
-            case 5: $tab5="tabon5"; break;
-            case 6: $tab6="tabon6"; break;
-            case 7: $tab7="tabon7"; break;
+        print '<div id="pagetabs">';
+        print '<ul> Nagrestconf '.VERSION;
+        
+        ksort( $g_tab_names );
+
+        foreach( $g_tab_names as $num => $name ) {
+            print '<li style="float:right;">';
+            print '<a href="#none">';
+            print '<span style="cursor: pointer;" id="'.$name[0];
+            print '-tab">'.$name[1].'</span>';
+            print '</a></li>';
+            print '<script>';
+            print '$("#'.$name[0].'-tab").bind("click", function() ';
+            print '{ window.location="index.php?tab='.$name[2].'"; } )';
+            print '</script>';
         }
 
-        #print "<img src=\"./images/logo.png\" id=logo alt=\"logo\">";
-        #print "<h1>Smorg</h1>";
-        print "<h1 class=\"titletext\">Nagios REST Configurator</h1>";
-        #print "<h2 class=\"pghdr\">Nagios REST Configurator</h2>";
+        print '</ul>';
+        print '</div>';
+        print '<script>';
+        print '$( "#pagetabs" ).tabs( { active: '.($g_tab_names[$g_tab][2]-1).' } );';
+        print '</script>';
 
-        print "<div id=$tab1>";
-        if( $g_tab != 1 ) print "<a href=\"index.php?tab=1\">";
-        print "Service Sets";
-        if( $g_tab != 1 ) print "</a>";
-        print "</div>";
-
-        print "<div id=$tab2>";
-        if( $g_tab != 2 ) print "<a href=\"index.php?tab=2\">";
-        print "Hosts";
-        if( $g_tab != 2 ) print "</a>";
-        print "</div>";
-
-        print "<div id=$tab3>";
-        if( $g_tab != 3 ) print "<a href=\"index.php?tab=3\">";
-        print "Groups";
-        if( $g_tab != 3 ) print "</a>";
-        print "</div>";
-
-        print "<div id=$tab4>";
-        if( $g_tab != 4 ) print "<a href=\"index.php?tab=4\">";
-        print "Contacts";
-        if( $g_tab != 4 ) print "</a>";
-        print "</div>";
-
-        print "<div id=$tab5>";
-        if( $g_tab != 5 ) print "<a href=\"index.php?tab=5\">";
-        print "Templates";
-        if( $g_tab != 5 ) print "</a>";
-        print "</div>";
-
-        print "<div id=$tab6>";
-        if( $g_tab != 6 ) print "<a href=\"index.php?tab=6\">";
-        print "Timeperiods";
-        if( $g_tab != 6 ) print "</a>";
-        print "</div>";
-
-        print "<div id=$tab7>";
-        if( $g_tab != 7 ) print "<a href=\"index.php?tab=7\">";
-        print "Commands";
-        if( $g_tab != 7 ) print "</a>";
-        print "</div>";
     }
 
     # ------------------------------------------------------------------------
@@ -6748,7 +6709,7 @@
     # ------------------------------------------------------------------------
     function show_hosts_tab_left_pane( ) {
     # ------------------------------------------------------------------------
-        global $g_tab, $g_hgfilter, $g_hfilter;
+        global $g_tab, $g_hgfilter, $g_hfilter, $g_folders;
 
         $hgfilter="";
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
@@ -6763,6 +6724,22 @@
         #print "<span id=\"applyconf\">";
         $g_hfilter = 0; # <-- don't include hfilter
         $url = create_url( );
+
+        # This will be a plugin
+        /*
+        print "<p style='margin-bottom:10px'>Environment:<br />".
+              "<select id='folder' name='folder' type='text'>";
+        foreach( $g_folders as $item ) {
+            $selected = "";
+            #if( $item["name"] == $template ) $selected = " selected";
+            print '<option value="'.$item.'"'.$selected.'>';
+            print $item.'</option>';
+        }
+        print '</select>';
+        print '</p>';
+        print "<hr />";
+        */
+
         print "<p style='margin-bottom:10px'>Filter by host regex:<br>".
               "<input id='hregex' name='hregex' type='text'".
               " style='width:100px;'".
@@ -10163,9 +10140,12 @@
     # ------------------------------------------------------------------------
     function read_config_file( ) {
     # ------------------------------------------------------------------------
+        global $g_folders;
+
         $ini_array = parse_ini_file( 
             "/etc/nagrestconf/nagrestconf.ini" );
         define( "FOLDER", $ini_array["folder"][0] );
+        $g_folders = $ini_array["folder"];
         define( "RESTUSER", $ini_array["restuser"] );
         define( "RESTPASS", $ini_array["restpass"] );
         define( "RESTURL", $ini_array["resturl"] );
@@ -10213,6 +10193,24 @@
     }
 
     # ------------------------------------------------------------------------
+    function init_tab_names( ) {
+    # ------------------------------------------------------------------------
+        global $g_tab_names;
+
+        # Key: Page tab order from right to left
+        # array( 0 - #idname, 1 - tab text, 2 - query string tab no. )
+        $g_tab_names = array(
+            7 => array("hosts","Hosts",2),
+            6 => array("servicesets","Service Sets",1),
+            5 => array("templates","Templates",5),
+            4 => array("contacts","Contacts",4),
+            3 => array("groups","Groups",3),
+            2 => array("commands","Commands",7),
+            1 => array("timeperiods","Timeperiods",6),
+        );
+    }
+
+    # ------------------------------------------------------------------------
     function main( ) {
     # ------------------------------------------------------------------------
         global $g_tab;
@@ -10220,6 +10218,8 @@
         date_default_timezone_set('UTC');
         
         read_config_file( );
+
+        init_tab_names( );
 
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
 

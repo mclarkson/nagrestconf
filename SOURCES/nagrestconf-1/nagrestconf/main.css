@@ -1,5 +1,40 @@
 /* Tab modifications */
 
+.ui-corner-all#pagetabs
+{
+    /*background-color: white;
+    background-image: none;
+    */
+    margin: 0px 0px 8px 0px;
+    padding: 0px 0px 0px 0px;
+    border: 0px;
+    border-top: 0px;
+    border-right: 0px;
+    border-left: 0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+#pagetabs .ui-tabs-nav,
+.ui-corner-br#pagetabs
+{
+    /*background-color: white;
+    background-image: none;
+    */
+    padding: 1.2em 1.2em 0px;
+    margin: 0px 0px 0px 0px;
+    border-top: 0px;
+    border-right: 0px;
+    border-left: 0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+/* Tab modifications */
+
 #editservicetabs .ui-tabs-nav,
 #edithosttabs .ui-tabs-nav,
 #editservicetabs .ui-corner-br,
@@ -21,7 +56,6 @@
     border-left: 0px;
     border-bottom: 0px;
 }
-
 /*
  * ICONS
  */
@@ -526,13 +560,15 @@ container {
 }
 
 #pageheader {
-    background: url("css/redmond/images/ui-bg_gloss-wave_55_5c9ccc_500x100.png") repeat-x scroll 50% 50% rgb(92, 156, 204);
+    /* background: url("css/redmond/images/ui-bg_gloss-wave_55_5c9ccc_500x100.png") repeat-x scroll 50% 50% rgb(92, 156, 204); */
     /* background-color: #A3D1FF; */
+    /*
     border-bottom-width: 1px;
     border-bottom: 1px solid black;
     height: 60px;
     margin-bottom: 10px;
     position: relative;
+    */
 }
 
 .btn:hover {
