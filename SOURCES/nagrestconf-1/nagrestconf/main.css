@@ -1,6 +1,6 @@
 /* Tab modifications */
 
-.ui-corner-all#pagetabs
+#pagetabs.ui-corner-all
 {
     /*background-color: white;
     background-image: none;
@@ -17,7 +17,7 @@
     border-bottom-right-radius: 0px;
 }
 #pagetabs .ui-tabs-nav,
-.ui-corner-br#pagetabs
+#pagetabs .ui-corner-br
 {
     /*background-color: white;
     background-image: none;
@@ -34,15 +34,28 @@
 }
 
 #pagetabs .ui-tabs-nav,
-.ui-corner-br#pagetabs
+#pagetabs .ui-corner-br
 {
     border-bottom: 1px solid #666666;
+}
+#pagetabs .ui-tabs .ui-tabs-anchor,
+#pagetabs .ui-tabs-nav .ui-tabs-anchor
+{
+    cursor: default;
+}
+#pagetabs li.ui-state-default
+{
+    border-top: 1px solid #666666;
+    border-left: 1px solid #666666;
+    border-right: 1px solid #666666;
+    background: #cccccc;
 }
 #pagetabs li.ui-tabs-active
 {
     border-top: 1px solid #666666;
     border-left: 1px solid #666666;
     border-right: 1px solid #666666;
+    background: #ffffff;
 }
 
 /* Tab modifications */
