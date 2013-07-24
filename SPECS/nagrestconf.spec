@@ -70,6 +70,8 @@ install -D -m 755 scripts/nagrestconf_install ${RPM_BUILD_ROOT}%_bindir/nagrestc
 
 # PHP Directories
 install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
+install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins/
+install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins-enabled/
 cp -r nagrestconf ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 

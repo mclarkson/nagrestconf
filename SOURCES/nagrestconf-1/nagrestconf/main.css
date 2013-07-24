@@ -1,5 +1,19 @@
 /* Tab modifications */
 
+#nagrestconf
+{
+    font-size: 1.4em;
+    color: black;
+    float: left;
+    z-index: 10000;
+    position: relative;
+    left: 10px;
+    top: 5px;
+    display: block;
+    font-family: "Helvetica", "Verdana", "sans-serif";
+    font-weight: bold;
+}
+
 #pagetabs.ui-corner-all
 {
     /*background-color: white;
@@ -36,12 +50,14 @@
 #pagetabs .ui-tabs-nav,
 #pagetabs .ui-corner-br
 {
+    padding: 30px 1.2em 0px;
     border-bottom: 1px solid #666666;
 }
 #pagetabs .ui-tabs .ui-tabs-anchor,
 #pagetabs .ui-tabs-nav .ui-tabs-anchor
 {
     cursor: default;
+    font-size: 10px;
 }
 #pagetabs li.ui-state-default
 {
@@ -329,250 +345,6 @@ h2.pghdr {
      values off for the parent causes parent to be positioned in its
      normal place. */
     right: 20px;
-    position: absolute;
-}
-
-#taboff1 {
-    background-color: #cccccc;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    height: 16px;
-    padding-top: 5px;
-    bottom: 0px;
-    font-weight: bold;
-    font-size: 12px;
-    padding-left: 8px;
-    padding-right: 8px;
-    color: #444444;
-   /*  The following is the key to positioning on the bottom of parent.
-     Parent must have 'position: relative', and leaving top and left
-     values off for the parent causes parent to be positioned in its
-     normal place. */
-    right: 476px;
-    position: absolute;
-}
-
-#taboff2 {
-    background-color: #cccccc;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    height: 16px;
-    padding-top: 5px;
-    bottom: 0px;
-    right: 584px;
-    font-weight: bold;
-    font-size: 12px;
-    padding-left: 8px;
-    padding-right: 8px;
-    color: #444444;
-    position: absolute;
-}
-
-#taboff3 {
-    background-color: #cccccc;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    height: 16px;
-    padding-top: 5px;
-    bottom: 0px;
-    font-weight: bold;
-    font-size: 12px;
-    padding-left: 8px;
-    padding-right: 8px;
-    color: #444444;
-    position: absolute;
-    right: 222px;
-    position: absolute;
-}
-
-#taboff4 {
-    background-color: #cccccc;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    height: 16px;
-    padding-top: 5px;
-    bottom: 0px;
-    /* right: 124px; */
-    font-weight: bold;
-    font-size: 12px;
-    padding-left: 8px;
-    padding-right: 8px;
-    color: #444444;
-    position: absolute;
-    right: 298px;
-    position: absolute;
-}
-
-#taboff5 {
-    background-color: #cccccc;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    height: 16px;
-    padding-top: 5px;
-    bottom: 0px;
-    /* right: 124px; */
-    font-weight: bold;
-    font-size: 12px;
-    padding-left: 8px;
-    padding-right: 8px;
-    color: #444444;
-    position: absolute;
-    right: 383px;
-    position: absolute;
-}
-
-#taboff6 {
-    background-color: #cccccc;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    height: 16px;
-    padding-top: 5px;
-    bottom: 0px;
-    /* right: 124px; */
-    font-weight: bold;
-    font-size: 12px;
-    padding-left: 8px;
-    padding-right: 8px;
-    color: #444444;
-    position: absolute;
-    right: 19px;
-    position: absolute;
-}
-
-#taboff7 {
-    background-color: #cccccc;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    height: 16px;
-    padding-top: 5px;
-    bottom: 0px;
-    /* right: 124px; */
-    font-weight: bold;
-    font-size: 12px;
-    padding-left: 8px;
-    padding-right: 8px;
-    color: #444444;
-    position: absolute;
-    right: 123px;
-    position: absolute;
-}
-
-#tabon1 {
-    background-color: white;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    bottom: -1px;
-    right: 476px;
-    font-weight: bold;
-    font-size: 12px;
-    height: 16px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 5px;
-    position: absolute;
-}
-
-#tabon2 {
-    background-color: white;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    bottom: -1px;
-    right: 584px;
-    font-weight: bold;
-    font-size: 12px;
-    height: 16px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 5px;
-    position: absolute;
-}
-
-#tabon3 {
-    background-color: white;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    bottom: -1px;
-    right: 222px;
-    font-weight: bold;
-    font-size: 12px;
-    height: 16px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 5px;
-    position: absolute;
-}
-
-#tabon4 {
-    background-color: white;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    bottom: -1px;
-    right: 298px;
-    font-weight: bold;
-    font-size: 12px;
-    height: 16px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 5px;
-    position: absolute;
-}
-
-#tabon5 {
-    background-color: white;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    bottom: -1px;
-    right: 383px;
-    font-weight: bold;
-    font-size: 12px;
-    height: 16px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 5px;
-    position: absolute;
-}
-
-#tabon6 {
-    background-color: white;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    bottom: -1px;
-    right: 19px;
-    font-weight: bold;
-    font-size: 12px;
-    height: 16px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 5px;
-    position: absolute;
-}
-
-#tabon7 {
-    background-color: white;
-    border-top: 1px solid black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    bottom: -1px;
-    right: 123px;
-    font-weight: bold;
-    font-size: 12px;
-    height: 16px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 5px;
     position: absolute;
 }
 

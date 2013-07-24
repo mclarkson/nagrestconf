@@ -17,6 +17,7 @@
 
     define( "SCRIPTNAME", "index.php" );
     define( "VERSION", "v1.158" );
+    define( "LIBDIR", "/usr/share/nagrestconf/htdocs/nagrestconf/" );
 
     # ------------------------------------------------------------------------
     # DON'T TOUCH ANYTHING BELOW
@@ -899,13 +900,19 @@
 
         global $g_tab, $g_tab_names;
 
+        print '<div id="nagrestconf">';
+        print 'Nagrestconf '.VERSION.'</div>';
         print '<div id="pagetabs">';
-        print '<ul> <span style="font-size: 1.3em; color: black;"> ';
-        print 'Nagrestconf '.VERSION.'</span>';
+        print '<ul>';
         
-        ksort( $g_tab_names );
+        krsort( $g_tab_names );
+
+        $active=0; # The active tab
+        $i=0;
 
         foreach( $g_tab_names as $num => $name ) {
+            if( $g_tab == $name[2] ) $active=$i;
+            $i++;
             print '<li style="float:right;">';
             print '<a href="#none">';
             print '<span style="cursor: pointer;" id="'.$name[0];
@@ -920,7 +927,7 @@
         print '</ul>';
         print '</div>';
         print '<script>';
-        print '$( "#pagetabs" ).tabs( { active: '.($g_tab_names[$g_tab][2]-1).' } );';
+        print '$( "#pagetabs" ).tabs( { active: '.($active).' } );';
         print '</script>';
 
     }
@@ -10129,6 +10136,139 @@
         }
     }
 
+    /***********************************************************************
+     *
+     * PLUGINS CODE CALLED BY PLUGINS (AKA PLUGINS API, ETC)
+     *
+     ***********************************************************************
+     */
+
+    # ------------------------------------------------------------------------
+    function spi_add_action( $action, $cb_func ) {
+    # ------------------------------------------------------------------------
+        global $g_plugins_init_list, $g_plugins_tabs_list;
+
+        if( $action == 'init' ) {
+            $g_plugins_init_list[] = $cb_func;
+        }
+        else if( $action == 'tab' ) {
+            $g_plugins_tabs_list[] = $cb_func;
+        }
+    }
+
+    # ------------------------------------------------------------------------
+    function spi_get_tab_idx( ) {
+    # ------------------------------------------------------------------------
+    # Returns the tab index. Tabs are ordered by tab idx from right to left in
+    # the GUI. This is the the key field in $g_tab_names
+
+        global $g_tab;
+        
+        return $g_tab;
+    }
+
+    # ------------------------------------------------------------------------
+    function spi_get_tab_id( $tab_id ) {
+    # ------------------------------------------------------------------------
+    # Returns the tab id passed around as 'tab=' in the query string.
+    # This is the $value[2] in $g_tab_names.
+        
+        return $g_tab;
+    }
+
+    # ------------------------------------------------------------------------
+    function spi_get_tab_prettyname( $tab_id ) {
+    # ------------------------------------------------------------------------
+    # Returns the name of the tab as displayed on-screen - it may have spaces
+    # in it. This is the $value[1] in $g_tab_names.
+        
+        return $g_tab;
+    }
+
+    # ------------------------------------------------------------------------
+    function spi_get_tab_name( $tab_id ) {
+    # ------------------------------------------------------------------------
+    # Returns the name of the tab. Appears as id=#name in HTML code.
+    # This is the $value[0] in $g_tab_names.
+
+        global $g_tab_names;
+        
+        foreach( $g_tab_names as $value ) {
+            if( $value[2] == $tab_id )
+                return $value[0];
+        }
+    }
+
+    # ------------------------------------------------------------------------
+    function &spi_get_tab_names_array( ) {
+    # ------------------------------------------------------------------------
+    # Returns the $g_tab_names array. Use the reference assignment to modify.
+
+        global $g_tab_names;
+
+        # Key: Page tab order from right to left
+        # array( 0 - #idname, 1 - tab text, 2 - query string tab no. )
+        $g_tab_names = array(
+            7 => array("hosts","Hosts",2),
+            6 => array("servicesets","Service Sets",1),
+            5 => array("templates","Templates",5),
+            4 => array("contacts","Contacts",4),
+            3 => array("groups","Groups",3),
+            2 => array("commands","Commands",7),
+            1 => array("timeperiods","Timeperiods",6),
+        );
+
+        return $g_tab_names;
+    }
+
+    /***********************************************************************
+     *
+     * PLUGINS CODE CALLED BY NAGRESTCONF
+     *
+     ***********************************************************************
+     */
+
+    # ------------------------------------------------------------------------
+    function plugins_tabs( ) {
+    # ------------------------------------------------------------------------
+        global $g_plugins_tabs_list;
+
+        foreach( $g_plugins_tabs_list as $cb_func ) {
+            $cb_func();
+        }
+    }
+
+    # ------------------------------------------------------------------------
+    function plugins_init( ) {
+    # ------------------------------------------------------------------------
+        global $g_plugins_init_list;
+
+        foreach( $g_plugins_init_list as $cb_func ) {
+            $cb_func();
+        }
+    }
+
+    # ------------------------------------------------------------------------
+    function plugins_load( $pattern ) {
+    # ------------------------------------------------------------------------
+
+        $pwd_was = getcwd( );
+        chdir( LIBDIR );
+
+        foreach( glob($pattern) as $file ) {
+            include $file;
+        }
+
+        chdir( $pwd_was ); 
+    }
+
+    /***********************************************************************
+     *
+     * HELPER FUNCS
+     *
+     ***********************************************************************
+     */
+
     # ------------------------------------------------------------------------
     function set_request_options( $request ) {
     # ------------------------------------------------------------------------
@@ -10157,7 +10297,7 @@
     }
 
     # ------------------------------------------------------------------------
-    function check_REST_connection( $request ) {
+    function check_REST_connection( ) {
     # ------------------------------------------------------------------------
         # This query should return a JSON empty list '[]'.
         $request = new RestRequest(
@@ -10201,13 +10341,13 @@
         # Key: Page tab order from right to left
         # array( 0 - #idname, 1 - tab text, 2 - query string tab no. )
         $g_tab_names = array(
-            7 => array("hosts","Hosts",2),
-            6 => array("servicesets","Service Sets",1),
-            5 => array("templates","Templates",5),
+            1 => array("hosts","Hosts",2),
+            2 => array("servicesets","Service Sets",1),
+            3 => array("templates","Templates",5),
             4 => array("contacts","Contacts",4),
-            3 => array("groups","Groups",3),
-            2 => array("commands","Commands",7),
-            1 => array("timeperiods","Timeperiods",6),
+            5 => array("groups","Groups",3),
+            6 => array("commands","Commands",7),
+            7 => array("timeperiods","Timeperiods",6),
         );
     }
 
@@ -10220,8 +10360,6 @@
         
         read_config_file( );
 
-        init_tab_names( );
-
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
 
         $g_tab = 2; #<-- Default to 2, the Hosts tab. Don't change this.
@@ -10230,8 +10368,15 @@
             $g_tab = (int) $query_str['tab'];
         }
 
+        init_tab_names( );
+
+        plugins_load( 'plugins-enabled/*.php' );
+
+        # Call all the plugins 'init' functions
+        plugins_init( );
+
         if( ! empty($query_str['name']) ) 
-		$query_str['name'] = urlencode( $query_str['name'] );
+            $query_str['name'] = urlencode( $query_str['name'] );
 
         header('Cache-Control: no-cache, no-store, must-revalidate'); // HTTP 1.1.
         header('Pragma: no-cache'); // HTTP 1.0.
@@ -10387,6 +10532,7 @@
             # ---------------------------------------------------------------
             default:
             # ---------------------------------------------------------------
+                plugins_tabs( );
         }
 
         show_applyconfiguration_dlg_div( );

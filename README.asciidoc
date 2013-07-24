@@ -10,6 +10,12 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
+xx Jul 2013 New version 1.158 (UNRELEASED)
+
+* Page tabs are now dynamic.
+* Plugins support started.
+** New Services plugin started.
+
 03 Jul 2013 New version 1.157
 
 * Fixes to get GUI working in Internet Explorer 8.
@@ -104,15 +110,17 @@ so at any point the configuration can be applied and Nagios won't be broken.
 TODO
 ~~~~
 
-* Add more Nagios options, which are supported by REST, to the GUI. (In progress)
+* Add more Nagios options, which are supported by REST, to the GUI. (by request)
 
 * Add urlencoding to the GUI `Commands' page.
 
-* Add bulk editing to the GUI.
+* Add plugins support to the GUI to do:
+** bulk editing
+** switching folders (environments)
+** rollback using subversion
 
-* Support rollback using subversion in the GUI.
-
-* Only create/overwrite host files for those that have been added/edited.
+* Performance enhancements:
+** Only create/overwrite host files for those that have been added/edited.
 
 How does it work?
 ~~~~~~~~~~~~~~~~~
