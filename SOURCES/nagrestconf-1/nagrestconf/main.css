@@ -30,13 +30,19 @@
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
 }
+#pagetabs .ui-tabs-nav li a
+{
+    padding: 0.5em 0.5em;
+    line-height: 1.2em;
+}
 #pagetabs .ui-tabs-nav,
 #pagetabs .ui-corner-br
 {
     /*background-color: white;
     background-image: none;
     */
-    padding: 1.2em 1.2em 0px;
+    padding: 30px 1.0em 0px;
+    /*padding: 30px 1.2em 0px;*/
     margin: 0px 0px 0px 0px;
     border-top: 0px;
     border-right: 0px;
@@ -45,19 +51,14 @@
     border-top-right-radius: 0px;
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
-}
-
-#pagetabs .ui-tabs-nav,
-#pagetabs .ui-corner-br
-{
-    padding: 30px 1.2em 0px;
     border-bottom: 1px solid #666666;
 }
+
 #pagetabs .ui-tabs .ui-tabs-anchor,
 #pagetabs .ui-tabs-nav .ui-tabs-anchor
 {
     cursor: default;
-    font-size: 10px;
+    /* font-size: 1em; */
 }
 #pagetabs li.ui-state-default
 {
