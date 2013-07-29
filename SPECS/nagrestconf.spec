@@ -1,5 +1,5 @@
 %define name nagrestconf
-%define version 1
+%define version 1.1
 %define php php
 %if "%{?dist}" == ".el5"
 %define php php53
@@ -13,7 +13,7 @@ Name: nagrestconf
 Version: %{version}
 Release: 1
 License: GPL
-Group: Applications/System
+Group: Application/System
 Source: nagrestconf-%{version}.tar.gz
 Requires: bash, grep, nagios >= 3, procmail, sed, gawk, grep, %php >= 5.3, httpd, mod_ssl, subversion
 # PreReq: sh-utils
@@ -23,7 +23,20 @@ Packager: Mark Clarkson
 Vendor: Smorg
 
 %description
-Configuration tools for Nagios. Includes csv2nag, nagctl, the REST interface and the web configurator GUI.
+Configuration tools for Nagios.
+
+This package provides csv2nag, nagctl, the REST interface and the web
+configurator GUI.
+
+%package services-tab-plugin
+Group: Application/System
+Summary: Services Tab plugin for Nagrestconf.
+Requires: nagrestconf
+
+%description services-tab-plugin
+Configuration tools for Nagios.
+
+This package provides the 'Services Tab' plugin.
 
 %prep
 %setup -q
@@ -70,16 +83,34 @@ install -D -m 755 scripts/nagrestconf_install ${RPM_BUILD_ROOT}%_bindir/nagrestc
 
 # PHP Directories
 install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
-install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins/
-install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins-enabled/
 cp -r nagrestconf ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 
+install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins/
+install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins-lib/
+install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins-enabled/
+
+# GUI Plugins
+install -D -m 755 plugins/smorg_services_tab_impl.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins-lib/
+install -D -m 755 plugins/smorg_services_tab.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins/
+
 %files
 %defattr(755,root,root,755)
-%_bindir
+%_bindir/csv2nag
+%_bindir/nagctl
+%_bindir/restart_nagios
+%_bindir/dcc_configure
+%_bindir/slc_configure
+%_bindir/upgrade_setup_files.sh
+%_bindir/update_nagios
+%_bindir/auto_reschedule_nagios_check
+%_bindir/nagrestconf_install
 %defattr(644,root,root,755)
-/usr/share/nagrestconf/htdocs/
+/usr/share/nagrestconf/htdocs/nagrestconf
+/usr/share/nagrestconf/htdocs/rest
+%dir /usr/share/nagrestconf/htdocs/plugins-lib
+%dir /usr/share/nagrestconf/htdocs/plugins-enabled
+%dir /usr/share/nagrestconf/htdocs/plugins
 %doc doc/initial-config doc/initial-config.dcc doc/bulk-loading README doc/README.html
 %config(noreplace) /etc/httpd/conf.d/rest.conf
 %config(noreplace) /etc/httpd/conf.d/nagrestconf.conf
@@ -88,8 +119,17 @@ cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 %config(noreplace) /etc/nagrestconf/csv2nag.conf
 %config(noreplace) /etc/nagrestconf/nagctl.conf
 
+%files services-tab-plugin
+%defattr(644,root,root,755)
+/usr/share/nagrestconf/htdocs/plugins-lib/smorg_services_tab_impl.php
+/usr/share/nagrestconf/htdocs/plugins/smorg_services_tab.php
+
 %clean
 %{__rm} -rf %{buildroot}
+
+%changelog
+* Mon Jul 29 2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
+- Added Services Tab plugin.
 
 %changelog
 * Fri Jan 4 2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
