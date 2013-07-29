@@ -91,8 +91,8 @@ install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins-lib/
 install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins-enabled/
 
 # GUI Plugins
-install -D -m 755 plugins/smorg_services_tab_impl.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins-lib/
-install -D -m 755 plugins/smorg_services_tab.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins/
+install -D -m 755 plugins/smorg_services_tab_impl.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
+install -D -m 755 plugins/smorg_services_tab.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 
 %files
 %defattr(755,root,root,755)
@@ -106,11 +106,15 @@ install -D -m 755 plugins/smorg_services_tab.php ${RPM_BUILD_ROOT}/usr/share/nag
 %_bindir/auto_reschedule_nagios_check
 %_bindir/nagrestconf_install
 %defattr(644,root,root,755)
-/usr/share/nagrestconf/htdocs/nagrestconf
+%dir /usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib
+%dir /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled
+%dir /usr/share/nagrestconf/htdocs/nagrestconf/plugins
+/usr/share/nagrestconf/htdocs/nagrestconf/css
+/usr/share/nagrestconf/htdocs/nagrestconf/images
+/usr/share/nagrestconf/htdocs/nagrestconf/index.php
+/usr/share/nagrestconf/htdocs/nagrestconf/js
+/usr/share/nagrestconf/htdocs/nagrestconf/main.css
 /usr/share/nagrestconf/htdocs/rest
-%dir /usr/share/nagrestconf/htdocs/plugins-lib
-%dir /usr/share/nagrestconf/htdocs/plugins-enabled
-%dir /usr/share/nagrestconf/htdocs/plugins
 %doc doc/initial-config doc/initial-config.dcc doc/bulk-loading README doc/README.html
 %config(noreplace) /etc/httpd/conf.d/rest.conf
 %config(noreplace) /etc/httpd/conf.d/nagrestconf.conf
@@ -121,8 +125,8 @@ install -D -m 755 plugins/smorg_services_tab.php ${RPM_BUILD_ROOT}/usr/share/nag
 
 %files services-tab-plugin
 %defattr(644,root,root,755)
-/usr/share/nagrestconf/htdocs/plugins-lib/smorg_services_tab_impl.php
-/usr/share/nagrestconf/htdocs/plugins/smorg_services_tab.php
+/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/smorg_services_tab_impl.php
+/usr/share/nagrestconf/htdocs/nagrestconf/plugins/smorg_services_tab.php
 
 %clean
 %{__rm} -rf %{buildroot}
