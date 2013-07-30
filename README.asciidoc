@@ -10,20 +10,15 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-xx Jul 2013 New version 1.158 (UNRELEASED)
+xx Jul 2013 New version 1.158 (SOON)
 
 * Page tabs are now dynamic.
 * Plugins support started.
-** New Services plugin started.
+** Services-Tab plugin added.
 
 03 Jul 2013 New version 1.157
 
 * Fixes to get GUI working in Internet Explorer 8.
-
-02 Jul 2013 New version 1.156
-
-* Fix for the `Filter by hostgroup' box not updating the UI.
-* Show an error message when the GUI can not retrieve its data using REST.
 
 License
 ~~~~~~~
