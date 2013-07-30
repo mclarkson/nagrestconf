@@ -86,9 +86,9 @@ install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 cp -r nagrestconf ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 
-install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins/
-install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins-lib/
-install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/plugins-enabled/
+install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
+install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/
 
 # GUI Plugins
 install -D -m 755 plugins/smorg_services_tab_impl.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
