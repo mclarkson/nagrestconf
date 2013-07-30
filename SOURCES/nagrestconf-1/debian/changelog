@@ -1,3 +1,9 @@
+nagrestconf (1.158) UNRELEASED; urgency=low
+
+  * Plugins.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Thu, 29 Jul 2013 23:08:00 +0000
+
 nagrestconf (1.157) UNRELEASED; urgency=low
 
   * Fixes to get GUI working in Internet Explorer 8.
