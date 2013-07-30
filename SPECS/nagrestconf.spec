@@ -57,7 +57,7 @@ This package provides the 'Services Tab' plugin.
 %postun
 
 %postun services-tab-plugin
-%__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins/smorg_services_tab.php
+%__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/smorg_services_tab.php
 
 %install
 
