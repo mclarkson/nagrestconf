@@ -121,12 +121,12 @@
         # Not so nice, disable Enter key.
         print "<script>".
               "$(document).ready(function() {".
-              "  $(document).keydown(function(event){".
-              "      if(event.keyCode == 13) {".
-              "        event.preventDefault();".
-              "      return false;".
-              "      }".
-              "    });".
+        #      "  $(document).keydown(function(event){".
+        #      "      if(event.keyCode == 13) {".
+        #      "        event.preventDefault();".
+        #      "      return false;".
+        #      "      }".
+        #      "    });".
               # Load the right pane
               #'$("#servicestable").html("").'.
               '$("#servicestable").'.
@@ -181,13 +181,13 @@
         $url = my_create_url( );
 
         print "<p style='margin-bottom:10px'>Filter by Name regex:<br>".
-              "<input id='hregex' name='hregex' type='text'".
+              "<input class='filtermain' id='hregex' name='hregex' type='text'".
               " style='width:100px;'".
               " value='".$hfilter."'".
               " />".
               "</p>";
         print "<p style='margin-bottom:10px'>Filter by Service regex:<br>".
-              "<input id='sregex' name='sregex' type='text'".
+              "<input class='filtermain' id='sregex' name='sregex' type='text'".
               " style='width:100px;'".
               " value='".$sfilter."'".
               " /><span class='btn ui-corner-all' ".
@@ -198,6 +198,18 @@
               '"+"&amp;sfilter="+a+"&amp;hfilter="+b;'.
               "'>go</span>".
               "</p>";
+        print "<script>";
+        print "$('.filtermain').keypress(function (e) {";
+        print "  if (e.which == 13) {";
+        print "    var a=encodeURIComponent($(\"#sregex\").val());".
+              "    var b=encodeURIComponent($(\"#hregex\").val());".
+              '     window.location="'.$url.
+              '"+"&sfilter="+a+"&hfilter="+b;'.
+              "    return true;";
+        print "  }";
+        print "});";
+        print "</script>";
+
         print "<hr />";
 
         show_revert_and_apply_buttons();
@@ -306,7 +318,10 @@
             print "<td>".urldecode($item['name'])."</td>";
             print "<td>".urldecode($item['svcdesc'])."</td>";
             print "<td>".$item['template']."</td>";
-            print "<td>".urldecode($item['command'])."</td>";
+            #print "<td>".urldecode($item['command'])."</td>";
+            print "<td>".urldecode(substr($item['command'],0,100));
+            if( strlen($item['command'])>100 ) print "...";
+            print "</td>";
             // Actions
             print "<td style=\"float:right;\">";
             print "<a class=\"icon icon-edit\" title=\"Edit Service\"".

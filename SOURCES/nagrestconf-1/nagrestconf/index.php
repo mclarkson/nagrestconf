@@ -6674,12 +6674,12 @@
         # Not so nice, disable Enter key.
         print "<script>".
               "$(document).ready(function() {".
-              "  $(document).keydown(function(event){".
-              "      if(event.keyCode == 13) {".
-              "        event.preventDefault();".
-              "      return false;".
-              "      }".
-              "    });".
+        #      "  $(document).keydown(function(event){".
+        #      "      if(event.keyCode == 13) {".
+        #      "        event.preventDefault();".
+        #      "      return false;".
+        #      "      }".
+        #      "    });".
               # Load the right pane
               #'$("#hoststable").html("").'.
               '$("#hoststable").'.
@@ -6749,7 +6749,7 @@
         */
 
         print "<p style='margin-bottom:10px'>Filter by host regex:<br>".
-              "<input id='hregex' name='hregex' type='text'".
+              "<input class='filtermain' id='hregex' name='hregex' type='text'".
               " style='width:100px;'".
               " value='".$hfilter."'".
               " /><span class='btn ui-corner-all' ".
@@ -6758,6 +6758,17 @@
               "window.location=\"$url\"+\"&amp;hfilter=\"+a;".
               "'>go</span>".
               "</p>";
+        print "<script>";
+        print "$('.filtermain').keypress(function (e) {";
+        print "  if (e.which == 13) {";
+        print "    var a=encodeURIComponent($(\"#sregex\").val());".
+              "    var b=encodeURIComponent($(\"#hregex\").val());".
+              '     window.location="'.$url.
+              '"+"&sfilter="+a+"&hfilter="+b;'.
+              "    return true;";
+        print "  }";
+        print "});";
+        print "</script>";
         $g_hgfilter = 0; # <-- don't include hgfilter
         $url = create_url( );
         print "<p>Filter by hostgroup:<br>";
