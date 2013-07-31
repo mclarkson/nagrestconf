@@ -961,6 +961,8 @@
         print '} );';
         print '</script>';
         print "<hr />";
+
+        plugins_buttons( );
     }
 
     /***********************************************************************
@@ -1599,7 +1601,7 @@
     # Outputs a html form fragment to add a New Host
 
         # 'Add New Host' dialog box div
-        print "<div id=\"edithostgroupdlg\" title=\"Add New Hostgroup\"></div>";
+        print "<div id=\"edithostgroupdlg\" title=\"Edit Hostgroup\"></div>";
         print '<script>';
         # Addhost button
         print 'var edithostgroup = function() { ';
@@ -10157,13 +10159,18 @@
     # ------------------------------------------------------------------------
     function spi_add_action( $action, $cb_func ) {
     # ------------------------------------------------------------------------
-        global $g_plugins_init_list, $g_plugins_tabs_list;
+        global $g_plugins_init_list,
+               $g_plugins_tabs_list,
+               $g_plugins_buttons_list;
 
         if( $action == 'init' ) {
             $g_plugins_init_list[] = $cb_func;
         }
         else if( $action == 'tab' ) {
             $g_plugins_tabs_list[] = $cb_func;
+        }
+        else if( $action == 'button' ) {
+            $g_plugins_buttons_list[] = $cb_func;
         }
     }
 
@@ -10240,9 +10247,23 @@
      */
 
     # ------------------------------------------------------------------------
+    function plugins_buttons( ) {
+    # ------------------------------------------------------------------------
+        global $g_plugins_buttons_list;
+
+        if( ! is_array( $g_plugins_buttons_list ) ) return;
+
+        foreach( $g_plugins_buttons_list as $cb_func ) {
+            $cb_func();
+        }
+    }
+
+    # ------------------------------------------------------------------------
     function plugins_tabs( ) {
     # ------------------------------------------------------------------------
         global $g_plugins_tabs_list;
+
+        if( ! is_array( $g_plugins_tabs_list ) ) return;
 
         foreach( $g_plugins_tabs_list as $cb_func ) {
             $cb_func();
@@ -10253,6 +10274,8 @@
     function plugins_init( ) {
     # ------------------------------------------------------------------------
         global $g_plugins_init_list;
+
+        if( ! is_array( $g_plugins_init_list ) ) return;
 
         foreach( $g_plugins_init_list as $cb_func ) {
             $cb_func();

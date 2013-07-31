@@ -2,6 +2,15 @@
 
     /***********************************************************************
      *
+     * DEFINE THE NAMESPACE
+     *
+     ***********************************************************************
+     */
+
+    namespace Smorg\services_tab;
+
+    /***********************************************************************
+     *
      * PLUGIN FUNCTIONS
      *
      ***********************************************************************
@@ -63,7 +72,7 @@
     }
 
     # ------------------------------------------------------------------------
-    function my_create_url( ) {
+    function create_url( ) {
     # ------------------------------------------------------------------------
     # Allow the globals to override the QUERY_STRING. The globals are
     # cleared if they were found to be set.
@@ -116,7 +125,7 @@
 
         global $g_tab;
 
-        $url = my_create_url( );
+        $url = create_url( );
 
         # Not so nice, disable Enter key.
         print "<script>".
@@ -178,7 +187,7 @@
 
         $g_hfilter = 0; # <-- don't include hfilter
         $g_sfilter = 0; # <-- don't include sfilter
-        $url = my_create_url( );
+        $url = create_url( );
 
         print "<p style='margin-bottom:10px'>Filter by Name regex:<br>".
               "<input class='filtermain' id='hregex' name='hregex' type='text'".
@@ -215,7 +224,7 @@
         show_revert_and_apply_buttons();
     }
     # ------------------------------------------------------------------------
-    function my_get_and_sort_services( $name, $sort="svcdesc" ) {
+    function get_and_sort_services( $name, $sort="svcdesc" ) {
     # ------------------------------------------------------------------------
 
         $request = new \RestRequest(
@@ -266,7 +275,7 @@
     # ------------------------------------------------------------------------
         global $g_sort, $g_sort_new;
 
-        $a = my_get_and_sort_services( '.*', $g_sort );
+        $a = get_and_sort_services( '.*', $g_sort );
 
         print "<p>".count($a)." services.</p>";
 
@@ -274,25 +283,25 @@
         print "<thead><tr style='font-weight: normal;'>";
 
         $g_sort_new = "name";
-        $url = my_create_url( );
+        $url = create_url( );
         print "<td><a href='".$url."'><span class=black>Name </span>";
         print "<img width=8 src=/nagrestconf/images/ArrowDown.svg.png".
               " alt=\"arrow\"></a></td>";
 
         $g_sort_new = "svcdesc";
-        $url = my_create_url( );
+        $url = create_url( );
         print "<td><a href='".$url."'><span class=black>Service </span>";
         print "<img width=8 src=/nagrestconf/images/ArrowDown.svg.png".
               " alt=\"arrow\"></a></td>";
 
         $g_sort_new = "template";
-        $url = my_create_url( );
+        $url = create_url( );
         print "<td><a href='".$url."'><span class=black>Template </span>";
         print "<img width=8 src=/nagrestconf/images/ArrowDown.svg.png".
               " alt=\"arrow\"></a></td>";
 
         $g_sort_new = "command";
-        $url = my_create_url( );
+        $url = create_url( );
         print "<td><a href='".$url."'><span class=black>Command </span>";
         print "<img width=8 src=/nagrestconf/images/ArrowDown.svg.png".
               " alt=\"arrow\"></a></td>";
@@ -303,6 +312,14 @@
 
         $num=1;
         foreach( $a as $item ) {
+            if( $num > 1000 ) {
+                print "<tr><td>...</td>";
+                print "<td>...</td>";
+                print "<td>...</td>";
+                print "<td>...</td>";
+                print "<td></td></tr>";
+                break;
+            }
             $style="";
             if( $item['disable'] == "1" ) {
                 $style = ' style="background-color: #F7DCC6;"';
@@ -400,7 +417,7 @@
         print '  if( code == 200 ) {';
         print '    $(".flash.error").hide();';
         print '    $(".flash.notice").html(""+message).show();';
-        $url = my_create_url( );
+        $url = create_url( );
         print '    $("#servicestable").html("").';
         print '      load("'.$url.'&servicestable=true");';
         print '  } else {';
@@ -492,7 +509,7 @@
         print '  if( code == 200 ) {';
         print '    $(".flash.error").hide();';
         print '    $(".flash.notice").html(""+message).show();';
-        $url = my_create_url( );
+        $url = create_url( );
         print '    $("#servicestable").html("").';
         print '      load("'.$url.'&servicestable=true");';
         print '  } else {';
@@ -577,7 +594,7 @@
         print ' value="'.$name.'" readonly="readonly" />';
         print '</p>';
         # Service Template
-        $st = my_get_and_sort_servicetemplates( );
+        $st = get_and_sort_servicetemplates( );
         print '<p>';
         print '<label for="svctemplate">Service Template *</label>';
         print '<select class="field" id="svctemplate" name="template"';

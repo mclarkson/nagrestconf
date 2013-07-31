@@ -48,7 +48,7 @@ This package provides the 'Services Tab' plugin.
 %post
 
 %post services-tab-plugin
-%__ln_s ../plugins/smorg_services_tab.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/smorg_services_tab.php
+%__ln_s ../plugins/smorg_services_tab.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/10_smorg_services_tab.php
 
 # Pre Uninstall
 %preun
@@ -57,7 +57,7 @@ This package provides the 'Services Tab' plugin.
 %postun
 
 %postun services-tab-plugin
-%__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/smorg_services_tab.php
+%__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/10_smorg_services_tab.php
 
 %install
 
