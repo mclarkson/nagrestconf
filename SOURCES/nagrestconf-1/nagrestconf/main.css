@@ -77,10 +77,12 @@
 
 /* Tab modifications */
 
-#editservicetabs .ui-tabs-nav,
+#bulktoolstabs .ui-tabs-nav,
+#bulktoolstabs .ui-corner-br,
 #edithosttabs .ui-tabs-nav,
-#editservicetabs .ui-corner-br,
-#edithosttabs .ui-corner-br
+#edithosttabs .ui-corner-br,
+#editservicetabs .ui-tabs-nav,
+#editservicetabs .ui-corner-br
 {
     background-color: white;
     background-image: none;
@@ -90,6 +92,7 @@
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
 }
+.ui-corner-all#bulktoolstabs,
 .ui-corner-all#edithosttabs,
 .ui-corner-all#editservicetabs
 {
@@ -98,6 +101,7 @@
     border-left: 0px;
     border-bottom: 0px;
 }
+
 /*
  * ICONS
  */
@@ -143,6 +147,16 @@
 /*
  * DIALOG FORM CONTENT
  */
+TEXTAREA#sbulktextarea {
+    /* background-image: url("images/working.gif"); */
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: 80px 80px;
+    background-color: white;
+    width: 100%;
+    height: 5em;
+}
 TEXTAREA#applyconfigtextarea {
     /* background-image: url("images/working.gif"); */
     background-image: none;

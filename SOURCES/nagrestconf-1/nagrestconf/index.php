@@ -10161,7 +10161,9 @@
     # ------------------------------------------------------------------------
         global $g_plugins_init_list,
                $g_plugins_tabs_list,
-               $g_plugins_buttons_list;
+               $g_plugins_dlg_divs_list,
+               $g_plugins_buttons_list,
+               $g_plugins_actions_list;
 
         if( $action == 'init' ) {
             $g_plugins_init_list[] = $cb_func;
@@ -10171,6 +10173,12 @@
         }
         else if( $action == 'button' ) {
             $g_plugins_buttons_list[] = $cb_func;
+        }
+        else if( $action == 'dlgdiv' ) {
+            $g_plugins_dlg_divs_list[] = $cb_func;
+        }
+        else if( $action == 'action' ) {
+            $g_plugins_actions_list[] = $cb_func;
         }
     }
 
@@ -10245,6 +10253,34 @@
      *
      ***********************************************************************
      */
+
+    # ------------------------------------------------------------------------
+    function plugins_actions( $query_str ) {
+    # ------------------------------------------------------------------------
+    # Added to the end of the page.
+
+        global $g_plugins_actions_list;
+
+        if( ! is_array( $g_plugins_actions_list ) ) return;
+
+        foreach( $g_plugins_actions_list as $cb_func ) {
+            $cb_func( $query_str );
+        }
+    }
+
+    # ------------------------------------------------------------------------
+    function plugins_dlg_divs( ) {
+    # ------------------------------------------------------------------------
+    # Added to the end of the page.
+
+        global $g_plugins_dlg_divs_list;
+
+        if( ! is_array( $g_plugins_dlg_divs_list ) ) return;
+
+        foreach( $g_plugins_dlg_divs_list as $cb_func ) {
+            $cb_func();
+        }
+    }
 
     # ------------------------------------------------------------------------
     function plugins_buttons( ) {
@@ -10397,6 +10433,7 @@
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
 
         $g_tab = 2; #<-- Default to 2, the Hosts tab. Don't change this.
+                    #    This defaults to the 'Hosts' tab page.
 
         if( isset( $query_str['tab'] )) {
             $g_tab = (int) $query_str['tab'];
@@ -10423,6 +10460,8 @@
                 #session_start( );
                 servicesets_page_actions( $query_str );
 
+                plugins_actions( $query_str );
+
                 show_html_header();
 
                 check_REST_connection();
@@ -10442,6 +10481,8 @@
             # ---------------------------------------------------------------
                 # Show html fragments or run REST actions (all will exit(0))
                 hosts_page_actions( $query_str );
+
+                plugins_actions( $query_str );
 
                 #session_start( );
                 show_html_header();
@@ -10470,6 +10511,8 @@
                 # Show html fragments or run REST actions
                 hostgroups_page_actions( $query_str );
 
+                plugins_actions( $query_str );
+
                 #session_start( );
                 show_html_header();
 
@@ -10490,6 +10533,8 @@
             # ---------------------------------------------------------------
                 # Show html fragments or run REST actions
                 contacts_page_actions( $query_str );
+
+                plugins_actions( $query_str );
 
                 #session_start( );
                 show_html_header();
@@ -10512,6 +10557,8 @@
                 # Show html fragments or run REST actions
                 templates_page_actions( $query_str );
 
+                plugins_actions( $query_str );
+
                 #session_start( );
                 show_html_header();
 
@@ -10533,6 +10580,8 @@
                 # Show html fragments or run REST actions
                 timeperiods_page_actions( $query_str );
 
+                plugins_actions( $query_str );
+
                 #session_start( );
                 show_html_header();
 
@@ -10551,6 +10600,8 @@
                 # Show html fragments or run REST actions
                 commands_page_actions( $query_str );
 
+                plugins_actions( $query_str );
+
                 #session_start( );
                 show_html_header();
 
@@ -10566,10 +10617,12 @@
             # ---------------------------------------------------------------
             default:
             # ---------------------------------------------------------------
+                plugins_actions( $query_str );
                 plugins_tabs( );
         }
 
         show_applyconfiguration_dlg_div( );
+        plugins_dlg_divs( );
 
         print "\n</BODY>";
         print "\n</HTML>";

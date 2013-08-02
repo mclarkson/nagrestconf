@@ -15,6 +15,7 @@ xx Jul 2013 New version 1.158 (SOON)
 * Page tabs are now dynamic.
 * Plugins support started.
 ** Services-Tab plugin added.
+** Bulk Tools plugin added. (in progress)
 
 03 Jul 2013 New version 1.157
 
@@ -1771,7 +1772,7 @@ services
 | 8.     | Freshness threshold (auto)*   |         | freshnessthresh           | N/A
 | 9.     | Active checks enabled         |         | activechecks              | active_checks_enabled
 | 10.    | Custom variables              | C       | customvars                | N/A
-| 11.    | Disable                       |         | disable                   | 
+| 11.    | Disable[0,1,2]                |         | disable                   | 
 | 12.    | Display name                  | X       | displayname               | display_name
 | 13.    | Is volatile                   | X       | isvolatile                | is_volatile
 | 14.    | Initial state                 | X       | initialstate              | initial_state

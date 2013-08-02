@@ -38,6 +38,16 @@ Configuration tools for Nagios.
 
 This package provides the 'Services Tab' plugin.
 
+%package services-bulktools-plugin
+Group: Application/System
+Summary: Services Tab Bulk Tools plugin for Nagrestconf.
+Requires: nagrestconf, nagrestconf-services-tab-plugin
+
+%description services-bulktools-plugin
+Configuration tools for Nagios.
+
+This package provides the 'Bulk Tools' plugin for the Services tab.
+
 %prep
 %setup -q
 
@@ -50,6 +60,9 @@ This package provides the 'Services Tab' plugin.
 %post services-tab-plugin
 %__ln_s ../plugins/smorg_services_tab.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/10_smorg_services_tab.php
 
+%post services-bulktools-plugin
+%__ln_s ../plugins/smorg_services_bulktools_btn.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bultools_btn.php
+
 # Pre Uninstall
 %preun
 
@@ -58,6 +71,9 @@ This package provides the 'Services Tab' plugin.
 
 %postun services-tab-plugin
 %__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/10_smorg_services_tab.php
+
+%postun services-bulktools-plugin
+%__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bultools_btn.php
 
 %install
 
@@ -134,10 +150,18 @@ install -D -m 755 plugins/smorg_services_tab.php ${RPM_BUILD_ROOT}/usr/share/nag
 /usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/smorg_services_tab_impl.php
 /usr/share/nagrestconf/htdocs/nagrestconf/plugins/smorg_services_tab.php
 
+%files services-bulktools-plugin
+%defattr(644,root,root,755)
+#/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/smorg_services_bultools_btn_impl.php
+/usr/share/nagrestconf/htdocs/nagrestconf/plugins/smorg_services_bultools_btn.php
+
 %clean
 %{__rm} -rf %{buildroot}
 
 %changelog
+* Mon Aug 02 2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
+- Added Bulk Tools plugin for the Services tab.
+
 * Mon Jul 29 2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
 - Added Services Tab plugin.
 
