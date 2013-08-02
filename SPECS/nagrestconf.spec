@@ -152,8 +152,8 @@ install -D -m 755 plugins/smorg_services_tab.php ${RPM_BUILD_ROOT}/usr/share/nag
 
 %files services-bulktools-plugin
 %defattr(644,root,root,755)
-#/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/smorg_services_bultools_btn_impl.php
-/usr/share/nagrestconf/htdocs/nagrestconf/plugins/smorg_services_bultools_btn.php
+#/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/smorg_services_bulktools_btn_impl.php
+/usr/share/nagrestconf/htdocs/nagrestconf/plugins/smorg_services_bulktools_btn.php
 
 %clean
 %{__rm} -rf %{buildroot}
