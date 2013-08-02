@@ -61,7 +61,7 @@ This package provides the 'Bulk Tools' plugin for the Services tab.
 %__ln_s ../plugins/smorg_services_tab.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/10_smorg_services_tab.php
 
 %post services-bulktools-plugin
-%__ln_s ../plugins/smorg_services_bulktools_btn.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bultools_btn.php
+%__ln_s ../plugins/smorg_services_bulktools_btn.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bulktools_btn.php
 
 # Pre Uninstall
 %preun
@@ -73,7 +73,7 @@ This package provides the 'Bulk Tools' plugin for the Services tab.
 %__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/10_smorg_services_tab.php
 
 %postun services-bulktools-plugin
-%__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bultools_btn.php
+%__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bulktools_btn.php
 
 %install
 
