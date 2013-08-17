@@ -40,8 +40,8 @@ License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----
 
-Screenshot
-~~~~~~~~~~
+Screenshots
+~~~~~~~~~~~
 
 Hosts page showing an Edit Host dialog.
 
@@ -53,7 +53,7 @@ alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
 The Services Tab, Bulk Tools plugin:
 
 ++++
-<img src="http://www.smorg.co.uk/images/BulkTools.png"
+<img src="http://www.smorg.co.uk/images/ServicesBulkTools.png"
 alt="Bulk Tools GUI Screenshot" style="float:none" width="700px" />
 ++++
 
