@@ -93,6 +93,8 @@
         print '    $(".flash.error").html("Fail").show();';
         print '    $("#sbulktextarea").val(message);';
         print '    $("#sbulktextarea").show();';
+        print '    $("#servicestable").html("").';
+        print '      load("'.$url.'&servicestable=true");';
         print '  }';
         # Enable button
         print '$( ".ui-button:contains(Apply Changes)" )';
@@ -216,7 +218,8 @@
         print '">';
         print '<fieldset>';
         print '<p style="font-weight: bold;text-align: center;" id="willaffect">';
-        print 'Any changes made here will apply to '.$size.' services.';
+        $s=""; if( $size != 1 ) $s="s";
+        print 'Any changes made here will apply to '.$size." service$s.";
         #print 'Any changes made here will apply to ';
         print '</p><br />';
         #print '<script>$("#willaffect").append( $("#servicestable > p:nth-child(1)").html() );</script>';
@@ -225,6 +228,7 @@
         print '<label for="field">Field to change *</label>';
         print '<select class="field" id="field" name="field" required="required">';
             print '<option value="command">command</option>';
+            print '<option value="template">template</option>';
             print '<option value="svcgroup">svcgroup</option>';
             print '<option value="contacts">contacts</option>';
             print '<option value="contactgroups">contactgroups</option>';
@@ -234,30 +238,37 @@
         print '<script>';
         print '$("#field").bind("click", function(){';
         print 'var selected=$("#field").val();';
+        print 'var selectedaction=$("#action").val();';
         print 'if( selected == "command" ){'.
               '  $("#chactionp").show();'.
-              '  $("#textp").show();'.
+              '  if( selectedaction != "remove" ) $("#textp").show();'.
+              '  $("#tristatep").hide();'.
+              '}';
+        print 'if( selected == "template" ){'.
+              '  $("#chactionp").show();'.
+              '  if( selectedaction != "remove" ) $("#textp").show();'.
               '  $("#tristatep").hide();'.
               '}';
         print 'if( selected == "svcgroup" ){'.
               '  $("#chactionp").show();'.
-              '  $("#textp").show();'.
+              '  if( selectedaction != "remove" ) $("#textp").show();'.
               '  $("#tristatep").hide();'.
               '}';
         print 'if( selected == "contacts" ){'.
               '  $("#chactionp").show();'.
-              '  $("#textp").show();'.
+              '  if( selectedaction != "remove" ) $("#textp").show();'.
               '  $("#tristatep").hide();'.
               '}';
         print 'if( selected == "contactgroups" ){'.
               '  $("#chactionp").show();'.
-              '  $("#textp").show();'.
+              '  if( selectedaction != "remove" ) $("#textp").show();'.
               '  $("#tristatep").hide();'.
               '}';
         print 'if( selected == "disable" ){'.
               '  $("#chactionp").hide();'.
               '  $("#textp").hide();'.
               '  $("#tristatep").show();'.
+              '  $("#action").val("replace");'.
               '}';
         print '});';
         print '</script>';
@@ -271,6 +282,15 @@
             print '<option value="remove">remove</option>';
         print '</select>';
         print '</p>';
+        print '<script>';
+        print '$("#action").bind("click", function(){';
+        print 'var selected=$("#action").val();';
+        print 'if( selected == "remove" ){'.
+              '  $("#textp").hide();'.
+              '} else {'.
+              '  $("#textp").show();'.
+              '}});';
+        print '</script>';
         # Tristate
         print '<p style="display: none;" id="tristatep">';
         print '<label for="disable">Status *</label>';
@@ -296,7 +316,10 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?tab='.$id.'&sbulkapply=1';
         print '">';
         print '<fieldset>';
-        print '<p><br />&nbsp;TODO - UNIMPLEMENTED</p>';
+        print '<p style="font-weight: bold;text-align: center;" id="willaffect">';
+        $s=""; if( $size != 1 ) $s="s";
+        print 'Pressing \'Apply Changes\' will DELETE '.$size." service$s.";
+        print '</p>';
         print '</fieldset>';
         print '</form>';
         print '</div>';
@@ -324,17 +347,250 @@
     }
 
     # ------------------------------------------------------------------------
+    function rest_replace( $query_str ) {
+    # ------------------------------------------------------------------------
+
+        $resp = array();
+        $slist="";
+        $field = $query_str["field"];
+
+        if( $field == "command" ||
+            $field == "svcgroup" ||
+            $field == "contacts" ||
+            $field == "template" ||
+            $field == "contactgroups"
+        ) {
+
+            $a = get_and_sort_services( '.*' );
+            $n = 0;
+
+            foreach( $a as $item ) {
+                $n++;
+                unset( $options );
+                $options["folder"] = FOLDER;
+                $options["name"] = $item["name"];
+                $options["svcdesc"] = $item["svcdesc"];
+                $options[$field] = $query_str["text"];
+
+                $json = json_encode( $options );
+
+                # Do the REST edit svcgroup request
+                $request = new \RestRequest(
+                  RESTURL.'/modify/services',
+                  'POST',
+                  'json='.$json
+                );
+                set_request_options( $request );
+                $request->execute();
+                $list = json_decode( $request->getResponseBody(), true );
+
+                foreach( $list as $slist_item )
+                    $slist .= "$n. Modifying " . $item["name"] . " -> " . 
+                              $item["svcdesc"] . " : " . $slist_item . "\n";
+
+                $resp = $request->getResponseInfo();
+                if( $resp["http_code"] != 200 ) break;
+            }
+
+        } elseif ( $query_str["field"] == "disable") {
+
+            // $query_str["disable"] == 0,1 or 2
+
+            $a = get_and_sort_services( '.*' );
+            $n = 0;
+
+            foreach( $a as $item ) {
+                $n++;
+                unset( $options );
+                $options["folder"] = FOLDER;
+                $options["name"] = $item["name"];
+                $options["svcdesc"] = $item["svcdesc"];
+                $options[$field] = $query_str["disable"];
+
+                $json = json_encode( $options );
+
+                # Do the REST edit svcgroup request
+                $request = new \RestRequest(
+                  RESTURL.'/modify/services',
+                  'POST',
+                  'json='.$json
+                );
+                set_request_options( $request );
+                $request->execute();
+                $list = json_decode( $request->getResponseBody(), true );
+
+                foreach( $list as $slist_item )
+                    $slist .= "$n. Modifying " . $item["name"] . " -> " . 
+                              $item["svcdesc"] . " : " . $slist_item . "\n";
+
+                $resp = $request->getResponseInfo();
+                if( $resp["http_code"] != 200 ) break;
+            }
+        }
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $slist;
+        $retval["code"] = $resp["http_code"];
+        print( json_encode( $retval ) );
+
+        exit(0);
+
+    }
+
+    # ------------------------------------------------------------------------
+    function rest_remove( $query_str ) {
+    # ------------------------------------------------------------------------
+
+        $resp = array();
+        $slist="";
+        $field = $query_str["field"];
+
+        if( $field == "command" ||
+            $field == "svcgroup" ||
+            $field == "contacts" ||
+            $field == "template" ||
+            $field == "contactgroups"
+        ) {
+
+            $a = get_and_sort_services( '.*' );
+            $n = 0;
+
+            foreach( $a as $item ) {
+                $n++;
+                unset( $options );
+                $options["folder"] = FOLDER;
+                $options["name"] = $item["name"];
+                $options["svcdesc"] = $item["svcdesc"];
+                $options[$field] = "-";
+
+                $json = json_encode( $options );
+
+                # Do the REST edit svcgroup request
+                $request = new \RestRequest(
+                  RESTURL.'/modify/services',
+                  'POST',
+                  'json='.$json
+                );
+                set_request_options( $request );
+                $request->execute();
+                $list = json_decode( $request->getResponseBody(), true );
+
+                foreach( $list as $slist_item )
+                    $slist .= "$n. Modifying " . $item["name"] . " -> " . 
+                              $item["svcdesc"] . " : " . $slist_item . "\n";
+
+                $resp = $request->getResponseInfo();
+                if( $resp["http_code"] != 200 ) break;
+            }
+
+        } else {
+            $retval = array();
+            $retval["message"] = "Cannot remove data from this field";
+            $retval["code"] = 400;
+            print( json_encode( $retval ) );
+            exit(0);
+        }
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $slist;
+        $retval["code"] = $resp["http_code"];
+        print( json_encode( $retval ) );
+
+        exit(0);
+
+    }
+
+    # ------------------------------------------------------------------------
+    function rest_modify_services( $query_str ) {
+    # ------------------------------------------------------------------------
+
+        /*
+        $retval = array();
+        $retval["message"] = json_encode( $query_str );
+        $retval["code"] = 200;
+        sleep( 2 );
+        print( json_encode( $retval ) );
+        exit(0);
+        */
+
+        if( $query_str["action"] == "replace") {
+
+            rest_replace( $query_str );
+
+        } elseif ( $query_str["action"] == "prepend") {
+
+        } elseif ( $query_str["action"] == "append") {
+
+        } elseif ( $query_str["action"] == "remove") {
+
+            rest_remove( $query_str );
+
+        }
+
+        $retval = array();
+        $retval["message"] = "Sorry, this action is not implemented.";
+        $retval["code"] = 200;
+        print( json_encode( $retval ) );
+        exit(0);
+    }
+
+    # ------------------------------------------------------------------------
+    function rest_delete_services( $query_str ) {
+    # ------------------------------------------------------------------------
+
+        $a = get_and_sort_services( '.*' );
+        $n = 0;
+
+        foreach( $a as $item ) {
+            $n++;
+            unset( $options );
+            $options["folder"] = FOLDER;
+            $options["name"] = $item["name"];
+            $options["svcdesc"] = $item["svcdesc"];
+
+            $json = json_encode( $options );
+
+            # Do the REST edit svcgroup request
+            $request = new \RestRequest(
+              RESTURL.'/delete/services',
+              'POST',
+              'json='.$json
+            );
+            set_request_options( $request );
+            $request->execute();
+            $list = json_decode( $request->getResponseBody(), true );
+
+            foreach( $list as $slist_item )
+                $slist .= "$n. Deleting " . $item["name"] . " -> " . 
+                          $item["svcdesc"] . " : " . $slist_item . "\n";
+
+            $resp = $request->getResponseInfo();
+            if( $resp["http_code"] != 200 ) break;
+        }
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $slist;
+        $retval["code"] = $resp["http_code"];
+        print( json_encode( $retval ) );
+
+        exit(0);
+
+    }
+
+    # ------------------------------------------------------------------------
     function bulk_modify_services_using_REST( ) {
     # ------------------------------------------------------------------------
 
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
 
-        $retval = array();
-        $retval["message"] = json_encode( $query_str );
-        $retval["code"] = 200;
+        if( $query_str["active_tab"] == 0 )
+            rest_modify_services( $query_str );
 
-        sleep( 2 );
-        print( json_encode( $retval ) );
+        if( $query_str["active_tab"] == 1 )
+            rest_delete_services( $query_str );
 
         exit( 0 ); # <- Stop here - bypass any other actions.
     }

@@ -10,12 +10,13 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-xx Jul 2013 New version 1.158 (SOON)
+xx Aug 2013 New version 1.158 (SOON)
 
 * Page tabs are now dynamic.
 * Plugins support started.
 ** Services-Tab plugin added.
-** Bulk Tools plugin added. (in progress)
+** Bulk Tools Services plugin added.
+** Bulk Tools Hosts plugin added (in progress).
 
 03 Jul 2013 New version 1.157
 

@@ -155,7 +155,7 @@ TEXTAREA#sbulktextarea {
     background-size: 80px 80px;
     background-color: white;
     width: 100%;
-    height: 5em;
+    height: 10em;
 }
 TEXTAREA#applyconfigtextarea {
     /* background-image: url("images/working.gif"); */
