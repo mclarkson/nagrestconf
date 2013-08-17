@@ -115,6 +115,7 @@ install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plu
 # GUI Plugins
 install -D -m 755 plugins/smorg_services_tab_impl.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
 install -D -m 755 plugins/smorg_services_tab.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+install -D -m 755 plugins/smorg_services_bulktools_btn_impl.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 install -D -m 755 plugins/smorg_services_bulktools_btn.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 
 %files
@@ -153,7 +154,7 @@ install -D -m 755 plugins/smorg_services_bulktools_btn.php ${RPM_BUILD_ROOT}/usr
 
 %files services-bulktools-plugin
 %defattr(644,root,root,755)
-#/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/smorg_services_bulktools_btn_impl.php
+/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/smorg_services_bulktools_btn_impl.php
 /usr/share/nagrestconf/htdocs/nagrestconf/plugins/smorg_services_bulktools_btn.php
 
 %clean
