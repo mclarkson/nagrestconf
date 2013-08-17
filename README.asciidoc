@@ -13,10 +13,11 @@ Latest News
 xx Aug 2013 New version 1.158 (SOON)
 
 * Page tabs are now dynamic.
+* Added `Check Command' to the Edit Host dialog.
 * Plugins support started.
 ** Services-Tab plugin added.
 ** Bulk Tools Services plugin added.
-** Bulk Tools Hosts plugin added (in progress).
+** Bulk Tools Hosts plugin added.
 
 03 Jul 2013 New version 1.157
 
@@ -1655,9 +1656,9 @@ hosts
 | 8.     | Active checks                 |         | activechecks              | active_checks_enabled
 | 9.     | Service Set                   |         | servicesets               | N/A
 | 10.    | Disable [0,1,2]               |         | disable                   | N/A
-| 11.    | Display name                  |         | displayname               | display_name
+| 11.    | Display name                  | X       | displayname               | display_name
 | 12.    | Parents                       | LXM     | parents                   | parents
-| 13.    | Check command                 | XM      | command                   | check_command
+| 13.    | Check command                 | M       | command                   | check_command
 | 14.    | Initial state                 | X       | initialstate              | initial_state
 | 15.    | Max check attempts            |         | maxcheckattempts          | max_check_attempts
 | 16.    | Check interval                | X       | checkinterval             | check_interval

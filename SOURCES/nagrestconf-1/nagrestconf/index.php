@@ -694,6 +694,7 @@
             if( preg_match("/$hostregex/i",$name) == 0 ) continue;
             $b['name']=$name;
             $b['alias']=$alias;
+            $b['command']=$alias;
             $b['ipaddress']=$ipaddress;
             $b['template']=$template;
             $b['hostgroup']=$hostgroup;
@@ -7724,6 +7725,11 @@
         print '</div>';
         print '<div id="fragment-2">';
         # Max check attempts
+        print '<p>';
+        print '<label for="ecommand">Check Command</label>';
+        print '<input class="field" type="text" id="ecommand"';
+        print ' value="'.$command.'" name="command">';
+        print '</p>';
         print '<p>';
         print '<label for="emaxcheckattempts">Max check attempts</label>';
         print '<input class="field" type="text" id="emaxcheckattempts"';

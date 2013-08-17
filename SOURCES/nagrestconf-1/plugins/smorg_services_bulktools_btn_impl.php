@@ -20,15 +20,15 @@
     function button_html( ) {
     # ------------------------------------------------------------------------
     # HTML code to show the 'Bulk Tools' button to the left pane.
-    # Adds code to find the dialog div, bulkhsttooldlg, add code to it, then
+    # Adds code to find the dialog div, bulksvctooldlg, add code to it, then
     # open the jQuery dialog.
 
         $id = spi_get_tab_idx();
 
-        print '<input id="bulkhsttool" type="button" value="Bulk Tools" />';
+        print '<input id="bulksvctool" type="button" value="Bulk Tools" />';
         print '<script>';
-        print ' $("#bulkhsttool").bind("click", function() {';
-        print "$('#bulkhsttooldlg').".
+        print ' $("#bulksvctool").bind("click", function() {';
+        print "$('#bulksvctooldlg').".
               "html('<p style=\"font-weight: bold;text-align: center;".
               "padding-top: 14px;\">".
               "<br />Loading filtered data...<p>').".
@@ -70,7 +70,7 @@
     # This is just a 'div' and a 'script'.
 
         # 'Add New Host' dialog box div
-        print "<div id=\"bulkhsttooldlg\" ".
+        print "<div id=\"bulksvctooldlg\" ".
               " title=\"Apply Service Changes in Bulk\"></div>";
         print '<script>';
         # Addtimeperiod button
@@ -130,9 +130,9 @@
         print '};';
         # Cancel button
         print 'var cancel = function() { '.
-              '$("#bulkhsttooldlg").dialog("close"); };';
+              '$("#bulksvctooldlg").dialog("close"); };';
         # Setup the dialog
-        print '$( "div#bulkhsttooldlg" ).dialog( { ';
+        print '$( "div#bulksvctooldlg" ).dialog( { ';
         print 'autoOpen : false';
         print ', width : 500';
         print ', resizable : false';
@@ -305,8 +305,9 @@
         print '<label for="action">Change action *</label>';
         print '<select class="field" id="action" name="action" required="required">';
             print '<option value="replace">replace</option>';
-            print '<option value="prepend">prepend</option>';
-            print '<option value="append">append</option>';
+        #    print '<option value="prepend">prepend</option>';
+        #    print '<option value="append">append</option>';
+        #    print '<option value="append">regex</option>';
             print '<option value="remove">remove</option>';
         print '</select>';
         print '</p>';
@@ -550,6 +551,8 @@
         } elseif ( $query_str["action"] == "prepend") {
 
         } elseif ( $query_str["action"] == "append") {
+
+        } elseif ( $query_str["action"] == "regex") {
 
         } elseif ( $query_str["action"] == "remove") {
 

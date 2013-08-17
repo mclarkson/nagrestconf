@@ -1347,7 +1347,7 @@ modify_host_line()
     local name disabled a
 
     IFS=, read name x x template hostgroups contacts contactgroups \
-        x x disable x x < <( echo "$gcsv" )
+        x x disable x x command x < <( echo "$gcsv" )
 
     lockdir
     if ! item_exists 1 $FILE_HOSTS "$name"; then
@@ -1355,6 +1355,15 @@ modify_host_line()
         unlockdir
         exit 14
     fi
+
+    [[ -n $command ]] && {
+        if ! item_exists 1 $FILE_COMMANDS "$command"; then
+            echo -n "NAGCTL ERROR: Command '$command' not found."
+            echo " Will not modify host."
+            unlockdir
+            exit 13
+        fi
+    }
 
     [[ -n $template ]] && {
         if ! item_exists 1 $FILE_HOSTTEMPLATES "$template"; then
