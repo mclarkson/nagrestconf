@@ -43,9 +43,18 @@ License
 Screenshot
 ~~~~~~~~~~
 
+Hosts page showing an Edit Host dialog.
+
 ++++
 <img src="http://www.smorg.co.uk/images/nagrestconfgui.png"
 alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
+++++
+
+The Services Tab, Bulk Tools plugin:
+
+++++
+<img src="http://www.smorg.co.uk/images/BulkTools.png"
+alt="Bulk Tools GUI Screenshot" style="float:none" width="700px" />
 ++++
 
 More screen shots can be seen in the Nagios Exchange Gallery at:
