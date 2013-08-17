@@ -478,24 +478,36 @@
                 $list = \get_and_sort_services( $item["name"] );
 
                 $options = array();
-                $options["name"] = $item["name"];
-                $options["folder"] = FOLDER;
-                $options[$field] = $query_str["disable"];
 
-                foreach( $list as $item2 ) {
-                    $options["svcdesc"] = $item2['svcdesc'];
-                    $json = json_encode( $options );
-                    $request = new \RestRequest(
-                      RESTURL.'/modify/services',
-                      'POST',
-                      'json='.$json
-                    );
-                    set_request_options( $request );
-                    $request->execute();
-                    $list = json_decode( $request->getResponseBody(), true );
-                    $resp = $request->getResponseInfo();
-                    if( $resp["http_code"] != 200 ) break;
-                    ### Check $slist->http_code ###
+                if( $query_str["disable"] != 0 ) {
+                    # If disabling, disable services first
+                    $options = array();
+                    $options["name"] = $item["name"];
+                    $options["folder"] = FOLDER;
+                    $options[$field] = $query_str["disable"];
+
+                    foreach( $list as $item2 ) {
+                        $options["svcdesc"] = $item2['svcdesc'];
+                        $json = json_encode( $options );
+                        $request = new \RestRequest(
+                          RESTURL.'/modify/services',
+                          'POST',
+                          'json='.$json
+                        );
+                        set_request_options( $request );
+                        $request->execute();
+                        $output = json_decode( $request->getResponseBody(),
+                                               true );
+
+                        foreach( $output as $slist_item )
+                            $slist .= "    Modifying " . $item["name"] .
+                                      " -> " . urldecode($item2['svcdesc']) .
+                                      " : " .  $slist_item . "\n";
+
+                        $resp = $request->getResponseInfo();
+                        if( $resp["http_code"] != 200 ) break;
+                        ### Check $slist->http_code ###
+                    }
                 }
 
                 # Disable Host
@@ -516,14 +528,46 @@
                 );
                 set_request_options( $request );
                 $request->execute();
-                $list = json_decode( $request->getResponseBody(), true );
+                $output = json_decode( $request->getResponseBody(), true );
 
-                foreach( $list as $slist_item )
+                foreach( $output as $slist_item )
                     $slist .= "$n. Modifying " . $item["name"] .
                               " : " . $slist_item . "\n";
 
                 $resp = $request->getResponseInfo();
                 if( $resp["http_code"] != 200 ) break;
+
+                if( $query_str["disable"] == 0 ) {
+                    # If enabling, enable services last
+                    $options = array();
+                    $options["name"] = $item["name"];
+                    $options["folder"] = FOLDER;
+                    $options[$field] = $query_str["disable"];
+
+                    foreach( $list as $item2 ) {
+                        $options["svcdesc"] = $item2['svcdesc'];
+                        $json = json_encode( $options );
+                        $request = new \RestRequest(
+                          RESTURL.'/modify/services',
+                          'POST',
+                          'json='.$json
+                        );
+                        set_request_options( $request );
+                        $request->execute();
+                        $output = json_decode( $request->getResponseBody(),
+                                               true );
+
+                        foreach( $output as $slist_item )
+                            $slist .= "    Modifying " . $item["name"] .
+                                      " -> " . urldecode($item2['svcdesc']) .
+                                      " : " .  $slist_item . "\n";
+
+                        $resp = $request->getResponseInfo();
+                        if( $resp["http_code"] != 200 ) break;
+                        ### Check $slist->http_code ###
+                    }
+                }
+
             }
         }
 
