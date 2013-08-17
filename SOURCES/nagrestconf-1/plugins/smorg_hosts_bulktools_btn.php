@@ -20,22 +20,6 @@
      */
  
     # ------------------------------------------------------------------------
-    function button_html( ) {
-    # ------------------------------------------------------------------------
-        print '<input id="bulkhsttool" type="button" value="Bulk Tools" />';
-        print '<hr />';
-    }
-
-    # ------------------------------------------------------------------------
-    function add_dlg( ) {
-    # ------------------------------------------------------------------------
-
-        # Output divs to contain dialog boxes
-        show_delete_service_dlg_div( );
-        show_edit_service_dlg_div( );
-    }
-        
-    # ------------------------------------------------------------------------
     function initialize_plugin() {
     # ------------------------------------------------------------------------
 
@@ -50,9 +34,11 @@
         # include the implementation using plugins_load().
         #
 
-        #plugins_load( "plugins-lib/smorg_services_tab_impl.php" );
+        plugins_load( "plugins-lib/smorg_hosts_bulktools_btn_impl.php" );
 
         spi_add_action( 'button', NS . 'button_html' );
+        spi_add_action( 'dlgdiv', NS . 'add_hosts_bulktools_dlg_div' );
+        spi_add_action( 'action', NS . 'hosts_bulktools_page_actions' );
     }
  
     /***********************************************************************
