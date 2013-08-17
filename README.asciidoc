@@ -10,7 +10,7 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-xx Aug 2013 New version 1.158 (SOON)
+17 Aug 2013 New version 1.158 (Centos/Redhat RPMS Released)
 
 * Page tabs are now dynamic.
 * Added `Check Command' to the Edit Host dialog.
@@ -270,7 +270,7 @@ Install
 Prebuilt Packages
 ^^^^^^^^^^^^^^^^^
 
-Get the relevant RPM for Centos/Redhat from Sourceforge at:
+Get the relevant RPMs for Centos/Redhat from Sourceforge at:
 
 https://sourceforge.net/projects/nagrestconf/files/
 
@@ -289,10 +289,10 @@ freshly installing the Operating System with a minimal set of packages.
 ----------------------------------------------------------
 # On Debian:
 apt-get update
-gdebi nagrestconf_1.157_all.deb
+gdebi nagrestconf_1.158_all.deb
 
 # On Centos/Redhat:
-yum install nagrestconf-1.157-1.noarch.rpm
+yum install nagrestconf-1.158-1.noarch.rpm
 ----------------------------------------------------------
 +
 2. Configure the system:
@@ -327,6 +327,10 @@ a supported Web Browser at `http://localhost/nagrestconf'.
 If something goes wrong then there are configuration files in the directory
 '/etc/nagrestconf' that might need correcting.
 
+Plugins
+~~~~~~~
+
+TODO
 
 Install From Source
 ~~~~~~~~~~~~~~~~~~~

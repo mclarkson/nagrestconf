@@ -48,6 +48,16 @@ Configuration tools for Nagios.
 
 This package provides the 'Bulk Tools' plugin for the Services tab.
 
+%package hosts-bulktools-plugin
+Group: Application/System
+Summary: Hosts Tab Bulk Tools plugin for Nagrestconf.
+Requires: nagrestconf
+
+%description hosts-bulktools-plugin
+Configuration tools for Nagios.
+
+This package provides the 'Bulk Tools' plugin for the Hosts tab.
+
 %prep
 %setup -q
 
@@ -63,6 +73,9 @@ This package provides the 'Bulk Tools' plugin for the Services tab.
 %post services-bulktools-plugin
 %__ln_s ../plugins/smorg_services_bulktools_btn.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bulktools_btn.php
 
+%post hosts-bulktools-plugin
+%__ln_s ../plugins/smorg_hosts_bulktools_btn.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_hosts_bulktools_btn.php
+
 # Pre Uninstall
 %preun
 
@@ -74,6 +87,9 @@ This package provides the 'Bulk Tools' plugin for the Services tab.
 
 %postun services-bulktools-plugin
 %__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bulktools_btn.php
+
+%postun hosts-bulktools-plugin
+%__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_hosts_bulktools_btn.php
 
 %install
 
@@ -117,6 +133,8 @@ install -D -m 755 plugins/smorg_services_tab_impl.php ${RPM_BUILD_ROOT}/usr/shar
 install -D -m 755 plugins/smorg_services_tab.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 install -D -m 755 plugins/smorg_services_bulktools_btn_impl.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 install -D -m 755 plugins/smorg_services_bulktools_btn.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+install -D -m 755 plugins/smorg_hosts_bulktools_btn_impl.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+install -D -m 755 plugins/smorg_hosts_bulktools_btn.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 
 %files
 %defattr(755,root,root,755)
@@ -157,10 +175,18 @@ install -D -m 755 plugins/smorg_services_bulktools_btn.php ${RPM_BUILD_ROOT}/usr
 /usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/smorg_services_bulktools_btn_impl.php
 /usr/share/nagrestconf/htdocs/nagrestconf/plugins/smorg_services_bulktools_btn.php
 
+%files hosts-bulktools-plugin
+%defattr(644,root,root,755)
+/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/smorg_hosts_bulktools_btn_impl.php
+/usr/share/nagrestconf/htdocs/nagrestconf/plugins/smorg_hosts_bulktools_btn.php
+
 %clean
 %{__rm} -rf %{buildroot}
 
 %changelog
+* Mon Aug 17 2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
+- Added Bulk Tools plugin for the Hosts tab.
+
 * Mon Aug 02 2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
 - Added Bulk Tools plugin for the Services tab.
 
