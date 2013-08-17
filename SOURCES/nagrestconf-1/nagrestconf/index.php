@@ -10432,6 +10432,8 @@
     # ------------------------------------------------------------------------
         global $g_tab;
 
+        session_start( );
+
         date_default_timezone_set('UTC');
         
         read_config_file( );

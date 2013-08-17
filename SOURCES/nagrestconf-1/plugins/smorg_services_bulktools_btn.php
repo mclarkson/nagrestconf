@@ -48,7 +48,6 @@
      ***********************************************************************
      */
 
-    session_start();
     spi_add_action( 'init', NS . 'initialize_plugin' );
 
 ?>
