@@ -10,9 +10,9 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-18 Aug 2013 New version 1.158 (Debian packages released)
+18 Aug 2013 New version 1.158 https://sourceforge.net/projects/nagrestconf/files/[(Debian packages)]
 
-17 Aug 2013 New version 1.158 (Centos/Redhat RPMS released)
+17 Aug 2013 New version 1.158 https://sourceforge.net/projects/nagrestconf/files/[(Centos/Redhat RPMS)]
 
 * Page tabs are now dynamic.
 * Added `Check Command' to the Edit Host dialog.
