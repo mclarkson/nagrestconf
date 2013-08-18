@@ -11,6 +11,7 @@ Latest News
 ~~~~~~~~~~~
 
 18 Aug 2013 New version 1.158 (Debian packages released)
+
 17 Aug 2013 New version 1.158 (Centos/Redhat RPMS released)
 
 * Page tabs are now dynamic.
