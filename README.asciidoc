@@ -58,9 +58,9 @@ The Services Tab, Bulk Tools plugin:
 alt="Bulk Tools GUI Screenshot" style="float:none" width="700px" />
 ++++
 
-More screen shots can be seen in the Nagios Exchange Gallery at:
+More screen shots can be seen in the Sourceforge Gallery at:
 
-http://exchange.nagios.org/directory/Addons/APIs/Nagrestconf/gallery
+https://sourceforge.net/projects/nagrestconf/
 
 
 What is Nagrestconf?
