@@ -24,3 +24,23 @@ Description: REST interface and configuration GUI for Nagios.
   * Automation
   * Catching common configuration mistakes
  .
+
+Package: nagrestconf-services-plugin
+Architecture: all
+Depends: ${misc:Depends}, nagrestconf
+Description: Configuration tools for Nagios.
+ This package provides the 'Services Tab' plugin.
+
+Package: nagrestconf-services-bulktools-plugin
+Architecture: all
+Depends: ${misc:Depends}, nagrestconf, nagrestconf-services-plugin
+Description: Configuration tools for Nagios.
+ This package provides the 'Bulk Tools' plugin for the Services tab.
+
+Package: nagrestconf-hosts-bulktools-plugin
+Architecture: all
+Depends: ${misc:Depends}, nagrestconf
+Description: Configuration tools for Nagios.
+ This package provides the 'Bulk Tools' plugin for the Hosts tab.
+
+

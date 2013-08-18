@@ -5,12 +5,14 @@
 #export DH_VERBOSE=1
 
 DESTDIR=$(CURDIR)/debian/nagrestconf/
+DESTDIR-hosts-bulktools-plugin=$(CURDIR)/debian/nagrestconf-hosts-bulktools-plugin/
+DESTDIR-services-bulktools-plugin=$(CURDIR)/debian/nagrestconf-services-bulktools-plugin/
+DESTDIR-services-plugin=$(CURDIR)/debian/nagrestconf-services-plugin/
 
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
 	touch configure-stamp
-
 
 build: build-stamp
 
@@ -56,11 +58,30 @@ install: build
 
 	# PHP Directories
 	install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/
-    install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/plugins/
-    install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/plugins-enabled/
+	install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+	install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
+	install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/
 	cp -r nagrestconf $(DESTDIR)/usr/share/nagrestconf/htdocs/
 	cp -r rest $(DESTDIR)/usr/share/nagrestconf/htdocs/
 	find $(DESTDIR)/usr/share/nagrestconf -depth -name ".svn" -type d -exec rm -rf {} \;
+
+	# GUI Plugins
+	install -d -m 755 $(DESTDIR-services-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+	install -d -m 755 $(DESTDIR-services-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
+	install -d -m 755 $(DESTDIR-services-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/
+	install -d -m 755 $(DESTDIR-services-bulktools-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+	install -d -m 755 $(DESTDIR-services-bulktools-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
+	install -d -m 755 $(DESTDIR-services-bulktools-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/
+	install -d -m 755 $(DESTDIR-hosts-bulktools-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+	install -d -m 755 $(DESTDIR-hosts-bulktools-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
+	install -d -m 755 $(DESTDIR-hosts-bulktools-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/
+	install -D -m 755 plugins/smorg_services_tab_impl.php ${DESTDIR-services-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
+	install -D -m 755 plugins/smorg_services_tab.php ${DESTDIR-services-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+	install -D -m 755 plugins/smorg_services_bulktools_btn_impl.php ${DESTDIR-services-bulktools-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
+	install -D -m 755 plugins/smorg_services_bulktools_btn.php ${DESTDIR-services-bulktools-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+	install -D -m 755 plugins/smorg_hosts_bulktools_btn_impl.php ${DESTDIR-hosts-bulktools-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
+	install -D -m 755 plugins/smorg_hosts_bulktools_btn.php ${DESTDIR-hosts-bulktools-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+
 
 # Build architecture-independent files here.
 binary-indep: build install
