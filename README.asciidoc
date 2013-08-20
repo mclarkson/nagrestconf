@@ -10,6 +10,10 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
+xx Sep 2013 New version 1.159 (UNRELEASED)
+
+* GUI now works in Internet Explorer 9 and 10.
+
 18 Aug 2013 New version 1.158 https://sourceforge.net/projects/nagrestconf/files/[(Debian packages)]
 
 17 Aug 2013 New version 1.158 https://sourceforge.net/projects/nagrestconf/files/[(Centos/Redhat RPMS)]
