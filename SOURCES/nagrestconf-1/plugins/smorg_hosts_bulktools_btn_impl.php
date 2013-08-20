@@ -377,6 +377,7 @@
         print '</fieldset>';
         print '</form>';
         print '</div>';
+        print '</div>';
 
         print '<script>';
         print '$( "#bulktoolstabs" ).tabs();';

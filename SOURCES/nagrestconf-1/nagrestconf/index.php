@@ -873,6 +873,8 @@
         print'<!DOCTYPE html>
 <HTML>
 <HEAD>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <TITLE>Nagios REST Configurator</TITLE>
 <meta name="author" content="Mark Clarkson">
 <meta name="keywords" content="">
