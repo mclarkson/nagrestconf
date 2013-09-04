@@ -215,6 +215,7 @@
         # --------------------------------------------------------------------
         {
             curl_setopt($curlHandle, CURLOPT_TIMEOUT, 300);
+            curl_setopt($curlHandle, CURLOPT_PROXY, "");
             curl_setopt($curlHandle, CURLOPT_URL, $this->url);
             curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array ('Accept: ' . $this->acceptType));
