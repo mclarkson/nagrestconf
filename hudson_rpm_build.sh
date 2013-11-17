@@ -110,7 +110,7 @@ for PKG in `( cd SPECS; ls *.spec )`; do
     #POINTRELEASE=$SVN_REV
 
 	echo "Package Release: $RELEASE"
-	echo "New Version No.: $VERSION-${POINTRELEASE}"
+	echo "New Version No.: $VERSION.${POINTRELEASE}"
 
     sed "s/^Release: .*/Release: ${POINTRELEASE}/g" \
     ${BASE}/SPECS/${PKG} > ${BASE}/TMP/${PKG}
@@ -119,7 +119,7 @@ for PKG in `( cd SPECS; ls *.spec )`; do
 
 	if [[ -d SOURCES/${NAME}-${VERSION} ]]; then
 		echo "Tarring existing source directory."
-        N="${NAME}-${VERSION}-${POINTRELEASE}"
+        N="${NAME}-${VERSION}.${POINTRELEASE}"
         cp -a SOURCES/${NAME}-${VERSION} SOURCES/$N
 		tar cvzf SOURCES/${N}.tar.gz -C SOURCES ${N} --exclude=.svn
 	else
