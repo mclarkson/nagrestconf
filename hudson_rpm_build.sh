@@ -21,14 +21,6 @@ for DIR in SOURCES SPECS; do
         fi 
 done
 
-echo ----
-ls -lh
-echo ----
-cat POINTRELEASE
-echo ----
-
-. POINTRELEASE
-
 rm -rf TMP
 mkdir -p TMP BUILD RPMS SRPMS|| exit 1 
 rm -rf TMP/* BUILD/* RPMS/* SRPMS/*|| exit 1
@@ -104,16 +96,22 @@ for PKG in `( cd SPECS; ls *.spec )`; do
 	}
 
     #SVN_REV=`svn info SOURCES | sed -n '/Revision:/ { s/Revision: //p }'`
-    #
+
 	#echo "Subversion Revision: $SVN_REV"
-    #
+
     #POINTRELEASE=$SVN_REV
+
+    # Use the debian version number from the changelog
+    POINTRELEASE=`head -1 ./SOURCES/nagrestconf-1/debian/changelog | sed 's/^.*(1\.//;s/).*//'`
 
 	echo "Package Release: $RELEASE"
 	echo "New Version No.: $VERSION.${POINTRELEASE}"
 
-    sed "s/^Release: .*/Release: ${POINTRELEASE}/g" \
+    sed "s/^%define *version.*/%define version ${VERSION}.${POINTRELEASE}/g" \
     ${BASE}/SPECS/${PKG} > ${BASE}/TMP/${PKG}
+
+    echo "Cleaning SOURCES directory..."
+    rm -rf SOURCES/$NAME-$VERSION.*
 
     echo "Preparing sources for '${NAME}-${VERSION}'..."
 
@@ -179,10 +177,6 @@ for PKG in `( cd SPECS; ls *.spec )`; do
     fi
 
     #rm -rf BUILD/${NAME}-${VERSION} SOURCES/${NAME}-${VERSION}.tar.gz 
-
-    echo "Cleaning SOURCES directory..."
-    find SOURCES/$NAME-$VERSION* ! -name "*.tar.gz" -exec rm -rf {} \;
-
 done
 
 if [ ${GRV} -ne 0 ]; then 
