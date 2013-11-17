@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Script to build rpms from hudson
 
@@ -20,6 +20,14 @@ for DIR in SOURCES SPECS; do
                 exit 1 
         fi 
 done
+
+echo ----
+ls -lh
+echo ----
+cat POINTRELEASE
+echo ----
+
+. POINTRELEASE
 
 rm -rf TMP
 mkdir -p TMP BUILD RPMS SRPMS|| exit 1 
@@ -96,28 +104,22 @@ for PKG in `( cd SPECS; ls *.spec )`; do
 	}
 
     #SVN_REV=`svn info SOURCES | sed -n '/Revision:/ { s/Revision: //p }'`
-
+    #
 	#echo "Subversion Revision: $SVN_REV"
-
+    #
     #POINTRELEASE=$SVN_REV
 
-    # Use the debian version number from the changelog
-    POINTRELEASE=`head -1 ./SOURCES/nagrestconf-1/debian/changelog | sed 's/^.*(1\.//;s/).*//'`
-
 	echo "Package Release: $RELEASE"
-	echo "New Version No.: $VERSION.${POINTRELEASE}"
+	echo "New Version No.: $VERSION-${POINTRELEASE}"
 
-    sed "s/^%define *version.*/%define version ${VERSION}.${POINTRELEASE}/g" \
+    sed "s/^Release: .*/Release: ${POINTRELEASE}/g" \
     ${BASE}/SPECS/${PKG} > ${BASE}/TMP/${PKG}
-
-    echo "Cleaning SOURCES directory..."
-    rm -rf SOURCES/$NAME-$VERSION.*
 
     echo "Preparing sources for '${NAME}-${VERSION}'..."
 
 	if [[ -d SOURCES/${NAME}-${VERSION} ]]; then
 		echo "Tarring existing source directory."
-        N="${NAME}-${VERSION}.${POINTRELEASE}"
+        N="${NAME}-${VERSION}-${POINTRELEASE}"
         cp -a SOURCES/${NAME}-${VERSION} SOURCES/$N
 		tar cvzf SOURCES/${N}.tar.gz -C SOURCES ${N} --exclude=.svn
 	else
@@ -177,6 +179,10 @@ for PKG in `( cd SPECS; ls *.spec )`; do
     fi
 
     #rm -rf BUILD/${NAME}-${VERSION} SOURCES/${NAME}-${VERSION}.tar.gz 
+
+    echo "Cleaning SOURCES directory..."
+    find SOURCES/$NAME-$VERSION* ! -name "*.tar.gz" -exec rm -rf {} \;
+
 done
 
 if [ ${GRV} -ne 0 ]; then 
