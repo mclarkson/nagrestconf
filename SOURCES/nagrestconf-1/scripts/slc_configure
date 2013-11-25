@@ -127,16 +127,31 @@ configure_restart_nagios_script()
 configure_mod_gearman()
 # ----------------------------------------------------------------------------
 {
-    cat >/etc/mod_gearman.conf <<EnD
+    local dcc=
+
+    [[ ! -w /etc/mod_gearman/mod_gearman/ ]] && {
+        # No writable mod_gearman directory
+        return 0
+    }
+
+    [[ $G_USEDCC -eq 1 ]] && {
+        if [[ -z $G_DCCIP ]]; then
+            dcc="#dupserver=MASTER_SERVER_IP:4730"
+        else
+            dcc="dupserver=${G_DCCIP}:4730"
+        fi
+    }
+
+    cat >/etc/mod_gearman/mod_gearman/mod_gearman_neb.conf <<EnD
 ###############################################################################
 # This file was written by slc_configure
 ###############################################################################
 #
-#  mod_gearman - distribute checks with gearman
+#  Mod-Gearman - distribute checks with gearman
 #
 #  Copyright (c) 2010 Sven Nierlein
 #
-#  Sample Worker / NEB Module Config
+#  Mod-Gearman NEB Module Config
 #
 ###############################################################################
 
@@ -149,6 +164,8 @@ configure_mod_gearman()
 # Default is 0.
 debug=0
 
+# Path to the logfile.
+logfile=/var/log/mod_gearman/mod_gearman_neb.log
 
 # sets the addess of your gearman job server. Can be specified
 # more than once to add more server.
@@ -158,7 +175,6 @@ server=localhost:4730
 # sets the address of your 2nd (duplicate) gearman job server. Can
 # be specified more than once o add more servers.
 #dupserver=<host>:<port>
-dupserver=${G_DCCIP}:4730
  
 # defines if the module should distribute execution of
 # eventhandlers.
@@ -195,6 +211,11 @@ hosts=yes
 # Default is Yes.
 do_hostchecks=yes
 
+# This settings determines if all eventhandlers go into a single
+# 'eventhandlers' queue or into the same queue like normal checks
+# would do.
+route_eventhandler_like_checks=no
+
 # enables or disables encryption. It is strongly
 # advised to not disable encryption. Anybody will be
 # able to inject packages to your worker.
@@ -219,6 +240,16 @@ key=key1
 #keyfile=/path/to/secret.file
 
 
+# use_uniq_jobs
+# Using uniq keys prevents the gearman queues from filling up when there
+# is no worker. However, gearmand seems to have problems with the uniq
+# key and sometimes jobs get stuck in the queue. Set this option to 'off'
+# when you run into problems with stuck jobs but make sure your worker
+# are running.
+use_uniq_jobs=on
+
+
+
 ###############################################################################
 #
 # NEB Module Config
@@ -239,6 +270,15 @@ localhostgroups=
 # Default is none
 localservicegroups=
 
+# The queue_custom_variable can be used to define the target queue
+# by a custom variable in addition to host/servicegroups. When set
+# for ex. to 'WORKER' you then could define a '_WORKER' custom
+# variable for your hosts and services to directly set the worker
+# queue. The host queue is inherited unless overwritten
+# by a service custom variable. Set the value of your custom
+# variable to 'local' to bypass Mod-Gearman (Same behaviour as in
+# localhostgroups/localservicegroups).
+#queue_custom_variable=WORKER
 
 # Number of result worker threads. Usually one is
 # enough. You may increase the value if your
@@ -254,35 +294,140 @@ result_workers=1
 # handling performance data. For example: pnp4nagios
 # Performance data is just written to the gearman
 # queue.
-# Default no
+# Default: no
 perfdata=no
 
+# perfdata mode overwrite helps preventing the perdata queue getting to big
+# 1 = overwrote
+# 2 = append
+perfdata_mode=1
 
+# The Mod-Gearman NEB module will submit a fake result for orphaned host
+# checks with a message saying there is no worker running for this
+# queue. Use this option to get better reporting results, otherwise your
+# hosts will keep their last state as long as there is no worker
+# running.
+# Default: yes
+orphan_host_checks=yes
+
+# Same like 'orphan_host_checks' but for services.
+# Default: yes
+orphan_service_checks=yes
+
+# When accept_clear_results is enabled, the NEB module will accept unencrypted
+# results too. This is quite useful if you have lots of passive checks and make
+# use of send_gearman/send_multi where you would have to spread the shared key to
+# all clients using these tools.
+# Default is no.
+accept_clear_results=no
+
+EnD
+
+    cat >/etc/mod_gearman/mod_gearman/mod_gearman_worker.conf <<EnD
+###############################################################################
+# This file was written by slc_configure
 ###############################################################################
 #
-# Worker Config
+#  Mod-Gearman - distribute checks with gearman
 #
-# the following settings are for the worker only and
-# will be ignored by the neb module.
+#  Copyright (c) 2010 Sven Nierlein
+#
+#  Worker Module Config
 #
 ###############################################################################
+
+# Identifier, hostname will be used if undefined
+#identifier=hostname
+
+# use debug to increase the verbosity of the module.
+# Possible values are:
+#     0 = only errors
+#     1 = debug messages
+#     2 = trace messages
+#     3 = trace and all gearman related logs are going to stdout.
+# Default is 0.
+debug=0
+
+# Path to the logfile.
+logfile=/var/log/mod_gearman/mod_gearman_worker.log
+
+# sets the addess of your gearman job server. Can be specified
+# more than once to add more server.
+server=localhost:4730
+
+
+# sets the address of your 2nd (duplicate) gearman job server. Can
+# be specified more than once o add more servers.
+#dupserver=<host>:<port>
+$dcc
+
+
+# defines if the worker should execute eventhandlers.
+eventhandler=yes
+
+
+# defines if the worker should execute
+# service checks.
+services=yes
+
+
+# defines if the worker should execute
+# host checks.
+hosts=yes
+
+
+# sets a list of hostgroups which this worker will work
+# on. Either specify a comma seperated list or use
+# multiple lines.
+#hostgroups=name1
+#hostgroups=name2,name3
+
+
+# sets a list of servicegroups which this worker will
+# work on.
+#servicegroups=name1,name2,name3
+
+# enables or disables encryption. It is strongly
+# advised to not disable encryption. Anybody will be
+# able to inject packages to your worker.
+# Encryption is enabled by default and you have to
+# explicitly disable it.
+# When using encryption, you will either have to
+# specify a shared password with key=... or a
+# keyfile with keyfile=...
+# Default is On.
+encryption=yes
+
+
+# A shared password which will be used for
+# encryption of data pakets. Should be at least 8
+# bytes long. Maximum length is 32 characters.
+key=key1
+
+
+# The shared password will be read from this file.
+# Use either key or keyfile. Only the first 32
+# characters will be used.
+#keyfile=/path/to/secret.file
 
 # Path to the pidfile. Usually set by the init script
 #pidfile=/var/mod_gearman/mod_gearman_worker.pid
 
-# Path to the logfile.
-logfile=/var/mod_gearman/mod_gearman_worker.log
+# Default job timeout in seconds. Currently this value is only used for
+# eventhandler. The worker will use the values from the core for host and
+# service checks.
+job_timeout=60
 
 # Minimum number of worker processes which should
 # run at any time.
-min-worker=20
+min-worker=5
 
 # Maximum number of worker processes which should
 # run at any time. You may set this equal to
 # min-worker setting to disable dynamic starting of
 # workers. When setting this to 1, all services from
 # this worker will be executed one after another.
-max-worker=60
+max-worker=50
 
 # Time after which an idling worker exists
 # This parameter controls how fast your waiting workers will
@@ -292,20 +437,62 @@ idle-timeout=30
 # Controls the amount of jobs a worker will do before he exits
 # Use this to control how fast the amount of workers will go down
 # after high load times
-max-jobs=50
+max-jobs=1000
 
-# defined the rate of spawed worker per second as long
+# max-age is the threshold for discarding too old jobs. When a new job is older
+# than this amount of seconds it will not be executed and just discarded. Set to
+# zero to disable this check.
+#max-age=0
+
+# defines the rate of spawned worker per second as long
 # as there are jobs waiting
 spawn-rate=1
 
 # Use this option to disable an extra fork for each plugin execution. Disabling
 # this option will reduce the load on the worker host but can lead to problems with
 # unclean plugin. Default: yes
-fork_on_exec=yes
+fork_on_exec=no
+
+# Set a limit based on the 1min load average. When exceding the load limit,
+# no new worker will be started until the current load is below the limit.
+# No limit will be used when set to 0.
+load_limit1=0
+
+# Same as load_limit1 but for the 5min load average.
+load_limit5=0
+
+# Same as load_limit1 but for the 15min load average.
+load_limit15=0
 
 # Use this option to show stderr output of plugins too.
 # Default: yes
 show_error_output=yes
+
+# Use dup_results_are_passive to set if the duplicate result send to the dupserver
+# will be passive or active.
+# Default is yes (passive).
+#dup_results_are_passive=yes
+
+# When embedded perl has been compiled in, you can use this
+# switch to enable or disable the embedded perl interpreter.
+enable_embedded_perl=on
+
+# Default value used when the perl script does not have a
+# "nagios: +epn" or "nagios: -epn" set.
+# Perl scripts not written for epn support usually fail with epn,
+# so its better to set the default to off.
+use_embedded_perl_implicitly=off
+
+# Cache compiled perl scripts. This makes the worker process a little
+# bit bigger but makes execution of perl scripts even faster.
+# When turned off, Mod-Gearman will still use the embedded perl
+# interpreter, but will not cache the compiled script.
+use_perl_cache=on
+
+# path to p1 file which is used to execute and cache the
+# perl scripts run by the embedded perl interpreter
+p1_file=/usr/share/mod_gearman/mod_gearman_p1.pl
+
 
 # Workarounds
 
@@ -425,11 +612,13 @@ main()
     }
 
     setup_nagios_cfg
+
     [[ $G_USEDCC -eq 1 ]] && {
         #configure_ssh #<--admin should do this manually
         configure_restart_nagios_script
-        configure_mod_gearman
     }
+
+    configure_mod_gearman
     setup_repo
 }
 
