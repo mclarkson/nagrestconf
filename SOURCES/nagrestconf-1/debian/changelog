@@ -1,3 +1,9 @@
+nagrestconf (1.159) UNRELEASED; urgency=low
+
+  * Plugins.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 03 Dec 2013 20:08:00 +0000
+
 nagrestconf (1.158) UNRELEASED; urgency=low
 
   * Plugins.
