@@ -82,7 +82,19 @@
 #edithosttabs .ui-tabs-nav,
 #edithosttabs .ui-corner-br,
 #editservicetabs .ui-tabs-nav,
-#editservicetabs .ui-corner-br
+#editservicetabs .ui-corner-br,
+#edithosttmpltabs .ui-tabs-nav,
+#edithosttmpltabs .ui-corner-br,
+#editsvctmpltabs .ui-tabs-nav,
+#editsvctmpltabs .ui-corner-br,
+#editcontactabs .ui-tabs-nav,
+#editcontactabs .ui-corner-br,
+#newcontactabs .ui-tabs-nav,
+#newcontactabs .ui-corner-br,
+#newhosttmpltabs .ui-tabs-nav,
+#newhosttmpltabs .ui-corner-br,
+#newsvctmpltabs .ui-tabs-nav,
+#newsvctmpltabs .ui-corner-br
 {
     background-color: white;
     background-image: none;
@@ -94,7 +106,13 @@
 }
 .ui-corner-all#bulktoolstabs,
 .ui-corner-all#edithosttabs,
-.ui-corner-all#editservicetabs
+.ui-corner-all#editservicetabs,
+.ui-corner-all#edithosttmpltabs,
+.ui-corner-all#editcontactabs,
+.ui-corner-all#editsvctmpltabs,
+.ui-corner-all#newcontactabs,
+.ui-corner-all#newhosttmpltabs,
+.ui-corner-all#newsvctmpltabs
 {
     border-top: 0px;
     border-right: 0px;

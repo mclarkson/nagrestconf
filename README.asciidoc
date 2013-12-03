@@ -10,24 +10,12 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-xx Sep 2013 New version 1.159 (UNRELEASED)
+xx Dec 2013 New version 1.159 (UNRELEASED)
 
-* GUI now works in Internet Explorer 9 and 10.
-
-18 Aug 2013 New version 1.158 https://sourceforge.net/projects/nagrestconf/files/[(Debian packages)]
-
-17 Aug 2013 New version 1.158 https://sourceforge.net/projects/nagrestconf/files/[(Centos/Redhat RPMS)]
-
-* Page tabs are now dynamic.
-* Added `Check Command' to the Edit Host dialog.
-* Plugins support started.
-** Services-Tab plugin added.
-** Bulk Tools Services plugin added.
-** Bulk Tools Hosts plugin added.
-
-03 Jul 2013 New version 1.157
-
-* Fixes to get GUI working in Internet Explorer 8.
+* GUI now works in Internet Explorer 8, 9, 10 and 11.
+* Added more fields to the GUI for Host Templates.
+* Added more fields to the GUI for Service Templates.
+* Added more fields to the GUI for Contacts.
 
 License
 ~~~~~~~
@@ -213,7 +201,7 @@ Requirements
 ~~~~~~~~~~~~
 
 For the Web GUI the following Browsers work: Firefox, Opera, Chrome, Internet
-Explorer 8, Safari and also the Browsers on Maemo, iPad and Android devices.
+Explorer 8 to 11, Safari and also the Browsers on Maemo, iPad and Android devices.
 
 [cols="<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
@@ -1579,17 +1567,17 @@ contacts
 | 10.    | Host notification commands    | LRM     | hstnotifcmds              | host_notification_commands
 | 11.    | Can submit commands           |         | cansubmitcmds             | can_submit_commands
 | 12.    | Disable                       | U       | disable                   | 
-| 13.    | Service notification enabled  | X       | svcnotifenabled           | service_notifications_enabled
-| 14.    | Host notification enabled     | X       | hstnotifenabled           | host_notifications_enabled
-| 15.    | Pager                         | X       | pager                     | pager
+| 13.    | Service notification enabled  |         | svcnotifenabled           | service_notifications_enabled
+| 14.    | Host notification enabled     |         | hstnotifenabled           | host_notifications_enabled
+| 15.    | Pager                         |         | pager                     | pager
 | 16.    | Address1                      | X       | address1                  | address1
 | 17.    | Address2                      | X       | address2                  | address2
 | 18.    | Address3                      | X       | address3                  | address3
 | 19.    | Address4                      | X       | address4                  | address4
 | 20.    | Address5                      | X       | address5                  | address5
 | 21.    | Address6                      | X       | address6                  | address6
-| 22.    | Retain status info            | X       | retainstatusinfo          | retain_status_information
-| 23.    | Retain non-status info        | X       | retainnonstatusinfo       | retain_nonstatus_information
+| 22.    | Retain status info            |         | retainstatusinfo          | retain_status_information
+| 23.    | Retain non-status info        |         | retainnonstatusinfo       | retain_nonstatus_information
 | 24.    | Contact groups                | XLM     | contactgroups             | contactgroups
 |===========================================================================================================
 
@@ -1736,7 +1724,7 @@ hosttemplates
 | 12.    | Max check attempts            | R       | maxcheckattempts          | max_check_attempts
 | 13.    | Check command                 | M       | checkcommand              | check_command
 | 14.    | Notification interval         | R       | notifinterval             | notification_interval
-| 15.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
+| 15.    | Passive checks enabled        |         | passivechecks             | passive_checks_enabled
 | 16.    | Obsess over host              | X       | obsessoverhost            | obsess_over_host
 | 17.    | Check freshness               | X       | checkfreshness            | check_freshness
 | 18.    | Freshness threshold           | X       | freshnessthresh           | freshness_threshold
@@ -1747,20 +1735,20 @@ hosttemplates
 | 23.    | Flap detection enabled        | X       | flapdetectionenabled      | flap_detection_enabled
 | 24.    | Flap detection options        | LX      | flapdetectionoptions      | flap_detection_options
 | 25.    | Process perf data             | X       | processperfdata           | process_perf_data
-| 26.    | Retain status information     | X       | retainstatusinfo          | retain_status_information
-| 27.    | Retain nonstatus information  | X       | retainnonstatusinfo       | retain_nonstatus_information
+| 26.    | Retain status information     |         | retainstatusinfo          | retain_status_information
+| 27.    | Retain nonstatus information  |         | retainnonstatusinfo       | retain_nonstatus_information
 | 28.    | First notification delay      | X       | firstnotifdelay           | first_notifdelay
-| 29.    | Notifications enabled         | X       | notifications_enabled     | notifications_enabled
+| 29.    | Notifications enabled         |         | notifications_enabled     | notifications_enabled
 | 30.    | Stalking options              | LX      | stalkingoptions           | stalking_options
 | 31.    | Notes                         | X       | notes                     | notes
 | 32.    | Notes url                     | X       | notes_url                 | notes_url
-| 33.    | Icon image                    | X       | icon_image                | icon_image
-| 34.    | Icon image alt                | X       | icon_image_alt            | icon_image_alt
+| 33.    | Icon image                    |         | icon_image                | icon_image
+| 34.    | Icon image alt                |         | icon_image_alt            | icon_image_alt
 | 35.    | Vrml image                    | X       | vrml_image                | vrml_image
 | 36.    | Statusmap image               | X       | statusmap_image           | statusmap_image
 | 37.    | 2d coords                     | X       | coords2d                  | 2d_coords
 | 38.    | 3d coords                     | X       | coords3d                  | 3d_coords
-| 39.    | Action url                    | X       | action_url                | action_url
+| 39.    | Action url                    |         | action_url                | action_url
 |===========================================================================================================
 
 Examples
@@ -1986,7 +1974,7 @@ servicetemplates
 | 16.    | Custom variables              | C       | customvars                | 
 | 17.    | Is volatile                   | X       | isvolatile                | is_volatile
 | 18.    | Initial state                 | X       | initialstate              | initial_state
-| 19.    | Passive checks enabled        | X       | passivechecks             | passive_checks_enabled
+| 19.    | Passive checks enabled        |         | passivechecks             | passive_checks_enabled
 | 20.    | Obsess over service           | X       | obsessoverservice         | obsess_over_service
 | 21.    | Freshness threshold (manual)  | X       | manfreshnessthresh        | freshness_threshold
 | 22.    | Check Freshness               | X       | checkfreshness            | check_freshness
@@ -2000,13 +1988,13 @@ servicetemplates
 | 30.    | Retain status information     | X       | retainstatusinfo          | retain_status_information
 | 31.    | Retain nonstatus information  | X       | retainnonstatusinfo       | retain_nonstatus_information
 | 32.    | First notification delay      | X       | firstnotifdelay           | first_notifdelay
-| 33.    | Notifications enabled         | X       | notifications_enabled     | notifications_enabled
+| 33.    | Notifications enabled         |         | notifications_enabled     | notifications_enabled
 | 34.    | Stalking options              | LX      | stalkingoptions           | stalking_options
 | 35.    | Notes                         | X       | notes                     | notes
 | 36.    | Notes url                     | X       | notes_url                 | notes_url
-| 37.    | Action url                    | X       | action_url                | action_url
-| 38.    | Icon image                    | X       | icon_image                | icon_image
-| 39.    | Icon image alt                | X       | icon_image_alt            | icon_image_alt
+| 37.    | Action url                    |         | action_url                | action_url
+| 38.    | Icon image                    |         | icon_image                | icon_image
+| 39.    | Icon image alt                |         | icon_image_alt            | icon_image_alt
 | 40.    | Vrml image                    | X       | vrml_image                | vrml_image
 | 41.    | Statusmap image               | X       | statusmap_image           | statusmap_image
 | 42.    | 2d coords                     | X       | coords2d                  | 2d_coords

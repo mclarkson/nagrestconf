@@ -1998,7 +1998,7 @@ class WriteCmd
         $this->newcmdline .= ",".$stalkingoptions;
         $this->newcmdline .= ",".$notes;
         $this->newcmdline .= ",".$notes_url;
-        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".urlencode($action_url);
         $this->newcmdline .= ",".$icon_image;
         $this->newcmdline .= ",".$icon_image_alt;
         $this->newcmdline .= ",".$vrml_image;
@@ -2058,7 +2058,7 @@ class WriteCmd
         $this->newcmdline .= ",".$statusmap_image;
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
-        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".urlencode($action_url);
 
         $this->newcmdline .= "'";
 
@@ -2619,7 +2619,7 @@ class WriteCmd
         $this->newcmdline .= ",".$statusmap_image;
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
-        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".urlencode($action_url);
 
         $this->newcmdline .= "'";
 
@@ -2671,7 +2671,7 @@ class WriteCmd
         $this->newcmdline .= ",".$stalkingoptions;
         $this->newcmdline .= ",".$notes;
         $this->newcmdline .= ",".$notes_url;
-        $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".urlencode($action_url);
         $this->newcmdline .= ",".$icon_image;
         $this->newcmdline .= ",".$icon_image_alt;
         $this->newcmdline .= ",".$vrml_image;

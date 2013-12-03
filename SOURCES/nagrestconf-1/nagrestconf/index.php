@@ -16,7 +16,7 @@
     # ------------------------------------------------------------------------
 
     define( "SCRIPTNAME", "index.php" );
-    define( "VERSION", "v1.158" );
+    define( "VERSION", "v1.159" );
     define( "LIBDIR", "/usr/share/nagrestconf/htdocs/nagrestconf/" );
 
     # ------------------------------------------------------------------------
@@ -3312,9 +3312,19 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=5&newhosttemplate=1';
         print '">';
         print '<fieldset>';
+
+        ###:TAB1
+        print '<div id="newhosttmpltabs">';
+        print '<ul>';
+        print '<li><a href="#fragment-1"><span>Standard</span></a></li>';
+        print '<li><a href="#fragment-2"><span>Additional</span></a></li>';
+        print '<li><a href="#fragment-3"><span>Advanced</span></a></li>';
+        print '</ul>';
+        print '<div id="fragment-1">';
+
         # name
         print '<p>';
-        print '<label for="hosttemplatename">Host Template Name *</label>';
+        print '<label for="hosttemplatename">Template Name *</label>';
         print '<input class="field" type="text" id="hosttemplatename" ';
         print ' name="name" required="required" ';
         print '/>';
@@ -3377,12 +3387,82 @@
         print '<input class="field" type="text" id="checkcommand" '.
               'value="check-host-alive" name="checkcommand" />';
         print '</p>';
+        print '</div>';
+
+        ###:TAB2
+        print '<div id="fragment-2">';
+        # Check Command
+        print '<p>';
+        print '<label for="checkcommand">Check Command</label>';
+        print '<input class="field" type="text" id="checkcommand" '.
+              'value="" name="checkcommand" />';
+        print '</p>';
         # Notification Options
         print '<p>';
         print '<label for="notifopts">Notif Opts</label>';
         print '<input class="field" type="text" id="notifopts" '.
               'value="d u r" name="notifopts" />';
         print '</p>';
+        # Passive Checks
+        print '<p>';
+        print '<label for="spassivechecks">Passive Checks Enabled</label>';
+        print '<select name="passivechecks" id="spassivechecks" class="field">';
+        print '<option value="" selected >Nagios default</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="snotifen">Notifications Enabled</label>';
+        print '<select name="notifications_enabled" id="snotifen" class="field">';
+        print '<option value="" selected >Nagios default</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</div>';
+
+        ###:TAB3
+        print '<div id="fragment-3">';
+        print '<p>';
+        print '<label for="actionurl">Action URL</label>';
+        print '<input class="field" type="text" id="action_url" '.
+              'value="" name="action_url" />';
+        print '</p>';
+        print '<p>';
+        print '<label for="srsi">Retain Status Info</label>';
+        print '<select name="retainstatusinfo" id="srsi" class="field">';
+        print '<option value="" selected >Nagios default</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="srnsi">Retain Nonstatus Info</label>';
+        print '<select name="retainnonstatusinfo" id="srnsi" class="field">';
+        print '<option value="" selected >Nagios default</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="siconimg">Icon Image</label>';
+        print '<input class="field" type="text" id="icon_image" '.
+              'value="" name="icon_image" />';
+        print '</p>';
+        print '<p>';
+        print '<p>';
+        print '<label for="siconimgalt">Icon Image Alt</label>';
+        print '<input class="field" type="text" id="icon_image_alt" '.
+              'value="" name="icon_image_alt" />';
+        print '</p>';
+        print '</div>';
+
+        print '</div>';
+        print '<script>';
+        print '$( "#newhosttmpltabs" ).tabs();';
+        print '</script>';
+        ###:TABEND
 
         print '</fieldset>';
         print '</form>';
@@ -3446,6 +3526,11 @@
         unset( $query_str["tab"] );
         unset( $query_str["newhosttemplate"] );
         $query_str["folder"] = FOLDER;
+        if( isset( $query_str["action_url"] ) ) {
+            $query_str["action_url"] = strtr( $query_str["action_url"], 
+                                           array( '"' => '\"',) );
+            $query_str["action_url"] = urlencode($query_str["action_url"]);
+        }
         $json = json_encode( $query_str );
 
         # Do the REST new hosttemplate request
@@ -3605,6 +3690,16 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=5&edithosttemplate=1';
         print '">';
         print '<fieldset>';
+
+        ###:TAB1
+        print '<div id="edithosttmpltabs">';
+        print '<ul>';
+        print '<li><a href="#fragment-1"><span>Standard</span></a></li>';
+        print '<li><a href="#fragment-2"><span>Additional</span></a></li>';
+        print '<li><a href="#fragment-3"><span>Advanced</span></a></li>';
+        print '</ul>';
+        print '<div id="fragment-1">';
+
         # Hostname
         print '<p>';
         print '<label for="hosttemplatename">Contact Name *</label>';
@@ -3668,6 +3763,10 @@
         print '<input class="field" type="text" id="notifinterval" '.
               'value="'.$notifinterval.'" name="notifinterval" required="required" />';
         print '</p>';
+        print '</div>';
+
+        ###:TAB2
+        print '<div id="fragment-2">';
         # Check Command
         print '<p>';
         print '<label for="checkcommand">Check Command</label>';
@@ -3680,6 +3779,80 @@
         print '<input class="field" type="text" id="notifopts" '.
               'value="'.$notifopts.'" name="notifopts" />';
         print '</p>';
+        # Passive Checks
+        print '<p>';
+        print '<label for="spassivechecks">Passive Checks Enabled</label>';
+        print '<select name="passivechecks" id="spassivechecks" class="field">';
+        $selected=""; if( ! strlen($passivechecks) ) $selected="selected";
+        print '<option value="" '.$selected.'>Nagios default</option>';
+        $selected=""; if( $passivechecks == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $passivechecks == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="snotifen">Notifications Enabled</label>';
+        print '<select name="notifications_enabled" id="snotifen" class="field">';
+        $selected=""; if( ! strlen($notifications_enabled) ) $selected="selected";
+        print '<option value="" '.$selected.'>Nagios default</option>';
+        $selected=""; if( $notifications_enabled == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $notifications_enabled == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</div>';
+
+        ###:TAB3
+        print '<div id="fragment-3">';
+        print '<p>';
+        $new_actionurl = urldecode( $action_url );
+        $new_actionurl = strtr( $new_actionurl, array("\""=>"\\\"") );
+        print '<label for="actionurl">Action URL</label>';
+        print '<input class="field" type="text" id="action_url" '.
+              'value="'.$new_actionurl.'" name="action_url" />';
+        print '</p>';
+        print '<p>';
+        print '<label for="srsi">Retain Status Info</label>';
+        print '<select name="retainstatusinfo" id="srsi" class="field">';
+        $selected=""; if( ! strlen($retainstatusinfo) ) $selected="selected";
+        print '<option value="" '.$selected.'>Nagios default</option>';
+        $selected=""; if( $retainstatusinfo == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $retainstatusinfo == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="srnsi">Retain Nonstatus Info</label>';
+        print '<select name="retainnonstatusinfo" id="srnsi" class="field">';
+        $selected=""; if( ! strlen($retainnonstatusinfo) ) $selected="selected";
+        print '<option value="" '.$selected.'>Nagios default</option>';
+        $selected=""; if( $retainnonstatusinfo == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $retainnonstatusinfo == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="siconimg">Icon Image</label>';
+        print '<input class="field" type="text" id="icon_image" '.
+              'value="'.$icon_image.'" name="icon_image" />';
+        print '</p>';
+        print '<p>';
+        print '<p>';
+        print '<label for="siconimgalt">Icon Image Alt</label>';
+        print '<input class="field" type="text" id="icon_image_alt" '.
+              'value="'.$icon_image_alt.'" name="icon_image_alt" />';
+        print '</p>';
+        print '</div>';
+
+        print '</div>';
+        print '<script>';
+        print '$( "#edithosttmpltabs" ).tabs();';
+        print '</script>';
+        ###:TABEND
 
         print '</fieldset>';
         print '</form>';
@@ -3742,6 +3915,11 @@
         unset( $query_str["tab"] );
         unset( $query_str["edithosttemplate"] );
         $query_str["folder"] = FOLDER;
+        if( isset( $query_str["action_url"] ) ) {
+            $query_str["action_url"] = strtr( $query_str["action_url"], 
+                                           array( '"' => '\"',) );
+            $query_str["action_url"] = urlencode($query_str["action_url"]);
+        }
         # Handle deleting fields
         if( empty( $query_str["contacts"] ) )
             $query_str["contacts"] = "-";
@@ -3749,6 +3927,20 @@
             $query_str["contactgroups"] = "-";
         if( empty( $query_str["notifopts"] ) )
             $query_str["notifopts"] = "-";
+        if( ! strlen( $query_str["retainstatusinfo"] ) )
+            $query_str["retainstatusinfo"] = "-";
+        if( ! strlen( $query_str["retainnonstatusinfo"] ) )
+            $query_str["retainnonstatusinfo"] = "-";
+        if( ! strlen( $query_str["action_url"] ) )
+            $query_str["action_url"] = "-";
+        if( ! strlen( $query_str["passivechecks"] ) )
+            $query_str["passivechecks"] = "-";
+        if( ! strlen( $query_str["notifications_enabled"] ) )
+            $query_str["notifications_enabled"] = "-";
+        if( ! strlen( $query_str["icon_image"] ) )
+            $query_str["icon_image"] = "-";
+        if( ! strlen( $query_str["icon_image_alt"] ) )
+            $query_str["icon_image_alt"] = "-";
         $json = json_encode( $query_str );
 
         # Do the REST edit hosttemplate request
@@ -3788,9 +3980,19 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=5&newsvctemplate=1';
         print '">';
         print '<fieldset>';
+
+        ###:TAB1
+        print '<div id="newsvctmpltabs">';
+        print '<ul>';
+        print '<li><a href="#fragment-1"><span>Standard</span></a></li>';
+        print '<li><a href="#fragment-2"><span>Additional</span></a></li>';
+        print '<li><a href="#fragment-3"><span>Advanced</span></a></li>';
+        print '</ul>';
+        print '<div id="fragment-1">';
+
         # name
         print '<p>';
-        print '<label for="svctemplatename">Service Template Name *</label>';
+        print '<label for="svctemplatename">Template Name *</label>';
         print '<input class="field" type="text" id="svctemplatename" ';
         print ' name="name" required="required" ';
         print '/>';
@@ -3847,12 +4049,77 @@
         print '<input class="field" type="text" id="notifperiod" '.
               'value="24x7" name="notifperiod" required="required" />';
         print '</p>';
+        print '</div>';
+
+        ###:TAB2
+        print '<div id="fragment-2">';
         # Notification Options
         print '<p>';
         print '<label for="notifopts">Notif Opts</label>';
         print '<input class="field" type="text" id="notifopts" '.
-              'name="notifopts" />';
+              'value="w u c r" name="notifopts" />';
         print '</p>';
+        # Passive Checks
+        print '<p>';
+        print '<label for="spassivechecks">Passive Checks Enabled</label>';
+        print '<select name="passivechecks" id="spassivechecks" class="field">';
+        print '<option value="" selected >Nagios default</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="snotifen">Notifications Enabled</label>';
+        print '<select name="notifications_enabled" id="snotifen" class="field">';
+        print '<option value="" selected >Nagios default</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</div>';
+
+        ###:TAB3
+        print '<div id="fragment-3">';
+        print '<p>';
+        print '<label for="actionurl">Action URL</label>';
+        print '<input class="field" type="text" id="action_url" '.
+              'value="" name="action_url" />';
+        print '</p>';
+        print '<p>';
+        print '<label for="srsi">Retain Status Info</label>';
+        print '<select name="retainstatusinfo" id="srsi" class="field">';
+        print '<option value="" selected >Nagios default</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="srnsi">Retain Nonstatus Info</label>';
+        print '<select name="retainnonstatusinfo" id="srnsi" class="field">';
+        print '<option value="" selected >Nagios default</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="siconimg">Icon Image</label>';
+        print '<input class="field" type="text" id="icon_image" '.
+              'value="" name="icon_image" />';
+        print '</p>';
+        print '<p>';
+        print '<p>';
+        print '<label for="siconimgalt">Icon Image Alt</label>';
+        print '<input class="field" type="text" id="icon_image_alt" '.
+              'value="" name="icon_image_alt" />';
+        print '</p>';
+        print '<p>';
+        print '</div>';
+
+        print '</div>';
+        print '<script>';
+        print '$( "#newsvctmpltabs" ).tabs();';
+        print '</script>';
+        ###:TABEND
 
         print '</fieldset>';
         print '</form>';
@@ -3916,6 +4183,11 @@
         unset( $query_str["tab"] );
         unset( $query_str["newsvctemplate"] );
         $query_str["folder"] = FOLDER;
+        if( isset( $query_str["action_url"] ) ) {
+            $query_str["action_url"] = strtr( $query_str["action_url"], 
+                                           array( '"' => '\"',) );
+            $query_str["action_url"] = urlencode($query_str["action_url"]);
+        }
         $json = json_encode( $query_str );
 
         # Do the REST new svctemplate request
@@ -4075,6 +4347,16 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=5&editsvctemplate=1';
         print '">';
         print '<fieldset>';
+
+        ###:TAB1
+        print '<div id="editsvctmpltabs">';
+        print '<ul>';
+        print '<li><a href="#fragment-1"><span>Standard</span></a></li>';
+        print '<li><a href="#fragment-2"><span>Additional</span></a></li>';
+        print '<li><a href="#fragment-3"><span>Advanced</span></a></li>';
+        print '</ul>';
+        print '<div id="fragment-1">';
+
         # Hostname
         print '<p>';
         print '<label for="svctemplatename">Contact Name *</label>';
@@ -4137,12 +4419,91 @@
         print '<input class="field" type="text" id="notifperiod" '.
               'value="'.$notifperiod.'" name="notifperiod" required="required" />';
         print '</p>';
+        print '</div>';
+
+        ###:TAB2
+        print '<div id="fragment-2">';
         # Notification Options
         print '<p>';
         print '<label for="notifopts">Notif Opts</label>';
         print '<input class="field" type="text" id="notifopts" '.
               'value="'.$notifopts.'" name="notifopts" />';
         print '</p>';
+        # Passive Checks
+        print '<p>';
+        print '<label for="spassivechecks">Passive Checks Enabled</label>';
+        print '<select name="passivechecks" id="spassivechecks" class="field">';
+        $selected=""; if( ! strlen($passivechecks) ) $selected="selected";
+        print '<option value="" '.$selected.'>Nagios default</option>';
+        $selected=""; if( $passivechecks == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $passivechecks == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="snotifen">Notifications Enabled</label>';
+        print '<select name="notifications_enabled" id="snotifen" class="field">';
+        $selected=""; if( ! strlen($notifications_enabled) ) $selected="selected";
+        print '<option value="" '.$selected.'>Nagios default</option>';
+        $selected=""; if( $notifications_enabled == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $notifications_enabled == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</div>';
+
+        ###:TAB3
+        print '<div id="fragment-3">';
+        print '<p>';
+        $new_actionurl = urldecode( $action_url );
+        $new_actionurl = strtr( $new_actionurl, array("\""=>"\\\"") );
+        print '<label for="actionurl">Action URL</label>';
+        print '<input class="field" type="text" id="action_url" '.
+              'value="'.$new_actionurl.'" name="action_url" />';
+        print '</p>';
+        print '<p>';
+        print '<label for="srsi">Retain Status Info</label>';
+        print '<select name="retainstatusinfo" id="srsi" class="field">';
+        $selected=""; if( ! strlen($retainstatusinfo) ) $selected="selected";
+        print '<option value="" '.$selected.'>Nagios default</option>';
+        $selected=""; if( $retainstatusinfo == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $retainstatusinfo == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="srnsi">Retain Nonstatus Info</label>';
+        print '<select name="retainnonstatusinfo" id="srnsi" class="field">';
+        $selected=""; if( ! strlen($retainnonstatusinfo) ) $selected="selected";
+        print '<option value="" '.$selected.'>Nagios default</option>';
+        $selected=""; if( $retainnonstatusinfo == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $retainnonstatusinfo == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="siconimg">Icon Image</label>';
+        print '<input class="field" type="text" id="icon_image" '.
+              'value="'.$icon_image.'" name="icon_image" />';
+        print '</p>';
+        print '<p>';
+        print '<p>';
+        print '<label for="siconimgalt">Icon Image Alt</label>';
+        print '<input class="field" type="text" id="icon_image_alt" '.
+              'value="'.$icon_image_alt.'" name="icon_image_alt" />';
+        print '</p>';
+        print '<p>';
+        print '</div>';
+
+        print '</div>';
+        print '<script>';
+        print '$( "#editsvctmpltabs" ).tabs();';
+        print '</script>';
+        ###:TABEND
 
         print '</fieldset>';
         print '</form>';
@@ -4205,6 +4566,11 @@
         unset( $query_str["tab"] );
         unset( $query_str["editsvctemplate"] );
         $query_str["folder"] = FOLDER;
+        if( isset( $query_str["action_url"] ) ) {
+            $query_str["action_url"] = strtr( $query_str["action_url"], 
+                                           array( '"' => '\"',) );
+            $query_str["action_url"] = urlencode($query_str["action_url"]);
+        }
         # Handle deleting fields
         if( empty( $query_str["contacts"] ) )
             $query_str["contacts"] = "-";
@@ -4212,6 +4578,20 @@
             $query_str["contactgroups"] = "-";
         if( empty( $query_str["notifopts"] ) )
             $query_str["notifopts"] = "-";
+        if( ! strlen( $query_str["retainstatusinfo"] ) )
+            $query_str["retainstatusinfo"] = "-";
+        if( ! strlen( $query_str["retainnonstatusinfo"] ) )
+            $query_str["retainnonstatusinfo"] = "-";
+        if( ! strlen( $query_str["action_url"] ) )
+            $query_str["action_url"] = "-";
+        if( ! strlen( $query_str["passivechecks"] ) )
+            $query_str["passivechecks"] = "-";
+        if( ! strlen( $query_str["notifications_enabled"] ) )
+            $query_str["notifications_enabled"] = "-";
+        if( ! strlen( $query_str["icon_image"] ) )
+            $query_str["icon_image"] = "-";
+        if( ! strlen( $query_str["icon_image_alt"] ) )
+            $query_str["icon_image_alt"] = "-";
         $json = json_encode( $query_str );
 
         # Do the REST edit svctemplate request
@@ -4529,6 +4909,16 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=4&newcontact=1';
         print '">';
         print '<fieldset>';
+
+        ###:TAB1
+        print '<div id="newcontactabs">';
+        print '<ul>';
+        print '<li><a href="#fragment-1"><span>Standard</span></a></li>';
+        print '<li><a href="#fragment-2"><span>Additional</span></a></li>';
+        print '<li><a href="#fragment-3"><span>Advanced</span></a></li>';
+        print '</ul>';
+        print '<div id="fragment-1">';
+
         # name
         print '<p>';
         print '<label for="contactname">Contact Name *</label>';
@@ -4592,6 +4982,52 @@
         print ' name="cansubmitcmds" />';
         #print ' name="activechecks" '.$checked.' />';
         print '</p>';
+        print '</div>';
+
+        ###:TAB2
+        print '<div id="fragment-2">';
+        print '<p>';
+        print '<label for="ssvcnotifenabled">Service Notifications</label>';
+        print '<input class="field" type="checkbox" id="svcnotifenabled"';
+        print ' name="svcnotifenabled" checked />';
+        print '</p>';
+        print '<p>';
+        print '<label for="shstnotifenabled">Host Notifications</label>';
+        print '<input class="field" type="checkbox" id="hstnotifenabled"';
+        print ' name="hstnotifenabled" checked />';
+        print '</p>';
+        print '<p>';
+        print '<label for="pager">Pager</label>';
+        print '<input class="field" type="text" id="pager" name="pager"';
+        print ' value="" />';
+        print '</p>';
+        print '</div>';
+
+        ###:TAB3
+        print '<div id="fragment-3">';
+        print '<p>';
+        print '<label for="srsi">Retain Status Info</label>';
+        print '<select name="retainstatusinfo" id="srsi" class="field">';
+        print '<option value="" selected>Nagios default</option>';
+        print '<option value="1" >Enabled</option>';
+        print '<option value="0" >Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="srnsi">Retain Nonstatus Info</label>';
+        print '<select name="retainnonstatusinfo" id="srnsi" class="field">';
+        print '<option value="" selected>Nagios default</option>';
+        print '<option value="1" >Enabled</option>';
+        print '<option value="0" >Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</div>';
+
+        print '</div>';
+        print '<script>';
+        print '$( "#newcontactabs" ).tabs();';
+        print '</script>';
+        ###:TABEND
 
         print '</fieldset>';
         print '</form>';
@@ -4655,6 +5091,19 @@
         unset( $query_str["tab"] );
         unset( $query_str["newcontact"] );
         $query_str["folder"] = FOLDER;
+        # Handle check box
+        if( isset( $query_str["cansubmitcmds"] ) )
+            $query_str["cansubmitcmds"] = "1";
+        else
+            $query_str["cansubmitcmds"] = "0";
+        if( isset( $query_str["svcnotifenabled"] ) )
+            $query_str["svcnotifenabled"] = "1";
+        else
+            $query_str["svcnotifenabled"] = "0";
+        if( isset( $query_str["hstnotifenabled"] ) )
+            $query_str["hstnotifenabled"] = "1";
+        else
+            $query_str["hstnotifenabled"] = "0";
         #clean_query_str( $query_str );
         $json = json_encode( $query_str );
 
@@ -4815,6 +5264,16 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=4&editcontact=1';
         print '">';
         print '<fieldset>';
+
+        ###:TAB1
+        print '<div id="editcontactabs">';
+        print '<ul>';
+        print '<li><a href="#fragment-1"><span>Standard</span></a></li>';
+        print '<li><a href="#fragment-2"><span>Additional</span></a></li>';
+        print '<li><a href="#fragment-3"><span>Advanced</span></a></li>';
+        print '</ul>';
+        print '<div id="fragment-1">';
+
         # name
         print '<p>';
         print '<label for="contactname">Contact Name *</label>';
@@ -4891,6 +5350,62 @@
         print '<input class="field" type="checkbox" id="cansubmitcmds"';
         print ' name="cansubmitcmds" '.$checked.' />';
         print '</p>';
+        print '</div>';
+
+        ###:TAB2
+        print '<div id="fragment-2">';
+        print '<p>';
+        print '<label for="ssvcnotifenabled">Service Notifications</label>';
+        $checked="checked";
+        if( $svcnotifenabled == "0" ) $checked="";
+        print '<input class="field" type="checkbox" id="svcnotifenabled"';
+        print ' name="svcnotifenabled" '.$checked.' />';
+        print '</p>';
+        print '<p>';
+        print '<label for="shstnotifenabled">Host Notifications</label>';
+        $checked="checked";
+        if( $hstnotifenabled == "0" ) $checked="";
+        print '<input class="field" type="checkbox" id="hstnotifenabled"';
+        print ' name="hstnotifenabled" '.$checked.' />';
+        print '</p>';
+        print '<p>';
+        print '<label for="pager">Pager</label>';
+        print '<input class="field" type="text" id="pager" name="pager"';
+        print ' value="'.$pager.'" />';
+        print '</p>';
+        print '</div>';
+
+        ###:TAB3
+        print '<div id="fragment-3">';
+        print '<p>';
+        print '<label for="srsi">Retain Status Info</label>';
+        print '<select name="retainstatusinfo" id="srsi" class="field">';
+        $selected=""; if( ! strlen($retainstatusinfo) ) $selected="selected";
+        print '<option value="" '.$selected.'>Nagios default</option>';
+        $selected=""; if( $retainstatusinfo == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $retainstatusinfo == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="srnsi">Retain Nonstatus Info</label>';
+        print '<select name="retainnonstatusinfo" id="srnsi" class="field">';
+        $selected=""; if( ! strlen($retainnonstatusinfo) ) $selected="selected";
+        print '<option value="" '.$selected.'>Nagios default</option>';
+        $selected=""; if( $retainnonstatusinfo == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $retainnonstatusinfo == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</div>';
+
+        print '</div>';
+        print '<script>';
+        print '$( "#editcontactabs" ).tabs();';
+        print '</script>';
+        ###:TABEND
 
         print '</fieldset>';
         print '</form>';
@@ -4958,7 +5473,19 @@
             $query_str["cansubmitcmds"] = "1";
         else
             $query_str["cansubmitcmds"] = "0";
+        if( isset( $query_str["svcnotifenabled"] ) )
+            $query_str["svcnotifenabled"] = "1";
+        else
+            $query_str["svcnotifenabled"] = "0";
+        if( isset( $query_str["hstnotifenabled"] ) )
+            $query_str["hstnotifenabled"] = "1";
+        else
+            $query_str["hstnotifenabled"] = "0";
         # Handle deleting fields
+        if( ! strlen( $query_str["retainstatusinfo"] ) )
+            $query_str["retainstatusinfo"] = "-";
+        if( ! strlen( $query_str["retainnonstatusinfo"] ) )
+            $query_str["retainnonstatusinfo"] = "-";
         if( empty( $query_str["svcnotifperiod"] ) )
             $query_str["svcnotifperiod"] = "-";
         if( empty( $query_str["svcnotifopts"] ) )
@@ -4969,6 +5496,8 @@
             $query_str["hstnotifperiod"] = "-";
         if( empty( $query_str["hstnotifcmds"] ) )
             $query_str["hstnotifcmds"] = "-";
+        if( empty( $query_str["pager"] ) )
+            $query_str["pager"] = "-";
         if( empty( $query_str["hstnotifopts"] ) )
             $query_str["hstnotifopts"] = "-";
         $json = json_encode( $query_str );

@@ -1193,7 +1193,7 @@ modify_hosttemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups x x x notifperiod \
-        x x checkperiod x x < <( echo "$gcsv" )
+        x x checkperiod x check_command x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -1212,6 +1212,15 @@ modify_hosttemplate_line()
         unlockdir
         exit 14
     fi
+
+    [[ -n $check_command ]] && {
+        if ! item_exists 1 $FILE_COMMANDS "$check_command"; then
+            echo -n "NAGCTL ERROR: Command '$check_command' not found."
+            echo " Will not modify host."
+            unlockdir
+            exit 13
+        fi
+    }
 
     [[ -n $notifperiod && $notifperiod != "-" ]] && {
         if ! item_exists 1 $FILE_TIMEPERIODS $notifperiod; then
@@ -2192,7 +2201,7 @@ add_hosttemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups x x x notifperiod \
-        x x checkperiod x < <( echo "$gcsv" )
+        x x checkperiod x check_command x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -2211,6 +2220,15 @@ add_hosttemplate_line()
         unlockdir
         exit 13
     fi
+
+    [[ -n $check_command ]] && {
+        if ! item_exists 1 $FILE_COMMANDS "$check_command"; then
+            echo -n "NAGCTL ERROR: Command '$check_command' not found."
+            echo " Will not modify host."
+            unlockdir
+            exit 13
+        fi
+    }
 
     if ! item_exists 1 $FILE_TIMEPERIODS $notifperiod; then
         echo -n "NAGCTL ERROR: Notifperiod '$notifperiod' unavailable."

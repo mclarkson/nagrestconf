@@ -1187,7 +1187,9 @@ create_service_entries()
                 echo "       3d_coords $coords3d"
             }
             [[ -n $action_url ]] && {
-                echo "       action_url $action_url"
+                echo -n "       action_url "
+                urldecode "$action_url"
+                echo
             }
             echo "}"
             echo
@@ -1423,7 +1425,9 @@ create_servicetemplates()
             echo "       3d_coords $coords3d"
         }
         [[ -n $action_url ]] && {
-            echo "       action_url $action_url"
+            echo -n "       action_url "
+            urldecode "$action_url"
+            echo
         }
         echo "       register 0"
         echo "}"
@@ -1625,7 +1629,9 @@ create_hosttemplates()
             echo "       3d_coords                    $coords3d"
         }
         [[ -n $action_url ]] && {
-            echo "       action_url                   $action_url"
+            echo -n "       action_url "
+            urldecode "$action_url"
+            echo
         }
         echo "}"
         echo
