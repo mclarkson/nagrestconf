@@ -8688,16 +8688,22 @@
 
             # Change " to \". otherwise we get 'folder not found'
             if( isset( $svcdesc ) ) {
-                $svcdesc = strtr( $svcdesc, array( '%22' => '%5C%22',) );
+                #$svcdesc = strtr( $svcdesc, array( '%22' => '%5C%22',) );
+                $query_str["svcdesc"] = strtr( $query_str["svcdesc"], 
+                                               array( '"' => '\"',) );
+                $query_str["svcdesc"] = urlencode($query_str["svcdesc"]);
             }
             if( isset( $command ) ) {
-                $command = strtr( $command, array( '%22' => '%5C%22',) );
+                #$command = strtr( $command, array( '%22' => '%5C%22',) );
+                $query_str["command"] = strtr( $query_str["command"], 
+                                               array( '"' => '\"',) );
+                $query_str["command"] = urlencode($query_str["command"]);
             }
 
             $newservice["folder"] = FOLDER;
             $newservice["name"] = $tohost;
             $newservice["template"] = $template;
-            $newservice["command"] =  $command;
+            $newservice["command"] = $command;
             $newservice["svcdesc"] = $svcdesc;
             $newservice["svcgroup"] = $svcgroup;
             $newservice["contacts"] = $contacts;

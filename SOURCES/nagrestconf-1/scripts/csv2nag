@@ -1259,7 +1259,7 @@ create_servicetemplates()
             echo "$freshness"
             echo "        check_freshness                 1"
         else
-            echo "        check_command                   $scommand"
+            #echo "        check_command                   $scommand"
             [[ -n $activechecks ]] && {
                 if [[ $activechecks == 0 ]]; then
                     echo "        active_checks_enabled           0"

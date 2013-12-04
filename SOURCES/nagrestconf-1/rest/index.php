@@ -1515,7 +1515,7 @@ class WriteCmd
         $this->newcmdline .= urlencode($command) . ",";
         # Allow mass deletions
         $this->newcmdline .= 
-		strtr( urlencode($svcdesc), array( '%2A' => '*',) )
+                strtr( urlencode($svcdesc), array( '%2A' => '*',) )
                 . ",";
         $this->newcmdline .= $svcgroup . ",";
         $this->newcmdline .= $contacts . ",";
@@ -1683,7 +1683,7 @@ class WriteCmd
         $this->newcmdline .= urlencode($command) . ",";
         # Allow mass deletions
         $this->newcmdline .= 
-		strtr( urlencode($svcdesc), array( '%2A' => '*',) )
+                strtr( urlencode($svcdesc), array( '%2A' => '*',) )
                 . ",";
         $this->newcmdline .= $svcgroup . ",";
         $this->newcmdline .= $contacts . ",";
@@ -1766,7 +1766,7 @@ class WriteCmd
         # TODO urlencodes:
         # urlencode should be done for all and urldecode expanded in nagctl.
         $this->newcmdline .= 
-		strtr( urlencode($name), array( '%2A' => '*',) );
+                strtr( urlencode($name), array( '%2A' => '*',) );
         $this->newcmdline .= ",".$command;
         $this->newcmdline .= ",".$disable;
 
