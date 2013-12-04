@@ -230,6 +230,7 @@ class RestServer
             # TODO: Eventually this should go...
             foreach( $this->jadata as &$item ) {
                $item = strtr( $item, array( "," => "`") );
+               $item = trim( $item );
             }
         }
     }
@@ -2698,7 +2699,7 @@ class WriteCmd
         $this->newcmdline .= $ipaddress . ",";
         $this->newcmdline .= $template . ",";
         $this->newcmdline .= $hostgroup . ",";
-        $this->newcmdline .= $contacts . ",";
+        $this->newcmdline .= $contact . ",";
         $this->newcmdline .= $contactgroups . ",";
         $this->newcmdline .= $activechecks . ",";
         $this->newcmdline .= $servicesets;

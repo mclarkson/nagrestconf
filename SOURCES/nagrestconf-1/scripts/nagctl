@@ -3417,6 +3417,10 @@ delete_servicetemplate_line()
         echo -n "NAGCTL ERROR: Servicetemplate is referenced by one or more services."
         echo " Will not delete."
         RETVAL=15
+    elif item_exists 2 $FILE_SERVICESETS "$name"; then
+        echo -n "NAGCTL ERROR: Servicetemplate is referenced by one or more service sets."
+        echo " Will not delete."
+        RETVAL=15
     else
         if item_exists 1 $FILE_SERVICETEMPLATES "$name"; then
             item_delete 1 $FILE_SERVICETEMPLATES "$name"
