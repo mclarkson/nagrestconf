@@ -3376,13 +3376,13 @@
         #print '</p>';
         # Contacts
         print '<p>';
-        print '<label for="contacts">Contacts</label>';
-        print '<input class="field" type="text" id="contacts" name="contacts" />';
+        print '<label for="acontacts">Contacts</label>';
+        print '<input class="field" type="text" id="acontacts" name="contacts" />';
         print '</p>';
         # Contact Groups
         print '<p>';
-        print '<label for="contactgroups">Contact Groups</label>';
-        print '<input class="field" type="text" id="contactgroups" name="contactgroups" />';
+        print '<label for="acontactgroups">Contact Groups</label>';
+        print '<input class="field" type="text" id="acontactgroups" name="contactgroups" />';
         print '</p>';
         # Check Interval
         print '<p>';
@@ -3510,6 +3510,34 @@
         print '<script>'.
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
+
+        # Auto-complete for contacts
+        $hgs = get_and_sort_contacts( );
+        print '<script>';
+        print '$(function() {';
+        print 'var acontacts = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "acontacts" );
+        print '</script>';
+
+        # Auto-complete for contact groups
+        $hgs = get_and_sort_contactgroups( );
+        print '<script>';
+        print '$(function() {';
+        print 'var acontactgroups = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item["name"]."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "acontactgroups" );
+        print '</script>';
 
         exit( 0 );
     }
@@ -3901,6 +3929,34 @@
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
 
+        # Auto-complete for contacts
+        $hgs = get_and_sort_contacts( );
+        print '<script>';
+        print '$(function() {';
+        print 'var contacts = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "contacts" );
+        print '</script>';
+
+        # Auto-complete for contact groups
+        $hgs = get_and_sort_contactgroups( );
+        print '<script>';
+        print '$(function() {';
+        print 'var contactgroups = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item["name"]."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "contactgroups" );
+        print '</script>';
+
         exit( 0 );
     }
 
@@ -4044,13 +4100,13 @@
         #print '</p>';
         # Contacts
         print '<p>';
-        print '<label for="contacts">Contacts</label>';
-        print '<input class="field" type="text" id="contacts" name="contacts" />';
+        print '<label for="bcontacts">Contacts</label>';
+        print '<input class="field" type="text" id="bcontacts" name="contacts" />';
         print '</p>';
         # Contact Groups
         print '<p>';
-        print '<label for="contactgroups">Contact Groups</label>';
-        print '<input class="field" type="text" id="contactgroups" name="contactgroups" />';
+        print '<label for="bcontactgroups">Contact Groups</label>';
+        print '<input class="field" type="text" id="bcontactgroups" name="contactgroups" />';
         print '</p>';
         # Check Interval
         print '<p>';
@@ -4167,6 +4223,34 @@
         print '<script>'.
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
+
+        # Auto-complete for contacts
+        $hgs = get_and_sort_contacts( );
+        print '<script>';
+        print '$(function() {';
+        print 'var bcontacts = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "bcontacts" );
+        print '</script>';
+
+        # Auto-complete for contact groups
+        $hgs = get_and_sort_contactgroups( );
+        print '<script>';
+        print '$(function() {';
+        print 'var bcontactgroups = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item["name"]."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "bcontactgroups" );
+        print '</script>';
 
         exit( 0 );
     }
@@ -4412,14 +4496,14 @@
         #print '</p>';
         # Contacts
         print '<p>';
-        print '<label for="contacts">Contacts</label>';
-        print '<input class="field" type="text" id="contacts" name="contacts"';
+        print '<label for="ccontacts">Contacts</label>';
+        print '<input class="field" type="text" id="ccontacts" name="contacts"';
         print ' value="'.$contacts.'" />';
         print '</p>';
         # Contact Groups
         print '<p>';
-        print '<label for="contactgroups">Contact Groups</label>';
-        print '<input class="field" type="text" id="contactgroups" name="contactgroups"';
+        print '<label for="ccontactgroups">Contact Groups</label>';
+        print '<input class="field" type="text" id="ccontactgroups" name="contactgroups"';
         print ' value="'.$contactgroups.'" />';
         print '</p>';
         # Check Interval
@@ -4551,6 +4635,34 @@
         print '<script>'.
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
+
+        # Auto-complete for contacts
+        $hgs = get_and_sort_contacts( );
+        print '<script>';
+        print '$(function() {';
+        print 'var ccontacts = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "ccontacts" );
+        print '</script>';
+
+        # Auto-complete for contact groups
+        $hgs = get_and_sort_contactgroups( );
+        print '<script>';
+        print '$(function() {';
+        print 'var ccontactgroups = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item["name"]."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "ccontactgroups" );
+        print '</script>';
 
         exit( 0 );
     }
