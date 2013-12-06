@@ -756,6 +756,31 @@ item_deleteN()
 }
 
 # ----------------------------------------------------------------------------
+item_exists_new()
+# ----------------------------------------------------------------------------
+# Purpose:      Look for text in a column.
+# Arguments:    $1 - column, $2 - FILE_XXX, $3 - text
+# Returns:      0 - found, 1 - not found
+{
+    local query i ncols=${gfile_ncols[$2]}
+
+    [[ $1 -gt $ncols ]] && {
+        echo -n "NAGCTL ERROR: Cannot search for column $1 when "
+        echo "there are only $ncols columns."
+        exit 11
+    }
+
+    [[ $1 -eq 1 ]] && { query="^"; }
+
+    #( |,)mark\.clarkson( |,)
+    # Build a precise query
+    for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
+    query="${query%,}( |,)$3( |,)"
+    for i in `seq 1 $(($ncols-$1))`; do query="$query.*"; done
+    return `grep -E -qs -- "$query" ${gservice}_${gfilename[$2]}.setup`
+}
+
+# ----------------------------------------------------------------------------
 item_exists()
 # ----------------------------------------------------------------------------
 # Purpose:      Look for text in a column.
@@ -840,6 +865,30 @@ item_existsN()
     done
     #TeSt: echo "query is '$query'"
     return `grep -qs -- "$query" ${gservice}_${gfilename[$2]}.setup`
+}
+
+# ----------------------------------------------------------------------------
+item_search_new()
+# ----------------------------------------------------------------------------
+# Purpose:      Look for text in a column and display it the entire line.
+# Arguments:    $1 - column, $2 - FILE_XXX, $3 - text
+# Returns:      0 - found, 1 - not found
+{
+    local query i ncols=${gfile_ncols[$2]}
+
+    if [[ $1 -gt $ncols ]]; then
+        echo -n "NAGCTL ERROR: Cannot search for column $1 when "
+        echo "there are only $ncols columns."
+        exit 11
+    elif [[ $1 -eq 1 ]]; then
+        query="^"
+    fi
+
+    # Build a precise query
+    for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
+    query="${query%,}( |,)$3( |,)"
+    for i in `seq 1 $(($ncols-$1))`; do query="$query.*"; done
+    grep -E -h -- "$query" ${gservice}_${gfilename[$2]}.setup
 }
 
 # ----------------------------------------------------------------------------
@@ -3579,34 +3628,34 @@ delete_contacts_line()
     }
 
     lockdir
-    if item_exists 3 $FILE_CONTACTGROUPS ".*$name\>"; then
-        t=`item_search "3" $FILE_CONTACTGROUPS ".*$name\>" | head -1`
+    if item_exists_new 3 $FILE_CONTACTGROUPS "$name"; then
+        t=`item_search_new "3" $FILE_CONTACTGROUPS ".*$name\>" | head -1`
         IFS=, read nname x < <( echo "$t" )
         echo -n "NAGCTL ERROR: Contact '$name' is referenced by one or more"
         echo " Contact Groups ($nname ...). Will not delete."
         RETVAL=15
-    elif item_exists 3 $FILE_SERVICETEMPLATES ".*$name\>"; then
-        t=`item_search "3" $FILE_SERVICETEMPLATES ".*$name\>" | head -1`
+    elif item_exists_new 3 $FILE_SERVICETEMPLATES "$name"; then
+        t=`item_search_new "3" $FILE_SERVICETEMPLATES ".*$name\>" | head -1`
         IFS=, read nname x < <( echo "$t" )
-        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo -n "NAGCTL ERROR: Contact '$name' is referenced by one"
         echo " or more service templates ($nname ...). Will not delete."
         RETVAL=15
-    elif item_exists 3 $FILE_HOSTTEMPLATES ".*$name\>"; then
-        t=`item_search "3" $FILE_HOSTTEMPLATES ".*$name\>" | head -1`
+    elif item_exists_new 3 $FILE_HOSTTEMPLATES "$name"; then
+        t=`item_search_new "3" $FILE_HOSTTEMPLATES "$name" | head -1`
         IFS=, read nname x < <( echo "$t" )
-        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo -n "NAGCTL ERROR: Contact '$name' is referenced by one"
         echo " or more host templates ($nname ...). Will not delete."
         RETVAL=15
-    elif item_exists 6 $FILE_HOSTS ".*$name\>"; then
-        t=`item_search "6" $FILE_HOSTS ".*$name\>" | head -1`
+    elif item_exists_new 6 $FILE_HOSTS "$name"; then
+        t=`item_search_new "6" $FILE_HOSTS "$name" | head -1`
         IFS=, read nname x < <( echo "$t" )
-        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo -n "NAGCTL ERROR: Contact '$name' is referenced by one"
         echo " or more hosts ($nname ...). Will not delete."
         RETVAL=15
-    elif item_exists 6 $FILE_SERVICES ".*$name\>"; then
-        t=`item_search "6" $FILE_SERVICES ".*$name\>" | head -1`
+    elif item_exists_new 6 $FILE_SERVICES "$name"; then
+        t=`item_search_new "6" $FILE_SERVICES "$name" | head -1`
         IFS=, read nname x x svcdesc x < <( echo "$t" )
-        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo -n "NAGCTL ERROR: Contact '$name' is referenced by one"
         echo " or more services ($nname:$svcdesc ...). Will not delete."
         RETVAL=15
     else
@@ -3637,19 +3686,19 @@ delete_contactgroups_line()
     }
 
     lockdir
-    if item_exists 4 $FILE_SERVICETEMPLATES ".*$name\>"; then
+    if item_exists_new 4 $FILE_SERVICETEMPLATES "$name"; then
         echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
         echo " or more service templates. Will not delete."
         RETVAL=15
-    elif item_exists 4 $FILE_HOSTTEMPLATES ".*$name\>"; then
+    elif item_exists_new 4 $FILE_HOSTTEMPLATES "$name"; then
         echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
         echo " or more host templates. Will not delete."
         RETVAL=15
-    elif item_exists 7 $FILE_HOSTS ".*$name\>"; then
+    elif item_exists_new 7 $FILE_HOSTS "$name"; then
         echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
         echo " or more hosts. Will not delete."
         RETVAL=15
-    elif item_exists 7 $FILE_SERVICES ".*$name\>"; then
+    elif item_exists_new 7 $FILE_SERVICES "$name"; then
         echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
         echo " or more services. Will not delete."
         RETVAL=15

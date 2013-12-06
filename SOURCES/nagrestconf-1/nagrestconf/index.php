@@ -355,6 +355,162 @@
      */
 
     # ------------------------------------------------------------------------
+    function autocomplete_svcnotifopts( $id ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Hostgroup
+
+        # d u r f s n
+         print '$(function() {
+         var '.$id.' = [
+         {
+             value: "w",
+             label: "warning",
+             desc: "Notify on WARNING service states."
+         },
+         {
+             value: "u",
+             label: "unknown",
+             desc: "notify on UNKNOWN service states."
+         },
+         {
+             value: "c",
+             label: "critical",
+             desc: "Notify on CRITICAL service states."
+         },
+         {
+             value: "r",
+             label: "recovery",
+             desc: "Notify on service recoveries (OK states)."
+         },
+         {
+             value: "f",
+             label: "flapping",
+             desc: "Notify when flapping starts/stops."
+         },
+         {
+             value: "n",
+             label: "none",
+             desc: "Disable all host notifications."
+         }
+         ];';
+        print 'function split( val ) {';
+        print ' return val.split( / \s*/ );';
+        print '}';
+        print 'function extractLast( term ) {';
+        print ' return split( term ).pop();';
+        print '}';
+        print "$( \"#$id\" )";
+        print '.bind( "keydown", function( event ) {';
+        print ' if ( event.keyCode === $.ui.keyCode.TAB &&';
+        print ' $( this ).data( "ui-autocomplete" ).menu.active ) {';
+        print '  event.preventDefault();';
+        print ' }';
+        print '})';
+        print '.autocomplete({';
+        print ' minLength: 0,';
+        print ' source: function( request, response ) {';
+        print ' response( $.ui.autocomplete.filter(';
+        print "  $id, extractLast( request.term ) ) );";
+        print '},';
+        print 'focus: function() {';
+        print ' return false;';
+        print '},';
+        print 'select: function( event, ui ) {';
+        print ' var terms = split( this.value );';
+        print ' terms.pop();';
+        print ' terms.push( ui.item.value );';
+        print ' terms.push( "" );';
+        print ' this.value = terms.join( " " );';
+        print ' return false;';
+        print '}';
+        print '})';
+        print '.data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+                 return $( "<li>" )
+                 .append( "<a><b>" + item.value + "</b> : " + item.desc + "</a>" )
+                 .appendTo( ul );
+             };';
+        print '});';
+    }
+
+    # ------------------------------------------------------------------------
+    function autocomplete_hstnotifopts( $id ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Hostgroup
+
+        # d u r f s n
+         print '$(function() {
+         var '.$id.' = [
+         {
+             value: "d",
+             label: "down",
+             desc: "Notify on DOWN host states."
+         },
+         {
+             value: "u",
+             label: "unreachable",
+             desc: "Notify on UNREACHABLE host states."
+         },
+         {
+             value: "r",
+             label: "recovery",
+             desc: "Notify on host recoveries (UP states)."
+         },
+         {
+             value: "f",
+             label: "flapping",
+             desc: "Notify when flapping starts/stops."
+         },
+         {
+             value: "s",
+             label: "scheduled downtime",
+             desc: "Notify when scheduled downtime starts/ends."
+         },
+         {
+             value: "n",
+             label: "none",
+             desc: "Disable all host notifications."
+         }
+         ];';
+        print 'function split( val ) {';
+        print ' return val.split( / \s*/ );';
+        print '}';
+        print 'function extractLast( term ) {';
+        print ' return split( term ).pop();';
+        print '}';
+        print "$( \"#$id\" )";
+        print '.bind( "keydown", function( event ) {';
+        print ' if ( event.keyCode === $.ui.keyCode.TAB &&';
+        print ' $( this ).data( "ui-autocomplete" ).menu.active ) {';
+        print '  event.preventDefault();';
+        print ' }';
+        print '})';
+        print '.autocomplete({';
+        print ' minLength: 0,';
+        print ' source: function( request, response ) {';
+        print ' response( $.ui.autocomplete.filter(';
+        print "  $id, extractLast( request.term ) ) );";
+        print '},';
+        print 'focus: function() {';
+        print ' return false;';
+        print '},';
+        print 'select: function( event, ui ) {';
+        print ' var terms = split( this.value );';
+        print ' terms.pop();';
+        print ' terms.push( ui.item.value );';
+        print ' terms.push( "" );';
+        print ' this.value = terms.join( " " );';
+        print ' return false;';
+        print '}';
+        print '})';
+        print '.data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+                 return $( "<li>" )
+                 .append( "<a><b>" + item.value + "</b> : " + item.desc + "</a>" )
+                 .appendTo( ul );
+             };';
+        print '});';
+    }
+
+    # ------------------------------------------------------------------------
     function autocomplete_jscript( $id ) {
     # ------------------------------------------------------------------------
     # Outputs a html form fragment to add a New Host
@@ -3514,7 +3670,7 @@
         # Auto-complete for contacts
         $hgs = get_and_sort_contacts( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var acontacts = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -3528,7 +3684,7 @@
         # Auto-complete for contact groups
         $hgs = get_and_sort_contactgroups( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var acontactgroups = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -3932,7 +4088,7 @@
         # Auto-complete for contacts
         $hgs = get_and_sort_contacts( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var contacts = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -3946,7 +4102,7 @@
         # Auto-complete for contact groups
         $hgs = get_and_sort_contactgroups( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var contactgroups = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -4227,7 +4383,7 @@
         # Auto-complete for contacts
         $hgs = get_and_sort_contacts( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var bcontacts = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -4241,7 +4397,7 @@
         # Auto-complete for contact groups
         $hgs = get_and_sort_contactgroups( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var bcontactgroups = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -4639,7 +4795,7 @@
         # Auto-complete for contacts
         $hgs = get_and_sort_contacts( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var ccontacts = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -4653,7 +4809,7 @@
         # Auto-complete for contact groups
         $hgs = get_and_sort_contactgroups( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var ccontactgroups = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -5188,6 +5344,15 @@
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
 
+
+        # Auto-complete for contacts
+        print '<script>';
+        print '$( document ).ready( function() {';
+        autocomplete_hstnotifopts( "hstnotifopts" );
+        autocomplete_svcnotifopts( "svcnotifopts" );
+        print '});';
+        print '</script>';
+
         exit( 0 );
     }
 
@@ -5460,8 +5625,8 @@
         print '</p>';
         # Service Notification Options
         print '<p>';
-        print '<label for="svcnotifopts">Service Notif Opts</label>';
-        print '<input class="field" type="text" id="svcnotifopts" '.
+        print '<label for="asvcnotifopts">Service Notif Opts</label>';
+        print '<input class="field" type="text" id="asvcnotifopts" '.
               'name="svcnotifopts"';
         print ' value="'.$svcnotifopts.'" />';
         print '</p>';
@@ -5481,8 +5646,8 @@
         print '</p>';
         # Host Notification Options
         print '<p>';
-        print '<label for="hstnotifopts">Host Notif Opts</label>';
-        print '<input class="field" type="text" id="hstnotifopts" '.
+        print '<label for="ahstnotifopts">Host Notif Opts</label>';
+        print '<input class="field" type="text" id="ahstnotifopts" '.
               'name="hstnotifopts"';
         print ' value="'.$hstnotifopts.'" />';
         print '</p>';
@@ -5565,6 +5730,14 @@
         print '<script>'.
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
+
+        # Auto-complete for contacts
+        print '<script>';
+        print '$( document ).ready( function() {';
+        autocomplete_hstnotifopts( "ahstnotifopts" );
+        autocomplete_svcnotifopts( "asvcnotifopts" );
+        print '});';
+        print '</script>';
 
         exit( 0 );
     }
@@ -5705,8 +5878,8 @@
         print '</p>';
         # Members
         print '<p>';
-        print '<label for="members">Members<br>(space delimited)</label>';
-        print '<input class="field" type="text" id="members" name="members" ';
+        print '<label for="amembers">Members<br>(space delimited)</label>';
+        print '<input class="field" type="text" id="amembers" name="members" ';
         print '/>';
         print '</p>';
         print '</fieldset>';
@@ -5716,6 +5889,20 @@
         print '<script>'.
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
+
+        # Auto-complete for contacts
+        $hgs = get_and_sort_contacts( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var amembers = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "amembers" );
+        print '</script>';
 
         exit( 0 );
     }
@@ -5945,8 +6132,8 @@
         print '</p>';
         # Members
         print '<p>';
-        print '<label for="members">Members<br>(space delimited)</label>';
-        print '<input class="field" type="text" id="members" name="members" ';
+        print '<label for="bmembers">Members<br>(space delimited)</label>';
+        print '<input class="field" type="text" id="bmembers" name="members" ';
         print ' value="'.$members.'" />';
         print '</p>';
         print '</fieldset>';
@@ -5956,6 +6143,20 @@
         print '<script>'.
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
+
+        # Auto-complete for contacts
+        $hgs = get_and_sort_contacts( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var bmembers = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "bmembers" );
+        print '</script>';
 
         exit( 0 );
     }
@@ -8464,7 +8665,7 @@
         # Auto-complete for contacts
         $hgs = get_and_sort_contacts( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var econtact = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -8478,7 +8679,7 @@
         # Auto-complete for contact groups
         $hgs = get_and_sort_contactgroups( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var econtactgroup = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -8698,7 +8899,7 @@
         # Auto-complete for contacts
         $hgs = get_and_sort_contacts( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var contact = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -8712,7 +8913,7 @@
         # Auto-complete for contact groups
         $hgs = get_and_sort_contactgroups( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var contactgroup = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -8726,7 +8927,7 @@
         # Auto-complete for service-sets
         $hgs = get_and_sort_servicesets_unique( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var serviceset = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -9564,7 +9765,7 @@
         # Auto-complete for contacts
         $hgs = get_and_sort_contacts( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var gcontacts = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -9578,7 +9779,7 @@
         # Auto-complete for contact groups
         $hgs = get_and_sort_contactgroups( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var gcontactgroup = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -9845,7 +10046,7 @@
         # Auto-complete for contacts
         $hgs = get_and_sort_contacts( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var fcontacts = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -9859,7 +10060,7 @@
         # Auto-complete for contact groups
         $hgs = get_and_sort_contactgroups( );
         print '<script>';
-        print '$(function() {';
+        print '$( document ).ready( function() {';
         print 'var fcontactgroup = [';
         $comma="";
         foreach( $hgs as $item ) {
