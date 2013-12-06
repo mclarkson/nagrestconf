@@ -6908,6 +6908,20 @@
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
 
+        # Auto-complete for service sets
+        $hgs = get_and_sort_servicesets_unique( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var chostname = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "chostname" );
+        print '</script>';
+
         exit( 0 );
     }
 
@@ -6942,7 +6956,7 @@
             exit( 0 );
         } 
         
-        $copyto = $query_str["copyto"];
+        $copyto = trim( $query_str["copyto"] );
         # Does the copyto host exist?
         $a = get_and_sort_servicesets( $copyto );
         $itemfound = 0;
@@ -7193,12 +7207,18 @@
     # ------------------------------------------------------------------------
     # Outputs a html form fragment to edit a host
 
-        $a = get_and_sort_servicesets( $name );
+        # Get form details from REST
+        $request = new RestRequest(
+        RESTURL.'/show/servicesets?json={"folder":"'.FOLDER.'",'.
+        '"column":"1","filter":"'.urlencode($name).'"}', 'GET');
+        set_request_options( $request );
+        $request->execute();
+        $hlist = json_decode( $request->getResponseBody(), true );
 
         # Can't search for specific service check using the REST interface.
         # Have to ask for all services for the host (above) and search it:
-        foreach( $a as $svcset ) {
-            extract( $svcset );
+        foreach( $hlist as $svcset ) {
+            foreach( $svcset as $item ) extract( $item );
             if( $svcdesc == $svcdesc_in ) break;
         }
 
@@ -7207,10 +7227,49 @@
         print '">';
         print '<fieldset>';
 
+        ###:TAB1
+        print '<div id="editsvcsettabs">';
+        print '<ul>';
+        print '<li><a href="#fragment-1"><span>Standard</span></a></li>';
+        print '<li><a href="#fragment-2"><span>Additional</span></a></li>';
+        print '<li><a href="#fragment-3"><span>Advanced</span></a></li>';
+        print '</ul>';
+        print '<div id="fragment-1">';
+
+        # Disabled
+        #print '<p>';
+        #print '<label for="sdisabled">Disabled</label>';
+        #$checked="";
+        #if( $disable == "1" ) $checked="checked";
+        #print '<input class="field" type="checkbox" id="sdisabled"';
+        #print ' name="disable" '.$checked.' />';
+        #print '</p>';
+
+        # Disabled
+        print '<p>';
+        print '<label for="sdisabled">Status</label>';
+        $checked="";
+        $checked1="";
+        $checked2="";
+        if( $disable == "2" ) {
+            $checked2="checked";
+        } elseif( $disable == "1" ) {
+            $checked1="checked";
+        } else {
+            $checked="checked";
+        }
+        print '<input type="radio" name="disable"';
+        print ' value="0" '.$checked.' />Enabled &nbsp;';
+        print '<input type="radio" name="disable"';
+        print ' value="1" '.$checked1.' />Disabled &nbsp;';
+        print '<input type="radio" name="disable"';
+        print ' value="2" '.$checked2.' />Testing';
+        print '</p>';
+
         # Hostname
         print '<p>';
-        print '<label for="svcsetname">Service Set Name</label>';
-        print '<input class="field" type="text" id="svcsetname" name="name"';
+        print '<label for="hostname">Host name</label>';
+        print '<input class="field" type="text" id="hostname" name="name"';
         print ' value="'.$name.'" readonly="readonly" />';
         print '</p>';
         # Service Template
@@ -7255,14 +7314,14 @@
         print '</p>';
         # Contact
         print '<p>';
-        print '<label for="contacts">Contacts</label>';
-        print '<input class="field" type="text" id="contacts"';
+        print '<label for="gcontacts">Contacts</label>';
+        print '<input class="field" type="text" id="gcontacts"';
         print ' value="'.$contacts.'" name="contacts">';
         print '</p>';
         # Contact Group
         print '<p>';
-        print '<label for="contactgroup">Contact Groups</label>';
-        print '<input class="field" type="text" id="contactgroup"';
+        print '<label for="gcontactgroup">Contact Groups</label>';
+        print '<input class="field" type="text" id="gcontactgroup"';
         print ' value="'.$contactgroups.'" name="contactgroups">';
         print '</p>';
         # Custom Variables
@@ -7285,6 +7344,91 @@
         print '<input class="field" type="checkbox" id="sactivechecks"';
         print ' name="activechecks" '.$checked.' />';
         print '</p>';
+        print '</div>';
+
+        ###:TAB2
+        print '<div id="fragment-2">';
+        # Check interval
+        print '<p>';
+        print '<label for="echeckinterval">Check Interval</label>';
+        print '<input class="field" type="text" id="echeckinterval"';
+        print ' value="'.$checkinterval.'" name="checkinterval">';
+        print '</p>';
+        # Retry interval
+        print '<p>';
+        print '<label for="eretryinterval">Retry Interval</label>';
+        print '<input class="field" type="text" id="eretryinterval"';
+        print ' value="'.$retryinterval.'" name="retryinterval">';
+        print '</p>';
+        # Max check attempts
+        print '<p>';
+        print '<label for="emaxcheckattempts">Max Check Attempts</label>';
+        print '<input class="field" type="text" id="emaxcheckattempts"';
+        print ' value="'.$maxcheckattempts.'" name="maxcheckattempts">';
+        print '</p>';
+        # Freshness threshold manual
+        print '<p>';
+        print '<label for="emfta">Freshness threshold (manual)</label>';
+        print '<input class="field" type="text" id="emfta"';
+        print ' value="'.$manfreshnessthresh.'" name="manfreshnessthresh">';
+        print '</p>';
+        # Passive Checks
+        print '<p style="margin-top: 12px;">';
+        print '<label for="spassivechecks">Passive Checks Enabled</label>';
+        print '<select name="passivechecks" id="spassivechecks" class="field">';
+        $selected=""; if( ! strlen($passivechecks) ) $selected="selected";
+        print '<option value="" '.$selected.'>From template</option>';
+        $selected=""; if( $passivechecks == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $passivechecks == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        # Check Freshness
+        print '<p>';
+        print '<label for="scheckfreshness">Check Freshness</label>';
+        print '<select name="checkfreshness" id="scheckfreshness" class="field">';
+        $selected=""; if( ! strlen($checkfreshness) ) $selected="selected";
+        print '<option value="" '.$selected.'>From template</option>';
+        $selected=""; if( $checkfreshness == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $checkfreshness == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</div>';
+
+        ###:TAB3
+        print '<div id="fragment-3">';
+        print '<p>';
+        print '<label for="srsi">Retain Status Info</label>';
+        print '<select name="retainstatusinfo" id="srsi" class="field">';
+        $selected=""; if( ! strlen($retainstatusinfo) ) $selected="selected";
+        print '<option value="" '.$selected.'>From template</option>';
+        $selected=""; if( $retainstatusinfo == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $retainstatusinfo == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="srnsi">Retain Nonstatus Info</label>';
+        print '<select name="retainnonstatusinfo" id="srnsi" class="field">';
+        $selected=""; if( ! strlen($retainnonstatusinfo) ) $selected="selected";
+        print '<option value="" '.$selected.'>From template</option>';
+        $selected=""; if( $retainnonstatusinfo == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $retainnonstatusinfo == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</div>';
+        print '</div>';
+        print '<script>';
+        print '$( "#editsvcsettabs" ).tabs();';
+        print '</script>';
+        ###:TABEND
+
         print '</fieldset>';
         print '</form>';
         print '<div class="flash notice" style="display:none"></div>';
@@ -7292,6 +7436,34 @@
         print '<script>'.
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
+
+        # Auto-complete for contacts
+        $hgs = get_and_sort_contacts( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var gcontacts = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "gcontacts" );
+        print '</script>';
+
+        # Auto-complete for contact groups
+        $hgs = get_and_sort_contactgroups( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var gcontactgroup = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item["name"]."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "gcontactgroup" );
+        print '</script>';
 
         exit( 0 );
     }
@@ -7312,6 +7484,11 @@
         #    elseif( $query_str["disable"] == "1" ) $query_str["disable"] = "1";
         #    else $query_str["disable"] = "0";
         #}
+        if( isset( $query_str["disable"] ) ) {
+            if( $query_str["disable"] == "2" ) $query_str["disable"] = "2";
+            elseif( $query_str["disable"] == "1" ) $query_str["disable"] = "1";
+            else $query_str["disable"] = "0";
+        }
         if( isset( $query_str["command"] ) ) {
             $query_str["command"] = strtr( $query_str["command"], 
                                            array( '"' => '\"',) );
@@ -7322,6 +7499,24 @@
         else
             $query_str["activechecks"] = "0";
         # Handle deleting fields
+        if( ! strlen( $query_str["retainstatusinfo"] ) )
+            $query_str["retainstatusinfo"] = "-";
+        if( ! strlen( $query_str["retainnonstatusinfo"] ) )
+            $query_str["retainnonstatusinfo"] = "-";
+        if( ! strlen( $query_str["passivechecks"] ) )
+            $query_str["passivechecks"] = "-";
+        if( ! strlen( $query_str["checkfreshness"] ) )
+            $query_str["checkfreshness"] = "-";
+        if( empty( $query_str["retryinterval"] ) )
+            $query_str["retryinterval"] = "-";
+        if( empty( $query_str["checkinterval"] ) )
+            $query_str["checkinterval"] = "-";
+        if( empty( $query_str["maxcheckattempts"] ) )
+            $query_str["maxcheckattempts"] = "-";
+        if( empty( $query_str["manfreshnessthresh"] ) )
+            $query_str["manfreshnessthresh"] = "-";
+        if( empty( $query_str["freshnessthresh"] ) )
+            $query_str["freshnessthresh"] = "-";
         if( empty( $query_str["contacts"] ) )
             $query_str["contacts"] = "-";
         if( empty( $query_str["contactgroups"] ) )

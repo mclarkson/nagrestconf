@@ -112,7 +112,9 @@ html .ui-autocomplete
 #newhosttmpltabs .ui-tabs-nav,
 #newhosttmpltabs .ui-corner-br,
 #newsvctmpltabs .ui-tabs-nav,
-#newsvctmpltabs .ui-corner-br
+#newsvctmpltabs .ui-corner-br,
+#editsvcsettabs .ui-tabs-nav,
+#editsvcsettabs .ui-corner-br
 {
     background-color: white;
     background-image: none;
@@ -130,7 +132,8 @@ html .ui-autocomplete
 .ui-corner-all#editsvctmpltabs,
 .ui-corner-all#newcontactabs,
 .ui-corner-all#newhosttmpltabs,
-.ui-corner-all#newsvctmpltabs
+.ui-corner-all#newsvctmpltabs,
+.ui-corner-all#editsvcsettabs
 {
     border-top: 0px;
     border-right: 0px;
