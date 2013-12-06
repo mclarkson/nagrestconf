@@ -315,6 +315,9 @@ form fieldset label {
     overflow:auto;
     margin:5px 0px;
     overflow: hidden;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #99CCFF;
 }
 /*
  * BODY ETC
