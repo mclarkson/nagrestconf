@@ -9107,16 +9107,10 @@
 
             # Change " to \". otherwise we get 'folder not found'
             if( isset( $svcdesc ) ) {
-                #$svcdesc = strtr( $svcdesc, array( '%22' => '%5C%22',) );
-                $query_str["svcdesc"] = strtr( $query_str["svcdesc"], 
-                                               array( '"' => '\"',) );
-                $query_str["svcdesc"] = urlencode($query_str["svcdesc"]);
+                $svcdesc = strtr( $svcdesc, array( '%22' => '%5C%22',) );
             }
             if( isset( $command ) ) {
-                #$command = strtr( $command, array( '%22' => '%5C%22',) );
-                $query_str["command"] = strtr( $query_str["command"], 
-                                               array( '"' => '\"',) );
-                $query_str["command"] = urlencode($query_str["command"]);
+                $command = strtr( $command, array( '%22' => '%5C%22',) );
             }
 
             $newservice["folder"] = FOLDER;
