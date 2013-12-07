@@ -511,6 +511,25 @@
     }
 
     # ------------------------------------------------------------------------
+    function autocomplete_jscript_single( $id ) {
+    # ------------------------------------------------------------------------
+    # Outputs a html form fragment to add a New Host
+
+        print "$( \"#$id\" )";
+        print '.bind( "keydown", function( event ) {';
+        print ' if ( event.keyCode === $.ui.keyCode.TAB &&';
+        print ' $( this ).data( "ui-autocomplete" ).menu.active ) {';
+        print '  event.preventDefault();';
+        print ' }';
+        print '})';
+        print '.autocomplete({';
+        print ' minLength: 0,';
+        print ' source: '.$id;
+        print '});';
+        print '});';
+    }
+
+    # ------------------------------------------------------------------------
     function autocomplete_jscript( $id ) {
     # ------------------------------------------------------------------------
     # Outputs a html form fragment to add a New Host
@@ -3576,12 +3595,6 @@
         print '<input class="field" type="text" id="notifinterval" '.
               'value="60" name="notifinterval" required="required" />';
         print '</p>';
-        # Check Command
-        print '<p>';
-        print '<label for="checkcommand">Check Command</label>';
-        print '<input class="field" type="text" id="checkcommand" '.
-              'value="check-host-alive" name="checkcommand" />';
-        print '</p>';
         print '</div>';
 
         ###:TAB2
@@ -3590,7 +3603,7 @@
         print '<p>';
         print '<label for="checkcommand">Check Command</label>';
         print '<input class="field" type="text" id="checkcommand" '.
-              'value="" name="checkcommand" />';
+              'value="check-host-alive" name="checkcommand" />';
         print '</p>';
         # Notification Options
         print '<p>';
@@ -3693,6 +3706,20 @@
         }
         print'];';
         autocomplete_jscript( "acontactgroups" );
+        print '</script>';
+
+        # Auto-complete for commands
+        $hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var checkcommand = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "checkcommand" );
         print '</script>';
 
         exit( 0 );
@@ -3993,7 +4020,7 @@
         # Check Command
         print '<p>';
         print '<label for="checkcommand">Check Command</label>';
-        print '<input class="field" type="text" id="checkcommand" '.
+        print '<input class="field" type="text" id="acheckcommand" '.
               'value="'.$checkcommand.'" name="checkcommand" />';
         print '</p>';
         # Notification Options
@@ -4111,6 +4138,20 @@
         }
         print'];';
         autocomplete_jscript( "contactgroups" );
+        print '</script>';
+
+        # Auto-complete for commands
+        $hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var acheckcommand = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "acheckcommand" );
         print '</script>';
 
         exit( 0 );
@@ -7465,6 +7506,20 @@
         autocomplete_jscript( "gcontactgroup" );
         print '</script>';
 
+        # Auto-complete for commands
+        $hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var escommand = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "escommand" );
+        print '</script>';
+
         exit( 0 );
     }
 
@@ -7677,6 +7732,20 @@
         print '<script>'.
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
+
+        # Auto-complete for commands
+        $hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var command = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "command" );
+        print '</script>';
 
         exit( 0 );
     }
@@ -9979,6 +10048,20 @@
         autocomplete_jscript( "gcontactgroup" );
         print '</script>';
 
+        # Auto-complete for commands
+        $hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var escommand = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "escommand" );
+        print '</script>';
+
         exit( 0 );
     }
 
@@ -10258,6 +10341,20 @@
         }
         print'];';
         autocomplete_jscript( "fcontactgroup" );
+        print '</script>';
+
+        # Auto-complete for commands
+        $hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var command = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "command" );
         print '</script>';
 
         exit( 0 );
