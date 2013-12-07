@@ -1026,6 +1026,7 @@ action_show()
     cd $SETUP_DIR
 
     eval "$gcsv" 2>/dev/null
+    echo "$gcsv" >>/tmp/bob
 
     [[ -z "$column" ]] && column=1
     [[ -z "$filter" ]] && filter=".*"
@@ -2394,15 +2395,22 @@ add_servicetemplate_line()
 add_host_line()
 # ----------------------------------------------------------------------------
 {
-    local name
+    local name i s
 
-    IFS=, read name x x template hostgroups contacts contactgroups \
+    IFS=, read name x ipaddress template hostgroups contacts contactgroups \
         x servicesets disable x < <( echo "$gcsv" )
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
         exit 13
     }
+
+    if ! echo "$ipaddress" | \
+        grep -qs -E '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b'
+    then
+        echo "NAGCTL ERROR: Invalid IP address."
+        exit 13
+    fi
 
     lockdir
     if item_exists 1 $FILE_HOSTS "$name"; then
@@ -2476,9 +2484,25 @@ add_host_line()
     echo "$gcsv" >>$SETUP_FILE
 
     [[ -n $servicesets ]] && {
-        item_search 1 $FILE_SERVICESETS "$servicesets"  | \
+        file="${gservice}_${gfilename[$FILE_SERVICES]}.setup"
+        tfile="/var/tmp/$file"
+        :>$tfile
+        # Apply
+        # Reverse servicesets
+        for i in $servicesets; do s="$i$spc$s"; spc=" "; done
+        # Apply
+        for i in $s; do
+        item_search 1 $FILE_SERVICESETS "$i"  | \
             sed -- "s/^[^,]*\(,.*\)/$name\1/" \
-            >>${gservice}_${gfilename[$FILE_SERVICES]}.setup
+            >>$tfile
+        done
+        # Filter out duplicate services
+        n=`wc -l $tfile | cut -d" " -f 1`
+        for i in `seq 1 $n`;do
+            svcdesc=`sed -n "$i{p}" $tfile | cut -d, -f4`
+            grep -m1 "^[^,]*,[^,]*,[^,]*,$svcdesc" $tfile
+        done | sort -u >>$file
+        rm -f $tfile
     }
     unlockdir
 

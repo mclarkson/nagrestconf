@@ -7659,10 +7659,40 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?tab=1&newsvcsetsvc=1';
         print '">';
         print '<fieldset>';
+
+        ###:TAB1
+        print '<div id="newsvcsettabs">';
+        print '<ul>';
+        print '<li><a href="#fragment-1"><span>Standard</span></a></li>';
+        print '<li><a href="#fragment-2"><span>Additional</span></a></li>';
+        print '<li><a href="#fragment-3"><span>Advanced</span></a></li>';
+        print '</ul>';
+        print '<div id="fragment-1">';
+
+        # Disabled
+        #print '<p>';
+        #print '<label for="sdisabled">Disabled</label>';
+        #$checked="";
+        #if( $disable == "1" ) $checked="checked";
+        #print '<input class="field" type="checkbox" id="sdisabled"';
+        #print ' name="disable" '.$checked.' />';
+        #print '</p>';
+
+        # Disabled
+        print '<p>';
+        print '<label for="sdisabled">Status</label>';
+        print '<input type="radio" name="disable"';
+        print ' value="0" checked />Enabled &nbsp;';
+        print '<input type="radio" name="disable"';
+        print ' value="1" />Disabled &nbsp;';
+        print '<input type="radio" name="disable"';
+        print ' value="2" />Testing';
+        print '</p>';
+
         # Hostname
         print '<p>';
-        print '<label for="svcsetname">Service Set Name</label>';
-        print '<input class="field" type="text" id="svcsetname" name="name"';
+        print '<label for="hostname">Service Set</label>';
+        print '<input class="field" type="text" id="hostname" name="name"';
         print ' value="'.$svcsetname.'" readonly="readonly" />';
         print '</p>';
         # Service Template
@@ -7672,52 +7702,57 @@
         print '<select class="field" id="svctemplate" name="template"';
         print ' required="required">';
         foreach( $st as $item ) {
-            print '<option value="'.$item["name"].'">'.$item["name"]
-              .'</option>';
+            $selected = "";
+            if( $item["name"] == $template ) $selected = " selected";
+            print '<option value="'.$item["name"].'"'.$selected.'>'
+              .$item["name"].'</option>';
         }
         print '</select>';
         print '</p>';
+
         # Command
+        # Allow both types of speech marks as input value
         print '<p>';
-        print '<label for="command">Command *</label>';
-        print '<input class="field" type="text" id="command" name="command"';
+        print '<label for="escommand">Command *</label>';
+        print '<input class="field" type="text" id="escommand" name="command"';
         print ' required="required" />';
         print '</p>';
+
         # Service Description
         print '<p>';
-        print '<label for="svcdesc">Description *</label>';
+        print '<label for="svcdesc">Description</label>';
         print '<input class="field" type="text" id="svcdesc" name="svcdesc"';
-        print ' required="required" />';
+        print ' value="" />';
         print '</p>';
         # Service Groups
         print '<p>';
         print '<label for="svcgroup">Service Groups</label>';
         print '<input class="field" type="text" id="svcgroup"';
-        print ' name="svcgroup">';
+        print ' value="" name="svcgroup">';
         print '</p>';
         # Contact
         print '<p>';
-        print '<label for="contacts">Contacts</label>';
-        print '<input class="field" type="text" id="contacts"';
-        print ' name="contacts">';
+        print '<label for="gcontacts">Contacts</label>';
+        print '<input class="field" type="text" id="gcontacts"';
+        print ' value="" name="contacts">';
         print '</p>';
         # Contact Group
         print '<p>';
-        print '<label for="contactgroup">Contact Groups</label>';
-        print '<input class="field" type="text" id="contactgroup"';
-        print ' name="contactgroups">';
+        print '<label for="gcontactgroup">Contact Groups</label>';
+        print '<input class="field" type="text" id="gcontactgroup"';
+        print ' value="" name="contactgroups">';
         print '</p>';
         # Custom Variables
         print '<p>';
         print '<label for="customvars">Custom Variables</label>';
         print '<input class="field" type="text" id="customvars"';
-        print ' name="customvars">';
+        print ' value="" name="customvars">';
         print '</p>';
         # Freshness Threshold
         print '<p>';
         print '<label for="freshnessthresh">Freshness Threshold</label>';
         print '<input class="field" type="text" id="contactgroup"';
-        print ' name="freshnessthresh">';
+        print ' value="" name="freshnessthresh">';
         print '</p>';
         # Active Checks
         print '<p>';
@@ -7725,6 +7760,79 @@
         print '<input class="field" type="checkbox" id="sactivechecks"';
         print ' name="activechecks" checked />';
         print '</p>';
+        print '</div>';
+
+        ###:TAB2
+        print '<div id="fragment-2">';
+        # Check interval
+        print '<p>';
+        print '<label for="echeckinterval">Check Interval</label>';
+        print '<input class="field" type="text" id="echeckinterval"';
+        print ' value="" name="checkinterval">';
+        print '</p>';
+        # Retry interval
+        print '<p>';
+        print '<label for="eretryinterval">Retry Interval</label>';
+        print '<input class="field" type="text" id="eretryinterval"';
+        print ' value="" name="retryinterval">';
+        print '</p>';
+        # Max check attempts
+        print '<p>';
+        print '<label for="emaxcheckattempts">Max Check Attempts</label>';
+        print '<input class="field" type="text" id="emaxcheckattempts"';
+        print ' value="" name="maxcheckattempts">';
+        print '</p>';
+        # Freshness threshold manual
+        print '<p>';
+        print '<label for="emfta">Freshness threshold (manual)</label>';
+        print '<input class="field" type="text" id="emfta"';
+        print ' value="" name="manfreshnessthresh">';
+        print '</p>';
+        # Passive Checks
+        print '<p style="margin-top: 12px;">';
+        print '<label for="spassivechecks">Passive Checks Enabled</label>';
+        print '<select name="passivechecks" id="spassivechecks" class="field">';
+        print '<option value="" selected >From template</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        # Check Freshness
+        print '<p>';
+        print '<label for="scheckfreshness">Check Freshness</label>';
+        print '<select name="checkfreshness" id="scheckfreshness" class="field">';
+        print '<option value="" selected >From template</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</div>';
+
+        ###:TAB3
+        print '<div id="fragment-3">';
+        print '<p>';
+        print '<label for="srsi">Retain Status Info</label>';
+        print '<select name="retainstatusinfo" id="srsi" class="field">';
+        print '<option value="" selected >From template</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="srnsi">Retain Nonstatus Info</label>';
+        print '<select name="retainnonstatusinfo" id="srnsi" class="field">';
+        print '<option value="" selected >From template</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</div>';
+        print '</div>';
+        print '<script>';
+        print '$( "#newsvcsettabs" ).tabs();';
+        print '</script>';
+        ###:TABEND
+
         print '</fieldset>';
         print '</form>';
         print '<div class="flash notice" style="display:none"></div>';
@@ -7733,19 +7841,48 @@
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
 
-        # Auto-complete for commands
-        $hgs = get_and_sort_commands( );
+        # Auto-complete for contacts
+        $hgs = get_and_sort_contacts( );
         print '<script>';
         print '$( document ).ready( function() {';
-        print 'var command = [';
+        print 'var gcontacts = [';
         $comma="";
         foreach( $hgs as $item ) {
             print "$comma\"".$item['name']."\"";
             $comma=",";
         }
         print'];';
-        autocomplete_jscript_single( "command" );
+        autocomplete_jscript( "gcontacts" );
         print '</script>';
+
+        # Auto-complete for contact groups
+        $hgs = get_and_sort_contactgroups( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var gcontactgroup = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item["name"]."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "gcontactgroup" );
+        print '</script>';
+
+        # Auto-complete for commands
+        $hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var escommand = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "escommand" );
+        print '</script>';
+
 
         exit( 0 );
     }
@@ -8953,6 +9090,21 @@
         print'];';
         autocomplete_jscript( "econtactgroup" );
         print '</script>';
+
+        # Auto-complete for commands
+        $hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var ecommand = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "ecommand" );
+        print '</script>';
+
         exit( 0 );
     }
 

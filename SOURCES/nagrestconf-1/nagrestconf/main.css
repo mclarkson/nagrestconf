@@ -114,7 +114,9 @@ html .ui-autocomplete
 #newsvctmpltabs .ui-tabs-nav,
 #newsvctmpltabs .ui-corner-br,
 #editsvcsettabs .ui-tabs-nav,
-#editsvcsettabs .ui-corner-br
+#editsvcsettabs .ui-corner-br,
+#newsvcsettabs .ui-tabs-nav,
+#newsvcsettabs .ui-corner-br
 {
     background-color: white;
     background-image: none;
@@ -133,7 +135,8 @@ html .ui-autocomplete
 .ui-corner-all#newcontactabs,
 .ui-corner-all#newhosttmpltabs,
 .ui-corner-all#newsvctmpltabs,
-.ui-corner-all#editsvcsettabs
+.ui-corner-all#editsvcsettabs,
+.ui-corner-all#newsvcsettabs
 {
     border-top: 0px;
     border-right: 0px;
@@ -249,6 +252,12 @@ form fieldset select {
     display:block;
     margin-top: 0;
     padding-top: 0;
+}
+input[readonly]
+{
+    border-width: 0px;
+    padding-top: 2px;
+    padding-bottom: 0px;
 }
 form fieldset input[type=radio] {
     display:inline;
