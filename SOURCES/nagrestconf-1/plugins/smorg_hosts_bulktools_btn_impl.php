@@ -712,23 +712,23 @@
             $svcs = get_and_sort_services( $item["name"] );
 
             if( sizeof($svcs) > 0 ) { 
-				# Delete Services attached to this host
-				$options = array();
-				$options["name"] = $item["name"];
-				$options["svcdesc"] = '.*';
-				$options["folder"] = FOLDER;
-				$json = json_encode( $options );
-				$request = new \RestRequest(
-				  RESTURL.'/delete/services',
-				  'POST',
-				  'json='.$json
-				);
-				set_request_options( $request );
-				$request->execute();
+                # Delete Services attached to this host
+                $options = array();
+                $options["name"] = $item["name"];
+                $options["svcdesc"] = '.*';
+                $options["folder"] = FOLDER;
+                $json = json_encode( $options );
+                $request = new \RestRequest(
+                  RESTURL.'/delete/services',
+                  'POST',
+                  'json='.$json
+                );
+                set_request_options( $request );
+                $request->execute();
 
-				$list = json_decode( $request->getResponseBody(), true );
-				$resp = $request->getResponseInfo();
-				if( $resp["http_code"] != 200 ) break;
+                $list = json_decode( $request->getResponseBody(), true );
+                $resp = $request->getResponseInfo();
+                if( $resp["http_code"] != 200 ) break;
             }
 
             #$slist = json_decode( $request->getResponseBody(), true );
