@@ -1405,8 +1405,15 @@ modify_host_line()
 {
     local name disabled a
 
-    IFS=, read name x x template hostgroups contacts contactgroups \
+    IFS=, read name x ipaddress template hostgroups contacts contactgroups \
         x x disable x x command x < <( echo "$gcsv" )
+
+    if ! echo "$ipaddress" | \
+        grep -qs -E '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b'
+    then
+        echo "NAGCTL ERROR: Invalid IP address."
+        exit 13
+    fi
 
     lockdir
     if ! item_exists 1 $FILE_HOSTS "$name"; then
