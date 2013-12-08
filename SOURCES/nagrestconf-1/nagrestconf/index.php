@@ -5299,7 +5299,7 @@
         print '</p>';
         # Service Notification Commands
         print '<p>';
-        print '<label for="svcnotifcmds">Service Notif Cmds *</label>';
+        print '<label for="svcnotifcmds">Service Notif Cmd *</label>';
         print '<input class="field" type="text" id="svcnotifcmds" '.
               'value="notify-service-by-email" name="svcnotifcmds" />';
         print '</p>';
@@ -5317,7 +5317,7 @@
         print '</p>';
         # Host Notification Commands
         print '<p>';
-        print '<label for="hstnotifcmds">Host Notif Cmds *</label>';
+        print '<label for="hstnotifcmds">Host Notif Cmd *</label>';
         print '<input class="field" type="text" id="hstnotifcmds" '.
               'value="notify-host-by-email" name="hstnotifcmds" />';
         print '</p>';
@@ -5392,6 +5392,34 @@
         autocomplete_hstnotifopts( "hstnotifopts" );
         autocomplete_svcnotifopts( "svcnotifopts" );
         print '});';
+        print '</script>';
+
+        # Auto-complete for commands
+        $hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var hstnotifcmds = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "hstnotifcmds" );
+        print '</script>';
+
+        # Auto-complete for commands
+        #$hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var svcnotifcmds = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "svcnotifcmds" );
         print '</script>';
 
         exit( 0 );
@@ -5673,8 +5701,8 @@
         print '</p>';
         # Service Notification Commands
         print '<p>';
-        print '<label for="svcnotifcmds">Service Notif Cmds</label>';
-        print '<input class="field" type="text" id="svcnotifcmds" '.
+        print '<label for="svcnotifcmds">Service Notif Cmd</label>';
+        print '<input class="field" type="text" id="asvcnotifcmds" '.
               'name="svcnotifcmds"';
         print ' value="'.$svcnotifcmds.'" />';
         print '</p>';
@@ -5694,8 +5722,8 @@
         print '</p>';
         # Host Notification Commands
         print '<p>';
-        print '<label for="hstnotifcmds">Host Notif Cmds</label>';
-        print '<input class="field" type="text" id="hstnotifcmds" '.
+        print '<label for="hstnotifcmds">Host Notif Cmd</label>';
+        print '<input class="field" type="text" id="ahstnotifcmds" '.
               'name="hstnotifcmds"';
         print ' value="'.$hstnotifcmds.'" />';
         print '</p>';
@@ -5778,6 +5806,34 @@
         autocomplete_hstnotifopts( "ahstnotifopts" );
         autocomplete_svcnotifopts( "asvcnotifopts" );
         print '});';
+        print '</script>';
+
+        # Auto-complete for commands
+        $hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var ahstnotifcmds = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "ahstnotifcmds" );
+        print '</script>';
+
+        # Auto-complete for commands
+        #$hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var asvcnotifcmds = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "asvcnotifcmds" );
         print '</script>';
 
         exit( 0 );
