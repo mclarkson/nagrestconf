@@ -1,5 +1,12 @@
 /* Tab modifications */
 
+#reapply
+{
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}
+
 #nagrestconf
 {
     font-size: 1.4em;
@@ -116,7 +123,11 @@ html .ui-autocomplete
 #editsvcsettabs .ui-tabs-nav,
 #editsvcsettabs .ui-corner-br,
 #newsvcsettabs .ui-tabs-nav,
-#newsvcsettabs .ui-corner-br
+#newsvcsettabs .ui-corner-br,
+#newservicetabs .ui-tabs-nav,
+#newservicetabs .ui-corner-br,
+#newhosttabs .ui-tabs-nav,
+#newhosttabs .ui-corner-br
 {
     background-color: white;
     background-image: none;
@@ -136,7 +147,9 @@ html .ui-autocomplete
 .ui-corner-all#newhosttmpltabs,
 .ui-corner-all#newsvctmpltabs,
 .ui-corner-all#editsvcsettabs,
-.ui-corner-all#newsvcsettabs
+.ui-corner-all#newsvcsettabs,
+.ui-corner-all#newservicetabs,
+.ui-corner-all#newhosttabs
 {
     border-top: 0px;
     border-right: 0px;

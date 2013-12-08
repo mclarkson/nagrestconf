@@ -8859,7 +8859,7 @@
         print ' }});';
         print '};';
         # Cancel button
-        print 'var cancel = function() { $("#edithostdlg").dialog("close"); };';
+        print 'var cancel = function() { $("p#deleteme").remove(); $("#edithostdlg").dialog("close"); };';
         # Setup the dialog
         print '$( "div#edithostdlg" ).dialog( { ';
         print 'autoOpen : false';
@@ -8867,6 +8867,7 @@
         print ', resizable : false';
         print ', position : { my: "center top", at: "center top+60" }';
         print ', buttons : { "Apply Changes": edithost, "Close": cancel }';
+        print ', close : function( event, ui ) { $("p#deleteme").remove(); }';
         print ' } );';
         print '</script>';
     }
@@ -8949,6 +8950,18 @@
         print '<input class="field" type="text" id="eipaddress" name="ipaddress"';
         print ' value="'.$ipaddress.'" required="required" />';
         print '</p>';
+        # Service Set (auto-complete)
+        print '<p>';
+        print '<label for="serviceset">Service Sets</label>';
+        print '<input class="field" id="serviceset"';
+        print ' value="'.$servicesets.'" name="servicesets">';
+        print '</p>';
+        # Refresh
+        #print '<p>';
+        #print '<label for="reapply">Re-apply Service Sets</label>';
+        print '<input type="checkbox" id="reapply"';
+        print ' name="reapply" />';
+        #print '</p>';
         # Host Template
         $hts = get_and_sort_hosttemplates( );
         print '<p>';
@@ -8987,24 +9000,6 @@
         print '<input class="field" type="text" id="econtactgroup"';
         print ' value="'.$contactgroups.'" name="contactgroups">';
         print '</p>';
-        # Service Set - DON'T SHOW SERVICESETS WHEN EDITING
-        #$hgs = get_and_sort_servicesets_unique( );
-        #print '<p>';
-        #print '<label for="serviceset">Service Set</label>';
-        #print '<select class="field" id="serviceset" name="servicesets">';
-        #foreach( $hgs as $item ) {
-        #    print '<option value="'.$item.'">'.$item.'</option>';
-        #}
-        #print '</select>';
-        #print '</p>';
-        # Active Checks
-        print '<p>';
-        print '<label for="eactivechecks">Active Check</label>';
-        $checked="checked";
-        if( $activechecks == "0" ) $checked="";
-        print '<input class="field" type="checkbox" id="eactivechecks"';
-        print ' name="activechecks" '.$checked.' />';
-        print '</p>';
 
         ###:TAB2
         print '</div>';
@@ -9014,6 +9009,14 @@
         print '<label for="ecommand">Check Command</label>';
         print '<input class="field" type="text" id="ecommand"';
         print ' value="'.$command.'" name="command">';
+        print '</p>';
+        # Active Checks
+        print '<p>';
+        print '<label for="eactivechecks">Active Check</label>';
+        $checked="checked";
+        if( $activechecks == "0" ) $checked="";
+        print '<input class="field" type="checkbox" id="eactivechecks"';
+        print ' name="activechecks" '.$checked.' />';
         print '</p>';
         print '<p>';
         print '<label for="emaxcheckattempts">Max check attempts</label>';
@@ -9060,13 +9063,17 @@
         print '<div class="flash notice" style="display:none"></div>';
         print '<div class="flash error" style="display:none"></div>';
         print '<script>'.
-              '$(".ui-button:contains(Close)").focus()'.
+              '$(".ui-button:contains(Close)").focus();'.
+              'if( $("input#reapplyfake").length == 0 ) { $(\'<p style="float: right;padding-right:16px;" id="deleteme"><label style="display:inline-block; position: relative; top: -2px; padding-right: 4px" >Re-apply Service Sets</label><input type="checkbox" id="reapplyfake" style="display:inline-block;" /></p>\''.
+              ').insertAfter("html body div.ui-dialog div.ui-dialog-buttonpane div.ui-dialog-buttonset");};'.
               '</script>';
 
         # Auto-complete for contacts
         $hgs = get_and_sort_contacts( );
         print '<script>';
         print '$( document ).ready( function() {';
+        print '$( "input#reapplyfake" ).prop("checked",false);';
+        print '$( "input#reapplyfake" ).change( function() { $("#reapply").prop("checked",$(this).prop("checked"));});';
         print 'var econtact = [';
         $comma="";
         foreach( $hgs as $item ) {
@@ -9105,6 +9112,20 @@
         autocomplete_jscript_single( "ecommand" );
         print '</script>';
 
+        # Auto-complete for service-sets
+        $hgs = get_and_sort_servicesets_unique( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var serviceset = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"$item\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "serviceset" );
+        print '</script>';
+
         exit( 0 );
     }
 
@@ -9117,6 +9138,72 @@
         # Create the query
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
         unset( $query_str["newhost"] );
+        if( isset( $query_str["reapply"] ) ) {
+            # Delete host
+            $query_str["folder"] = FOLDER;
+            unset( $query_str["delservices"] );
+            if( isset( $query_str["name"] ) ) {
+                $a = array();
+                $a["name"] = $query_str["name"];
+                $a["svcdesc"] = '.*';
+                $a["folder"] = FOLDER;
+                $json = json_encode( $a );
+                $request2 = new RestRequest(
+                  RESTURL.'/delete/services',
+                  'POST',
+                  'json='.$json
+                );
+                set_request_options( $request2 );
+                $request2->execute();
+                $slist = json_decode( $request2->getResponseBody(), true );
+                ### Check $slist->http_code ###
+            } else {
+                $retval["message"] = "Internal error: name empty";
+                $retval["code"] = "400";
+                print( json_encode( $retval ) );
+                exit( 0 );
+            }
+            $json = json_encode( $query_str );
+
+            # Do the REST add host request
+            $request = new RestRequest(
+              RESTURL.'/delete/hosts',
+              'POST',
+              'json='.$json
+            );
+            set_request_options( $request );
+            $request->execute();
+            $slist = json_decode( $request->getResponseBody(), true );
+
+            # Add host
+
+            if( isset( $query_str["activechecks"] ) )
+                $query_str["activechecks"] = "1";
+            else
+                $query_str["activechecks"] = "0";
+            $json = json_encode( $query_str );
+
+            # Do the REST add host request
+            $request = new RestRequest(
+              RESTURL.'/add/hosts',
+              'POST',
+              'json='.$json
+            );
+            set_request_options( $request );
+            $request->execute();
+            $slist = json_decode( $request->getResponseBody(), true );
+
+            # Return json
+            $retval = array();
+            $retval["message"] = $slist;
+            $resp = $request->getResponseInfo();
+            $retval["code"] = $resp["http_code"];
+            print( json_encode( $retval ) );
+
+            exit( 0 );
+        }
+        
+        unset( $query_str["reapply"] );
         $query_str["folder"] = FOLDER;
         if( isset( $query_str["disable"] ) ) {
             if( $query_str["disable"] == "2" ) $query_str["disable"] = "2";
@@ -9245,65 +9332,148 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?newhost=1';
         print '">';
         print '<fieldset>';
+
+        ###:TAB1
+        print '<div id="newhosttabs">';
+        print '<ul>';
+        print '<li><a href="#fragment-1"><span>Standard</span></a></li>';
+        print '<li><a href="#fragment-2"><span>Additional</span></a></li>';
+        print '<li><a href="#fragment-3"><span>Advanced</span></a></li>';
+        print '</ul>';
+        print '<div id="fragment-1">';
+
+        # Disabled TODO Allow services to be started disabled
+        #print '<p>';
+        #print '<label for="sdisabled">Status</label>';
+        #print '<input type="radio" name="disable"';
+        #print ' value="0" checked />Enabled &nbsp;';
+        #print '<input type="radio" name="disable"';
+        #print ' value="1" />Disabled &nbsp;';
+        #print '<input type="radio" name="disable"';
+        #print ' value="2" />Testing';
+        #print '</p>';
+
+        # Disabled
+        #print '<p>';
+        #print '<label for="edisabled">Disabled</label>';
+        #$checked="";
+        #if( $disable == "1" ) $checked="checked";
+        #print '<input class="field" type="checkbox" id="edisabled"';
+        #print ' name="disable" '.$checked.' />';
+        #print '</p>';
+
         # Hostname
         print '<p>';
-        print '<label for="hostname">Host name *</label>';
-        print '<input class="field" type="text" id="hostname" name="name" required="required" />';
+        print '<label for="ehostname">Host name *</label>';
+        print '<input class="field" type="text" id="ehostname" name="name"';
+        print ' value="" required="required" />';
         print '</p>';
         # Alias
         print '<p>';
-        print '<label for="alias">Alias *</label>';
-        print '<input class="field" type="text" id="alias" name="alias" required="required" />';
+        print '<label for="ealias">Alias *</label>';
+        print '<input class="field" type="text" id="ealias" name="alias"';
+        print ' value="" required="required" />';
         print '</p>';
         # IP Address
         print '<p>';
-        print '<label for="ipaddress">IP Address *</label>';
-        print '<input class="field" type="text" id="ipaddress" name="ipaddress" required="required" />';
+        print '<label for="eipaddress">IP Address *</label>';
+        print '<input class="field" type="text" id="eipaddress" name="ipaddress"';
+        print ' value="" required="required" />';
+        print '</p>';
+        # Service Set (auto-complete)
+        print '<p>';
+        print '<label for="serviceset">Service Sets</label>';
+        print '<input class="field" id="serviceset"';
+        print ' value="'.$servicesets.'" name="servicesets">';
         print '</p>';
         # Host Template
         $hts = get_and_sort_hosttemplates( );
         print '<p>';
-        print '<label for="hosttemplate">Host Template</label>';
-        print '<select class="field" id="hosttemplate" name="template" required="required">';
+        print '<label for="ehosttemplate">Host Template</label>';
+        print '<select class="field" id="ehosttemplate" name="template" required="required">';
         foreach( $hts as $item ) {
-            print '<option value="'.$item["name"].'">'.$item["name"].'</option>';
+            $selected = "";
+            if( $item["name"] == $template ) $selected = " selected";
+            print '<option value="'.$item["name"].'"'.$selected.'>';
+            print $item["name"].'</option>';
         }
         print '</select>';
         print '</p>';
         # Host Group
         $hgs = get_and_sort_hostgroups( );
         print '<p>';
-        print '<label for="hostgroup">Hostgroup</label>';
-        print '<select class="field" id="hostgroup" name="hostgroup" required="required">';
+        print '<label for="ehostgroup">Hostgroup</label>';
+        print '<select class="field" id="ehostgroup" name="hostgroup" required="required">';
         foreach( $hgs as $item ) {
-            print '<option value="'.$item["name"].'">'.$item["alias"].'</option>';
+            $selected = "";
+            if( $item["name"] == $hostgroup ) $selected = " selected";
+            print '<option value="'.$item["name"].'"'.$selected.'>';
+            print $item["alias"].'</option>';
         }
         print '</select>';
         print '</p>';
         # Contact
         print '<p>';
-        print '<label for="contact">Contacts</label>';
-        #print '<input class="field" type="text" id="contact" name="contact">';
-        print '<input class="field" type="text" id="contact" name="contact">';
+        print '<label for="econtact">Contacts</label>';
+        print '<input class="field" type="text" id="econtact"';
+        print ' value="" name="contact">';
         print '</p>';
         # Contact Group
         print '<p>';
-        print '<label for="contactgroup">Contact Groups</label>';
-        print '<input class="field" type="text" id="contactgroup" name="contactgroups">';
+        print '<label for="econtactgroup">Contact Groups</label>';
+        print '<input class="field" type="text" id="econtactgroup"';
+        print ' value="" name="contactgroups">';
         print '</p>';
-        # Service Set (auto-complete)
+
+        ###:TAB2
+        print '</div>';
+        print '<div id="fragment-2">';
+        # Max check attempts
         print '<p>';
-        print '<label for="serviceset">Service Set</label>';
-        #print '<div class="ui-widget">';
-        print '<input class="field" id="serviceset" name="servicesets">';
-        #print '</div>';
+        print '<label for="ecommand">Check Command</label>';
+        print '<input class="field" type="text" id="ecommand"';
+        print ' value="" name="command">';
         print '</p>';
         # Active Checks
         print '<p>';
-        print '<label for="activechecks">Active Check</label>';
-        print '<input class="field" type="checkbox" id="activechecks"';
+        print '<label for="eactivechecks">Active Check</label>';
+        print '<input class="field" type="checkbox" id="eactivechecks"';
         print ' name="activechecks" checked />';
         print '</p>';
+        print '<p>';
+        print '<label for="emaxcheckattempts">Max check attempts</label>';
+        print '<input class="field" type="text" id="emaxcheckattempts"';
+        print ' value="" name="maxcheckattempts">';
+        print '</p>';
+        print '</div>';
+
+        ###:TAB3
+        print '<div id="fragment-3">';
+        print '<p>';
+        print '<label for="srsi">Retain Status Info</label>';
+        print '<select name="retainstatusinfo" id="srsi" class="field">';
+        print '<option value="" selected >From template</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="srnsi">Retain Nonstatus Info</label>';
+        print '<select name="retainnonstatusinfo" id="srnsi" class="field">';
+        print '<option value="" selected >From template</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</p>';
+        print '</div>';
+        print '</div>';
+        print '<script>';
+        #print '$( "#edithosttabs" ).tabs({heightStyle: "fill"});';
+        print '$( "#newhosttabs" ).tabs();';
+        print '</script>';
+        ###:TABEND
+
         print '</fieldset>';
         print '</form>';
         print '<div class="flash notice" style="display:none"></div>';
@@ -9316,28 +9486,42 @@
         $hgs = get_and_sort_contacts( );
         print '<script>';
         print '$( document ).ready( function() {';
-        print 'var contact = [';
+        print 'var econtact = [';
         $comma="";
         foreach( $hgs as $item ) {
             print "$comma\"".$item['name']."\"";
             $comma=",";
         }
         print'];';
-        autocomplete_jscript( "contact" );
+        autocomplete_jscript( "econtact" );
         print '</script>';
 
         # Auto-complete for contact groups
         $hgs = get_and_sort_contactgroups( );
         print '<script>';
         print '$( document ).ready( function() {';
-        print 'var contactgroup = [';
+        print 'var econtactgroup = [';
         $comma="";
         foreach( $hgs as $item ) {
             print "$comma\"".$item["name"]."\"";
             $comma=",";
         }
         print'];';
-        autocomplete_jscript( "contactgroup" );
+        autocomplete_jscript( "econtactgroup" );
+        print '</script>';
+
+        # Auto-complete for commands
+        $hgs = get_and_sort_commands( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var ecommand = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item['name']."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "ecommand" );
         print '</script>';
 
         # Auto-complete for service-sets
@@ -10393,6 +10577,27 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?newsvc=1';
         print '">';
         print '<fieldset>';
+
+        ###:TAB1
+        print '<div id="newservicetabs">';
+        print '<ul>';
+        print '<li><a href="#fragment-1"><span>Standard</span></a></li>';
+        print '<li><a href="#fragment-2"><span>Additional</span></a></li>';
+        print '<li><a href="#fragment-3"><span>Advanced</span></a></li>';
+        print '</ul>';
+        print '<div id="fragment-1">';
+
+        # Disabled
+        print '<p>';
+        print '<label for="sdisabled">Status</label>';
+        print '<input type="radio" name="disable"';
+        print ' value="0" checked />Enabled &nbsp;';
+        print '<input type="radio" name="disable"';
+        print ' value="1">Disabled &nbsp;';
+        print '<input type="radio" name="disable"';
+        print ' value="2">Testing';
+        print '</p>';
+
         # Hostname
         print '<p>';
         print '<label for="hostname">Host name</label>';
@@ -10406,52 +10611,60 @@
         print '<select class="field" id="svctemplate" name="template"';
         print ' required="required">';
         foreach( $st as $item ) {
-            print '<option value="'.$item["name"].'">'.$item["name"]
-              .'</option>';
+            $selected = "";
+            if( $item["name"] == $template ) $selected = " selected";
+            print '<option value="'.$item["name"].'"'.$selected.'>'
+              .$item["name"].'</option>';
         }
         print '</select>';
         print '</p>';
+
         # Command
+        # Allow both types of speech marks as input value
         print '<p>';
-        print '<label for="command">Command *</label>';
-        print '<input class="field" type="text" id="command" name="command"';
+        print '<label for="escommand">Command *</label>';
+        print '<input class="field" type="text" id="escommand" name="command"';
+              # Using <.. value="\"" ..> does not work so...
         print ' required="required" />';
+              # ...have to use javascript to set the value:
+        print '<script>$("#escommand").val("");</script>';
         print '</p>';
+
         # Service Description
         print '<p>';
-        print '<label for="svcdesc">Description *</label>';
+        print '<label for="svcdesc">Description</label>';
         print '<input class="field" type="text" id="svcdesc" name="svcdesc"';
-        print ' required="required" />';
+        print ' value="" />';
         print '</p>';
         # Service Groups
         print '<p>';
         print '<label for="svcgroup">Service Groups</label>';
         print '<input class="field" type="text" id="svcgroup"';
-        print ' name="svcgroup">';
+        print ' value="" name="svcgroup">';
         print '</p>';
         # Contact
         print '<p>';
-        print '<label for="fcontacts">Contacts</label>';
-        print '<input class="field" type="text" id="fcontacts"';
-        print ' name="contacts">';
+        print '<label for="gcontacts">Contacts</label>';
+        print '<input class="field" type="text" id="gcontacts"';
+        print ' value="" name="contacts">';
         print '</p>';
         # Contact Group
         print '<p>';
-        print '<label for="fcontactgroup">Contact Groups</label>';
-        print '<input class="field" type="text" id="fcontactgroup"';
-        print ' name="contactgroups">';
+        print '<label for="gcontactgroup">Contact Groups</label>';
+        print '<input class="field" type="text" id="gcontactgroup"';
+        print ' value="" name="contactgroups">';
         print '</p>';
         # Custom Variables
         print '<p>';
         print '<label for="customvars">Custom Variables</label>';
         print '<input class="field" type="text" id="customvars"';
-        print ' name="customvars">';
+        print ' value="" name="customvars">';
         print '</p>';
         # Freshness Threshold
         print '<p>';
         print '<label for="freshnessthresh">Freshness Threshold</label>';
         print '<input class="field" type="text" id="contactgroup"';
-        print ' name="freshnessthresh">';
+        print ' value="" name="freshnessthresh">';
         print '</p>';
         # Active Checks
         print '<p>';
@@ -10459,6 +10672,79 @@
         print '<input class="field" type="checkbox" id="sactivechecks"';
         print ' name="activechecks" checked />';
         print '</p>';
+        print '</div>';
+
+        ###:TAB2
+        print '<div id="fragment-2">';
+        # Check interval
+        print '<p>';
+        print '<label for="echeckinterval">Check Interval</label>';
+        print '<input class="field" type="text" id="echeckinterval"';
+        print ' value="" name="checkinterval">';
+        print '</p>';
+        # Retry interval
+        print '<p>';
+        print '<label for="eretryinterval">Retry Interval</label>';
+        print '<input class="field" type="text" id="eretryinterval"';
+        print ' value="" name="retryinterval">';
+        print '</p>';
+        # Max check attempts
+        print '<p>';
+        print '<label for="emaxcheckattempts">Max Check Attempts</label>';
+        print '<input class="field" type="text" id="emaxcheckattempts"';
+        print ' value="" name="maxcheckattempts">';
+        print '</p>';
+        # Freshness threshold manual
+        print '<p>';
+        print '<label for="emfta">Freshness threshold (manual)</label>';
+        print '<input class="field" type="text" id="emfta"';
+        print ' value="" name="manfreshnessthresh">';
+        print '</p>';
+        # Passive Checks
+        print '<p style="margin-top: 12px;">';
+        print '<label for="spassivechecks">Passive Checks Enabled</label>';
+        print '<select name="passivechecks" id="spassivechecks" class="field">';
+        print '<option value="" selected >From template</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        # Check Freshness
+        print '<p>';
+        print '<label for="scheckfreshness">Check Freshness</label>';
+        print '<select name="checkfreshness" id="scheckfreshness" class="field">';
+        print '<option value="" selected >From template</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</div>';
+
+        ###:TAB3
+        print '<div id="fragment-3">';
+        print '<p>';
+        print '<label for="srsi">Retain Status Info</label>';
+        print '<select name="retainstatusinfo" id="srsi" class="field">';
+        print '<option value="" selected >From template</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '<p>';
+        print '<label for="srnsi">Retain Nonstatus Info</label>';
+        print '<select name="retainnonstatusinfo" id="srnsi" class="field">';
+        print '<option value="" selected >From template</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        print '</div>';
+        print '</div>';
+        print '<script>';
+        print '$( "#newservicetabs" ).tabs();';
+        print '</script>';
+        ###:TABEND
+
         print '</fieldset>';
         print '</form>';
         print '<div class="flash notice" style="display:none"></div>';
@@ -10471,42 +10757,42 @@
         $hgs = get_and_sort_contacts( );
         print '<script>';
         print '$( document ).ready( function() {';
-        print 'var fcontacts = [';
+        print 'var gcontacts = [';
         $comma="";
         foreach( $hgs as $item ) {
             print "$comma\"".$item['name']."\"";
             $comma=",";
         }
         print'];';
-        autocomplete_jscript( "fcontacts" );
+        autocomplete_jscript( "gcontacts" );
         print '</script>';
 
         # Auto-complete for contact groups
         $hgs = get_and_sort_contactgroups( );
         print '<script>';
         print '$( document ).ready( function() {';
-        print 'var fcontactgroup = [';
+        print 'var gcontactgroup = [';
         $comma="";
         foreach( $hgs as $item ) {
             print "$comma\"".$item["name"]."\"";
             $comma=",";
         }
         print'];';
-        autocomplete_jscript( "fcontactgroup" );
+        autocomplete_jscript( "gcontactgroup" );
         print '</script>';
 
         # Auto-complete for commands
         $hgs = get_and_sort_commands( );
         print '<script>';
         print '$( document ).ready( function() {';
-        print 'var command = [';
+        print 'var escommand = [';
         $comma="";
         foreach( $hgs as $item ) {
             print "$comma\"".$item['name']."\"";
             $comma=",";
         }
         print'];';
-        autocomplete_jscript_single( "command" );
+        autocomplete_jscript_single( "escommand" );
         print '</script>';
 
         exit( 0 );
