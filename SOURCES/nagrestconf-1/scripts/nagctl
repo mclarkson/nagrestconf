@@ -1411,10 +1411,12 @@ modify_host_line()
     is_ip='^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.)){3}'
     is_ip+='(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
 
-    if ! echo "$ipaddress" | grep -qs -E "$is_ip"; then
-        echo "NAGCTL ERROR: Invalid IP address."
-        exit 13
-    fi
+    [[ -n $ipaddress ]] && {
+        if ! echo "$ipaddress" | grep -qs -E "$is_ip"; then
+            echo "NAGCTL ERROR: Invalid IP address."
+            exit 13
+        fi
+    }
 
     lockdir
     if ! item_exists 1 $FILE_HOSTS "$name"; then
