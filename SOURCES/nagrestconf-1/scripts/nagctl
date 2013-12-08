@@ -1403,14 +1403,15 @@ modify_servicetemplate_line()
 modify_host_line()
 # ----------------------------------------------------------------------------
 {
-    local name disabled a
+    local name disabled a is_ip
 
     IFS=, read name x ipaddress template hostgroups contacts contactgroups \
         x x disable x x command x < <( echo "$gcsv" )
 
-    if ! echo "$ipaddress" | \
-        grep -qs -E '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b'
-    then
+    is_ip='^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.)){3}'
+    is_ip+='(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+
+    if ! echo "$ipaddress" | grep -qs -E "$is_ip"; then
         echo "NAGCTL ERROR: Invalid IP address."
         exit 13
     fi
@@ -2412,9 +2413,10 @@ add_host_line()
         exit 13
     }
 
-    if ! echo "$ipaddress" | \
-        grep -qs -E '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b'
-    then
+    is_ip='^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.)){3}'
+    is_ip+='(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+
+    if ! echo "$ipaddress" | grep -qs -E "$is_ip"; then
         echo "NAGCTL ERROR: Invalid IP address."
         exit 13
     fi
