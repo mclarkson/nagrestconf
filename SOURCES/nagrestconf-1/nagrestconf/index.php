@@ -9008,8 +9008,8 @@
         print '</p>';
         # Service Set (auto-complete)
         print '<p>';
-        print '<label for="serviceset">Service Sets</label>';
-        print '<input class="field" id="serviceset"';
+        print '<label for="aserviceset">Service Sets</label>';
+        print '<input class="field" id="aserviceset"';
         print ' value="'.$servicesets.'" name="servicesets">';
         print '</p>';
         # Refresh
@@ -9046,14 +9046,14 @@
         print '</p>';
         # Contact
         print '<p>';
-        print '<label for="econtact">Contacts</label>';
-        print '<input class="field" type="text" id="econtact"';
+        print '<label for="fcontact">Contacts</label>';
+        print '<input class="field" type="text" id="fcontact"';
         print ' value="'.$contact.'" name="contact">';
         print '</p>';
         # Contact Group
         print '<p>';
-        print '<label for="econtactgroup">Contact Groups</label>';
-        print '<input class="field" type="text" id="econtactgroup"';
+        print '<label for="fcontactgroup">Contact Groups</label>';
+        print '<input class="field" type="text" id="fcontactgroup"';
         print ' value="'.$contactgroups.'" name="contactgroups">';
         print '</p>';
 
@@ -9062,8 +9062,8 @@
         print '<div id="fragment-2">';
         # Max check attempts
         print '<p>';
-        print '<label for="ecommand">Check Command</label>';
-        print '<input class="field" type="text" id="ecommand"';
+        print '<label for="fcommand">Check Command</label>';
+        print '<input class="field" type="text" id="fcommand"';
         print ' value="'.$command.'" name="command">';
         print '</p>';
         # Active Checks
@@ -9130,56 +9130,56 @@
         print '$( document ).ready( function() {';
         print '$( "input#reapplyfake" ).prop("checked",false);';
         print '$( "input#reapplyfake" ).change( function() { $("#reapply").prop("checked",$(this).prop("checked"));});';
-        print 'var econtact = [';
+        print 'var fcontact = [';
         $comma="";
         foreach( $hgs as $item ) {
             print "$comma\"".$item['name']."\"";
             $comma=",";
         }
         print'];';
-        autocomplete_jscript( "econtact" );
+        autocomplete_jscript( "fcontact" );
         print '</script>';
 
         # Auto-complete for contact groups
         $hgs = get_and_sort_contactgroups( );
         print '<script>';
         print '$( document ).ready( function() {';
-        print 'var econtactgroup = [';
+        print 'var fcontactgroup = [';
         $comma="";
         foreach( $hgs as $item ) {
             print "$comma\"".$item["name"]."\"";
             $comma=",";
         }
         print'];';
-        autocomplete_jscript( "econtactgroup" );
+        autocomplete_jscript( "fcontactgroup" );
         print '</script>';
 
         # Auto-complete for commands
         $hgs = get_and_sort_commands( );
         print '<script>';
         print '$( document ).ready( function() {';
-        print 'var ecommand = [';
+        print 'var fcommand = [';
         $comma="";
         foreach( $hgs as $item ) {
             print "$comma\"".$item['name']."\"";
             $comma=",";
         }
         print'];';
-        autocomplete_jscript_single( "ecommand" );
+        autocomplete_jscript_single( "fcommand" );
         print '</script>';
 
         # Auto-complete for service-sets
         $hgs = get_and_sort_servicesets_unique( );
         print '<script>';
         print '$( document ).ready( function() {';
-        print 'var serviceset = [';
+        print 'var aserviceset = [';
         $comma="";
         foreach( $hgs as $item ) {
             print "$comma\"$item\"";
             $comma=",";
         }
         print'];';
-        autocomplete_jscript( "serviceset" );
+        autocomplete_jscript( "aserviceset" );
         print '</script>';
 
         exit( 0 );
