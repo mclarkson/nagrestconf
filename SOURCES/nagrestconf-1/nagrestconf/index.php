@@ -9275,6 +9275,12 @@
             $query_str["contact"] = "-";
         if( empty( $query_str["contactgroups"] ) )
             $query_str["contactgroups"] = "-";
+        if( empty( $query_str["checkcommand"] ) )
+            $query_str["checkcommand"] = "-";
+        if( empty( $query_str["maxcheckattempts"] ) )
+            $query_str["maxcheckattempts"] = "-";
+        if( empty( $query_str["servicesets"] ) )
+            $query_str["servicesets"] = "-";
         $json = json_encode( $query_str );
 
         # Do the REST add host request
