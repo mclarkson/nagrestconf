@@ -204,12 +204,13 @@ html .ui-autocomplete
  */
 TEXTAREA#sbulktextarea {
     /* background-image: url("images/working.gif"); */
+    border: 1px solid #aaaaaa; 
     background-image: none;
     background-repeat: no-repeat;
     background-position: 50% 50%;
     background-size: 80px 80px;
     background-color: white;
-    width: 100%;
+    width: 99%;
     height: 10em;
 }
 TEXTAREA#applyconfigtextarea {

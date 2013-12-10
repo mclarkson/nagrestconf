@@ -392,7 +392,41 @@
         print ' action="/nagrestconf/'.SCRIPTNAME.'?tab='.$id.'&sbulkapply=1';
         print '">';
         print '<fieldset>';
-        print '<p><br />&nbsp;TODO - UNIMPLEMENTED</p>';
+        # Text
+        print '<p style="font-weight: bold;text-align: center">';
+        print 'Add hosts using a CSV file. Use the following file format:';
+        print '</p>';
+        print '<p style="text-align: center; padding-top: 8px;';
+        print ' padding-bottom: 12px;">';
+        print 'Hostname,IP Address,Host Template,Hostgroup,Service Sets';
+        print '</p>';
+        print '<p>';
+        print '<p style="display: inline; margin-left: 50px;"';
+        print '>File to upload *</p>';
+        print '<input type="file" id="file" name="file" required="required"';
+        print ' style="height: auto;display: inline-block; margin-left: 10px;" \>';
+        print '</p>';
+
+        print '<p style="padding-left: 50px; padding-top: 4px;" >';
+        print '<input type="checkbox" id="hasheading"';
+        print ' name="hasheading" ';
+        print ' style="display: inline-block; vertical-align: middle;';
+        print ' margin: 0 0 0 0; padding-top: 0px;" />';
+        print '<label for="hasheading" style="display: inline-block;';
+        print ' vertical-align: middle; float: none; width: auto;';
+        print ' padding-left: 6px; margin: 0 0 0 0;';
+        print ' padding-top: 0px;">First line is a heading line.</label>';
+
+        print '<p style="padding-left: 50px; padding-top: 14px;" >';
+        print '<input type="checkbox" id="overwrite"';
+        print ' name="overwrite" ';
+        print ' style="display: inline-block; vertical-align: middle;';
+        print ' margin: 0 0 0 0; padding-top: 0px;" />';
+        print '<label for="overwrite" style="display: inline-block;';
+        print ' vertical-align: middle; float: none; width: auto;';
+        print ' padding-left: 6px; margin: 0 0 0 0;';
+        print ' padding-top: 0px;">Overwrite existing hosts.</label>';
+
         print '</fieldset>';
         print '</form>';
         print '</div>';
@@ -733,7 +767,7 @@
     }
 
     # ------------------------------------------------------------------------
-    function rest_delete_hosts( $query_str ) {
+    function rest_add_hosts( $query_str ) {
     # ------------------------------------------------------------------------
 
         if( ! isset( $query_str["bulkdelhosts"] ) ) {
@@ -818,6 +852,107 @@
 
         exit(0);
 
+    }
+
+    # ------------------------------------------------------------------------
+    function rest_delete_hosts( $query_str ) {
+    # ------------------------------------------------------------------------
+
+        $qs = $_SESSION['query_str'];
+        $hgfilter = $qs['hgfilter'];
+        if( empty( $hgfilter ) || $hgfilter == "all" ) {
+            $a = get_and_sort_hosts( $sort="name" );
+        } else {
+            $a = get_and_sort_hosts( $sort="name", $filter=$hgfilter,
+                $column=5 );
+        }
+
+        $n = 0;
+
+        foreach( $a as $item ) {
+            $n++;
+            $svcs = get_and_sort_services( $item["name"] );
+
+            # Save host details
+            $request = new \RestRequest(
+            RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
+            '"column":"1","filter":"'.$item["name"].'"}', 'GET');
+            set_request_options( $request );
+            $request->execute();
+            $slist = json_decode( $request->getResponseBody(), true );
+
+            $new_qs = array();
+            $new_qs["folder"] = FOLDER;
+            foreach( $slist[0] as $item2 ) {
+                foreach( $item2 as $key => $val ) {
+                    $new_qs[$key] = $val; 
+                }
+            }
+            $newhostjson = json_encode( $new_qs );
+
+            # Delete host
+            if( sizeof($svcs) > 0 ) { 
+                $option = array();
+                $option["name"] = $item["name"];
+                $option["svcdesc"] = '.*';
+                $option["folder"] = FOLDER;
+                $json = json_encode( $option );
+                $request = new \RestRequest(
+                  RESTURL.'/delete/services',
+                  'POST',
+                  'json='.$json
+                );
+                set_request_options( $request );
+                $request->execute();
+                $slist = json_decode( $request->getResponseBody(), true );
+                $resp = $request->getResponseInfo();
+                if( $resp["http_code"] != 200 ) break;
+                ### Check $slist->http_code ###
+            }
+
+            $option = array();
+            $option["name"] = $item["name"];
+            $option["folder"] = FOLDER;
+            $json = json_encode( $option );
+            # Do the REST add host request
+            $request = new \RestRequest(
+              RESTURL.'/delete/hosts',
+              'POST',
+              'json='.$json
+            );
+            set_request_options( $request );
+            $request->execute();
+            $slist = json_decode( $request->getResponseBody(), true );
+            $resp = $request->getResponseInfo();
+            if( $resp["http_code"] != 200 ) break;
+
+            # Add host
+
+            # Do the REST add host request
+            $request2 = new \RestRequest(
+              RESTURL.'/add/hosts',
+              'POST',
+              'json='.$newhostjson
+            );
+            set_request_options( $request2 );
+            $request2->execute();
+            $slist = json_decode( $request2->getResponseBody(), true );
+
+            foreach( $slist as $slist_item )
+                $list .= "$n. Refreshing " . $item["name"] . 
+                          " : " . $slist_item . "\n";
+
+            $resp = $request->getResponseInfo();
+            if( $resp["http_code"] != 200 ) break;
+        }
+
+        # Return json
+        $retval = array();
+        $retval["message"] = $list;
+        $retval["code"] = $resp["http_code"];
+        print( json_encode( $retval ) );
+
+        exit(0);
     }
 
     # ------------------------------------------------------------------------
@@ -931,10 +1066,10 @@
             rest_modify_hosts( $query_str );
 
         if( $query_str["active_tab"] == 1 )
-            rest_delete_hosts( $query_str );
+            rest_add_hosts( $query_str );
 
-        #if( $query_str["active_tab"] == 2 )
-        #    rest_delete_hosts( $query_str );
+        if( $query_str["active_tab"] == 2 )
+            rest_delete_hosts( $query_str );
 
         if( $query_str["active_tab"] == 3 )
             rest_refresh_hosts( $query_str );
