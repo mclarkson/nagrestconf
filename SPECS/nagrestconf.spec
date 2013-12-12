@@ -156,7 +156,7 @@ install -D -m 755 plugins/smorg_hosts_bulktools_btn.php ${RPM_BUILD_ROOT}/usr/sh
 %dir /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled
 %dir /usr/share/nagrestconf/htdocs/nagrestconf/plugins
 %dir /usr/share/nagrestconf/htdocs/nagrestconf/scripts
-%dir /usr/share/nagrestconf/htdocs/nagrestconf/uploads
+%dir /usr/share/nagrestconf/htdocs/nagrestconf/upload
 /usr/share/nagrestconf/htdocs/nagrestconf/css
 /usr/share/nagrestconf/htdocs/nagrestconf/images
 /usr/share/nagrestconf/htdocs/nagrestconf/index.php
