@@ -139,8 +139,6 @@ install -D -m 755 plugins/smorg_hosts_bulktools_btn_impl.php ${RPM_BUILD_ROOT}/u
 install -D -m 755 plugins/smorg_hosts_bulktools_btn.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 
 %files
-%defattr(644,root,root,755)
-/usr/share/nagrestconf/htdocs/nagrestconf/scripts/csv2json.sh
 %defattr(755,root,root,755)
 %_bindir/csv2nag
 %_bindir/nagctl
@@ -151,12 +149,15 @@ install -D -m 755 plugins/smorg_hosts_bulktools_btn.php ${RPM_BUILD_ROOT}/usr/sh
 %_bindir/update_nagios
 %_bindir/auto_reschedule_nagios_check
 %_bindir/nagrestconf_install
+/usr/share/nagrestconf/htdocs/nagrestconf/scripts/csv2json.sh
 %defattr(644,root,root,755)
 %dir /usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib
 %dir /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled
 %dir /usr/share/nagrestconf/htdocs/nagrestconf/plugins
 %dir /usr/share/nagrestconf/htdocs/nagrestconf/scripts
+%defattr(644,apache,apache,755)
 %dir /usr/share/nagrestconf/htdocs/nagrestconf/upload
+%defattr(644,root,root,755)
 /usr/share/nagrestconf/htdocs/nagrestconf/css
 /usr/share/nagrestconf/htdocs/nagrestconf/images
 /usr/share/nagrestconf/htdocs/nagrestconf/index.php
