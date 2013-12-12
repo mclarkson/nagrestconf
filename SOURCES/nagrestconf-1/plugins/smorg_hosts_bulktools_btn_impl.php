@@ -958,7 +958,7 @@
     }
 
     # ------------------------------------------------------------------------
-    function rest_delete_hosts( $query_str ) {
+    function rest_refresh_hosts( $query_str ) {
     # ------------------------------------------------------------------------
 
         $qs = $_SESSION['query_str'];
@@ -1059,8 +1059,15 @@
     }
 
     # ------------------------------------------------------------------------
-    function rest_refresh_hosts( $query_str ) {
+    function rest_delete_hosts( $query_str ) {
     # ------------------------------------------------------------------------
+
+        if( ! isset( $query_str["bulkdelhosts"] ) ) {
+            $retval["message"] = "Error: Deletion was not confirmed.";
+            $retval["code"] = "400";
+            print( json_encode( $retval ) );
+            exit( 0 );
+        }
 
         $qs = $_SESSION['query_str'];
         $hgfilter = $qs['hgfilter'];
@@ -1077,30 +1084,13 @@
             $n++;
             $svcs = get_and_sort_services( $item["name"] );
 
-            # Save host details
-            $request = new \RestRequest(
-            RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
-            '"column":"1","filter":"'.$item["name"].'"}', 'GET');
-            set_request_options( $request );
-            $request->execute();
-            $slist = json_decode( $request->getResponseBody(), true );
-
-            $new_qs = array();
-            $new_qs["folder"] = FOLDER;
-            foreach( $slist[0] as $item2 ) {
-                foreach( $item2 as $key => $val ) {
-                    $new_qs[$key] = $val; 
-                }
-            }
-            $newhostjson = json_encode( $new_qs );
-
-            # Delete host
             if( sizeof($svcs) > 0 ) { 
-                $option = array();
-                $option["name"] = $item["name"];
-                $option["svcdesc"] = '.*';
-                $option["folder"] = FOLDER;
-                $json = json_encode( $option );
+                # Delete Services attached to this host
+                $options = array();
+                $options["name"] = $item["name"];
+                $options["svcdesc"] = '.*';
+                $options["folder"] = FOLDER;
+                $json = json_encode( $options );
                 $request = new \RestRequest(
                   RESTURL.'/delete/services',
                   'POST',
@@ -1108,17 +1098,27 @@
                 );
                 set_request_options( $request );
                 $request->execute();
-                $slist = json_decode( $request->getResponseBody(), true );
+
+                $list = json_decode( $request->getResponseBody(), true );
                 $resp = $request->getResponseInfo();
                 if( $resp["http_code"] != 200 ) break;
-                ### Check $slist->http_code ###
             }
 
-            $option = array();
-            $option["name"] = $item["name"];
-            $option["folder"] = FOLDER;
-            $json = json_encode( $option );
-            # Do the REST add host request
+            #$slist = json_decode( $request->getResponseBody(), true );
+            ### Check $slist->http_code ###
+
+            # Delete Host
+
+            unset( $resp );
+            unset( $request );
+            unset( $options );
+
+            $options["folder"] = FOLDER;
+            $options["name"] = $item["name"];
+
+            $json = json_encode( $options );
+
+            # Do the REST edit svcgroup request
             $request = new \RestRequest(
               RESTURL.'/delete/hosts',
               'POST',
@@ -1126,24 +1126,10 @@
             );
             set_request_options( $request );
             $request->execute();
-            $slist = json_decode( $request->getResponseBody(), true );
-            $resp = $request->getResponseInfo();
-            if( $resp["http_code"] != 200 ) break;
+            $list = json_decode( $request->getResponseBody(), true );
 
-            # Add host
-
-            # Do the REST add host request
-            $request2 = new \RestRequest(
-              RESTURL.'/add/hosts',
-              'POST',
-              'json='.$newhostjson
-            );
-            set_request_options( $request2 );
-            $request2->execute();
-            $slist = json_decode( $request2->getResponseBody(), true );
-
-            foreach( $slist as $slist_item )
-                $list .= "$n. Refreshing " . $item["name"] . 
+            foreach( $list as $slist_item )
+                $slist .= "$n. Deleting " . $item["name"] . 
                           " : " . $slist_item . "\n";
 
             $resp = $request->getResponseInfo();
@@ -1152,7 +1138,7 @@
 
         # Return json
         $retval = array();
-        $retval["message"] = $list;
+        $retval["message"] = $slist;
         $retval["code"] = $resp["http_code"];
         print( json_encode( $retval ) );
 
