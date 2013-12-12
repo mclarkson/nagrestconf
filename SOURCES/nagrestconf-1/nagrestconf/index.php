@@ -53,7 +53,7 @@
         protected $responseInfo;
         protected $sslkey;
         protected $sslcert;
-        
+
         public function __construct ($url = null, $verb = 'GET', $requestBody = null)
         {
             $this->url              = $url;
@@ -65,7 +65,7 @@
             $this->acceptType       = 'application/json';
             $this->responseBody     = null;
             $this->responseInfo     = null;
-            
+
             /*
              * Don't buildPostBody on construction. Allow arbitrary data
              * to be stored in this case.
@@ -76,7 +76,7 @@
             }
             */
         }
-        
+
         # --------------------------------------------------------------------
         public function flush ()
         # --------------------------------------------------------------------
@@ -87,14 +87,14 @@
             $this->responseBody     = null;
             $this->responseInfo     = null;
         }
-        
+
         # --------------------------------------------------------------------
         public function execute ()
         # --------------------------------------------------------------------
         {
             $ch = curl_init();
             $this->setAuth($ch);
-            
+
             try
             {
                 switch (strtoupper($this->verb))
@@ -126,31 +126,31 @@
                 curl_close($ch);
                 throw $e;
             }
-            
+
         }
-        
+
         # --------------------------------------------------------------------
         public function buildPostBody ($data = null)
         # --------------------------------------------------------------------
         {
             $data = ($data !== null) ? $data : $this->requestBody;
-            
+
             if (!is_array($data))
             {
                 throw new InvalidArgumentException('Invalid data input for postBody.  Array expected');
             }
-            
+
             $data = http_build_query($data, '', '&');
             $this->requestBody = $data;
         }
-        
+
         # --------------------------------------------------------------------
         protected function executeGet ($ch)
         # --------------------------------------------------------------------
         {       
             $this->doExecute($ch);  
         }
-        
+
         # --------------------------------------------------------------------
         protected function executePost ($ch)
         # --------------------------------------------------------------------
@@ -159,13 +159,13 @@
             {
                 $this->buildPostBody();
             }
-            
+
             curl_setopt($ch, CURLOPT_POSTFIELDS, $this->requestBody);
             curl_setopt($ch, CURLOPT_POST, 1);
-            
+
             $this->doExecute($ch);  
         }
-        
+
         # --------------------------------------------------------------------
         protected function executePut ($ch)
         # --------------------------------------------------------------------
@@ -174,31 +174,31 @@
             {
                 $this->buildPostBody();
             }
-            
+
             $this->requestLength = strlen($this->requestBody);
-            
+
             $fh = fopen('php://memory', 'rw');
             fwrite($fh, $this->requestBody);
             rewind($fh);
-            
+
             curl_setopt($ch, CURLOPT_INFILE, $fh);
             curl_setopt($ch, CURLOPT_INFILESIZE, $this->requestLength);
             curl_setopt($ch, CURLOPT_PUT, true);
-            
+
             $this->doExecute($ch);
-            
+
             fclose($fh);
         }
-        
+
         # --------------------------------------------------------------------
         protected function executeDelete ($ch)
         # --------------------------------------------------------------------
         {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-            
+
             $this->doExecute($ch);
         }
-        
+
         # --------------------------------------------------------------------
         protected function doExecute (&$curlHandle)
         # --------------------------------------------------------------------
@@ -206,10 +206,10 @@
             $this->setCurlOpts($curlHandle);
             $this->responseBody = curl_exec($curlHandle);
             $this->responseInfo = curl_getinfo($curlHandle);
-            
+
             curl_close($curlHandle);
         }
-        
+
         # --------------------------------------------------------------------
         protected function setCurlOpts (&$curlHandle)
         # --------------------------------------------------------------------
@@ -220,7 +220,7 @@
             curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array ('Accept: ' . $this->acceptType));
         }
-        
+
         # --------------------------------------------------------------------
         protected function setAuth (&$curlHandle)
         # --------------------------------------------------------------------
@@ -240,98 +240,98 @@
                 }
             }
         }
-        
+
         # --------------------------------------------------------------------
         public function getAcceptType ()
         # --------------------------------------------------------------------
         {
             return $this->acceptType;
         } 
-        
+
         # --------------------------------------------------------------------
         public function setAcceptType ($acceptType)
         # --------------------------------------------------------------------
         {
             $this->acceptType = $acceptType;
         } 
-        
+
         # --------------------------------------------------------------------
         public function getPassword ()
         # --------------------------------------------------------------------
         {
             return $this->password;
         } 
-        
+
         # --------------------------------------------------------------------
         public function setPassword ($password)
         # --------------------------------------------------------------------
         {
             $this->password = $password;
         } 
-        
+
         # --------------------------------------------------------------------
         public function setSSLKey ($key)
         # --------------------------------------------------------------------
         {
             $this->sslkey = $key;
         } 
-        
+
         # --------------------------------------------------------------------
         public function setSSLCert ($cert)
         # --------------------------------------------------------------------
         {
             $this->sslcert = $cert;
         } 
-        
+
         # --------------------------------------------------------------------
         public function getResponseBody ()
         # --------------------------------------------------------------------
         {
             return $this->responseBody;
         } 
-        
+
         # --------------------------------------------------------------------
         public function getResponseInfo ()
         # --------------------------------------------------------------------
         {
             return $this->responseInfo;
         } 
-        
+
         # --------------------------------------------------------------------
         public function getUrl ()
         # --------------------------------------------------------------------
         {
             return $this->url;
         } 
-        
+
         # --------------------------------------------------------------------
         public function setUrl ($url)
         # --------------------------------------------------------------------
         {
             $this->url = $url;
         } 
-        
+
         # --------------------------------------------------------------------
         public function getUsername ()
         # --------------------------------------------------------------------
         {
             return $this->username;
         } 
-        
+
         # --------------------------------------------------------------------
         public function setUsername ($username)
         # --------------------------------------------------------------------
         {
             $this->username = $username;
         } 
-        
+
         # --------------------------------------------------------------------
         public function getVerb ()
         # --------------------------------------------------------------------
         {
             return $this->verb;
         } 
-        
+
         # --------------------------------------------------------------------
         public function setVerb ($verb)
         # --------------------------------------------------------------------
@@ -1032,7 +1032,7 @@
     # ------------------------------------------------------------------------
     # Allow the globals to override the QUERY_STRING. The globals are
     # cleared if they were found to be set.
-    
+
         global $g_tab_new, $g_sort_new, $g_hgfilter, $g_hfilter;
 
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
@@ -1098,6 +1098,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="main.css">
 <script src = js/jquery-1.9.1.js></script>
+<script src = js/jquery.ajaxfileupload.js></script>
 <script src = js/jquery-ui-1.10.3.custom.min.js></script>
 <link rel=stylesheet type=text/css
     href=css/redmond/jquery-ui.css />
@@ -1122,7 +1123,7 @@
         print 'Nagrestconf '.VERSION.'</div>';
         print '<div id="pagetabs">';
         print '<ul>';
-        
+
         krsort( $g_tab_names );
 
         $active=0; # The active tab
@@ -6856,7 +6857,7 @@
             print( json_encode( $retval ) );
             exit( 0 );
         }
-        
+
         $tohost = trim( $query_str["copyto"] );
         $fromhost = $query_str["name"];
 
@@ -7052,7 +7053,7 @@
             print( json_encode( $retval ) );
             exit( 0 );
         } 
-        
+
         $copyto = trim( $query_str["copyto"] );
         # Does the copyto host exist?
         $a = get_and_sort_servicesets( $copyto );
@@ -9258,7 +9259,7 @@
 
             exit( 0 );
         }
-        
+
         unset( $query_str["reapply"] );
         $query_str["folder"] = FOLDER;
         if( isset( $query_str["disable"] ) ) {
@@ -9667,6 +9668,12 @@
         print '<input class="field" type="text" id="chostname" name="copyto"'.
               ' required="required" />';
         print '</p>';
+        # Hostname
+        print '<p>';
+        print '<label for="ipaddress">New IP Address *</label>';
+        print '<input class="field" type="text" id="ipaddress" name="ipaddress"'.
+              ' required="required" />';
+        print '</p>';
         print "<p>Click 'Clone Host' to confirm or 'Close' to cancel.</p>";
         print '<input type="hidden" name="name" value="';
         print $name;
@@ -9709,9 +9716,10 @@
             print( json_encode( $retval ) );
             exit( 0 );
         }
-        
+
         $tohost = trim( $query_str["copyto"] );
         $fromhost = $query_str["name"];
+        $newipaddress = $query_str["ipaddress"];
 
         # Clone the host
 
@@ -9722,18 +9730,22 @@
         $request->execute();
         $hlist = json_decode( $request->getResponseBody(), true );
 
-        foreach( $hlist[0] as $item ) extract( $item );
+        $new_qs = array();
+        $new_qs["folder"] = FOLDER;
+        foreach( $hlist[0] as $item2 ) {
+            foreach( $item2 as $key => $val ) {
+                $new_qs[$key] = $val; 
+            }
+        }
+        $new_qs["name"] = $tohost;
+        $new_qs["ipaddress"] =  $newipaddress;
+        # Don't create with servicesets field set otherwise
+        # the host will be created from service sets. Save
+        # and add servicesets field later.
+        $oldservicesets = $new_qs["servicesets"];
+        $new_qs["servicesets"] = "";
+        $json = json_encode( $new_qs );
 
-        $newhost["folder"] = FOLDER;
-        $newhost["name"] = $tohost;
-        $newhost["alias"] = $alias;
-        $newhost["ipaddress"] =  "change the ip address";
-        $newhost["template"] = $template;
-        $newhost["hostgroup"] = $hostgroup;
-        $newhost["contact"] = $contact;
-        $newhost["contactgroups"] = $contactgroups;
-        $newhost["activechecks"] = $activechecks;
-        $json = json_encode( $newhost );
         $request = new RestRequest(
           RESTURL.'/add/hosts',
           'POST',
@@ -9745,7 +9757,33 @@
 
         # Return json if there was an error
         $retval = array();
-        $retval["message"] = $slist;
+        #$retval["message"] = "(ADD HOST) ".$slist[0]." ".$json;
+        $retval["message"] = "(ADD HOST) ".$slist[0];
+        $resp = $request->getResponseInfo();
+        $retval["code"] = $resp["http_code"];
+        if( $retval["code"] != 200 ) {
+            print( json_encode( $retval ) );
+            exit( 0 );
+        }
+
+        # Modify the host to add servicesets. Services won't
+        # be created automatically with 'modify', unlike 'add'.
+
+        $modifyhost["folder"] = FOLDER;
+        $modifyhost["name"] = $tohost;
+        $modifyhost["servicesets"] = $oldservicesets;
+        $json = json_encode( $modifyhost );
+        $request = new RestRequest(
+          RESTURL.'/modify/hosts',
+          'POST',
+          'json='.$json
+        );
+        set_request_options( $request );
+        $request->execute();
+        $slist = json_decode( $request->getResponseBody(), true );
+        $retval = array();
+        #$retval["message"] = "(MODIFY HOST) ".$slist[0]." ".$json;
+        $retval["message"] = "(MODIFY HOST) ".$slist[0];
         $resp = $request->getResponseInfo();
         $retval["code"] = $resp["http_code"];
         if( $retval["code"] != 200 ) {
@@ -9775,18 +9813,18 @@
                 $command = strtr( $command, array( '%22' => '%5C%22',) );
             }
 
-            $newservice["folder"] = FOLDER;
-            $newservice["name"] = $tohost;
-            $newservice["template"] = $template;
-            $newservice["command"] = $command;
-            $newservice["svcdesc"] = $svcdesc;
-            $newservice["svcgroup"] = $svcgroup;
-            $newservice["contacts"] = $contacts;
-            $newservice["contactgroups"] = $contactgroups;
-            $newservice["freshnessthresh"] = $freshnessthresh;
-            $newservice["activechecks"] = $activechecks;
-            $newservice["customvars"] = $customvars;
-            $json = json_encode( $newservice );
+            $new_qs = array();
+            $new_qs["folder"] = FOLDER;
+            foreach( $svc as $item2 ) {
+                foreach( $item2 as $key => $val ) {
+                    $new_qs[$key] = $val; 
+                }
+            }
+            $new_qs["name"] = $tohost;
+            $new_qs["svcdesc"] = $svcdesc;
+            $new_qs["command"] = $command;
+            $json = json_encode( $new_qs );
+
             $request = new RestRequest(
               RESTURL.'/add/services',
               'POST',
@@ -9798,7 +9836,7 @@
 
             # Return json
             $retval = array();
-            $retval["message"] = "Host was added but: ".$slist;
+            $retval["message"] = "Host was added but: ".$slist[0]." ".$json;
             $resp = $request->getResponseInfo();
             $retval["code"] = $resp["http_code"];
             if( $retval["code"] != 200 ) {
@@ -9931,7 +9969,7 @@
             print( json_encode( $retval ) );
             exit( 0 );
         } 
-        
+
         # Does the copyto host exist?
         $request = new RestRequest(
         RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
@@ -10980,7 +11018,7 @@
         set_request_options( $request );
         $request->execute();
         $slist_raw = json_decode( $request->getResponseBody(), true );
- 
+
         # Check the configuration
         $request = new RestRequest(
           RESTURL.'/check/nagiosconfig?json='.
@@ -11747,7 +11785,7 @@
         } else if( isset( $query_str['newsvcsetdialog'] )) {
 
             show_newsvcsetdialog_buttons( );
- 
+
         } else if( isset( $query_str['delsvcsetdialog'] )) {
 
             show_delsvcsetdialog_buttons( $query_str['name'] );
@@ -11857,11 +11895,11 @@
         } else if( isset( $query_str['applyconfig'] )) {
 
             show_applyconfiguration_dialog_buttons( );
- 
+
         } else if( isset( $query_str['newhostdialog'] )) {
 
             show_newhostdialog_buttons( );
- 
+
         } else if( isset( $query_str['edithostdialog'] )) {
 
             show_edithostdialog_buttons( $query_str['name'] );
@@ -11994,7 +12032,7 @@
     # the GUI. This is the the key field in $g_tab_names
 
         global $g_tab;
-        
+
         return $g_tab;
     }
 
@@ -12003,7 +12041,7 @@
     # ------------------------------------------------------------------------
     # Returns the tab id passed around as 'tab=' in the query string.
     # This is the $value[2] in $g_tab_names.
-        
+
         return $g_tab;
     }
 
@@ -12012,7 +12050,7 @@
     # ------------------------------------------------------------------------
     # Returns the name of the tab as displayed on-screen - it may have spaces
     # in it. This is the $value[1] in $g_tab_names.
-        
+
         return $g_tab;
     }
 
@@ -12023,7 +12061,7 @@
     # This is the $value[0] in $g_tab_names.
 
         global $g_tab_names;
-        
+
         foreach( $g_tab_names as $value ) {
             if( $value[2] == $tab_id )
                 return $value[0];
@@ -12234,7 +12272,7 @@
         session_start( );
 
         date_default_timezone_set('UTC');
-        
+
         read_config_file( );
 
         parse_str( $_SERVER['QUERY_STRING'], $query_str );

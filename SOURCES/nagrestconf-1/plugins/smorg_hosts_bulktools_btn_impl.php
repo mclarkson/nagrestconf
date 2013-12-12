@@ -89,14 +89,19 @@
         # Do REST stuff
         print ' var active = $("#bulktoolstabs").tabs("option","active");';
         print ' var form;';
+        print ' function completeHandler(){alert("file uploaded");}';
+        print ' function errorHandler(){alert("error");}';
+        print ' function progressHandlingFunction(){alert("progress");}';
         print ' switch(active){'.
               '  case 0: form="#hstbulkform1"; break;'.
               '  case 1: form="#hstbulkform2"; break;'.
-              '  case 2: form="#hstbulkform3"; break;'.
-              '  case 3: form="#hstbulkform4"; break;'.
+              '  case 2: form="#hstbulkform3";'.
+              '          break;'.
+              '  case 3: form="#hstbulkform4";break;'.
               ' };';
         print ' var query_string=$(form).serialize();';
         print ' query_string+="&active_tab="+active;';
+        print ' query_string+="&filename="+$("#file1").val();';
         print ' $.getJSON( $(form).attr("action"), '; # <- url
         print ' query_string,';             # <- data
         print ' function(response) {';                       # <- success
@@ -387,9 +392,9 @@
 
         ###:TAB3
         print '<div id="hstadd">';
-        print '<form id="hstbulkform3" '.
-              'name="hstbulkform3" method="get"';
-        print ' action="/nagrestconf/'.SCRIPTNAME.'?tab='.$id.'&sbulkapply=1';
+        print '<form id="uploadfileform" action=""';
+        print ' enctype="multipart/form-data" method="post" ';
+        #print ' action="/nagrestconf/upload_file.php';
         print '">';
         print '<fieldset>';
         # Text
@@ -401,13 +406,19 @@
         print 'Hostname,IP Address,Host Template,Hostgroup,Service Sets';
         print '</p>';
         print '<p>';
-        print '<p style="display: inline; margin-left: 50px;"';
+        print '<p style="display: inline; margin-left: 70px;"';
         print '>File to upload *</p>';
-        print '<input type="file" id="file" name="file" required="required"';
-        print ' style="height: auto;display: inline-block; margin-left: 10px;" \>';
+        print '<input type="file" id="file1" name="file" required="required"';
+        print ' style="height: auto;display: inline-block; margin-left: 10px;" />';
         print '</p>';
-
-        print '<p style="padding-left: 50px; padding-top: 4px;" >';
+        print '</fieldset>';
+        print '</form>';
+        print '<form id="hstbulkform3" '.
+              'name="hstbulkform3" method="get"';
+        print ' action="/nagrestconf/'.SCRIPTNAME.'?tab='.$id.'&sbulkapply=1';
+        print '">';
+        print '<fieldset>';
+        print '<p style="padding-left: 100px; padding-top: 4px;" >';
         print '<input type="checkbox" id="hasheading"';
         print ' name="hasheading" ';
         print ' style="display: inline-block; vertical-align: middle;';
@@ -417,7 +428,7 @@
         print ' padding-left: 6px; margin: 0 0 0 0;';
         print ' padding-top: 0px;">First line is a heading line.</label>';
 
-        print '<p style="padding-left: 50px; padding-top: 14px;" >';
+        print '<p style="padding-left: 100px; padding-top: 14px;" >';
         print '<input type="checkbox" id="overwrite"';
         print ' name="overwrite" ';
         print ' style="display: inline-block; vertical-align: middle;';
@@ -467,7 +478,22 @@
         print '<div class="flash notice" style="display:none"></div>';
         print '<div class="flash error" style="display:none"></div>';
         print '<script>'.
-              '$(".ui-button:contains(Close)").focus()'.
+              '$(".ui-button:contains(Close)").focus();
+                    $("#file1").AjaxFileUpload({
+                        onComplete: function(filename, response) {
+                            if( response.code != 200 ){ 
+                                $(".flash.notice").hide();
+                                $(".flash.error").html("Fail").show();
+                                $("#sbulktextarea").val(response.error);
+                                $("#sbulktextarea").show();
+                            } else {
+                                $(".flash.error").hide();
+                                $(".flash.notice").html("Success").show();
+                                $("#sbulktextarea").val("Uploaded "+response.name);
+                                $("#sbulktextarea").show();
+                            }
+                        }
+                    });'.
               '</script>';
 
         exit( 0 ); # <- Stop here - bypass any other actions.
@@ -491,6 +517,9 @@
             $field == "servicesets" ||
             $field == "contactgroups"
         ) {
+
+            # Rest inconsistency: TODO
+            if( $field == "contacts" ) $field="contact";
 
             $qs = $_SESSION['query_str'];
             $hgfilter = $qs['hgfilter'];
@@ -674,6 +703,9 @@
             $field == "contactgroups"
         ) {
 
+            # Rest inconsistency: TODO
+            if( $field == "contacts" ) $field="contact";
+
             $qs = $_SESSION['query_str'];
             $hgfilter = $qs['hgfilter'];
             if( empty( $hgfilter ) || $hgfilter == "all" ) {
@@ -770,84 +802,155 @@
     function rest_add_hosts( $query_str ) {
     # ------------------------------------------------------------------------
 
-        if( ! isset( $query_str["bulkdelhosts"] ) ) {
-            $retval["message"] = "Error: Deletion was not confirmed.";
-            $retval["code"] = "400";
-            print( json_encode( $retval ) );
-            exit( 0 );
+        $overwrite=0;
+        $hasheading=0;
+
+        if( isset( $query_str["overwrite"] ) ) {
+            $overwrite = 1;
         }
 
-        $qs = $_SESSION['query_str'];
-        $hgfilter = $qs['hgfilter'];
-        if( empty( $hgfilter ) || $hgfilter == "all" ) {
-            $a = get_and_sort_hosts( $sort="name" );
-        } else {
-            $a = get_and_sort_hosts( $sort="name", $filter=$hgfilter,
-                $column=5 );
+        if( isset( $query_str["hasheading"] ) ) {
+            $hasheading = 1;
         }
+
+        $output = array();
+        $cmd = "scripts/csv2json.sh \"upload/".$query_str["filename"]."\"";
+        if( $hasheading == 1 ) $cmd.=" hasheading";
+        #$cmd = "/bin/pwd";
+        exec( $cmd . ' &>/dev/stdout', $output, $exit_status );
+
+        $output = implode($output);
+
+        if( $exit_status != 0 ) {
+            # Return json
+            $retval = array();
+            $retval["message"] = json_decode($output);
+            $retval["code"] = 400;
+            print( json_encode( $retval ) );
+            exit(0);
+        }
+
+        $hostlist = json_decode($output);
+        
+        # Sanity checks
+        # Number of columns:
+        $nl = $hasheading == 1 ? 2:1;
+        foreach( $hostlist as $host ) {
+            $n=0;
+            foreach( $host as $item ) $n+=1;
+            if( $n != 5 ) {
+                $retval = array(
+                    "message" => "Column count is wrong on line $nl.",
+                    "code" => 400
+                );
+                print( json_encode( $retval ) );
+                exit(0);
+            }
+            $nl += 1;
+        }
+
+        $list = "";
+        $key = array( 0 => "name",
+                      1 => "ipaddress",
+                      2 => "template",
+                      3 => "hostgroup",
+                      4 => "servicesets" );
 
         $n = 0;
-
-        foreach( $a as $item ) {
+        foreach( $hostlist as $host ) {
             $n++;
-            $svcs = get_and_sort_services( $item["name"] );
 
-            if( sizeof($svcs) > 0 ) { 
-                # Delete Services attached to this host
-                $options = array();
-                $options["name"] = $item["name"];
-                $options["svcdesc"] = '.*';
-                $options["folder"] = FOLDER;
-                $json = json_encode( $options );
+            $new_qs = array();
+            $new_qs["folder"] = FOLDER;
+            $i=0;
+            foreach( $host as $item ) {
+                $new_qs[$key[$i++]] = $item; 
+            }
+            $new_qs["alias"] = $new_qs["name"];
+            $newhostjson = json_encode( $new_qs );
+
+            # Delete host
+            $request = new \RestRequest(
+            RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
+            '"column":"1","filter":"'.$new_qs["name"].'"}', 'GET');
+            set_request_options( $request );
+            $request->execute();
+            $slist = json_decode( $request->getResponseBody(), true );
+
+            $newhostjson = json_encode( $new_qs );
+
+            if( isset( $slist[0] ) && $overwrite == 1 ) {
+                $svcs = get_and_sort_services( $new_qs["name"] );
+                if( sizeof($svcs) > 0 ) { 
+                    # Delete services
+                    $option = array();
+                    $option["name"] = $new_qs["name"];
+                    $option["svcdesc"] = '.*';
+                    $option["folder"] = FOLDER;
+                    $json = json_encode( $option );
+                    $request = new \RestRequest(
+                      RESTURL.'/delete/services',
+                      'POST',
+                      'json='.$json
+                    );
+                    set_request_options( $request );
+                    $request->execute();
+                    $slist = json_decode( $request->getResponseBody(), true );
+                    $resp = $request->getResponseInfo();
+                    if( $resp["http_code"] != 200 ) break;
+                    ### Check $slist->http_code ###
+                }
+                # Delete host
+                $option = array();
+                $option["name"] = $new_qs["name"];
+                $option["folder"] = FOLDER;
+                $json = json_encode( $option );
+                # Do the REST add host request
                 $request = new \RestRequest(
-                  RESTURL.'/delete/services',
+                  RESTURL.'/delete/hosts',
                   'POST',
                   'json='.$json
                 );
                 set_request_options( $request );
                 $request->execute();
-
-                $list = json_decode( $request->getResponseBody(), true );
+                $slist = json_decode( $request->getResponseBody(), true );
                 $resp = $request->getResponseInfo();
                 if( $resp["http_code"] != 200 ) break;
             }
+            elseif( isset( $slist[0] ) && $overwrite == 0 ) {
+                foreach( $slist as $slist_item )
+                    $list .= "$n. Skipping existing host, " . $new_qs["name"]
+                             . "\n";
+                continue;
+            }
 
-            #$slist = json_decode( $request->getResponseBody(), true );
-            ### Check $slist->http_code ###
+            # Add host
 
-            # Delete Host
-
-            unset( $resp );
-            unset( $request );
-            unset( $options );
-
-            $options["folder"] = FOLDER;
-            $options["name"] = $item["name"];
-
-            $json = json_encode( $options );
-
-            # Do the REST edit svcgroup request
-            $request = new \RestRequest(
-              RESTURL.'/delete/hosts',
+            # Do the REST add host request
+            $request2 = new \RestRequest(
+              RESTURL.'/add/hosts',
               'POST',
-              'json='.$json
+              'json='.$newhostjson
             );
-            set_request_options( $request );
-            $request->execute();
-            $list = json_decode( $request->getResponseBody(), true );
+            set_request_options( $request2 );
+            $request2->execute();
+            $slist = json_decode( $request2->getResponseBody(), true );
 
-            foreach( $list as $slist_item )
-                $slist .= "$n. Deleting " . $item["name"] . 
+            foreach( $slist as $slist_item )
+                $list .= "$n. Adding " . $new_qs["name"] . 
                           " : " . $slist_item . "\n";
 
-            $resp = $request->getResponseInfo();
+            $resp = $request2->getResponseInfo();
             if( $resp["http_code"] != 200 ) break;
         }
 
+        #$a=print_r( $hostlist, true );
+
         # Return json
         $retval = array();
-        $retval["message"] = $slist;
-        $retval["code"] = $resp["http_code"];
+        #$retval["message"] = $a;
+        $retval["message"] = $list;
+        $retval["code"] = 200;
         print( json_encode( $retval ) );
 
         exit(0);
@@ -942,7 +1045,7 @@
                 $list .= "$n. Refreshing " . $item["name"] . 
                           " : " . $slist_item . "\n";
 
-            $resp = $request->getResponseInfo();
+            $resp = $request2->getResponseInfo();
             if( $resp["http_code"] != 200 ) break;
         }
 
@@ -1066,10 +1169,10 @@
             rest_modify_hosts( $query_str );
 
         if( $query_str["active_tab"] == 1 )
-            rest_add_hosts( $query_str );
+            rest_delete_hosts( $query_str );
 
         if( $query_str["active_tab"] == 2 )
-            rest_delete_hosts( $query_str );
+            rest_add_hosts( $query_str );
 
         if( $query_str["active_tab"] == 3 )
             rest_refresh_hosts( $query_str );

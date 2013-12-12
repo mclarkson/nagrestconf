@@ -1406,7 +1406,7 @@ modify_host_line()
     local name disabled a is_ip
 
     IFS=, read name x ipaddress template hostgroups contacts contactgroups \
-        x x disable x x command x < <( echo "$gcsv" )
+        x servicesets disable x x command x < <( echo "$gcsv" )
 
     is_ip='^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.)){3}'
     is_ip+='(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
@@ -1432,6 +1432,17 @@ modify_host_line()
             unlockdir
             exit 13
         fi
+    }
+
+    [[ -n $servicesets ]] && {
+        for i in $servicesets; do
+            if ! item_exists 1 $FILE_SERVICESETS "$i"; then
+                echo -n "NAGCTL ERROR: Service Set '$i' not found."
+                echo " Will not modify host."
+                unlockdir
+                exit 13
+            fi
+        done
     }
 
     [[ -n $template ]] && {
@@ -3693,6 +3704,12 @@ delete_contacts_line()
         echo -n "NAGCTL ERROR: Contact '$name' is referenced by one"
         echo " or more services ($nname:$svcdesc ...). Will not delete."
         RETVAL=15
+    elif item_exists_new 6 $FILE_SERVICESETS "$name"; then
+        t=`item_search_new "6" $FILE_SERVICESETS "$name" | head -1`
+        IFS=, read nname x x svcdesc x < <( echo "$t" )
+        echo -n "NAGCTL ERROR: Contact '$name' is referenced by one"
+        echo " or more service sets ($nname:$svcdesc ...). Will not delete."
+        RETVAL=15
     else
         if item_exists 1 $FILE_CONTACTS "$name"; then
             item_delete 1 $FILE_CONTACTS "$name"
@@ -3736,6 +3753,10 @@ delete_contactgroups_line()
     elif item_exists_new 7 $FILE_SERVICES "$name"; then
         echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
         echo " or more services. Will not delete."
+        RETVAL=15
+    elif item_exists_new 7 $FILE_SERVICESETS "$name"; then
+        echo -n "NAGCTL ERROR: Contact Group '$name' is referenced by one"
+        echo " or more service sets. Will not delete."
         RETVAL=15
     else
         if item_exists 1 $FILE_CONTACTGROUPS "$name"; then
