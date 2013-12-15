@@ -3787,8 +3787,8 @@ delete_servicesets_line()
     }
 
     lockdir
-    if item_exists_new 9 $FILE_HOSTS "$name"; then
-        t=`item_search_new "9" $FILE_HOSTS "$name" | head -1`
+    if item_exists 9 $FILE_HOSTS "$svcdesc"; then
+        t=`item_search_new "9" $FILE_HOSTS "$svcdesc" | head -1`
         IFS=, read nname x < <( echo "$t" )
         echo -n "NAGCTL ERROR: Service set '$name' is referenced by one"
         echo " or more hosts ($nname ...). Will not delete."
