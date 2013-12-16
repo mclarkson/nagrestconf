@@ -82,13 +82,13 @@ This package provides the 'Bulk Tools' plugin for the Hosts tab.
 # Post Uninstall
 %postun
 
-%postun services-tab-plugin
+%preun services-tab-plugin
 %__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/10_smorg_services_tab.php
 
-%postun services-bulktools-plugin
+%preun services-bulktools-plugin
 %__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bulktools_btn.php
 
-%postun hosts-bulktools-plugin
+%preun hosts-bulktools-plugin
 %__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_hosts_bulktools_btn.php
 
 %install
