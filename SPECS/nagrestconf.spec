@@ -68,13 +68,22 @@ This package provides the 'Bulk Tools' plugin for the Hosts tab.
 %post
 
 %post services-tab-plugin
-%__ln_s ../plugins/smorg_services_tab.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/10_smorg_services_tab.php
+if [ "$1" = 1 ]; then
+    # New install
+    %__ln_s ../plugins/smorg_services_tab.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/10_smorg_services_tab.php
+fi
 
 %post services-bulktools-plugin
-%__ln_s ../plugins/smorg_services_bulktools_btn.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bulktools_btn.php
+if [ "$1" = 1 ]; then
+    # New install
+    %__ln_s ../plugins/smorg_services_bulktools_btn.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bulktools_btn.php
+fi
 
 %post hosts-bulktools-plugin
-%__ln_s ../plugins/smorg_hosts_bulktools_btn.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_hosts_bulktools_btn.php
+if [ "$1" = 1 ]; then
+    # New install
+    %__ln_s ../plugins/smorg_hosts_bulktools_btn.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_hosts_bulktools_btn.php
+fi
 
 # Pre Uninstall
 %preun
@@ -83,13 +92,22 @@ This package provides the 'Bulk Tools' plugin for the Hosts tab.
 %postun
 
 %preun services-tab-plugin
-%__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/10_smorg_services_tab.php
+if [ "$1" = 0 ]; then
+    # uninstall
+    %__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/10_smorg_services_tab.php
+fi
 
 %preun services-bulktools-plugin
-%__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bulktools_btn.php
+if [ "$1" = 0 ]; then
+    # uninstall
+    %__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_services_bulktools_btn.php
+fi
 
 %preun hosts-bulktools-plugin
-%__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_hosts_bulktools_btn.php
+if [ "$1" = 0 ]; then
+    # uninstall
+    %__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_hosts_bulktools_btn.php
+fi
 
 %install
 
