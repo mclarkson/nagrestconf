@@ -10,7 +10,7 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-xx Dec 2013 New version 1.159 (UNRELEASED)
+xx Dec 2013 New version 1.160 (UNRELEASED)
 
 * The GUI now works in Internet Explorer 8, 9, 10 and 11.
 * More fields have been added to the GUI for Host Templates, Service Templates, and Contacts.

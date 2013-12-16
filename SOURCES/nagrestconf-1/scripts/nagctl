@@ -1548,7 +1548,7 @@ modify_service_line()
     IFS=, read name template command svcdesc servicegroups \
         contacts contactgroups x x x disable x x < <( echo "$gcsv" )
 
-    [[ -n $command ]] && command=`echo "$command" | grep -o '[-A-Za-z0-9_+]*'`
+    [[ -n $command ]] && command=`echo "$command" | grep -o '[-A-Za-z0-9_]*'`
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
@@ -2540,16 +2540,7 @@ add_service_line()
     IFS=, read name template command svcdesc servicegroups \
         contacts contactgroups x < <( echo "$gcsv" )
 
-    #name=`echo "$gcsv" | cut -d, -f1`
-    #template=`echo "$gcsv" | cut -d, -f2`
-
-    command=`echo "$command" | grep -o '[-A-Za-z0-9_+]*'`
-
-    #command=`echo "$gcsv" | cut -d, -f3 | grep -o '[-A-Za-z0-9_+]*'`
-    #svcdesc=`echo "$gcsv" | cut -d, -f4`
-    #servicegroups=`echo "$gcsv" | cut -d, -f5`
-    #contacts=`echo "$gcsv" | cut -d, -f6`
-    #contactgroups=`echo "$gcsv" | cut -d, -f7`
+    command=`echo "$command" | grep -o '[-A-Za-z0-9_]*'`
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
@@ -2571,7 +2562,7 @@ add_service_line()
     fi
     
     # command must exist in commands file
-    if ! item_exists 1 $FILE_COMMANDS "$command"; then
+    if ! item_exists_new 1 $FILE_COMMANDS "$command"; then
         echo "NAGCTL ERROR: Command '$command' unavailable. Cannot add item."
         unlockdir
         exit 13
@@ -2776,9 +2767,9 @@ add_servicesets_line()
     #name=`echo "$gcsv" | cut -d, -f1`
     #template=`echo "$gcsv" | cut -d, -f2`
 
-    command=`echo "$command" | grep -o '[-A-Za-z0-9_+]*'`
+    command=`echo "$command" | grep -o '[-A-Za-z0-9_]*'`
 
-    #command=`echo "$gcsv" | cut -d, -f3 | grep -o '[-A-Za-z0-9_+]*'`
+    #command=`echo "$gcsv" | cut -d, -f3 | grep -o '[-A-Za-z0-9_]*'`
     #svcdesc=`echo "$gcsv" | cut -d, -f4`
     #servicegroups=`echo "$gcsv" | cut -d, -f5`
     #contacts=`echo "$gcsv" | cut -d, -f6`

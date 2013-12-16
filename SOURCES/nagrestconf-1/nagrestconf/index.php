@@ -3716,7 +3716,7 @@
         print 'var checkcommand = [';
         $comma="";
         foreach( $hgs as $item ) {
-            print "$comma\"".$item['name']."\"";
+            print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
@@ -4148,7 +4148,7 @@
         print 'var acheckcommand = [';
         $comma="";
         foreach( $hgs as $item ) {
-            print "$comma\"".$item['name']."\"";
+            print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
@@ -5402,7 +5402,7 @@
         print 'var hstnotifcmds = [';
         $comma="";
         foreach( $hgs as $item ) {
-            print "$comma\"".$item['name']."\"";
+            print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
@@ -5416,7 +5416,7 @@
         print 'var svcnotifcmds = [';
         $comma="";
         foreach( $hgs as $item ) {
-            print "$comma\"".$item['name']."\"";
+            print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
@@ -5816,7 +5816,7 @@
         print 'var ahstnotifcmds = [';
         $comma="";
         foreach( $hgs as $item ) {
-            print "$comma\"".$item['name']."\"";
+            print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
@@ -5830,7 +5830,7 @@
         print 'var asvcnotifcmds = [';
         $comma="";
         foreach( $hgs as $item ) {
-            print "$comma\"".$item['name']."\"";
+            print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
@@ -7570,7 +7570,7 @@
         print 'var escommand = [';
         $comma="";
         foreach( $hgs as $item ) {
-            print "$comma\"".$item['name']."\"";
+            print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
@@ -7933,7 +7933,7 @@
         print 'var escommand = [';
         $comma="";
         foreach( $hgs as $item ) {
-            print "$comma\"".$item['name']."\"";
+            print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
@@ -9162,7 +9162,7 @@
         print 'var fcommand = [';
         $comma="";
         foreach( $hgs as $item ) {
-            print "$comma\"".$item['name']."\"";
+            print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
@@ -9580,7 +9580,7 @@
         print 'var ecommand = [';
         $comma="";
         foreach( $hgs as $item ) {
-            print "$comma\"".$item['name']."\"";
+            print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
@@ -10491,7 +10491,7 @@
         print 'var escommand = [';
         $comma="";
         foreach( $hgs as $item ) {
-            print "$comma\"".$item['name']."\"";
+            print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
@@ -10888,7 +10888,7 @@
         print 'var escommand = [';
         $comma="";
         foreach( $hgs as $item ) {
-            print "$comma\"".$item['name']."\"";
+            print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
