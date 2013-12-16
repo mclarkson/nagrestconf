@@ -17,8 +17,8 @@ xx Dec 2013 New version 1.159 (UNRELEASED)
 * Added auto-completion to most applicable text entry boxes.
 * Servicesets field in hosts now accepts multiple service sets. Service sets are added from left to right; any duplicate services are overwritten by the rightmost serviceset.
 * The service sets can now be edited and reapplied to hosts using the edit host dialog.
-* Bulk Tools, new 'Add Hosts' tab: Allows bulk adding of hosts using csv files.
-* Bulk Tools, new 'Refresh Hosts' tab: Applies service sets to many hosts.
+* Bulk Tools, new `Add Hosts' tab: Allows bulk adding of hosts using csv files.
+* Bulk Tools, new `Refresh Hosts' tab: Applies service sets to many hosts.
 * Various bug fixes and extra validity checks.
 
 License
