@@ -52,7 +52,7 @@ alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
 The Services Tab, Bulk Tools plugin:
 
 ++++
-<img src="http://www.smorg.co.uk/images/ServicesBulkTools.png"
+<img src="http://www.smorg.co.uk/images/ServicesBulkTools_1_159.png"
 alt="Bulk Tools GUI Screenshot" style="float:none" width="700px" />
 ++++
 
