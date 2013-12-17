@@ -229,7 +229,7 @@ class RestServer
 
             # TODO: Eventually this should go...
             foreach( $this->jadata as &$item ) {
-               $item = strtr( $item, array( "," => "`") );
+               $item = strtr( $item, array( "," => "`", "\\" => "\\\\" ) );
                $item = trim( $item );
             }
         }

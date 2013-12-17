@@ -4059,7 +4059,7 @@
         print '<div id="fragment-3">';
         print '<p>';
         $new_actionurl = urldecode( $action_url );
-        $new_actionurl = strtr( $new_actionurl, array("\""=>"\\\"") );
+        $new_actionurl = strtr( $new_actionurl, array("\""=>"\\\"","\\"=>"\\\\") );
         print '<label for="actionurl">Action URL</label>';
         print '<input class="field" type="text" id="action_url" '.
               'value="'.$new_actionurl.'" name="action_url" />';
@@ -4779,7 +4779,7 @@
         print '<div id="fragment-3">';
         print '<p>';
         $new_actionurl = urldecode( $action_url );
-        $new_actionurl = strtr( $new_actionurl, array("\""=>"\\\"") );
+        $new_actionurl = strtr( $new_actionurl, array("\""=>"\\\"","\\"=>"\\\\") );
         print '<label for="actionurl">Action URL</label>';
         print '<input class="field" type="text" id="action_url" '.
               'value="'.$new_actionurl.'" name="action_url" />';
@@ -7388,7 +7388,7 @@
         # Command
         # Allow both types of speech marks as input value
         $newcmd = urldecode( $command );
-        $newcmd = strtr( $newcmd, array("\""=>"\\\"") );
+        $newcmd = strtr( $newcmd, array("\""=>"\\\"","\\"=>"\\\\") );
         print '<p>';
         print '<label for="escommand">Command *</label>';
         print '<input class="field" type="text" id="escommand" name="command"';
@@ -10309,7 +10309,7 @@
         # Command
         # Allow both types of speech marks as input value
         $newcmd = urldecode( $command );
-        $newcmd = strtr( $newcmd, array("\""=>"\\\"") );
+        $newcmd = strtr( $newcmd, array("\""=>"\\\"","\\"=>"\\\\") );
         print '<p>';
         print '<label for="escommand">Command *</label>';
         print '<input class="field" type="text" id="escommand" name="command"';
