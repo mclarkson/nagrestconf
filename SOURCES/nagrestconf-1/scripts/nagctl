@@ -762,7 +762,7 @@ item_exists_new()
 # Arguments:    $1 - column, $2 - FILE_XXX, $3 - text
 # Returns:      0 - found, 1 - not found
 {
-    local query i ncols=${gfile_ncols[$2]}
+    local query="^" i ncols=${gfile_ncols[$2]}
 
     [[ $1 -gt $ncols ]] && {
         echo -n "NAGCTL ERROR: Cannot search for column $1 when "
@@ -770,14 +770,48 @@ item_exists_new()
         exit 11
     }
 
-    [[ $1 -eq 1 ]] && { query="^"; }
-
-    #( |,)mark\.clarkson( |,)
+    # E.g. col 3 search = ^[^,]*,[^,]*,[^,]*com( |,|$)
     # Build a precise query
-    for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
-    query="${query%,}( |,)$3( |,)"
-    for i in `seq 1 $(($ncols-$1))`; do query="$query.*"; done
+    for i in `seq 1 $(($1-1))`; do query="$query[^,]*,"; done
+    query="$query[^,]*$3( |,|$)"
     return `grep -E -qs -- "$query" ${gservice}_${gfilename[$2]}.setup`
+}
+
+# ----------------------------------------------------------------------------
+item_existsN_new()
+# ----------------------------------------------------------------------------
+#
+# TODO
+#
+# Purpose:      Look for two items of text respectively in N columns.
+#               columns must be in numeric sort order.
+# Arguments:    $1 - space separated columns, $2 - FILE_XXX,
+#               $3 - comma separated text, $4 - optional prefix (for
+#               matching empty fields)
+# Returns:      0 - found, 1 - not found
+{
+    local query i ncols=${gfile_ncols[$2]}
+
+    declare -a colnos=($1)
+    IFS=, read -a txt < <( echo "$3" )
+
+    #[[ ${colnos[0]} -eq 1 ]] && {
+        query="^"
+    #}
+
+    # Build a precise query TODO
+    # E.g. col 3 search = ^[^,]*,[^,]*,[^,]*com( |,|$)
+    for i in `seq 1 $((${colnos[0]}-1))`; do query="$query^[^,]*,"; done
+    query="$query[^,]*${txt[0]}( |,|$)"
+    for j in `seq 2 ${#colnos[*]}`; do
+        for i in `seq $((${colnos[$j-2]}+1)) $((${colnos[$j-1]}-1))`; do
+            query="$query,.*"
+        done
+        query="$query,${txt[$j-1]}"
+        query="${query%,}( |,)${txt[$j-1]}( |,)"
+    done
+    #TeSt: echo "query is '$query'"
+    return `grep -qs -- "$query" ${gservice}_${gfilename[$2]}.setup`
 }
 
 # ----------------------------------------------------------------------------
@@ -874,20 +908,17 @@ item_search_new()
 # Arguments:    $1 - column, $2 - FILE_XXX, $3 - text
 # Returns:      0 - found, 1 - not found
 {
-    local query i ncols=${gfile_ncols[$2]}
+    local query="^" i ncols=${gfile_ncols[$2]}
 
     if [[ $1 -gt $ncols ]]; then
         echo -n "NAGCTL ERROR: Cannot search for column $1 when "
         echo "there are only $ncols columns."
         exit 11
-    elif [[ $1 -eq 1 ]]; then
-        query="^"
     fi
 
     # Build a precise query
-    for i in `seq 1 $(($1-1))`; do query="$query.*,"; done
-    query="${query%,}( |,)$3( |,)"
-    for i in `seq 1 $(($ncols-$1))`; do query="$query.*"; done
+    for i in `seq 1 $(($1-1))`; do query="$query[^,]*,"; done
+    query="$query[^,]*$3( |,|$)"
     grep -E -h -- "$query" ${gservice}_${gfilename[$2]}.setup
 }
 
@@ -3765,33 +3796,39 @@ delete_contactgroups_line()
 delete_servicesets_line()
 # ----------------------------------------------------------------------------
 {
-    local name svcdesc
+    local name svcdesc numitems=0 wildcard=0
 
     IFS=, read name x x svcdesc x < <( echo "$gcsv" )
-
-    #name=`echo "$gcsv" | cut -d, -f1`
-    #svcdesc=`echo "$gcsv" | cut -d, -f4`
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
         exit 13
     }
 
+    [[ "$svcdesc" == ".*" ]] && wildcard=1
+
     lockdir
-    if item_exists 9 $FILE_HOSTS "$svcdesc"; then
-        t=`item_search_new "9" $FILE_HOSTS "$svcdesc" | head -1`
-        IFS=, read nname x < <( echo "$t" )
-        echo -n "NAGCTL ERROR: Service set '$name' is referenced by one"
-        echo " or more hosts ($nname ...). Will not delete."
-        RETVAL=15
-    else
-        if item_exists2 1 4 $FILE_SERVICESETS "$name" "$svcdesc"; then
-            item_delete2 1 4 $FILE_SERVICESETS "$name" "$svcdesc"
-            echo "Success"
-        else
-            echo "NAGCTL ERROR: Serviceset not found."
+    # Don't allow deletion if this is the last service in the serviceset
+    # and it's referenced by a HOST.
+    numitems=`item_search_new 1 $FILE_SERVICESETS "$name" | wc -l`
+    if [[ $numitems -eq 1 || $wildcard -eq 1 ]]; then
+        if item_exists_new 9 $FILE_HOSTS "$name"; then
+            t=`item_search_new "9" $FILE_HOSTS "$name" | head -1`
+            IFS=, read nname x < <( echo "$t" )
+            echo -n "NAGCTL ERROR: Service set '$name' is referenced by one"
+            echo " or more hosts ($nname ...). Will not delete."
+            unlockdir
             RETVAL=15
+            return
         fi
+    fi
+
+    if item_exists2 1 4 $FILE_SERVICESETS "$name" "$svcdesc"; then
+        item_delete2 1 4 $FILE_SERVICESETS "$name" "$svcdesc"
+        echo "Success"
+    else
+        echo "NAGCTL ERROR: Serviceset not found."
+        RETVAL=15
     fi
     unlockdir
 }
