@@ -816,7 +816,6 @@
         $output = array();
         $cmd = "scripts/csv2json.sh \"upload/".$query_str["filename"]."\"";
         if( $hasheading == 1 ) $cmd.=" hasheading";
-        #$cmd = "/bin/pwd";
         exec( $cmd . ' &>/dev/stdout', $output, $exit_status );
 
         $output = implode($output);
