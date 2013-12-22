@@ -10,7 +10,7 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-xx Dec 2013 New version 1.160 (UNRELEASED)
+22 Dec 2013 New version 1.160 (RedHat 5/6 rpms released to Sourceforge)
 
 * The GUI now works in Internet Explorer 8, 9, 10 and 11.
 * More fields have been added to the GUI for Host Templates, Service Templates, and Contacts.
@@ -45,14 +45,14 @@ Screenshots
 Hosts page showing an Edit Host dialog.
 
 ++++
-<img src="http://www.smorg.co.uk/images/nagrestconfgui.png"
+<img src="http://www.smorg.co.uk/images/HostsTab_1_160.png"
 alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
 ++++
 
 The Services Tab, Bulk Tools plugin:
 
 ++++
-<img src="http://www.smorg.co.uk/images/ServicesBulkTools2_1_159.png"
+<img src="http://www.smorg.co.uk/images/ServicesBulkTools_1_160.png"
 alt="Bulk Tools GUI Screenshot" style="float:none" width="700px" />
 ++++
 
@@ -251,10 +251,10 @@ freshly installing the Operating System with a minimal set of packages.
 ----------------------------------------------------------
 # On Debian:
 apt-get update
-gdebi nagrestconf_1.158_all.deb
+gdebi nagrestconf_1.160_all.deb
 
 # On Centos/Redhat:
-yum install nagrestconf-1.158-1.noarch.rpm
+yum install nagrestconf-1.160-1.noarch.rpm
 ----------------------------------------------------------
 +
 2. Configure the system:
