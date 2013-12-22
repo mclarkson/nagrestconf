@@ -205,6 +205,17 @@ echo
     echo
 
     echo curl -knX POST \
+        -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\",
+                  \"svcdesc\":\".*\"}'" \
+        http://${IP}/rest/delete/servicesets
+    curl -knX POST \
+        -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\",
+                  \"svcdesc\":\".*\"}" \
+        http://${IP}/rest/delete/servicesets
+
+    echo
+
+    echo curl -knX POST \
         -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\"}'" \
         http://${IP}/rest/delete/hosts
     curl -knX POST \
@@ -266,17 +277,6 @@ echo
         -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\",
                   \"svcdesc\":\".*\"}" \
         http://${IP}/rest/delete/servicegroups
-
-    echo
-
-    echo curl -knX POST \
-        -d "'json={\"folder\":\"$FOLDER\", \"name\":\".*\",
-                  \"svcdesc\":\".*\"}'" \
-        http://${IP}/rest/delete/servicesets
-    curl -knX POST \
-        -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\",
-                  \"svcdesc\":\".*\"}" \
-        http://${IP}/rest/delete/servicesets
 
     echo
 
