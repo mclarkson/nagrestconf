@@ -816,7 +816,7 @@
         $output = array();
         $cmd = "scripts/csv2json.sh \"upload/".$query_str["filename"]."\"";
         if( $hasheading == 1 ) $cmd.=" hasheading";
-        exec( $cmd . ' &>/dev/stdout', $output, $exit_status );
+        exec( $cmd . ' >/dev/stdout 2>&1', $output, $exit_status );
 
         $output = implode($output);
 
@@ -949,7 +949,7 @@
         $retval = array();
         #$retval["message"] = $a;
         $retval["message"] = $list;
-        $retval["code"] = 200;
+        $retval["code"] = $resp["http_code"];
         print( json_encode( $retval ) );
 
         exit(0);

@@ -3986,7 +3986,7 @@ function main()
 
             $output = array();
             $exit_status = 1;
-            exec( $cmd . " &>/dev/stdout", $output, $exit_status );
+            exec( $cmd . ' >/dev/stdout 2>&1', $output, $exit_status );
             if( $exit_status > 0 ) {
                 $rs->sendResponse( 400,
                                    json_encode($output[0]),
@@ -4021,7 +4021,7 @@ function main()
             
             $output = array();
             $exit_status = 1;
-            exec( $cmd . ' &>/dev/stdout', $output, $exit_status );
+            exec( $cmd . ' >/dev/stdout 2>&1', $output, $exit_status );
 
             if( $exit_status > 0 ) {
                 $rs->sendResponse( 400,
