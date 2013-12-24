@@ -241,6 +241,8 @@ Debian install packages are also available.
 Install Using Prebuilt Packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+For all functionality download and install all four RPMs or debian packages.
+
 .*DEBIAN, CENTOS & REDHAT*
 
 Do not install on an existing Nagios server. Use the following procedure after
@@ -251,10 +253,17 @@ freshly installing the Operating System with a minimal set of packages.
 ----------------------------------------------------------
 # On Debian:
 apt-get update
-gdebi nagrestconf_1.160_all.deb
+gdebi nagrestconf_1.160_all.deb \
+      nagrestconf-services-plugin_1.160_all.deb \
+      nagrestconf-services-bulktools-plugin_1.160_all.deb \
+      nagrestconf-hosts-bulktools-plugin_1.160_all.deb
 
 # On Centos/Redhat:
-yum install nagrestconf-1.160-1.noarch.rpm
+yum install nagrestconf-1.160-1.noarch.rpm \
+            nagrestconf-services-tab-plugin-1.160-1.noarch.rpm \
+            nagrestconf-services-bulktools-plugin-1.160-1.noarch.rpm \
+            nagrestconf-hosts-bulktools-plugin-1.160-1.noarch.rpm
+
 ----------------------------------------------------------
 +
 2. Configure the system:
