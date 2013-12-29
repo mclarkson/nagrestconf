@@ -10,6 +10,10 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
+29 Dec 2013 New version 1.161 (redhat 5/6 and debian packages released to Sourceforge)
+
+* Bug fixes
+
 22 Dec 2013 New version 1.160 (redhat 5/6 and debian packages released to Sourceforge)
 
 * The GUI now works in Internet Explorer 8, 9, 10 and 11.
