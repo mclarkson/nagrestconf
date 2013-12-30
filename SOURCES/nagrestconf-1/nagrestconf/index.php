@@ -1119,8 +1119,16 @@
 
         global $g_tab, $g_tab_names;
 
-        print '<div id="nagrestconf">';
-        print 'Nagrestconf '.VERSION.'</div>';
+        print '<div id="nagrestconf"';
+        print ' style="margin-top: 0px; padding-top: 0px; height: 53px;';
+        print ' top: 0px;">';
+        print '<img src="images/meerkat_50x51_sinc.png" alt="Meerkat"';
+        print ' style="padding-top: 3px;">';
+        print '<span style="vertical-align: top; padding-top: 9px;';
+        print ' display: inline-block; padding-left: 6px;';
+        print ' text-align: left;">Nagrestconf<br /><span style="';
+        print ' font-weight: normal; font-size: 12px;"><i>'.VERSION.'</i></span>';
+        print '</div>';
         print '<div id="pagetabs">';
         print '<ul>';
 
