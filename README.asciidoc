@@ -10,6 +10,11 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
+29 Dec 2013 New version 1.162 (redhat 5/6 and debian packages released to Sourceforge)
+
+* Added Parent Template field to the Templates tab.
+* Added project icon.
+
 29 Dec 2013 New version 1.161 (redhat 5/6 and debian packages released to Sourceforge)
 
 * Bug fixes
@@ -49,14 +54,14 @@ Screenshots
 Hosts page showing an Edit Host dialog.
 
 ++++
-<img src="http://www.smorg.co.uk/images/HostsTab_1_160.png"
+<img src="http://www.smorg.co.uk/images/HostsTab_1_162.png"
 alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
 ++++
 
 The Services Tab, Bulk Tools plugin:
 
 ++++
-<img src="http://www.smorg.co.uk/images/ServicesBulkTools_1_160.png"
+<img src="http://www.smorg.co.uk/images/ServicesBulkTools_1_162.png"
 alt="Bulk Tools GUI Screenshot" style="float:none" width="700px" />
 ++++
 
@@ -257,16 +262,16 @@ freshly installing the Operating System with a minimal set of packages.
 ----------------------------------------------------------
 # On Debian:
 apt-get update
-gdebi nagrestconf_1.161_all.deb \
-      nagrestconf-services-plugin_1.161_all.deb \
-      nagrestconf-services-bulktools-plugin_1.161_all.deb \
-      nagrestconf-hosts-bulktools-plugin_1.161_all.deb
+gdebi nagrestconf_1.162_all.deb \
+      nagrestconf-services-plugin_1.162_all.deb \
+      nagrestconf-services-bulktools-plugin_1.162_all.deb \
+      nagrestconf-hosts-bulktools-plugin_1.162_all.deb
 
 # On Centos/Redhat:
-yum install nagrestconf-1.161-1.noarch.rpm \
-            nagrestconf-services-tab-plugin-1.161-1.noarch.rpm \
-            nagrestconf-services-bulktools-plugin-1.161-1.noarch.rpm \
-            nagrestconf-hosts-bulktools-plugin-1.161-1.noarch.rpm
+yum install nagrestconf-1.162-1.noarch.rpm \
+            nagrestconf-services-tab-plugin-1.162-1.noarch.rpm \
+            nagrestconf-services-bulktools-plugin-1.162-1.noarch.rpm \
+            nagrestconf-hosts-bulktools-plugin-1.162-1.noarch.rpm
 
 ----------------------------------------------------------
 +
