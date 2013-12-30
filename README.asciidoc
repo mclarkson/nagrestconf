@@ -10,7 +10,7 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-29 Dec 2013 New version 1.162 (redhat 5/6 and debian packages released to Sourceforge)
+30 Dec 2013 New version 1.162 (redhat 5/6 and debian packages released to Sourceforge)
 
 * Added Parent Template field to the Templates tab.
 * Added project icon.
