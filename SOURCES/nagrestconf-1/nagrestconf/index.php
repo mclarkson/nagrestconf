@@ -3298,11 +3298,11 @@
               " alt=\"arrow\"></a></td>";
 
         # Sort by use
-        #$g_sort_new = "use";
-        #$url = create_url( );
-        #print "<td><a href='".$url."'><span class=black>Use </span>";
-        #print "<img width=8 src=/nagrestconf/images/ArrowDown.svg.png".
-        #      " alt=\"arrow\"></a></td>";
+        $g_sort_new = "use";
+        $url = create_url( );
+        print "<td><a href='".$url."'><span class=black>Parent </span>";
+        print "<img width=8 src=/nagrestconf/images/ArrowDown.svg.png".
+              " alt=\"arrow\"></a></td>";
 
         # Sort by contacts
         $g_sort_new = "contacts";
@@ -3366,6 +3366,8 @@
 
             // NAME
             print "<td>".$item['name']."</td>";
+            // USE (Parent template)
+            print "<td>".$item['use']."</td>";
             // CONTACTS
             print "<td>".$item['contacts']."</td>";
             // CONTACT GROUPS
@@ -3425,6 +3427,13 @@
         print "<img width=8 src=/nagrestconf/images/ArrowDown.svg.png".
               " alt=\"arrow\"></a></td>";
 
+        # Sort by use
+        $g_sort_new = "use";
+        $url = create_url( );
+        print "<td><a href='".$url."'><span class=black>Parent </span>";
+        print "<img width=8 src=/nagrestconf/images/ArrowDown.svg.png".
+              " alt=\"arrow\"></a></td>";
+
         # Sort by contacts
         $g_sort_new = "contacts";
         $url = create_url( );
@@ -3480,6 +3489,8 @@
 
             // NAME
             print "<td>".$item['name']."</td>";
+            // USE (Parent template)
+            print "<td>".$item['use']."</td>";
             // CONTACTS
             print "<td>".$item['contacts']."</td>";
             // CONTACT GROUPS
@@ -3553,11 +3564,18 @@
         print '/>';
         print '</p>';
         # Use
-        #print '<p>';
-        #print '<label for="use">Use Template *</label>';
-        #print '<input class="field" type="text" id="use" name="use" ';
-        #print ' required="required" />';
-        #print '</p>';
+        $hts = get_and_sort_hosttemplates( );
+        print '<p>';
+        print '<label for="use">Parent Template *</label>';
+        print '<select class="field" id="use" name="use" required="required">';
+        $selected = "selected";
+        print '<option value="" selected>None</option>';
+        foreach( $hts as $item ) {
+            print '<option value="'.$item["name"].'">';
+            print $item["name"].'</option>';
+        }
+        print '</select>';
+        print '</p>';
         # Contacts
         print '<p>';
         print '<label for="acontacts">Contacts</label>';
@@ -3961,18 +3979,28 @@
 
         # Hostname
         print '<p>';
-        print '<label for="hosttemplatename">Contact Name *</label>';
+        print '<label for="hosttemplatename">Template Name *</label>';
         print '<input class="field" type="text" id="hosttemplatename" ';
         print ' readonly="readonly" name="name" required="required" ';
         print ' value="'.$name.'" />';
         print '</p>';
         # Use
-        #print '<p>';
-        #print '<label for="use">Use Template *</label>';
-        #print '<input class="field" type="text" id="use" name="use" ';
-        #print ' required="required"';
-        #print ' value="'.$use.'" />';
-        #print '</p>';
+        $hts = get_and_sort_hosttemplates( );
+        print '<p>';
+        print '<label for="use">Parent Template *</label>';
+        print '<select class="field" id="use" name="use" required="required">';
+        $selected = "";
+        if( ! isset( $use ) ) $selected = " selected";
+        print '<option value="-"'.$selected.'>None</option>';
+        foreach( $hts as $item ) {
+            $selected = "";
+            if( $item["name"] == $name ) continue;
+            if( $item["name"] == $use ) $selected = " selected";
+            print '<option value="'.$item["name"].'"'.$selected.'>';
+            print $item["name"].'</option>';
+        }
+        print '</select>';
+        print '</p>';
         # Contacts
         print '<p>';
         print '<label for="contacts">Contacts</label>';
@@ -4299,11 +4327,18 @@
         print '/>';
         print '</p>';
         # Use
-        #print '<p>';
-        #print '<label for="use">Use Template *</label>';
-        #print '<input class="field" type="text" id="use" name="use" ';
-        #print ' required="required" />';
-        #print '</p>';
+        $hts = get_and_sort_servicetemplates( );
+        print '<p>';
+        print '<label for="use">Parent Template *</label>';
+        print '<select class="field" id="use" name="use" required="required">';
+        $selected = "selected";
+        print '<option value="" selected>None</option>';
+        foreach( $hts as $item ) {
+            print '<option value="'.$item["name"].'">';
+            print $item["name"].'</option>';
+        }
+        print '</select>';
+        print '</p>';
         # Contacts
         print '<p>';
         print '<label for="bcontacts">Contacts</label>';
@@ -4694,12 +4729,22 @@
         print ' value="'.$name.'" />';
         print '</p>';
         # Use
-        #print '<p>';
-        #print '<label for="use">Use Template *</label>';
-        #print '<input class="field" type="text" id="use" name="use" ';
-        #print ' required="required"';
-        #print ' value="'.$use.'" />';
-        #print '</p>';
+        $hts = get_and_sort_servicetemplates( );
+        print '<p>';
+        print '<label for="use">Parent Template *</label>';
+        print '<select class="field" id="use" name="use" required="required">';
+        $selected = "";
+        if( ! isset( $use ) ) $selected = " selected";
+        print '<option value="-"'.$selected.'>None</option>';
+        foreach( $hts as $item ) {
+            $selected = "";
+            if( $item["name"] == $name ) continue;
+            if( $item["name"] == $use ) $selected = " selected";
+            print '<option value="'.$item["name"].'"'.$selected.'>';
+            print $item["name"].'</option>';
+        }
+        print '</select>';
+        print '</p>';
         # Contacts
         print '<p>';
         print '<label for="ccontacts">Contacts</label>';
