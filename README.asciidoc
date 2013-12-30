@@ -58,13 +58,6 @@ Hosts page showing an Edit Host dialog.
 alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
 ++++
 
-The Services Tab, Bulk Tools plugin:
-
-++++
-<img src="http://www.smorg.co.uk/images/ServicesBulkTools_1_162.png"
-alt="Bulk Tools GUI Screenshot" style="float:none" width="700px" />
-++++
-
 More screen shots can be seen in the Sourceforge Gallery at:
 
 https://sourceforge.net/projects/nagrestconf/
