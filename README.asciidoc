@@ -49,14 +49,14 @@ Screenshots
 Hosts page showing an Edit Host dialog.
 
 ++++
-<img src="http://www.smorg.co.uk/images/HostsTab_1_161.png"
+<img src="http://www.smorg.co.uk/images/HostsTab_1_160.png"
 alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
 ++++
 
 The Services Tab, Bulk Tools plugin:
 
 ++++
-<img src="http://www.smorg.co.uk/images/ServicesBulkTools_1_161.png"
+<img src="http://www.smorg.co.uk/images/ServicesBulkTools_1_160.png"
 alt="Bulk Tools GUI Screenshot" style="float:none" width="700px" />
 ++++
 
