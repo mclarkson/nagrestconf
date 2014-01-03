@@ -259,16 +259,18 @@ freshly installing the Operating System with a minimal set of packages.
 ----------------------------------------------------------
 # On Debian:
 apt-get update
-gdebi nagrestconf_1.162_all.deb \
-      nagrestconf-services-plugin_1.162_all.deb \
-      nagrestconf-services-bulktools-plugin_1.162_all.deb \
-      nagrestconf-hosts-bulktools-plugin_1.162_all.deb
+gdebi nagrestconf_1.163_all.deb \
+      nagrestconf-services-plugin_1.163_all.deb \
+      nagrestconf-services-bulktools-plugin_1.163_all.deb \
+      nagrestconf-hosts-bulktools-plugin_1.163_all.deb \
+      nagrestconf-backup-plugin_1.163_all.deb \
 
 # On Centos/Redhat:
-yum install nagrestconf-1.162-1.noarch.rpm \
-            nagrestconf-services-tab-plugin-1.162-1.noarch.rpm \
-            nagrestconf-services-bulktools-plugin-1.162-1.noarch.rpm \
-            nagrestconf-hosts-bulktools-plugin-1.162-1.noarch.rpm
+yum install nagrestconf-1.163-1.noarch.rpm \
+            nagrestconf-services-tab-plugin-1.163-1.noarch.rpm \
+            nagrestconf-services-bulktools-plugin-1.163-1.noarch.rpm \
+            nagrestconf-hosts-bulktools-plugin-1.163-1.noarch.rpm \
+            nagrestconf-backup-plugin-1.163-1.noarch.rpm
 
 ----------------------------------------------------------
 +
