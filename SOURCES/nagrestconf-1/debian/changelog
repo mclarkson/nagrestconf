@@ -1,3 +1,9 @@
+nagrestconf (1.163) UNRELEASED; urgency=low
+
+  * New Backup & Restore plugin.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 03 Jan 2014 22:23:00 +0000
+
 nagrestconf (1.162) UNRELEASED; urgency=low
 
   * Project icon and parent template field added.

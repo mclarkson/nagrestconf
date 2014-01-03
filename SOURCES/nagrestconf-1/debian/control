@@ -43,4 +43,9 @@ Depends: ${misc:Depends}, nagrestconf
 Description: Configuration tools for Nagios.
  This package provides the 'Bulk Tools' plugin for the Hosts tab.
 
+Package: nagrestconf-backup-plugin
+Architecture: all
+Depends: ${misc:Depends}, nagrestconf
+Description: Configuration tools for Nagios.
+ This package provides the 'Backup & Restore' plugin.
 
