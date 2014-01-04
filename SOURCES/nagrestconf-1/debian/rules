@@ -88,8 +88,8 @@ install: build
 	install -D -m 755 plugins/smorg_services_bulktools_btn.php ${DESTDIR-services-bulktools-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 	install -D -m 755 plugins/smorg_hosts_bulktools_btn_impl.php ${DESTDIR-hosts-bulktools-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
 	install -D -m 755 plugins/smorg_hosts_bulktools_btn.php ${DESTDIR-hosts-bulktools-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
-	install -D -m 755 plugins/smorg_backup_btn.php ${DESTDIR-backup-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
-	install -D -m 755 plugins/smorg_backup_btn_impl.php ${DESTDIR-backup-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+	install -D -m 755 plugins/smorg_backup_btn_impl.php ${DESTDIR-backup-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
+	install -D -m 755 plugins/smorg_backup_btn.php ${DESTDIR-backup-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 
 
 # Build architecture-independent files here.
