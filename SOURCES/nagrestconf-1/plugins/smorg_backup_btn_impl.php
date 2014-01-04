@@ -17,7 +17,7 @@
      */
 
     # ------------------------------------------------------------------------
-    function button_html( ) {
+    function backup_button_html( ) {
     # ------------------------------------------------------------------------
     # HTML code to show the 'Bulk Tools' button to the left pane.
     # Adds code to find the dialog div, backupdlg, add code to it, then
@@ -44,8 +44,6 @@
     # ------------------------------------------------------------------------
     # Check for options that return html fragments or JSON
 
-        global $g_sort;
-
         # Show the dialog buttons
 
         if( isset( $query_str['sbackupbtns'] )) {
@@ -57,10 +55,6 @@
         if( isset( $query_str['sbackupapply'] )) {
             backup_restore_using_REST( );
         }
-
-        # Save the query_string
-        parse_str( $_SERVER['QUERY_STRING'], $query_str );
-        $_SESSION['query_str'] = $query_str;
     }
 
     # ------------------------------------------------------------------------
