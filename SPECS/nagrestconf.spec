@@ -58,6 +58,16 @@ Configuration tools for Nagios.
 
 This package provides the 'Bulk Tools' plugin for the Hosts tab.
 
+%package backup-plugin
+Group: Application/System
+Summary: Backup and restore plugin for Nagrestconf.
+Requires: nagrestconf
+
+%description backup-plugin
+Configuration tools for Nagios.
+
+This package provides the 'Backup & Restore' plugin.
+
 %prep
 %setup -q
 
@@ -85,6 +95,12 @@ if [ "$1" = 1 ]; then
     %__ln_s ../plugins/smorg_hosts_bulktools_btn.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_hosts_bulktools_btn.php
 fi
 
+%post backup-plugin
+if [ "$1" = 1 ]; then
+    # New install
+    %__ln_s ../plugins/smorg_backup_btn.php /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/06_smorg_backup_btn.php
+fi
+
 # Pre Uninstall
 %preun
 
@@ -107,6 +123,12 @@ fi
 if [ "$1" = 0 ]; then
     # uninstall
     %__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/50_smorg_hosts_bulktools_btn.php
+fi
+
+%preun backup-plugin
+if [ "$1" = 0 ]; then
+    # uninstall
+    %__rm -f /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/06_smorg_backup_btn.php
 fi
 
 %install
@@ -144,6 +166,7 @@ cp -r rest ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/
 
 install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/scripts/
 install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/upload/
+install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/download/
 install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
 install -d -m 755 ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/
@@ -155,6 +178,8 @@ install -D -m 755 plugins/smorg_services_bulktools_btn_impl.php ${RPM_BUILD_ROOT
 install -D -m 755 plugins/smorg_services_bulktools_btn.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 install -D -m 755 plugins/smorg_hosts_bulktools_btn_impl.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
 install -D -m 755 plugins/smorg_hosts_bulktools_btn.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+install -D -m 755 plugins/smorg_backup_btn_impl.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
+install -D -m 755 plugins/smorg_backup_btn.php ${RPM_BUILD_ROOT}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 
 %files
 %defattr(755,root,root,755)
@@ -175,6 +200,7 @@ install -D -m 755 plugins/smorg_hosts_bulktools_btn.php ${RPM_BUILD_ROOT}/usr/sh
 %dir /usr/share/nagrestconf/htdocs/nagrestconf/scripts
 %defattr(644,apache,apache,755)
 %dir /usr/share/nagrestconf/htdocs/nagrestconf/upload
+%dir /usr/share/nagrestconf/htdocs/nagrestconf/download
 %defattr(644,root,root,755)
 /usr/share/nagrestconf/htdocs/nagrestconf/css
 /usr/share/nagrestconf/htdocs/nagrestconf/images
@@ -205,6 +231,12 @@ install -D -m 755 plugins/smorg_hosts_bulktools_btn.php ${RPM_BUILD_ROOT}/usr/sh
 %defattr(644,root,root,755)
 /usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/smorg_hosts_bulktools_btn_impl.php
 /usr/share/nagrestconf/htdocs/nagrestconf/plugins/smorg_hosts_bulktools_btn.php
+
+%files backup-plugin
+%defattr(644,root,root,755)
+/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/smorg_backup_btn_impl.php
+/usr/share/nagrestconf/htdocs/nagrestconf/plugins/smorg_backup_btn.php
+/usr/share/nagrestconf/htdocs/nagrestconf/scripts/restore.php
 
 %clean
 %{__rm} -rf %{buildroot}

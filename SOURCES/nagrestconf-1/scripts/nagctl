@@ -1025,7 +1025,6 @@ action_show()
     cd $SETUP_DIR
 
     eval "$gcsv" 2>/dev/null
-    echo "$gcsv" >>/tmp/bob
 
     [[ -z "$column" ]] && column=1
     [[ -z "$filter" ]] && filter=".*"
