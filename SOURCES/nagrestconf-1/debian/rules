@@ -79,6 +79,9 @@ install: build
 	install -d -m 755 $(DESTDIR-hosts-bulktools-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 	install -d -m 755 $(DESTDIR-hosts-bulktools-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
 	install -d -m 755 $(DESTDIR-hosts-bulktools-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/
+	install -d -m 755 $(DESTDIR-backup-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
+	install -d -m 755 $(DESTDIR-backup-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
+	install -d -m 755 $(DESTDIR-backup-plugin)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/
 	install -D -m 755 plugins/smorg_services_tab_impl.php ${DESTDIR-services-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
 	install -D -m 755 plugins/smorg_services_tab.php ${DESTDIR-services-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 	install -D -m 755 plugins/smorg_services_bulktools_btn_impl.php ${DESTDIR-services-bulktools-plugin}/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
