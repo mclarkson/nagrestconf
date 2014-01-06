@@ -24,6 +24,8 @@ case "$1" in
         a2enmod php5
         a2enmod auth_basic
         a2enmod rewrite
+
+        chown www-data: /usr/share/nagrestconf/htdocs/nagrestconf/upload
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

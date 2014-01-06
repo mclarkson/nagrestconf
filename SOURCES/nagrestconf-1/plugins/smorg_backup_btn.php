@@ -36,7 +36,7 @@
 
         plugins_load( "plugins-lib/smorg_backup_btn_impl.php" );
 
-        spi_add_action( 'button', NS . 'button_html' );
+        spi_add_action( 'button', NS . 'backup_button_html' );
         spi_add_action( 'dlgdiv', NS . 'add_backup_dlg_div' );
         spi_add_action( 'action', NS . 'backup_page_actions' );
     }
