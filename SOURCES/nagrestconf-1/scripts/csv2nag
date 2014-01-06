@@ -1868,11 +1868,12 @@ create_commands()
 
         IFS=, read -r name command disable x < <(echo "$a")
 
+        name=`urldecode "$name"`
+        command=`urldecode "$command"`
+
         [[ -n $command ]] && command=$(echo "$command" | tr '`' ',')
 
         echo "define command {"
-        name=`urldecode "$name"`
-        command=`urldecode "$command"`
         Echo "       command_name $name"
         echo "       command_line $command"
         echo "}"
