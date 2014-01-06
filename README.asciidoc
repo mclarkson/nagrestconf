@@ -55,7 +55,7 @@ License
 Screenshots
 ~~~~~~~~~~~
 
-Hosts page showing an Edit Host dialog.
+Hosts page showing the Backup or Restore dialog.
 
 ++++
 <img src="http://www.smorg.co.uk/images/BackupPlugin_1_163.png"
@@ -309,26 +309,62 @@ If something goes wrong then there are configuration files in the directory
 Plugins
 ~~~~~~~
 
-.nagrestconf-hosts-bulktools-plugin
-======================================
-This is the Bulk Tools plugin for the Hosts tab.
+Plugins can be enabled or disabled by installing or uninstalling the plugin
+package, or by adding/deleting symbolic links in:
+
+ /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/
+
+The order that plugins are loaded does matter, for example, the Services Tab must be loaded
+before the Services Bulk Tool. Ordering is achieved by prefixing the plugin name with a
+number. The order is currently as follows:
+
+ 06_smorg_backup_btn.php
+ 10_smorg_services_tab.php
+ 50_smorg_hosts_bulktools_btn.php
+ 50_smorg_services_bulktools_btn.php
+
+*nagrestconf-hosts-bulktools-plugin*
+
+This is the Bulk Tools GUI plugin for the Hosts tab.
 
 The Bulk Tools plugin makes changes to many hosts at once. Hosts can
 be added, modified, deleted and refreshed.
 
 Tabs:
-* Modify Hosts
-  All hosts shown in the hosts tab will be affected.
-* Delete Hosts
-  All hosts shown in the hosts tab will be affected.
-* Refresh Hosts
-  All services for a host are deleted and reapplied using whatever
-hosts are entered in the servicesets field.
-  All hosts shown in the hosts tab will be affected.
-* Add Hosts
-  Uses a csv (comma delimited) file to add many hosts.
-======================================
 
+* Modify Hosts
++
+All hosts shown in the hosts tab will be affected.
++
+* Delete Hosts
++
+All hosts shown in the hosts tab will be affected.
++
+* Refresh Hosts
++
+All services for a host are deleted and reapplied using entries
+in the servicesets field.
++
+All hosts shown in the hosts tab will be affected.
++
+* Add Hosts
++
+Uses a csv (comma delimited) file to add many hosts.
+
+*nagrestconf-services-plugin*
+
+The Services GUI plugin creates a new Services top-level tab.
+
+*nagrestconf-services-bulktools-plugin*
+
+This GUI plugin adds Bulk Tools to the Services tab.
+
+*nagrestconf-backup-plugin*
+
+The Backup plugin adds a Backup and Restore capability to the GUI.
+
+This is especially useful for distributed environments where the configuration can
+be restored to many nagios servers (without restoring the hosts and services).
 
 Install From Source
 ~~~~~~~~~~~~~~~~~~~
