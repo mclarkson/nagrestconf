@@ -58,7 +58,7 @@ Screenshots
 Hosts page showing an Edit Host dialog.
 
 ++++
-<img src="http://www.smorg.co.uk/images/HostsTab_1_162.png"
+<img src="http://www.smorg.co.uk/images/BackupPlugin_1_163.png"
 alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
 ++++
 
@@ -309,7 +309,26 @@ If something goes wrong then there are configuration files in the directory
 Plugins
 ~~~~~~~
 
-TODO
+.nagrestconf-hosts-bulktools-plugin
+======================================
+This is the Bulk Tools plugin for the Hosts tab.
+
+The Bulk Tools plugin makes changes to many hosts at once. Hosts can
+be added, modified, deleted and refreshed.
+
+Tabs:
+* Modify Hosts
+  All hosts shown in the hosts tab will be affected.
+* Delete Hosts
+  All hosts shown in the hosts tab will be affected.
+* Refresh Hosts
+  All services for a host are deleted and reapplied using whatever
+hosts are entered in the servicesets field.
+  All hosts shown in the hosts tab will be affected.
+* Add Hosts
+  Uses a csv (comma delimited) file to add many hosts.
+======================================
+
 
 Install From Source
 ~~~~~~~~~~~~~~~~~~~
