@@ -219,8 +219,6 @@ Upgrade
 Encoding for the commands table has changed. After the upgrade change all
 commands that have four backslashes, '\\\\', to two backslashes, '\\'.
 
-This can be done using the GUI.
-
 If using vim, do:
 
  cd /etc/<nagios_dir>/objects/<FOLDER>/setup
@@ -229,6 +227,7 @@ If using vim, do:
 
 Replacing <FOLDER> and <nagios_dir> with the correct path names, then, in vim:
 
+ :%s/\\\\/%5C%5C/g
  :%s/%5C%5C%5C%5C/%5C%5C/g
  :wq
 
