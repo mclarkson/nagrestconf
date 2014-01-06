@@ -1102,6 +1102,9 @@
 <script src = js/jquery-ui-1.10.3.custom.min.js></script>
 <link rel=stylesheet type=text/css
     href=css/redmond/jquery-ui.css />
+<link rel="icon"
+      type="image/png"
+      href="/nagrestconf/images/meerkat_16x16.png">
 </HEAD>
 <BODY>
         ';
