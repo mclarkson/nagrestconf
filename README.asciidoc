@@ -243,7 +243,7 @@ gdebi nagrestconf_1.163_all.deb \
       nagrestconf-services-plugin_1.163_all.deb \
       nagrestconf-services-bulktools-plugin_1.163_all.deb \
       nagrestconf-hosts-bulktools-plugin_1.163_all.deb \
-      nagrestconf-backup-plugin_1.163_all.deb \
+      nagrestconf-backup-plugin_1.163_all.deb
 
 # On Centos/Redhat:
 yum install nagrestconf-1.163-1.noarch.rpm \
