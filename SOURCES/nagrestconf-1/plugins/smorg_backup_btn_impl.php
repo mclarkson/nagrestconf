@@ -133,7 +133,7 @@
      *
      ***********************************************************************
      */
- 
+
     # ------------------------------------------------------------------------
     function send_backup_dlg_content( ) {
     # ------------------------------------------------------------------------
@@ -412,7 +412,7 @@
         print '$( "#backuptabs" ).tabs();';
         print '</script>';
 
-        #print "<br /><p style=\"text-align:center;\">Click 'Apply' to start the operation"; 
+        #print "<br /><p style=\"text-align:center;\">Click 'Apply' to start the operation";
         #print " or click 'Close' to cancel.</p>";
         print '<div class="flash notice" style="display:none"></div>';
         print '<div class="flash error" style="display:none"></div>';
@@ -421,7 +421,7 @@
                $("#file2").AjaxFileUpload({
                    action: "/nagrestconf/scripts/restore.php",
                    onComplete: function(filename, response) {
-                       if( response.code != 200 ){ 
+                       if( response.code != 200 ){
                            var msg = "Fail: \'"+response.error+"\'";
                            $(".flash.notice").hide();
                            $(".flash.error").html(msg).show();
@@ -541,13 +541,13 @@
 
         #file_put_contents( "/tmp/bob", print_r($items,true) );
 
-        $new_qs = array();
-        $new_qs["folder"] = FOLDER;
         foreach( $items as $moreitems ) {
+            $new_qs = array();
+            $new_qs["folder"] = FOLDER;
             foreach( $moreitems as $item ) {
                 foreach( $item as $key => $val ) {
                     if( empty($val) ) continue;
-                    $new_qs[$key] = $val; 
+                    $new_qs[$key] = $val;
                 }
             }
             #file_put_contents("/tmp/bob", print_r($new_qs,true),FILE_APPEND);
@@ -556,6 +556,24 @@
             {
                 $oldservicesets = $new_qs["servicesets"];
                 $new_qs["servicesets"] = "";
+            }
+            elseif( $tblnam == "services" )
+            {
+                $new_qs["svcdesc"] = strtr( $new_qs["svcdesc"],
+                    array( '"' => '\"',
+                           '%22' => '%5C%22' ) );
+                $new_qs["command"] = strtr( $new_qs["command"],
+                    array( '"' => '\"',
+                           '%22' => '%5C%22' ) );
+            }
+            elseif( $tblnam == "servicesets" )
+            {
+                $new_qs["svcdesc"] = strtr( $new_qs["svcdesc"],
+                    array( '"' => '\"',
+                           '%22' => '%5C%22' ) );
+                $new_qs["command"] = strtr( $new_qs["command"],
+                    array( '"' => '\"',
+                           '%22' => '%5C%22' ) );
             }
 
             $json = json_encode( $new_qs );
