@@ -229,7 +229,11 @@ class RestServer
 
             # TODO: Eventually this should go...
             foreach( $this->jadata as &$item ) {
-               $item = strtr( $item, array( "," => "`", "\\" => "\\\\" ) );
+                $item = strtr( $item, array(
+                    "," => "`",
+                    "\\" => "\\\\",
+                    "%2c" => "%60",
+                    "%2C" => "%60" ) );
                $item = trim( $item );
             }
         }
@@ -2385,8 +2389,8 @@ class WriteCmd
 
         # TODO urlencodes:
         # urlencode should be done for all and urldecode expanded in nagctl.
-        $this->newcmdline .= urlencode($name) . ",";
-        $this->newcmdline .= $command;
+        $this->newcmdline .= urlencode($name);
+        $this->newcmdline .= ",".urlencode($command);
         $this->newcmdline .= ",".$disable;
 
         $this->newcmdline .= "'";
@@ -3004,8 +3008,8 @@ class WriteCmd
 
         # TODO urlencodes:
         # urlencode should be done for all and urldecode expanded in nagctl.
-        $this->newcmdline .= urlencode($name) . ",";
-        $this->newcmdline .= $command;
+        $this->newcmdline .= urlencode($name);
+        $this->newcmdline .= ",".urlencode($command);
         $this->newcmdline .= ",".$disable;
 
         $this->newcmdline .= "'";

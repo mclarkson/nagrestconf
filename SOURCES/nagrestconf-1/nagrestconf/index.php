@@ -2246,8 +2246,8 @@
             // NAME
             print "<td>".urldecode($item['name'])."</td>";
             // COMMAND
-            print "<td>".substr($item['command'],0,100);
-            if( strlen($item['command'])>100 ) print "...";
+            print "<td>".substr(urldecode($item['command']),0,100);
+            if( strlen(urldecode($item['command']))>100 ) print "...";
             print "</td>";
             // Actions
             print "<td style=\"float: right\">";
@@ -2373,7 +2373,17 @@
         unset( $query_str["newcommand"] );
         $query_str["folder"] = FOLDER;
         if( ! empty( $query_str["name"] ) )
+        {
+            $query_str["name"] = strtr( $query_str["name"], 
+                                           array( '"' => '\"',) );
             $query_str["name"] = urlencode($query_str["name"]);
+        }
+        if( ! empty( $query_str["command"] ) )
+        {
+            $query_str["command"] = strtr( $query_str["command"], 
+                                           array( '"' => '\"',) );
+            $query_str["command"] = urlencode($query_str["command"]);
+        }
         $json = json_encode( $query_str );
 
         # Do the REST new command request
@@ -2542,14 +2552,15 @@
         print ' value="'.urldecode($name).'" />';
         print '</p>';
         # Command
-        $newcmd = strtr( $command, array("\""=>"\\\"","\\"=>"\\\\") );
+        $newcmd = urldecode($command);
+        $newcmd = strtr( $newcmd, array("\""=>"\\\"","\\"=>"\\\\") );
         print '<p>';
-        print '<label for="command">Command</label>';
-        print '<input class="field" type="text" id="command" name="command"';
+        print '<label for="ecommand">Command</label>';
+        print '<input class="field" type="text" id="ecommand" name="ecommand"';
               # Using <.. value="\"" ..> does not work so...
         print ' required="required" value="'.$newcmd.'" />';
               # ...have to use javascript to set the value:
-        print '<script>$("#command").val("'.$newcmd.'");</script>';
+        print '<script>$("#ecommand").val("'.$newcmd.'");</script>';
         print '</p>';
 
         print '</fieldset>';
@@ -2614,7 +2625,17 @@
         unset( $query_str["editcommand"] );
         $query_str["folder"] = FOLDER;
         if( ! empty( $query_str["name"] ) )
+        {
+            $query_str["name"] = strtr( $query_str["name"], 
+                                           array( '"' => '\"',) );
             $query_str["name"] = urlencode($query_str["name"]);
+        }
+        if( ! empty( $query_str["command"] ) )
+        {
+            $query_str["command"] = strtr( $query_str["command"], 
+                                           array( '"' => '\"',) );
+            $query_str["command"] = urlencode($query_str["command"]);
+        }
         # Handle deleting fields
         if( empty( $query_str["exclude"] ) )
             $query_str["exclude"] = "-";

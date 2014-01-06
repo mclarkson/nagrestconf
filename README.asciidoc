@@ -10,6 +10,10 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
+06 Jan 2013 New version 1.164 (redhat 5/6 and debian packages released to Sourceforge)
+
+* Important bug fixes. READ the Upgrade section before upgrading.
+
 03 Jan 2013 New version 1.163 (redhat 5/6 and debian packages released to Sourceforge)
 
 * New Backup & Restore plugin.
@@ -210,7 +214,23 @@ Explorer 8 to 11, Safari and also the Browsers on Maemo, iPad and Android device
 Upgrade
 ~~~~~~~
 
-Use the package manager.
+*UPGRADING TO VERSION 1.164*
+
+Encoding for the commands table has changed. After the upgrade change all
+commands that have four backslashes, '\\\\', to two backslashes, '\\'.
+
+This can be done using the GUI.
+
+If using vim, do:
+
+ cd /etc/<nagios_dir>/objects/<FOLDER>/setup
+ cp <FOLDER>_commands.setup ~
+ vim <FOLDER>_commands.setup
+
+Replacing <FOLDER> and <nagios_dir> with the correct path names, then, in vim:
+
+ :%s/%5C%5C%5C%5C/%5C%5C/g
+ :wq
 
 Install
 ~~~~~~~
@@ -360,6 +380,29 @@ be made using the REST interface.
 
 More examples are in the sections `REST Commands' and `Object Definitions and
 Options' below.
+
+*How to delete everything:*
+
+Save the following as `delete_all.sh' then run it with `bash delete_all.sh'.
+
+----
+FOLDER="local"
+IP="127.0.0.1"
+HTTP="http"  #<-- or https
+
+for i in services hosts servicesets hosttemplates \
+         servicetemplates contactgroups contacts  \
+         hostgroups servicegroups timeperiods commands
+do
+    curl -sknX POST \
+        -d "json={\"folder\":\"$FOLDER\", \"name\":\".*\",
+                  \"svcdesc\":\".*\"}" \
+        $HTTP://${IP}/rest/delete/$i
+done
+----
+
+Note that if other tables were used outside of the GUI configurator
+then those will need to be deleted first.
 
 [[X20]]
 Status

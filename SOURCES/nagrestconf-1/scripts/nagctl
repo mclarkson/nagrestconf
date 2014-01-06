@@ -1546,7 +1546,9 @@ modify_service_line()
     IFS=, read name template command svcdesc servicegroups \
         contacts contactgroups x x x disable x x < <( echo "$gcsv" )
 
-    [[ -n $command ]] && command=`echo "$command" | grep -o '[-A-Za-z0-9_]*'`
+    #[[ -n $command ]] && command=`echo "$command" | grep -o '^[-A-Za-z0-9_]*'`
+    [[ -n $command ]] && command=`echo "$command" | \
+        sed -nr 's/%21/!/g;s/(^[^!]*)(!|%21|$).*/\1/p'`
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
@@ -2536,7 +2538,8 @@ add_service_line()
     IFS=, read name template command svcdesc servicegroups \
         contacts contactgroups x < <( echo "$gcsv" )
 
-    command=`echo "$command" | grep -o '[-A-Za-z0-9_]*'`
+    #command=`echo "$command" | grep -o '[-A-Za-z0-9_]*'`
+    command=`echo "$command" | sed -nr 's/%21/!/g;s/(^[^!]*)(!|%21|$).*/\1/p'`
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"

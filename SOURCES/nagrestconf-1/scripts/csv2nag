@@ -1872,6 +1872,7 @@ create_commands()
 
         echo "define command {"
         name=`urldecode "$name"`
+        command=`urldecode "$command"`
         Echo "       command_name $name"
         echo "       command_line $command"
         echo "}"
