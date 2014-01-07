@@ -10,7 +10,7 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-06 Jan 2013 New version 1.164 (redhat 5/6 and debian packages released to Sourceforge)
+06 Jan 2013 New version 1.165 (redhat 5/6 and debian packages released to Sourceforge)
 
 * Important bug fixes. READ the Upgrade section before upgrading.
 
