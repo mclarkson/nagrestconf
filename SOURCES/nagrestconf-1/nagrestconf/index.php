@@ -2556,7 +2556,7 @@
         $newcmd = strtr( $newcmd, array("\""=>"\\\"","\\"=>"\\\\") );
         print '<p>';
         print '<label for="ecommand">Command</label>';
-        print '<input class="field" type="text" id="ecommand" name="ecommand"';
+        print '<input class="field" type="text" id="ecommand" name="command"';
               # Using <.. value="\"" ..> does not work so...
         print ' required="required" value="'.$newcmd.'" />';
               # ...have to use javascript to set the value:
