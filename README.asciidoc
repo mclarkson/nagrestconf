@@ -214,22 +214,22 @@ Explorer 8 to 11, Safari and also the Browsers on Maemo, iPad and Android device
 Upgrade
 ~~~~~~~
 
-*UPGRADING TO VERSION 1.164*
+*UPGRADING FROM A VERSION BEFORE 1.165*
 
-Encoding for the commands table has changed. After the upgrade change all
-commands that have four backslashes, '\\\\', to two backslashes, '\\'.
-
-If using vim, do:
+Encoding for the commands table has changed. After the upgrade the second
+column should be url encoded:
 
  cd /etc/<nagios_dir>/objects/<FOLDER>/setup
- cp <FOLDER>_commands.setup ~
- vim <FOLDER>_commands.setup
+ # Back up the commands table
+ cp <FOLDER>_commands.setup ~/<FOLDER>_commands.setup.orig
+ # url encode the 2nd column
+ cat <FOLDER>_commands.setup | while IFS=, read a b c x; do \
+ b=`php -r "echo urlencode('$b');"`; echo "$a,$b,$c"; done \
+ >~/<FOLDER>_commands.setup.new
+ # Move the url encoded file into place
+ cp ~/<FOLDER>_commands.setup.new <FOLDER>_commands.setup
 
-Replacing <FOLDER> and <nagios_dir> with the correct path names, then, in vim:
-
- :%s/\\\\/%5C%5C/g
- :%s/%5C%5C%5C%5C/%5C%5C/g
- :wq
+Replace `<FOLDER>' and `<nagios_dir>' with the correct path names.
 
 Install
 ~~~~~~~
