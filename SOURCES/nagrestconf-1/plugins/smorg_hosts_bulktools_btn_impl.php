@@ -992,6 +992,13 @@
             }
             $newhostjson = json_encode( $new_qs );
 
+            if ( $new_qs["disable"] != 0 ) {
+                $list .= "$n. Host, '" . $new_qs["name"] . 
+                    "', must be enabled to refresh the service sets." .
+                    "\n";
+                continue;
+            }
+
             # Delete host
             if( sizeof($svcs) > 0 ) { 
                 $option = array();

@@ -7505,20 +7505,6 @@
         print '<input class="field" type="text" id="customvars"';
         print ' value="'.$customvars.'" name="customvars">';
         print '</p>';
-        # Freshness Threshold
-        print '<p>';
-        print '<label for="freshnessthresh">Freshness Threshold</label>';
-        print '<input class="field" type="text" id="contactgroup"';
-        print ' value="'.$freshnessthresh.'" name="freshnessthresh">';
-        print '</p>';
-        # Active Checks
-        print '<p>';
-        print '<label for="sactivechecks">Active Check</label>';
-        $checked="checked";
-        if( $activechecks == "0" ) $checked="";
-        print '<input class="field" type="checkbox" id="sactivechecks"';
-        print ' name="activechecks" '.$checked.' />';
-        print '</p>';
         print '</div>';
 
         ###:TAB2
@@ -7543,9 +7529,15 @@
         print '</p>';
         # Freshness threshold manual
         print '<p>';
-        print '<label for="emfta">Freshness threshold (manual)</label>';
+        print '<label for="emfta">Freshness threshold</label>';
         print '<input class="field" type="text" id="emfta"';
         print ' value="'.$manfreshnessthresh.'" name="manfreshnessthresh">';
+        print '</p>';
+        # Freshness Threshold
+        print '<p>';
+        print '<label for="freshnessthresh">Freshness Threshold (distributed)</label>';
+        print '<input class="field" type="text" id="contactgroup"';
+        print ' value="'.$freshnessthresh.'" name="freshnessthresh">';
         print '</p>';
         # Passive Checks
         print '<p style="margin-top: 12px;">';
@@ -7570,6 +7562,14 @@
         $selected=""; if( $checkfreshness == "0" ) $selected="selected";
         print '<option value="0" '.$selected.'>Disabled</option>';
         print '</select>';
+        print '</p>';
+        # Active Checks
+        print '<p>';
+        print '<label for="sactivechecks">Active Check</label>';
+        $checked="checked";
+        if( $activechecks == "0" ) $checked="";
+        print '<input class="field" type="checkbox" id="sactivechecks"';
+        print ' name="activechecks" '.$checked.' />';
         print '</p>';
         print '</div>';
 
@@ -7882,18 +7882,6 @@
         print '<input class="field" type="text" id="customvars"';
         print ' value="" name="customvars">';
         print '</p>';
-        # Freshness Threshold
-        print '<p>';
-        print '<label for="freshnessthresh">Freshness Threshold</label>';
-        print '<input class="field" type="text" id="contactgroup"';
-        print ' value="" name="freshnessthresh">';
-        print '</p>';
-        # Active Checks
-        print '<p>';
-        print '<label for="sactivechecks">Active Check</label>';
-        print '<input class="field" type="checkbox" id="sactivechecks"';
-        print ' name="activechecks" checked />';
-        print '</p>';
         print '</div>';
 
         ###:TAB2
@@ -7918,9 +7906,15 @@
         print '</p>';
         # Freshness threshold manual
         print '<p>';
-        print '<label for="emfta">Freshness threshold (manual)</label>';
+        print '<label for="emfta">Freshness Threshold</label>';
         print '<input class="field" type="text" id="emfta"';
         print ' value="" name="manfreshnessthresh">';
+        print '</p>';
+        # Freshness Threshold
+        print '<p>';
+        print '<label for="freshnessthresh">Freshness Threshold (distributed)</label>';
+        print '<input class="field" type="text" id="contactgroup"';
+        print ' value="" name="freshnessthresh">';
         print '</p>';
         # Passive Checks
         print '<p style="margin-top: 12px;">';
@@ -7939,6 +7933,12 @@
         print '<option value="1">Enabled</option>';
         print '<option value="0">Disabled</option>';
         print '</select>';
+        print '</p>';
+        # Active Checks
+        print '<p>';
+        print '<label for="sactivechecks">Active Check</label>';
+        print '<input class="field" type="checkbox" id="sactivechecks"';
+        print ' name="activechecks" checked />';
         print '</p>';
         print '</div>';
 
@@ -9276,7 +9276,7 @@
             # Delete host
             $query_str["folder"] = FOLDER;
             unset( $query_str["delservices"] );
-            if( isset( $query_str["name"] ) ) {
+            if( isset( $query_str["name"] ) && $query_str["disable"] == 0 ) {
                 $a = array();
                 $a["name"] = $query_str["name"];
                 $a["svcdesc"] = '.*';
@@ -9291,6 +9291,14 @@
                 $request2->execute();
                 $slist = json_decode( $request2->getResponseBody(), true );
                 ### Check $slist->http_code ###
+            } elseif (isset( $query_str["name"] ) && 
+                $query_str["disable"] != 0 )
+            {
+                $retval["message"] = 
+                    "Host must be enabled to re-apply the service sets.";
+                $retval["code"] = "400";
+                print( json_encode( $retval ) );
+                exit( 0 );
             } else {
                 $retval["message"] = "Internal error: name empty";
                 $retval["code"] = "400";
@@ -10013,6 +10021,20 @@
               '$(".ui-button:contains(Close)").focus()'.
               '</script>';
 
+        # Auto-complete for hosts groups
+        $hgs = get_and_sort_hosts( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var chostname = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item["name"]."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "chostname" );
+        print '</script>';
+
         exit( 0 );
     }
 
@@ -10025,6 +10047,8 @@
         # Create the query
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
 
+        $copyto = trim( $query_str["copyto"] );
+
         # Sanity checks
         if( ! ( isset( $query_str["name"] )
               && isset( $query_str["svcdesc"] )
@@ -10033,8 +10057,7 @@
             $retval["code"] = "400";
             print( json_encode( $retval ) );
             exit( 0 );
-        } else if( ! isset( $query_str["copyto"] )
-                   || empty( $query_str["copyto"] ) ) {
+        } else if( ! isset( $copyto ) || empty( $copyto ) ) {
             $retval["message"] = "A required field is empty.";
             $retval["code"] = "400";
             print( json_encode( $retval ) );
@@ -10050,7 +10073,7 @@
         # Does the copyto host exist?
         $request = new RestRequest(
         RESTURL.'/show/hosts?json={"folder":"'.FOLDER.'",'.
-        '"column":"1","filter":"'.$query_str["copyto"].'"}', 'GET');
+        '"column":"1","filter":"'.$copyto.'"}', 'GET');
         set_request_options( $request );
         $request->execute();
         $slist = json_decode( $request->getResponseBody(), true );
@@ -10070,8 +10093,8 @@
         # returned from any REST request.
         $tohost = $slist[0][0]["name"];
 
-        $fromhost = $query_str["name"];
-        $fromsvc = $query_str["svcdesc"];
+        $fromhost = trim( $query_str["name"] );
+        $fromsvc = trim( $query_str["svcdesc"] );
 
         # Get service details from REST
         unset( $request );
@@ -10388,12 +10411,12 @@
         $newcmd = urldecode( $command );
         $newcmd = strtr( $newcmd, array("\""=>"\\\"","\\"=>"\\\\") );
         print '<p>';
-        print '<label for="escommand">Command *</label>';
-        print '<input class="field" type="text" id="escommand" name="command"';
+        print '<label for="iescommand">Command *</label>';
+        print '<input class="field" type="text" id="iescommand" name="command"';
               # Using <.. value="\"" ..> does not work so...
         print ' required="required" />';
               # ...have to use javascript to set the value:
-        print '<script>$("#escommand").val("'.$newcmd.'");</script>';
+        print '<script>$("#iescommand").val("'.$newcmd.'");</script>';
         print '</p>';
 
         # Service Description
@@ -10426,20 +10449,6 @@
         print '<input class="field" type="text" id="customvars"';
         print ' value="'.$customvars.'" name="customvars">';
         print '</p>';
-        # Freshness Threshold
-        print '<p>';
-        print '<label for="freshnessthresh">Freshness Threshold</label>';
-        print '<input class="field" type="text" id="contactgroup"';
-        print ' value="'.$freshnessthresh.'" name="freshnessthresh">';
-        print '</p>';
-        # Active Checks
-        print '<p>';
-        print '<label for="sactivechecks">Active Check</label>';
-        $checked="checked";
-        if( $activechecks == "0" ) $checked="";
-        print '<input class="field" type="checkbox" id="sactivechecks"';
-        print ' name="activechecks" '.$checked.' />';
-        print '</p>';
         print '</div>';
 
         ###:TAB2
@@ -10464,9 +10473,15 @@
         print '</p>';
         # Freshness threshold manual
         print '<p>';
-        print '<label for="emfta">Freshness threshold (manual)</label>';
+        print '<label for="emfta">Freshness Threshold</label>';
         print '<input class="field" type="text" id="emfta"';
         print ' value="'.$manfreshnessthresh.'" name="manfreshnessthresh">';
+        print '</p>';
+        # Freshness Threshold
+        print '<p>';
+        print '<label for="freshnessthresh">Freshness Threshold (distributed)</label>';
+        print '<input class="field" type="text" id="contactgroup"';
+        print ' value="'.$freshnessthresh.'" name="freshnessthresh">';
         print '</p>';
         # Passive Checks
         print '<p style="margin-top: 12px;">';
@@ -10491,6 +10506,14 @@
         $selected=""; if( $checkfreshness == "0" ) $selected="selected";
         print '<option value="0" '.$selected.'>Disabled</option>';
         print '</select>';
+        print '</p>';
+        # Active Checks
+        print '<p>';
+        print '<label for="sactivechecks">Active Check</label>';
+        $checked="checked";
+        if( $activechecks == "0" ) $checked="";
+        print '<input class="field" type="checkbox" id="sactivechecks"';
+        print ' name="activechecks" '.$checked.' />';
         print '</p>';
         print '</div>';
 
@@ -10565,14 +10588,14 @@
         $hgs = get_and_sort_commands( );
         print '<script>';
         print '$( document ).ready( function() {';
-        print 'var escommand = [';
+        print 'var iescommand = [';
         $comma="";
         foreach( $hgs as $item ) {
             print "$comma\"".urldecode($item['name'])."\"";
             $comma=",";
         }
         print'];';
-        autocomplete_jscript_single( "escommand" );
+        autocomplete_jscript_single( "iescommand" );
         print '</script>';
 
         exit( 0 );
@@ -10837,18 +10860,6 @@
         print '<input class="field" type="text" id="customvars"';
         print ' value="" name="customvars">';
         print '</p>';
-        # Freshness Threshold
-        print '<p>';
-        print '<label for="freshnessthresh">Freshness Threshold</label>';
-        print '<input class="field" type="text" id="contactgroup"';
-        print ' value="" name="freshnessthresh">';
-        print '</p>';
-        # Active Checks
-        print '<p>';
-        print '<label for="sactivechecks">Active Check</label>';
-        print '<input class="field" type="checkbox" id="sactivechecks"';
-        print ' name="activechecks" checked />';
-        print '</p>';
         print '</div>';
 
         ###:TAB2
@@ -10873,9 +10884,15 @@
         print '</p>';
         # Freshness threshold manual
         print '<p>';
-        print '<label for="emfta">Freshness threshold (manual)</label>';
+        print '<label for="emfta">Freshness threshold</label>';
         print '<input class="field" type="text" id="emfta"';
         print ' value="" name="manfreshnessthresh">';
+        print '</p>';
+        # Freshness Threshold
+        print '<p>';
+        print '<label for="freshnessthresh">Freshness Threshold (distributed)</label>';
+        print '<input class="field" type="text" id="contactgroup"';
+        print ' value="" name="freshnessthresh">';
         print '</p>';
         # Passive Checks
         print '<p style="margin-top: 12px;">';
@@ -10894,6 +10911,12 @@
         print '<option value="1">Enabled</option>';
         print '<option value="0">Disabled</option>';
         print '</select>';
+        print '</p>';
+        # Active Checks
+        print '<p>';
+        print '<label for="sactivechecks">Active Check</label>';
+        print '<input class="field" type="checkbox" id="sactivechecks"';
+        print ' name="activechecks" checked />';
         print '</p>';
         print '</div>';
 
