@@ -1,6 +1,14 @@
 News
 ----
 
+06 Jan 2013 New version 1.165 (redhat 5/6 and debian packages released to Sourceforge)
+
+* Important bug fixes. READ the Upgrade section before upgrading.
+
+03 Jan 2013 New version 1.163 (redhat 5/6 and debian packages released to Sourceforge)
+
+* New Backup & Restore plugin.
+
 30 Dec 2013 New version 1.162 (redhat 5/6 and debian packages released to Sourceforge)
 
 * Added Parent Template field to the Templates tab.
