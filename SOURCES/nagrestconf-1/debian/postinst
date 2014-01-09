@@ -26,6 +26,7 @@ case "$1" in
         a2enmod rewrite
 
         chown www-data: /usr/share/nagrestconf/htdocs/nagrestconf/upload
+        chown www-data: /usr/share/nagrestconf/htdocs/nagrestconf/download
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

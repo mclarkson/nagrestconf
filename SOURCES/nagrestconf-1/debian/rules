@@ -61,6 +61,7 @@ install: build
 	install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/
 	install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/nagrestconf/scripts/
 	install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/nagrestconf/upload/
+	install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/nagrestconf/download/
 	install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/nagrestconf/plugins/
 	install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-lib/
 	install -d -m 755 $(DESTDIR)/usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/
