@@ -575,6 +575,15 @@
                     array( '"' => '\"',
                            '%22' => '%5C%22' ) );
             }
+            elseif( $tblnam == "commands" )
+            {
+                $new_qs["name"] = strtr( $new_qs["name"],
+                    array( '"' => '\"',
+                           '%22' => '%5C%22' ) );
+                $new_qs["command"] = strtr( $new_qs["command"],
+                    array( '"' => '\"',
+                           '%22' => '%5C%22' ) );
+            }
 
             $json = json_encode( $new_qs );
             $request = new \RestRequest(
