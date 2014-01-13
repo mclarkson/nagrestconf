@@ -1,6 +1,11 @@
 News
 ----
 
+09 Jan 2013 New version 1.168 (redhat 5/6 and debian packages released to Sourceforge)
+
+* READ the Upgrade section before upgrading a version <1.165.
+
+* Bug squashing.
 06 Jan 2013 New version 1.165 (redhat 5/6 and debian packages released to Sourceforge)
 
 * Important bug fixes. READ the Upgrade section before upgrading.

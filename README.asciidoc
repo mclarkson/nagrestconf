@@ -5,15 +5,15 @@ Nagrestconf README
 :icons:
 :numbered:
 
-CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_life_cycle#Alpha[ALPHA STAGE].
+CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_life_cycle#Beta[BETA STAGE].
 
 Latest News
 ~~~~~~~~~~~
 
-09 Jan 2013 New version 1.168 (redhat 5/6 and debian packages released to Sourceforge)
+13 Jan 2013 New version 1.169 (redhat 5/6 and debian packages released to Sourceforge)
 
-* READ the Upgrade section before upgrading a version <1.165.
-* Bug squashing.
+* Now in Beta. (Feature freeze)
+* Added extra back-end checks and autocomplete for time periods.
 
 License
 ~~~~~~~
@@ -96,15 +96,11 @@ have been made but the user then decides to back out.
 * Multi-user. Many people or scripts can make changes and apply configurations simultaneously.
 This is achieved partly by ensuring that every REST POST command creates a valid configuration,
 so at any point the configuration can be applied and Nagios won't be broken.
-* No database required.
+* No SQL database required.
 * A configuration GUI is included.
 
 TODO
 ~~~~
-
-* Add more Nagios options, which are supported by REST, to the GUI. (by request)
-
-* Add urlencoding to the GUI `Commands' page.
 
 * Add plugins support to the GUI to do:
 ** switching folders (environments)
@@ -216,6 +212,8 @@ Upgrade
 Encoding for the commands table has changed. After the upgrade the second
 column should be url encoded:
 
+ ## Only do the following once! ##
+
  cd /etc/<nagios_dir>/objects/<FOLDER>/setup
  # Back up the commands table
  cp <FOLDER>_commands.setup ~/<FOLDER>_commands.setup.orig
@@ -256,18 +254,18 @@ freshly installing the Operating System with a minimal set of packages.
 # On Debian:
 apt-get update
 apt-get install gdebi-core
-gdebi nagrestconf_1.168_all.deb \
-      nagrestconf-services-plugin_1.168_all.deb \
-      nagrestconf-services-bulktools-plugin_1.168_all.deb \
-      nagrestconf-hosts-bulktools-plugin_1.168_all.deb \
-      nagrestconf-backup-plugin_1.168_all.deb
+gdebi nagrestconf_1.169_all.deb \
+      nagrestconf-services-plugin_1.169_all.deb \
+      nagrestconf-services-bulktools-plugin_1.169_all.deb \
+      nagrestconf-hosts-bulktools-plugin_1.169_all.deb \
+      nagrestconf-backup-plugin_1.169_all.deb
 
 # On Centos/Redhat:
-yum install nagrestconf-1.168-1.noarch.rpm \
-            nagrestconf-services-tab-plugin-1.168-1.noarch.rpm \
-            nagrestconf-services-bulktools-plugin-1.168-1.noarch.rpm \
-            nagrestconf-hosts-bulktools-plugin-1.168-1.noarch.rpm \
-            nagrestconf-backup-plugin-1.168-1.noarch.rpm
+yum install nagrestconf-1.169-1.noarch.rpm \
+            nagrestconf-services-tab-plugin-1.169-1.noarch.rpm \
+            nagrestconf-services-bulktools-plugin-1.169-1.noarch.rpm \
+            nagrestconf-hosts-bulktools-plugin-1.169-1.noarch.rpm \
+            nagrestconf-backup-plugin-1.169-1.noarch.rpm
 
 ----------------------------------------------------------
 +
@@ -538,6 +536,7 @@ database files on the nagios server. These are comma delimited files used by
 Key for the `Flags' column:
 
  * \'U' - The option is Unimplemented.
+ * \'E' - The field should be URL encoded.
  * \'R' - A required field.
  * \'K' - A key field. Required to uniquely identify an entry.
  * \'L' - A list field. Lists consist of zero or more items separated by spaces.
@@ -660,7 +659,7 @@ hosts
 | 10.    | Disable [0,1,2]               |         | disable                   | N/A
 | 11.    | Display name                  | X       | displayname               | display_name
 | 12.    | Parents                       | LXM     | parents                   | parents
-| 13.    | Check command                 | M       | command                   | check_command
+| 13.    | Check command                 | ME      | command                   | check_command
 | 14.    | Initial state                 | X       | initialstate              | initial_state
 | 15.    | Max check attempts            |         | maxcheckattempts          | max_check_attempts
 | 16.    | Check interval                | X       | checkinterval             | check_interval
@@ -726,7 +725,7 @@ hosttemplates
 | 10.    | Disable                       | U       | disable                   | 
 | 11.    | Check period                  | RM      | checkperiod               | check_period
 | 12.    | Max check attempts            | R       | maxcheckattempts          | max_check_attempts
-| 13.    | Check command                 | M       | checkcommand              | check_command
+| 13.    | Check command                 | ME      | checkcommand              | check_command
 | 14.    | Notification interval         | R       | notifinterval             | notification_interval
 | 15.    | Passive checks enabled        |         | passivechecks             | passive_checks_enabled
 | 16.    | Obsess over host              | X       | obsessoverhost            | obsess_over_host
@@ -752,7 +751,7 @@ hosttemplates
 | 36.    | Statusmap image               | X       | statusmap_image           | statusmap_image
 | 37.    | 2d coords                     | X       | coords2d                  | 2d_coords
 | 38.    | 3d coords                     | X       | coords3d                  | 3d_coords
-| 39.    | Action url                    |         | action_url                | action_url
+| 39.    | Action url                    | E       | action_url                | action_url
 |===========================================================================================================
 
 Examples
@@ -775,9 +774,9 @@ services
 [cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
-| 1.     | Name                          | RK      | name                      | host_name
+| 1.     | Name                          | RKE     | name                      | host_name
 | 2.     | Service template              | RM      | template                  | use
-| 3.     | Service command               | RM      | command                   | check_command
+| 3.     | Service command               | RME     | command                   | check_command
 | 4.     | Service description           | RK      | svcdesc                   | service_description
 | 5.     | Service groups                | L       | svcgroup                  | servicegroups
 | 6.     | Contacts                      | LM      | contacts                  | contacts
@@ -866,9 +865,9 @@ servicesets
 [cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
-| 1.     | Serviceset name               | RK      | name                      | N/A      
+| 1.     | Serviceset name               | RKE     | name                      | N/A      
 | 2.     | Service template              | R       | template                  | use
-| 3.     | Service command               | R       | command                   | check_command
+| 3.     | Service command               | RE      | command                   | check_command
 | 4.     | Service description           | RK      | svcdesc                   | service_description
 | 5.     | Service groups                | L       | svcgroup                  | servicegroups
 | 6.     | Contacts                      | L       | contacts                  | contacts
@@ -996,7 +995,7 @@ servicetemplates
 | 34.    | Stalking options              | LX      | stalkingoptions           | stalking_options
 | 35.    | Notes                         | X       | notes                     | notes
 | 36.    | Notes url                     | X       | notes_url                 | notes_url
-| 37.    | Action url                    |         | action_url                | action_url
+| 37.    | Action url                    | E       | action_url                | action_url
 | 38.    | Icon image                    |         | icon_image                | icon_image
 | 39.    | Icon image alt                |         | icon_image_alt            | icon_image_alt
 | 40.    | Vrml image                    | X       | vrml_image                | vrml_image
@@ -1024,8 +1023,8 @@ commands
 [cols="^e,<,^,<,<",frame="topbot",options="header,autowidth"]
 |===========================================================================================================
 | Column | Description                   | Flags   | REST variable name        | Nagios argument name
-| 1.     | Command name                  | RKM     | name                      | command_name
-| 2.     | Command line                  | R       | command                   | command_line
+| 1.     | Command name                  | RKME    | name                      | command_name
+| 2.     | Command line                  | RE      | command                   | command_line
 | 3.     | Disable                       | U       | disable                   | N/A
 |===========================================================================================================
 
