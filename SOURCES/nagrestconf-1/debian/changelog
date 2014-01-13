@@ -1,3 +1,9 @@
+nagrestconf (1.169) UNRELEASED; urgency=low
+
+  * Checks for notif opts and auto-complete for check periods.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 06 Jan 2014 22:32:00 +0000
+
 nagrestconf (1.168) UNRELEASED; urgency=low
 
   * Bug squashing.
