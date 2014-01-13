@@ -3630,14 +3630,14 @@
         print '</p>';
         # Check Period
         print '<p>';
-        print '<label for="checkperiod">Check Period *</label>';
-        print '<input class="field" type="text" id="checkperiod" '.
+        print '<label for="vcheckperiod">Check Period *</label>';
+        print '<input class="field" type="text" id="vcheckperiod" '.
               'value="24x7" name="checkperiod" required="required" />';
         print '</p>';
         # Notification Period
         print '<p>';
-        print '<label for="notifperiod">Notif Period *</label>';
-        print '<input class="field" type="text" id="notifperiod" '.
+        print '<label for="vnotifperiod">Notif Period *</label>';
+        print '<input class="field" type="text" id="vnotifperiod" '.
               'value="24x7" name="notifperiod" required="required" />';
         print '</p>';
         # Notification Interval
@@ -3658,8 +3658,8 @@
         print '</p>';
         # Notification Options
         print '<p>';
-        print '<label for="notifopts">Notif Opts</label>';
-        print '<input class="field" type="text" id="notifopts" '.
+        print '<label for="vnotifopts">Notif Opts</label>';
+        print '<input class="field" type="text" id="vnotifopts" '.
               'value="d u r" name="notifopts" />';
         print '</p>';
         # Passive Checks
@@ -3771,6 +3771,39 @@
         }
         print'];';
         autocomplete_jscript_single( "checkcommand" );
+        print '</script>';
+
+        # Auto-complete for checkperiod
+        $hgs = get_and_sort_timeperiods( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var vcheckperiod = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".urldecode($item['name'])."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "vcheckperiod" );
+        print '</script>';
+        #
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var vnotifperiod = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".urldecode($item['name'])."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "vnotifperiod" );
+        print '</script>';
+
+        # Auto-complete for notif opts
+        print '<script>';
+        print '$( document ).ready( function() {';
+        autocomplete_hstnotifopts( "vnotifopts" );
+        print '});';
         print '</script>';
 
         exit( 0 );
@@ -4058,14 +4091,14 @@
         print '</p>';
         # Check Period
         print '<p>';
-        print '<label for="checkperiod">Check Period *</label>';
-        print '<input class="field" type="text" id="checkperiod" '.
+        print '<label for="wcheckperiod">Check Period *</label>';
+        print '<input class="field" type="text" id="wcheckperiod" '.
               'value="'.$checkperiod.'" name="checkperiod" required="required" />';
         print '</p>';
         # Notification Period
         print '<p>';
-        print '<label for="notifperiod">Notif Period *</label>';
-        print '<input class="field" type="text" id="notifperiod" '.
+        print '<label for="wnotifperiod">Notif Period *</label>';
+        print '<input class="field" type="text" id="wnotifperiod" '.
               'value="'.$notifperiod.'" name="notifperiod" required="required" />';
         print '</p>';
         # Notification Interval
@@ -4086,8 +4119,8 @@
         print '</p>';
         # Notification Options
         print '<p>';
-        print '<label for="notifopts">Notif Opts</label>';
-        print '<input class="field" type="text" id="notifopts" '.
+        print '<label for="wnotifopts">Notif Opts</label>';
+        print '<input class="field" type="text" id="wnotifopts" '.
               'value="'.$notifopts.'" name="notifopts" />';
         print '</p>';
         # Passive Checks
@@ -4213,6 +4246,39 @@
         }
         print'];';
         autocomplete_jscript_single( "acheckcommand" );
+        print '</script>';
+
+        # Auto-complete for checkperiod
+        $hgs = get_and_sort_timeperiods( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var wcheckperiod = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".urldecode($item['name'])."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "wcheckperiod" );
+        print '</script>';
+        #
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var wnotifperiod = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".urldecode($item['name'])."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "wnotifperiod" );
+        print '</script>';
+
+        # Auto-complete for notif opts
+        print '<script>';
+        print '$( document ).ready( function() {';
+        autocomplete_hstnotifopts( "wnotifopts" );
+        print '});';
         print '</script>';
 
         exit( 0 );
@@ -4393,9 +4459,15 @@
         print '</p>';
         # Check Period
         print '<p>';
-        print '<label for="checkperiod">Check Period *</label>';
-        print '<input class="field" type="text" id="checkperiod" '.
+        print '<label for="xcheckperiod">Check Period *</label>';
+        print '<input class="field" type="text" id="xcheckperiod" '.
               'value="24x7" name="checkperiod" required="required" />';
+        print '</p>';
+        # Notification Period
+        print '<p>';
+        print '<label for="xnotifperiod">Notif Period *</label>';
+        print '<input class="field" type="text" id="xnotifperiod" '.
+              'value="24x7" name="notifperiod" required="required" />';
         print '</p>';
         # Notification Interval
         print '<p>';
@@ -4403,20 +4475,14 @@
         print '<input class="field" type="text" id="notifinterval" '.
               'value="60" name="notifinterval" required="required" />';
         print '</p>';
-        # Notification Period
-        print '<p>';
-        print '<label for="notifperiod">Notif Period *</label>';
-        print '<input class="field" type="text" id="notifperiod" '.
-              'value="24x7" name="notifperiod" required="required" />';
-        print '</p>';
         print '</div>';
 
         ###:TAB2
         print '<div id="fragment-2">';
         # Notification Options
         print '<p>';
-        print '<label for="notifopts">Notif Opts</label>';
-        print '<input class="field" type="text" id="notifopts" '.
+        print '<label for="xnotifopts">Notif Opts</label>';
+        print '<input class="field" type="text" id="xnotifopts" '.
               'value="w u c r" name="notifopts" />';
         print '</p>';
         # Passive Checks
@@ -4515,6 +4581,39 @@
         }
         print'];';
         autocomplete_jscript( "bcontactgroups" );
+        print '</script>';
+
+        # Auto-complete for checkperiod
+        $hgs = get_and_sort_timeperiods( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var xcheckperiod = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".urldecode($item['name'])."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "xcheckperiod" );
+        print '</script>';
+        #
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var xnotifperiod = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".urldecode($item['name'])."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "xnotifperiod" );
+        print '</script>';
+
+        # Auto-complete for notif opts
+        print '<script>';
+        print '$( document ).ready( function() {';
+        autocomplete_svcnotifopts( "xnotifopts" );
+        print '});';
         print '</script>';
 
         exit( 0 );
@@ -4801,9 +4900,15 @@
         print '</p>';
         # Check Period
         print '<p>';
-        print '<label for="checkperiod">Check Period *</label>';
-        print '<input class="field" type="text" id="checkperiod" '.
+        print '<label for="ycheckperiod">Check Period *</label>';
+        print '<input class="field" type="text" id="ycheckperiod" '.
               'value="'.$checkperiod.'" name="checkperiod" required="required" />';
+        print '</p>';
+        # Notification Period
+        print '<p>';
+        print '<label for="ynotifperiod">Notif Period *</label>';
+        print '<input class="field" type="text" id="ynotifperiod" '.
+              'value="'.$notifperiod.'" name="notifperiod" required="required" />';
         print '</p>';
         # Notification Interval
         print '<p>';
@@ -4811,20 +4916,14 @@
         print '<input class="field" type="text" id="notifinterval" '.
               'value="'.$notifinterval.'" name="notifinterval" required="required" />';
         print '</p>';
-        # Notification Period
-        print '<p>';
-        print '<label for="notifperiod">Notif Period *</label>';
-        print '<input class="field" type="text" id="notifperiod" '.
-              'value="'.$notifperiod.'" name="notifperiod" required="required" />';
-        print '</p>';
         print '</div>';
 
         ###:TAB2
         print '<div id="fragment-2">';
         # Notification Options
         print '<p>';
-        print '<label for="notifopts">Notif Opts</label>';
-        print '<input class="field" type="text" id="notifopts" '.
+        print '<label for="ynotifopts">Notif Opts</label>';
+        print '<input class="field" type="text" id="ynotifopts" '.
               'value="'.$notifopts.'" name="notifopts" />';
         print '</p>';
         # Passive Checks
@@ -4937,6 +5036,39 @@
         }
         print'];';
         autocomplete_jscript( "ccontactgroups" );
+        print '</script>';
+
+        # Auto-complete for checkperiod
+        $hgs = get_and_sort_timeperiods( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var ycheckperiod = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".urldecode($item['name'])."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "ycheckperiod" );
+        print '</script>';
+        #
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var ynotifperiod = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".urldecode($item['name'])."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "ynotifperiod" );
+        print '</script>';
+
+        # Auto-complete for notif opts
+        print '<script>';
+        print '$( document ).ready( function() {';
+        autocomplete_svcnotifopts( "ynotifopts" );
+        print '});';
         print '</script>';
 
         exit( 0 );
@@ -5365,8 +5497,8 @@
         print '</p>';
         # Service Notification Period
         print '<p>';
-        print '<label for="svcnotifperiod">Service Notif Period *</label>';
-        print '<input class="field" type="text" id="svcnotifperiod" '.
+        print '<label for="xsvcnotifperiod">Service Notif Period *</label>';
+        print '<input class="field" type="text" id="xsvcnotifperiod" '.
               'value="24x7" name="svcnotifperiod" />';
         print '</p>';
         # Service Notification Options
@@ -5383,8 +5515,8 @@
         print '</p>';
         # Host Notification Period
         print '<p>';
-        print '<label for="hstnotifperiod">Host Notif Period *</label>';
-        print '<input class="field" type="text" id="hstnotifperiod" '.
+        print '<label for="xhstnotifperiod">Host Notif Period *</label>';
+        print '<input class="field" type="text" id="xhstnotifperiod" '.
               'value="24x7" name="hstnotifperiod" />';
         print '</p>';
         # Host Notification Options
@@ -5464,7 +5596,7 @@
               '</script>';
 
 
-        # Auto-complete for contacts
+        # Auto-complete for notif opts
         print '<script>';
         print '$( document ).ready( function() {';
         autocomplete_hstnotifopts( "hstnotifopts" );
@@ -5498,6 +5630,32 @@
         }
         print'];';
         autocomplete_jscript_single( "svcnotifcmds" );
+        print '</script>';
+
+        # Auto-complete for checkperiod
+        $hgs = get_and_sort_timeperiods( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var xhstnotifperiod = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".urldecode($item['name'])."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "xhstnotifperiod" );
+        print '</script>';
+        #
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var xsvcnotifperiod = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".urldecode($item['name'])."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "xsvcnotifperiod" );
         print '</script>';
 
         exit( 0 );
@@ -5765,8 +5923,8 @@
         print '</p>';
         # Service Notification Period
         print '<p>';
-        print '<label for="svcnotifperiod">Service Notif Period</label>';
-        print '<input class="field" type="text" id="svcnotifperiod" '.
+        print '<label for="wsvcnotifperiod">Service Notif Period</label>';
+        print '<input class="field" type="text" id="wsvcnotifperiod" '.
               'name="svcnotifperiod"';
         print ' value="'.$svcnotifperiod.'" />';
         print '</p>';
@@ -5786,8 +5944,8 @@
         print '</p>';
         # Host Notification Period
         print '<p>';
-        print '<label for="hstnotifperiod">Host Notif Period</label>';
-        print '<input class="field" type="text" id="hstnotifperiod" '.
+        print '<label for="whstnotifperiod">Host Notif Period</label>';
+        print '<input class="field" type="text" id="whstnotifperiod" '.
               'name="hstnotifperiod"';
         print ' value="'.$hstnotifperiod.'" />';
         print '</p>';
@@ -5912,6 +6070,32 @@
         }
         print'];';
         autocomplete_jscript_single( "asvcnotifcmds" );
+        print '</script>';
+
+        # Auto-complete for checkperiod
+        $hgs = get_and_sort_timeperiods( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var whstnotifperiod = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".urldecode($item['name'])."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "whstnotifperiod" );
+        print '</script>';
+        #
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var wsvcnotifperiod = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".urldecode($item['name'])."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript_single( "wsvcnotifperiod" );
         print '</script>';
 
         exit( 0 );

@@ -1241,7 +1241,7 @@ modify_hosttemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups x x x notifperiod \
-        x x checkperiod x check_command x < <( echo "$gcsv" )
+        notifopts x checkperiod x check_command x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -1310,6 +1310,18 @@ modify_hosttemplate_line()
         done
     }
 
+    [[ -n $notifopts ]] && {
+        numterms=`echo "$notifopts" | grep -Eo '([^ ]*)?' | wc -l`
+        numvalidterms=`echo "$notifopts" | \
+            grep -Eo '(d( |$)|u( |$)|r( |$)|f( |$)|s( |$)|n( |$))?' | wc -l`
+        [[ $numterms -ne $numvalidterms ]] && {
+            echo -n "NAGCTL ERROR: Notifopts '$notifopts' contains invalid"
+            echo " option(s). Only d, u, r, f, s, or n are allowed."
+            unlockdir
+            exit 14
+        }
+    }
+
     olditem=`item_search 1 $FILE_HOSTTEMPLATES "$name"`
     item_merge ${gfile_ncols[$FILE_HOSTTEMPLATES]} "$olditem" "$gcsv"
     item_delete 1 $FILE_HOSTTEMPLATES "$name"
@@ -1326,7 +1338,7 @@ modify_servicetemplate_line()
 {
     local name
 
-    IFS=, read name x contacts contactgroups x x x x x notifperiod \
+    IFS=, read name x contacts contactgroups notifopts x x x x notifperiod \
         x checkperiod x x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
@@ -1385,6 +1397,18 @@ modify_servicetemplate_line()
                 exit 13
             fi
         done
+    }
+
+    [[ -n $notifopts ]] && {
+        numterms=`echo "$notifopts" | grep -Eo '([^ ]*)?' | wc -l`
+        numvalidterms=`echo "$notifopts" | \
+            grep -Eo '(w( |$)|u( |$)|c( |$)|r( |$)|f( |$)|n( |$))?' | wc -l`
+        [[ $numterms -ne $numvalidterms ]] && {
+            echo -n "NAGCTL ERROR: Notifopts '$notifopts' contains invalid"
+            echo " option(s). Only w, u, c, r, f, or n are allowed."
+            unlockdir
+            exit 14
+        }
     }
 
     olditem=`item_search 1 $FILE_SERVICETEMPLATES "$name"`
@@ -1711,7 +1735,7 @@ modify_contacts_line()
 {
     local name
 
-    IFS=, read name x x x svcnp x x hstnp x < <( echo "$gcsv" )
+    IFS=, read name x x x svcnp svcopt x hstnp hstopt x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #svcnp=`echo "$gcsv" | cut -d, -f5`
@@ -1742,6 +1766,30 @@ modify_contacts_line()
         unlockdir
         exit 14
     fi
+
+    [[ -n $hstopt ]] && {
+        numterms=`echo "$hstopt" | grep -Eo '([^ ]*)?' | wc -l`
+        numvalidterms=`echo "$hstopt" | \
+            grep -Eo '(d( |$)|u( |$)|r( |$)|f( |$)|s( |$)|n( |$))?' | wc -l`
+        [[ $numterms -ne $numvalidterms ]] && {
+            echo -n "NAGCTL ERROR: Host notif opts '$hstopt' contains invalid"
+            echo " option(s). Only d, u, r, f, s, or n are allowed."
+            unlockdir
+            exit 14
+        }
+    }
+
+    [[ -n $svcopt ]] && {
+        numterms=`echo "$svcopt" | grep -Eo '([^ ]*)?' | wc -l`
+        numvalidterms=`echo "$svcopt" | \
+            grep -Eo '(w( |$)|u( |$)|c( |$)|r( |$)|f( |$)|n( |$))?' | wc -l`
+        [[ $numterms -ne $numvalidterms ]] && {
+            echo -n "NAGCTL ERROR: Service notif opts '$svcopt' contains invalid"
+            echo " option(s). Only w, u, c, r, f, or n are allowed."
+            unlockdir
+            exit 14
+        }
+    }
 
     olditem=`item_search 1 $FILE_CONTACTS "$name"`
     item_merge ${gfile_ncols[$FILE_CONTACTS]} "$olditem" "$gcsv"
@@ -2272,7 +2320,7 @@ add_hosttemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups x x x notifperiod \
-        x x checkperiod x check_command x < <( echo "$gcsv" )
+        notifopts x checkperiod x check_command x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -2299,6 +2347,18 @@ add_hosttemplate_line()
             unlockdir
             exit 13
         fi
+    }
+
+    [[ -n $notifopts ]] && {
+        numterms=`echo "$notifopts" | grep -Eo '([^ ]*)?' | wc -l`
+        numvalidterms=`echo "$notifopts" | \
+            grep -Eo '(d( |$)|u( |$)|r( |$)|f( |$)|s( |$)|n( |$))?' | wc -l`
+        [[ $numterms -ne $numvalidterms ]] && {
+            echo -n "NAGCTL ERROR: Notifopts '$notifopts' contains invalid"
+            echo " option(s). Only d, u, r, f, s, or n are allowed."
+            unlockdir
+            exit 14
+        }
     }
 
     if ! item_exists 1 $FILE_TIMEPERIODS $notifperiod; then
@@ -2349,7 +2409,7 @@ add_servicetemplate_line()
 {
     local name
 
-    IFS=, read name x contacts contactgroups x x x x x notifperiod \
+    IFS=, read name x contacts contactgroups notifopts x x x x notifperiod \
         x checkperiod x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
@@ -2404,6 +2464,18 @@ add_servicetemplate_line()
                 exit 13
             fi
         done
+    }
+
+    [[ -n $notifopts ]] && {
+        numterms=`echo "$notifopts" | grep -Eo '([^ ]*)?' | wc -l`
+        numvalidterms=`echo "$notifopts" | \
+            grep -Eo '(w( |$)|u( |$)|c( |$)|r( |$)|f( |$)|n( |$))?' | wc -l`
+        [[ $numterms -ne $numvalidterms ]] && {
+            echo -n "NAGCTL ERROR: Notifopts '$notifopts' contains invalid"
+            echo " option(s). Only w, u, c, r, f, or n are allowed."
+            unlockdir
+            exit 14
+        }
     }
 
     echo "$gcsv" >>$SETUP_FILE
@@ -2679,7 +2751,7 @@ add_contacts_line()
 {
     local name
 
-    IFS=, read name x x x svcnp x x hstnp x < <( echo "$gcsv" )
+    IFS=, read name x x x svcnp svcopt x hstnp hstopt x < <( echo "$gcsv" )
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #svcnp=`echo "$gcsv" | cut -d, -f5`
@@ -2711,6 +2783,29 @@ add_contacts_line()
         exit 14
     fi
 
+    [[ -n $hstopt ]] && {
+        numterms=`echo "$hstopt" | grep -Eo '([^ ]*)?' | wc -l`
+        numvalidterms=`echo "$hstopt" | \
+            grep -Eo '(d( |$)|u( |$)|r( |$)|f( |$)|s( |$)|n( |$))?' | wc -l`
+        [[ $numterms -ne $numvalidterms ]] && {
+            echo -n "NAGCTL ERROR: Host notif opts '$hstopt' contains invalid"
+            echo " option(s). Only d, u, r, f, s, or n are allowed."
+            unlockdir
+            exit 14
+        }
+    }
+
+    [[ -n $svcopt ]] && {
+        numterms=`echo "$svcopt" | grep -Eo '([^ ]*)?' | wc -l`
+        numvalidterms=`echo "$svcopt" | \
+            grep -Eo '(w( |$)|u( |$)|c( |$)|r( |$)|f( |$)|n( |$))?' | wc -l`
+        [[ $numterms -ne $numvalidterms ]] && {
+            echo -n "NAGCTL ERROR: Service notif opts '$svcopt' contains invalid"
+            echo " option(s). Only w, u, c, r, f, or n are allowed."
+            unlockdir
+            exit 14
+        }
+    }
 
     echo "$gcsv" >>$SETUP_FILE
     unlockdir
