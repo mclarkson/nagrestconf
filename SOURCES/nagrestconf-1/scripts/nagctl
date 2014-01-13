@@ -1310,10 +1310,10 @@ modify_hosttemplate_line()
         done
     }
 
-    [[ -n $notifopts ]] && {
+    [[ -n $notifopts && $notifopts != "-" ]] && {
         numterms=`echo "$notifopts" | grep -Eo '([^ ]*)?' | wc -l`
         numvalidterms=`echo "$notifopts" | \
-            grep -Eo '(d( |$)|u( |$)|r( |$)|f( |$)|s( |$)|n( |$))?' | wc -l`
+            grep -Eo '(\bd( |$)|\bu( |$)|\br( |$)|\bf( |$)|\bs( |$)|\bn( |$))?' | wc -l`
         [[ $numterms -ne $numvalidterms ]] && {
             echo -n "NAGCTL ERROR: Notifopts '$notifopts' contains invalid"
             echo " option(s). Only d, u, r, f, s, or n are allowed."
@@ -1399,10 +1399,10 @@ modify_servicetemplate_line()
         done
     }
 
-    [[ -n $notifopts ]] && {
+    [[ -n $notifopts && $notifopts != "-" ]] && {
         numterms=`echo "$notifopts" | grep -Eo '([^ ]*)?' | wc -l`
         numvalidterms=`echo "$notifopts" | \
-            grep -Eo '(w( |$)|u( |$)|c( |$)|r( |$)|f( |$)|n( |$))?' | wc -l`
+            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bn( |$))?' | wc -l`
         [[ $numterms -ne $numvalidterms ]] && {
             echo -n "NAGCTL ERROR: Notifopts '$notifopts' contains invalid"
             echo " option(s). Only w, u, c, r, f, or n are allowed."
@@ -1767,10 +1767,10 @@ modify_contacts_line()
         exit 14
     fi
 
-    [[ -n $hstopt ]] && {
+    [[ -n $hstopt && $hstopt != "-" ]] && {
         numterms=`echo "$hstopt" | grep -Eo '([^ ]*)?' | wc -l`
         numvalidterms=`echo "$hstopt" | \
-            grep -Eo '(d( |$)|u( |$)|r( |$)|f( |$)|s( |$)|n( |$))?' | wc -l`
+            grep -Eo '(\bd( |$)|\bu( |$)|\br( |$)|\bf( |$)|\bs( |$)|\bn( |$))?' | wc -l`
         [[ $numterms -ne $numvalidterms ]] && {
             echo -n "NAGCTL ERROR: Host notif opts '$hstopt' contains invalid"
             echo " option(s). Only d, u, r, f, s, or n are allowed."
@@ -1779,10 +1779,10 @@ modify_contacts_line()
         }
     }
 
-    [[ -n $svcopt ]] && {
+    [[ -n $svcopt && $svcopt != "-"  ]] && {
         numterms=`echo "$svcopt" | grep -Eo '([^ ]*)?' | wc -l`
         numvalidterms=`echo "$svcopt" | \
-            grep -Eo '(w( |$)|u( |$)|c( |$)|r( |$)|f( |$)|n( |$))?' | wc -l`
+            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bn( |$))?' | wc -l`
         [[ $numterms -ne $numvalidterms ]] && {
             echo -n "NAGCTL ERROR: Service notif opts '$svcopt' contains invalid"
             echo " option(s). Only w, u, c, r, f, or n are allowed."
@@ -2349,10 +2349,10 @@ add_hosttemplate_line()
         fi
     }
 
-    [[ -n $notifopts ]] && {
+    [[ -n $notifopts && $notifopts != "-" ]] && {
         numterms=`echo "$notifopts" | grep -Eo '([^ ]*)?' | wc -l`
         numvalidterms=`echo "$notifopts" | \
-            grep -Eo '(d( |$)|u( |$)|r( |$)|f( |$)|s( |$)|n( |$))?' | wc -l`
+            grep -Eo '(\bd( |$)|\bu( |$)|\br( |$)|\bf( |$)|\bs( |$)|\bn( |$))?' | wc -l`
         [[ $numterms -ne $numvalidterms ]] && {
             echo -n "NAGCTL ERROR: Notifopts '$notifopts' contains invalid"
             echo " option(s). Only d, u, r, f, s, or n are allowed."
@@ -2466,10 +2466,10 @@ add_servicetemplate_line()
         done
     }
 
-    [[ -n $notifopts ]] && {
+    [[ -n $notifopts && $notifopts != "-" ]] && {
         numterms=`echo "$notifopts" | grep -Eo '([^ ]*)?' | wc -l`
         numvalidterms=`echo "$notifopts" | \
-            grep -Eo '(w( |$)|u( |$)|c( |$)|r( |$)|f( |$)|n( |$))?' | wc -l`
+            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bn( |$))?' | wc -l`
         [[ $numterms -ne $numvalidterms ]] && {
             echo -n "NAGCTL ERROR: Notifopts '$notifopts' contains invalid"
             echo " option(s). Only w, u, c, r, f, or n are allowed."
@@ -2783,10 +2783,10 @@ add_contacts_line()
         exit 14
     fi
 
-    [[ -n $hstopt ]] && {
+    [[ -n $hstopt && $hstopt != "-" ]] && {
         numterms=`echo "$hstopt" | grep -Eo '([^ ]*)?' | wc -l`
         numvalidterms=`echo "$hstopt" | \
-            grep -Eo '(d( |$)|u( |$)|r( |$)|f( |$)|s( |$)|n( |$))?' | wc -l`
+            grep -Eo '(\bd( |$)|\bu( |$)|\br( |$)|\bf( |$)|\bs( |$)|\bn( |$))?' | wc -l`
         [[ $numterms -ne $numvalidterms ]] && {
             echo -n "NAGCTL ERROR: Host notif opts '$hstopt' contains invalid"
             echo " option(s). Only d, u, r, f, s, or n are allowed."
@@ -2795,10 +2795,10 @@ add_contacts_line()
         }
     }
 
-    [[ -n $svcopt ]] && {
+    [[ -n $svcopt && $svcopt != "-" ]] && {
         numterms=`echo "$svcopt" | grep -Eo '([^ ]*)?' | wc -l`
         numvalidterms=`echo "$svcopt" | \
-            grep -Eo '(w( |$)|u( |$)|c( |$)|r( |$)|f( |$)|n( |$))?' | wc -l`
+            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bn( |$))?' | wc -l`
         [[ $numterms -ne $numvalidterms ]] && {
             echo -n "NAGCTL ERROR: Service notif opts '$svcopt' contains invalid"
             echo " option(s). Only w, u, c, r, f, or n are allowed."
