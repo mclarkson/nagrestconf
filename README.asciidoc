@@ -284,6 +284,7 @@ Use the two helper scripts nagrestconf_install and slc_configure. A sample
 configuration is also included in the system doc/ directories. For example:
 +
 *Centos/Debian/Redhat/Fedora*
++
 ------------------------------------------------------------------
 # On Centos/Redhat
 cd /etc/
@@ -297,6 +298,7 @@ slc_configure --folder=local
 ------------------------------------------------------------------
 +
 *Ubuntu*
++
 ------------------------------------------------------------------
 ln -s /etc/apache2/conf.d/nagrestconf.conf /etc/apache2/conf-enabled/
 ln -s /etc/apache2/conf.d/rest.conf /etc/apache2/conf-enabled/
