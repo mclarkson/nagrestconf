@@ -10,7 +10,7 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-13 Jan 2013 New version 1.169 (redhat 5/6 and debian packages released to Sourceforge)
+13 Jan 2013 New version 1.169 (packages released to Sourceforge)
 
 * Now in Beta. (Feature freeze)
 * Added extra back-end checks and autocomplete for time periods.
@@ -260,6 +260,15 @@ gdebi nagrestconf_1.169_all.deb \
       nagrestconf-hosts-bulktools-plugin_1.169_all.deb \
       nagrestconf-backup-plugin_1.169_all.deb
 
+# On Ubuntu:
+apt-get update
+apt-get install gdebi-core
+gdebi nagrestconf_1.169_all.deb
+dpkg -i nagrestconf-services-plugin_1.169_all.deb \
+      nagrestconf-services-bulktools-plugin_1.169_all.deb \
+      nagrestconf-hosts-bulktools-plugin_1.169_all.deb \
+      nagrestconf-backup-plugin_1.169_all.deb
+
 # On Centos/Redhat:
 yum install nagrestconf-1.169-1.noarch.rpm \
             nagrestconf-services-tab-plugin-1.169-1.noarch.rpm \
@@ -274,13 +283,24 @@ yum install nagrestconf-1.169-1.noarch.rpm \
 Use the two helper scripts nagrestconf_install and slc_configure. A sample
 configuration is also included in the system doc/ directories. For example:
 +
+*Centos/Debian/Redhat/Fedora*
 ------------------------------------------------------------------
 # On Centos/Redhat
 cd /etc/
 mv nagios/ nagios.orig
 cp -a /usr/share/doc/nagrestconf-1*/initial-config/ nagios
 
-# On Centos/Redhat/Debian
+# then..
+# On Debian/Centos/Redhat/Fedora
+nagrestconf_install -a
+slc_configure --folder=local
+------------------------------------------------------------------
++
+*Ubuntu*
+------------------------------------------------------------------
+ln -s /etc/apache2/conf.d/nagrestconf.conf /etc/apache2/conf-enabled/
+ln -s /etc/apache2/conf.d/rest.conf /etc/apache2/conf-enabled/
+service apache2 restart
 nagrestconf_install -a
 slc_configure --folder=local
 ------------------------------------------------------------------
