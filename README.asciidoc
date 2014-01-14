@@ -39,8 +39,6 @@ License
 Screenshots
 ~~~~~~~~~~~
 
-Hosts page showing the Backup or Restore dialog.
-
 ++++
 <img src="http://www.smorg.co.uk/images/HostsTab_1_169.png"
 alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
