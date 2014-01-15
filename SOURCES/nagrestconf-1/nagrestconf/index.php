@@ -6181,6 +6181,8 @@
             $query_str["hstnotifcmds"] = "-";
         if( empty( $query_str["pager"] ) )
             $query_str["pager"] = "-";
+        if( empty( $query_str["emailaddr"] ) )
+            $query_str["emailaddr"] = "-";
         if( empty( $query_str["hstnotifopts"] ) )
             $query_str["hstnotifopts"] = "-";
         $json = json_encode( $query_str );
