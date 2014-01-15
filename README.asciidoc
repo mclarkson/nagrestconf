@@ -13,6 +13,8 @@ Latest News
 15 Jan 2013 (synagios.spk for x86 released to sourceforge)
 
 * NEW - Nagrestconf for Synology Diskstation NAS devices.
++
+The Synagios package includes nagios, pnp4nagios and nagrestconf.
 
 13 Jan 2013 New version 1.169 (packages released to Sourceforge)
 
@@ -43,8 +45,10 @@ License
 Screenshots
 ~~~~~~~~~~~
 
+Nagrestconf running on a Synology Diskstation DS412+ NAS device.
+
 ++++
-<img src="http://www.smorg.co.uk/images/HostsTab_1_169.png"
+<img src="http://www.smorg.co.uk/images/Synagios_0.10.png"
 alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
 ++++
 
