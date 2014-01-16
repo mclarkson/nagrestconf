@@ -10,11 +10,22 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
+15 Jan 2013 (synagios.spk for ARM released to sourceforge)
+
+* NEW - Nagrestconf for Synology Diskstation NAS devices.
++
+The Synagios package includes nagios, pnp4nagios and nagrestconf.
++
+I don't own an ARM device so the spk is completely untested - Use
+at your own risk!
+
 15 Jan 2013 (synagios.spk for x86 released to sourceforge)
 
 * NEW - Nagrestconf for Synology Diskstation NAS devices.
 +
 The Synagios package includes nagios, pnp4nagios and nagrestconf.
++
+Tested on a Synology Diskstation DS412+, DSM 4.3, Intel Atom.
 
 13 Jan 2013 New version 1.169 (packages released to Sourceforge)
 
@@ -338,12 +349,16 @@ Download the package, synagios.spk, for your device from sourceforge:
 
 https://sourceforge.net/projects/nagrestconf/files/synology
 
-In the DSM Desktop open the 'Package Center' then choose 'Manual Install'.
+In the DSM Desktop open the 'Package Center' then choose 'Manual Install' and 'Browse' for the synology_0.10.spk file.
+
+Set passwords for nagiosadmin, and nagrestconfadmin.
 
 After installation use nagrestconf to restore the example configuration,
 nagcfgbak_xxx.tgz, which is also in the synology directory at sourceforge.
 
-To view nagios use: http://diskstation/nagios3
+To open the nagios GUI use: http://diskstation/nagios3
+
+To open the nagrestconf GUI click the Synagios icon in DSM or open, http://diskstation/nagrestconf.
 
 Plugins
 ~~~~~~~
