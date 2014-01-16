@@ -347,7 +347,7 @@ a supported Web Browser at `http://localhost/nagrestconf'.
 If something goes wrong then there are configuration files in the directory
 '/etc/nagrestconf' that might need correcting.
 
-*SYNOLOGY DSM 4.3+ x86 DEVICES*
+*SYNOLOGY DSM 4.3+ x86/arm DEVICES*
 
 Download the package, synagios.spk, for your device from sourceforge:
 
