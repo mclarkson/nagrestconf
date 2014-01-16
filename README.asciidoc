@@ -11,7 +11,7 @@ Latest News
 ~~~~~~~~~~~
 
 16 Jan 2013 New version 1.170 (released for all platforms)
-+
+
 * Minor bug fixes.
 
 16 Jan 2013 (synagios.spk for ARM released to sourceforge)
