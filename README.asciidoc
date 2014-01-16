@@ -360,9 +360,9 @@ Set passwords for nagiosadmin, and nagrestconfadmin.
 After installation use nagrestconf to restore the example configuration,
 nagcfgbak_xxx.tgz, which is also in the synology directory at sourceforge.
 
-To open the nagios GUI use: http://diskstation/nagios3
+To open the nagios GUI use: http://diskstation:8888/nagios3
 
-To open the nagrestconf GUI click the Synagios icon in DSM or open, http://diskstation/nagrestconf.
+To open the nagrestconf GUI click the Synagios icon in DSM or open, http://diskstation:8888/nagrestconf.
 
 Plugins
 ~~~~~~~
