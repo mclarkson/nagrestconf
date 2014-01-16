@@ -10,7 +10,11 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-15 Jan 2013 (synagios.spk for ARM released to sourceforge)
+16 Jan 2013 New version 1.170 (released for all platforms)
++
+* Minor bug fixes.
+
+16 Jan 2013 (synagios.spk for ARM released to sourceforge)
 
 * NEW - Nagrestconf for Synology Diskstation NAS devices.
 +
