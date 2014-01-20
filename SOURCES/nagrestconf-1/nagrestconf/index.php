@@ -7157,6 +7157,14 @@
             $newservice["freshnessthresh"] = $freshnessthresh;
             $newservice["activechecks"] = $activechecks;
             $newservice["customvars"] = $customvars;
+            $newservice["maxcheckattempts"] = $maxcheckattempts;
+            $newservice["checkinterval"] = $checkinterval;
+            $newservice["retryinterval"] = $retryinterval;
+            $newservice["passivechecks"] = $passivechecks;
+            $newservice["manfreshnessthresh"] = $manfreshnessthresh;
+            $newservice["checkfreshness"] = $checkfreshness;
+            $newservice["retainstatusinfo"] = $retainstatusinfo;
+            $newservice["retainnonstatusinfo"] = $retainnonstatusinfo;
             $json = json_encode( $newservice );
             $request = new RestRequest(
               RESTURL.'/add/servicesets',
@@ -7377,6 +7385,14 @@
         $newservice["freshnessthresh"] = $freshnessthresh;
         $newservice["activechecks"] = $activechecks;
         $newservice["customvars"] = $customvars;
+        $newservice["maxcheckattempts"] = $maxcheckattempts;
+        $newservice["checkinterval"] = $checkinterval;
+        $newservice["retryinterval"] = $retryinterval;
+        $newservice["passivechecks"] = $passivechecks;
+        $newservice["manfreshnessthresh"] = $manfreshnessthresh;
+        $newservice["checkfreshness"] = $checkfreshness;
+        $newservice["retainstatusinfo"] = $retainstatusinfo;
+        $newservice["retainnonstatusinfo"] = $retainnonstatusinfo;
         $json = json_encode( $newservice );
         $request = new RestRequest(
           RESTURL.'/add/servicesets',
@@ -10317,6 +10333,14 @@
         $newservice["freshnessthresh"] = $freshnessthresh;
         $newservice["activechecks"] = $activechecks;
         $newservice["customvars"] = $customvars;
+        $newservice["maxcheckattempts"] = $maxcheckattempts;
+        $newservice["checkinterval"] = $checkinterval;
+        $newservice["retryinterval"] = $retryinterval;
+        $newservice["passivechecks"] = $passivechecks;
+        $newservice["manfreshnessthresh"] = $manfreshnessthresh;
+        $newservice["checkfreshness"] = $checkfreshness;
+        $newservice["retainstatusinfo"] = $retainstatusinfo;
+        $newservice["retainnonstatusinfo"] = $retainnonstatusinfo;
         $json = json_encode( $newservice );
         $request = new RestRequest(
           RESTURL.'/add/services',
