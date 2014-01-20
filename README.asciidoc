@@ -10,7 +10,7 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-16 Jan 2013 New version 1.170 (released for all platforms)
+20 Jan 2013 New version 1.172 (released for all platforms)
 
 * Minor bug fixes.
 
