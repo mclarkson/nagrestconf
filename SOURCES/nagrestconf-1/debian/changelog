@@ -1,3 +1,9 @@
+nagrestconf (1.171) UNRELEASED; urgency=low
+
+  * Added extra fields for host/service cloning.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 20 Jan 2014 12:04:00 +0000
+
 nagrestconf (1.170) UNRELEASED; urgency=low
 
   * Checks for notif opts and auto-complete for check periods.
