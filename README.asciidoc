@@ -63,7 +63,7 @@ Screenshots
 Nagrestconf running on a Synology Diskstation DS412+ NAS device.
 
 ++++
-<img src="http://www.smorg.co.uk/images/Synagios_0.10.png"
+<img src="http://www.smorg.co.uk/images/SynologyDSM_1_171.png"
 alt="Nagrestconf GUI Screenshot" style="float:none" width="700px" />
 ++++
 
