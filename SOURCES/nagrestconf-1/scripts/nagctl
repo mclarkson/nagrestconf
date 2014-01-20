@@ -2594,7 +2594,7 @@ add_host_line()
         n=`wc -l $tfile | cut -d" " -f 1`
         for i in `seq 1 $n`;do
             svcdesc=`sed -n "$i{p}" $tfile | cut -d, -f4`
-            grep -m1 "^[^,]*,[^,]*,[^,]*,$svcdesc" $tfile
+            grep -m1 "^[^,]*,[^,]*,[^,]*,$svcdesc," $tfile
         done | sort -u >>$file
         rm -f $tfile
     }
