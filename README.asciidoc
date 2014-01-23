@@ -10,11 +10,15 @@ CAUTION: THIS SOFTWARE IS IN THE http://en.wikipedia.org/wiki/Software_release_l
 Latest News
 ~~~~~~~~~~~
 
-20 Jan 2013 New version 1.172 (released for all platforms)
+23 Jan 2014 Web site goes live, but it is still under construction.
+
+* See: http://nagrestconf.sourceforge.net/
+
+20 Jan 2014 New version 1.172 (released for all platforms)
 
 * Minor bug fixes.
 
-16 Jan 2013 (synagios.spk for ARM released to sourceforge)
+16 Jan 2014 (synagios.spk for ARM released to sourceforge)
 
 * NEW - Nagrestconf for Synology Diskstation NAS devices.
 +
@@ -23,7 +27,7 @@ The Synagios package includes nagios, pnp4nagios and nagrestconf.
 I don't own an ARM device so the spk is completely untested - Use
 at your own risk!
 
-15 Jan 2013 (synagios.spk for x86 released to sourceforge)
+15 Jan 2014 (synagios.spk for x86 released to sourceforge)
 
 * NEW - Nagrestconf for Synology Diskstation NAS devices.
 +
@@ -31,7 +35,7 @@ The Synagios package includes nagios, pnp4nagios and nagrestconf.
 +
 Tested on a Synology Diskstation DS412+, DSM 4.3, Intel Atom.
 
-13 Jan 2013 New version 1.169 (packages released to Sourceforge)
+13 Jan 2014 New version 1.169 (packages released to Sourceforge)
 
 * Now in Beta. (Feature freeze)
 +
@@ -253,116 +257,7 @@ Replace `<FOLDER>' and `<nagios_dir>' with the correct path names.
 Install
 ~~~~~~~
 
-Prebuilt Packages
-^^^^^^^^^^^^^^^^^
-
-Get the relevant RPMs for Centos/Redhat from Sourceforge at:
-
-https://sourceforge.net/projects/nagrestconf/files/
-
-Debian install packages are also available.
-
-Install Using Prebuilt Packages
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-For all functionality download and install all four RPMs or debian packages.
-
-.*DEBIAN, UBUNTU, FEDORA, CENTOS & REDHAT*
-
-Do not install on an existing Nagios server. Use the following procedure after
-freshly installing the Operating System with a minimal set of packages.
-
-1. Install the prebuilt package downloaded from Sourceforge. For example:
-+
-----------------------------------------------------------
-# On Debian:
-apt-get update
-apt-get install gdebi-core
-gdebi nagrestconf_1.169_all.deb \
-      nagrestconf-services-plugin_1.169_all.deb \
-      nagrestconf-services-bulktools-plugin_1.169_all.deb \
-      nagrestconf-hosts-bulktools-plugin_1.169_all.deb \
-      nagrestconf-backup-plugin_1.169_all.deb
-
-# On Ubuntu:
-apt-get update
-apt-get install gdebi-core
-gdebi nagrestconf_1.169_all.deb
-dpkg -i nagrestconf-services-plugin_1.169_all.deb \
-      nagrestconf-services-bulktools-plugin_1.169_all.deb \
-      nagrestconf-hosts-bulktools-plugin_1.169_all.deb \
-      nagrestconf-backup-plugin_1.169_all.deb
-
-# On Centos/Redhat:
-yum install nagrestconf-1.169-1.noarch.rpm \
-            nagrestconf-services-tab-plugin-1.169-1.noarch.rpm \
-            nagrestconf-services-bulktools-plugin-1.169-1.noarch.rpm \
-            nagrestconf-hosts-bulktools-plugin-1.169-1.noarch.rpm \
-            nagrestconf-backup-plugin-1.169-1.noarch.rpm
-
-----------------------------------------------------------
-+
-2. Configure the system:
-+
-Use the two helper scripts nagrestconf_install and slc_configure. A sample
-configuration is also included in the system doc/ directories. For example:
-+
-*Centos/Debian/Redhat/Fedora*
-+
-------------------------------------------------------------------
-# On Centos/Redhat
-cd /etc/
-mv nagios/ nagios.orig
-cp -a /usr/share/doc/nagrestconf-1*/initial-config/ nagios
-
-# then..
-# On Debian/Centos/Redhat/Fedora
-nagrestconf_install -a
-slc_configure --folder=local
-------------------------------------------------------------------
-+
-*Ubuntu*
-+
-------------------------------------------------------------------
-ln -s /etc/apache2/conf.d/nagrestconf.conf /etc/apache2/conf-enabled/
-ln -s /etc/apache2/conf.d/rest.conf /etc/apache2/conf-enabled/
-service apache2 restart
-nagrestconf_install -a
-slc_configure --folder=local
-------------------------------------------------------------------
-+
-Test the installation with:
-+
-------------------------------------------------------------------
-# On Centos/Redhat
-htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin a_password
-
-# On Centos/Redhat/Debian
-bash /usr/share/doc/nagrestconf*/bulk-loading/REST_setup_local.sh
-------------------------------------------------------------------
-+
-Then check that it can be seen and edited in the 'Nagrestconf' GUI by pointing
-a supported Web Browser at `http://localhost/nagrestconf'.
-+
-If something goes wrong then there are configuration files in the directory
-'/etc/nagrestconf' that might need correcting.
-
-*SYNOLOGY DSM 4.3+ x86/arm DEVICES*
-
-Download the package, synagios.spk, for your device from sourceforge:
-
-https://sourceforge.net/projects/nagrestconf/files/synology
-
-In the DSM Desktop open the 'Package Center' then choose 'Manual Install' and 'Browse' for the synology_0.10.spk file.
-
-Set passwords for nagiosadmin, and nagrestconfadmin.
-
-After installation use nagrestconf to restore the example configuration,
-nagcfgbak_xxx.tgz, which is also in the synology directory at sourceforge.
-
-To open the nagios GUI use: http://diskstation:8888/nagios3
-
-To open the nagrestconf GUI click the Synagios icon in DSM or open, http://diskstation:8888/nagrestconf.
+Refer to the 'Installation Guides' section at http://nagrestconf.sourceforge.net/installguide.html
 
 Plugins
 ~~~~~~~
