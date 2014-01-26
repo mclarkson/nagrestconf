@@ -3,5 +3,5 @@ Nagrestconf README
 
 Nagrestconf is a REST interface and configuration GUI for Nagios.
 
-All documentation moved to http://nagrestconf.sourceforge.net/.
+All documentation has been moved to http://nagrestconf.smorg.co.uk/.
 
