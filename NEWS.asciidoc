@@ -1,6 +1,31 @@
 News
 ----
 
+16 Jan 2014 (synagios.spk for ARM released to sourceforge)
+
+* NEW - Nagrestconf for Synology Diskstation NAS devices.
++
+The Synagios package includes nagios, pnp4nagios and nagrestconf.
++
+I don't own an ARM device so the spk is completely untested - Use
+at your own risk!
+
+15 Jan 2014 (synagios.spk for x86 released to sourceforge)
+
+* NEW - Nagrestconf for Synology Diskstation NAS devices.
++
+The Synagios package includes nagios, pnp4nagios and nagrestconf.
++
+Tested on a Synology Diskstation DS412+, DSM 4.3, Intel Atom.
+
+13 Jan 2014 New version 1.169 (packages released to Sourceforge)
+
+* Now in Beta. (Feature freeze)
++
+Only bug fixes and plugins will be developed with version 1.x
++
+* Added extra back-end checks and autocomplete for time periods.
+
 09 Jan 2013 New version 1.168 (redhat 5/6 and debian packages released to Sourceforge)
 
 * READ the Upgrade section before upgrading a version <1.165.
