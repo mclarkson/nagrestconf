@@ -16,7 +16,7 @@
     # ------------------------------------------------------------------------
 
     define( "SCRIPTNAME", "index.php" );
-    define( "VERSION", "v1.172" );
+    define( "VERSION", "v1.173" );
     define( "LIBDIR", "/usr/share/nagrestconf/htdocs/nagrestconf/" );
 
     # ------------------------------------------------------------------------
@@ -4494,6 +4494,7 @@
         print '<option value="0">Disabled</option>';
         print '</select>';
         print '</p>';
+        # Notifications Enabled
         print '<p>';
         print '<label for="snotifen">Notifications Enabled</label>';
         print '<select name="notifications_enabled" id="snotifen" class="field">';
@@ -7777,6 +7778,25 @@
 
         ###:TAB3
         print '<div id="fragment-3">';
+        # Notification Options
+        print '<p>';
+        print '<label for="ynotifopts">Notif Opts</label>';
+        print '<input class="field" type="text" id="ynotifopts" '.
+              'value="'.$notifopts.'" name="notifopts" />';
+        print '</p>';
+        # Notifications Enabled
+        print '<p>';
+        print '<label for="snotifen">Notifications Enabled</label>';
+        print '<select name="notifications_enabled" id="snotifen" class="field">';
+        $selected=""; if( ! strlen($notifications_enabled) ) $selected="selected";
+        print '<option value="" '.$selected.'>Nagios default</option>';
+        $selected=""; if( $notifications_enabled == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $notifications_enabled == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        # Retain Status Info
         print '<p>';
         print '<label for="srsi">Retain Status Info</label>';
         print '<select name="retainstatusinfo" id="srsi" class="field">';
@@ -7856,6 +7876,13 @@
         autocomplete_jscript_single( "escommand" );
         print '</script>';
 
+        # Auto-complete for notif opts
+        print '<script>';
+        print '$( document ).ready( function() {';
+        autocomplete_svcnotifopts( "ynotifopts" );
+        print '});';
+        print '</script>';
+
         exit( 0 );
     }
 
@@ -7890,6 +7917,8 @@
         else
             $query_str["activechecks"] = "0";
         # Handle deleting fields
+        if( ! strlen( $query_str["notifications_enabled"] ) )
+            $query_str["notifications_enabled"] = "-";
         if( ! strlen( $query_str["retainstatusinfo"] ) )
             $query_str["retainstatusinfo"] = "-";
         if( ! strlen( $query_str["retainnonstatusinfo"] ) )
@@ -7942,7 +7971,7 @@
 
     /***********************************************************************
      *
-     * ADD NEW SERVICSET SERVICE DIALOG
+     * ADD NEW SERVICESET SERVICE DIALOG
      *
      ***********************************************************************
      */
@@ -8146,6 +8175,21 @@
 
         ###:TAB3
         print '<div id="fragment-3">';
+        # Notification Options
+        print '<p>';
+        print '<label for="xnotifopts">Notif Opts</label>';
+        print '<input class="field" type="text" id="xnotifopts" '.
+              'value="" name="notifopts" />';
+        print '</p>';
+        # Notifications Enabled
+        print '<p>';
+        print '<label for="snotifen">Notifications Enabled</label>';
+        print '<select name="notifications_enabled" id="snotifen" class="field">';
+        print '<option value="" selected >Nagios default</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
         print '<p>';
         print '<label for="srsi">Retain Status Info</label>';
         print '<select name="retainstatusinfo" id="srsi" class="field">';
@@ -8219,6 +8263,12 @@
         autocomplete_jscript_single( "escommand" );
         print '</script>';
 
+        # Auto-complete for notif opts
+        print '<script>';
+        print '$( document ).ready( function() {';
+        autocomplete_svcnotifopts( "xnotifopts" );
+        print '});';
+        print '</script>';
 
         exit( 0 );
     }
@@ -10729,6 +10779,25 @@
 
         ###:TAB3
         print '<div id="fragment-3">';
+        # Notification Options
+        print '<p>';
+        print '<label for="ynotifopts">Notif Opts</label>';
+        print '<input class="field" type="text" id="ynotifopts" '.
+              'value="'.$notifopts.'" name="notifopts" />';
+        print '</p>';
+        # Notifications Enabled
+        print '<p>';
+        print '<label for="snotifen">Notifications Enabled</label>';
+        print '<select name="notifications_enabled" id="snotifen" class="field">';
+        $selected=""; if( ! strlen($notifications_enabled) ) $selected="selected";
+        print '<option value="" '.$selected.'>Nagios default</option>';
+        $selected=""; if( $notifications_enabled == "1" ) $selected="selected";
+        print '<option value="1" '.$selected.'>Enabled</option>';
+        $selected=""; if( $notifications_enabled == "0" ) $selected="selected";
+        print '<option value="0" '.$selected.'>Disabled</option>';
+        print '</select>';
+        print '</p>';
+        # Retain Status Info
         print '<p>';
         print '<label for="srsi">Retain Status Info</label>';
         print '<select name="retainstatusinfo" id="srsi" class="field">';
@@ -10808,6 +10877,13 @@
         autocomplete_jscript_single( "iescommand" );
         print '</script>';
 
+        # Auto-complete for notif opts
+        print '<script>';
+        print '$( document ).ready( function() {';
+        autocomplete_svcnotifopts( "ynotifopts" );
+        print '});';
+        print '</script>';
+
         exit( 0 );
     }
 
@@ -10836,6 +10912,8 @@
         else
             $query_str["activechecks"] = "0";
         # Handle deleting fields
+        if( ! strlen( $query_str["notifications_enabled"] ) )
+            $query_str["notifications_enabled"] = "-";
         if( ! strlen( $query_str["retainstatusinfo"] ) )
             $query_str["retainstatusinfo"] = "-";
         if( ! strlen( $query_str["retainnonstatusinfo"] ) )
@@ -11132,6 +11210,22 @@
 
         ###:TAB3
         print '<div id="fragment-3">';
+        # Notification Options
+        print '<p>';
+        print '<label for="xnotifopts">Notif Opts</label>';
+        print '<input class="field" type="text" id="xnotifopts" '.
+              'value="" name="notifopts" />';
+        print '</p>';
+        # Notifications Enabled
+        print '<p>';
+        print '<label for="snotifen">Notifications Enabled</label>';
+        print '<select name="notifications_enabled" id="snotifen" class="field">';
+        print '<option value="" selected >Nagios default</option>';
+        print '<option value="1">Enabled</option>';
+        print '<option value="0">Disabled</option>';
+        print '</select>';
+        print '</p>';
+        # Retain Status Info
         print '<p>';
         print '<label for="srsi">Retain Status Info</label>';
         print '<select name="retainstatusinfo" id="srsi" class="field">';
@@ -11203,6 +11297,13 @@
         }
         print'];';
         autocomplete_jscript_single( "escommand" );
+        print '</script>';
+
+        # Auto-complete for notif opts
+        print '<script>';
+        print '$( document ).ready( function() {';
+        autocomplete_svcnotifopts( "xnotifopts" );
+        print '});';
         print '</script>';
 
         exit( 0 );
