@@ -2859,17 +2859,8 @@ add_servicesets_line()
     IFS=, read name template command svcdesc servicegroups contacts \
         contactgroups x < <( echo "$gcsv" )
 
-    # Same name and svcdesc is an error (duplicate)
-    #name=`echo "$gcsv" | cut -d, -f1`
-    #template=`echo "$gcsv" | cut -d, -f2`
-
-    command=`echo "$command" | grep -o '[-A-Za-z0-9_]*'`
-
-    #command=`echo "$gcsv" | cut -d, -f3 | grep -o '[-A-Za-z0-9_]*'`
-    #svcdesc=`echo "$gcsv" | cut -d, -f4`
-    #servicegroups=`echo "$gcsv" | cut -d, -f5`
-    #contacts=`echo "$gcsv" | cut -d, -f6`
-    #contactgroups=`echo "$gcsv" | cut -d, -f7`
+    #command=`echo "$command" | grep -o '[-A-Za-z0-9_]*'`
+    command=`echo "$command" | sed -nr 's/%21/!/g;s/(^[^!]*)(!|%21|$).*/\1/p'`
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
