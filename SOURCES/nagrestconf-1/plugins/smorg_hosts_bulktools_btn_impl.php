@@ -25,7 +25,8 @@
 
         $id = spi_get_tab_idx();
 
-        print '<input id="bulkhsttool" type="button" value="Bulk Tools" />';
+        #print '<input id="bulkhsttool" type="button" value="Bulk Tools" />';
+        print '<p style="padding-bottom: 4px; padding-left: 6px;"><a href="#" id="bulkhsttool">Bulk Tools...</a></p>';
         print '<script>';
         print ' $("#bulkhsttool").bind("click", function() {';
         print "$('#bulkhsttooldlg').".
@@ -36,7 +37,7 @@
               "dialog('open'); ";
         print '} );';
         print '</script>';
-        print '<hr />';
+        #print '<hr />';
     }
 
     # ------------------------------------------------------------------------

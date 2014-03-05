@@ -25,7 +25,8 @@
 
         $id = spi_get_tab_idx();
 
-        print '<input id="bulksvctool" type="button" value="Bulk Tools" />';
+        #print '<input id="bulksvctool" type="button" value="Bulk Tools" />';
+        print '<p style="padding-bottom: 4px; padding-left: 6px;"><a href="#" id="bulksvctool">Bulk Tools...</a></p>';
         print '<script>';
         print ' $("#bulksvctool").bind("click", function() {';
         print "$('#bulksvctooldlg').".
@@ -36,7 +37,7 @@
               "dialog('open'); ";
         print '} );';
         print '</script>';
-        print '<hr />';
+        #print '<hr />';
     }
 
     # ------------------------------------------------------------------------

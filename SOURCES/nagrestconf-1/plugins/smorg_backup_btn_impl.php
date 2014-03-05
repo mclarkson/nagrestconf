@@ -25,7 +25,8 @@
 
         $id = spi_get_tab_idx();
 
-        print '<input id="backuptool" type="button" value="Backup/Restore" />';
+        #print '<input id="backuptool" type="button" value="Backup/Restore" />';
+        print '<p style="padding-bottom: 4px; padding-left: 6px;"><a href="#" id="backuptool">Backup/Restore...</a></p>';
         print '<script>';
         print ' $("#backuptool").bind("click", function() {';
         print "$('#backupdlg').".
@@ -36,7 +37,7 @@
               "dialog('open'); ";
         print '} );';
         print '</script>';
-        print '<hr />';
+        #print '<hr />';
     }
 
     # ------------------------------------------------------------------------
