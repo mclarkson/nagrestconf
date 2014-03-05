@@ -1164,7 +1164,27 @@
     }
 
     # ------------------------------------------------------------------------
-    function show_revert_and_apply_buttons( ) {
+    function show_revert_button( ) {
+    # ------------------------------------------------------------------------
+        global $g_tab;
+
+        $url = create_url( );
+
+        print '<style>#revert:hover{font-weight: bold;}</style>';
+        print '<p style="padding: 4px 0px 4px 6px;"><a href="#" id="revert">';
+        print '<span class="ion-ios7-undo-outline" style="font-size:16px"></span>';
+        print '&nbsp; Revert Changes</a></p>';
+        print '<script>';
+        print ' $("#revert").bind("click", function() {';
+        print ' var ans = confirm( "Reverting to Last Known Good';
+        print ' configuration\nAll changes will be lost - Really Revert?" );';
+        print ' if( ans ) window.location="'.$url.'&revert=true";';
+        print '} );';
+        print '</script>';
+    }
+
+    # ------------------------------------------------------------------------
+    function show_apply_button( ) {
     # ------------------------------------------------------------------------
         global $g_tab;
 
@@ -1172,7 +1192,7 @@
 
         print '<div style="text-align: center">';
         print '<input id="apply" type="button" value="Apply Changes"';
-        print ' style="width: 100%; margin: 6px 0 4px 0;"/>';
+        print ' style="width: 100%; margin: 8px 0 10px 0;"/>';
         print '</div>';
         print '<script>';
         print ' $("#apply").bind("click", function() {';
@@ -1185,21 +1205,6 @@
         #
         print '} );';
         print '</script>';
-        #print "<hr />";
-        #print '<input id="revert" type="button" value="Revert Changes" />';
-        print '<style>#revert:hover{font-weight: bold;}</style>';
-        print '<p style="padding: 4px 0px 4px 6px;"><a href="#" id="revert">';
-        print '<span class="ion-ios7-undo-outline" style="font-size:16px"></span>';
-        print '&nbsp; Revert Changes</a></p>';
-        print '<script>';
-        print ' $("#revert").bind("click", function() {';
-        print ' var ans = confirm( "Reverting to Last Known Good';
-        print ' configuration\nAll changes will be lost - Really Revert?" );';
-        print ' if( ans ) window.location="'.$url.'&revert=true";';
-        print '} );';
-        print '</script>';
-
-        plugins_buttons( );
     }
 
     /***********************************************************************
@@ -1264,7 +1269,11 @@
     function show_hostgroups_tab_left_pane( ) {
     # ------------------------------------------------------------------------
 
-        show_revert_and_apply_buttons( );
+        show_apply_button( );
+
+        show_revert_button( );
+
+        plugins_buttons( );
     }
 
     # ------------------------------------------------------------------------
@@ -2195,7 +2204,11 @@
     function show_commands_tab_left_pane( ) {
     # ------------------------------------------------------------------------
 
-        show_revert_and_apply_buttons();
+        show_apply_button();
+
+        show_revert_button( );
+
+        plugins_buttons( );
     }
 
     # ------------------------------------------------------------------------
@@ -2744,7 +2757,11 @@
     function show_timeperiods_tab_left_pane( ) {
     # ------------------------------------------------------------------------
 
-        show_revert_and_apply_buttons();
+        show_apply_button();
+
+        show_revert_button( );
+
+        plugins_buttons( );
     }
 
     # ------------------------------------------------------------------------
@@ -3294,7 +3311,11 @@
     function show_templates_tab_left_pane( ) {
     # ------------------------------------------------------------------------
 
-        show_revert_and_apply_buttons();
+        show_apply_button();
+
+        show_revert_button( );
+
+        plugins_buttons( );
     }
 
     # ------------------------------------------------------------------------
@@ -5254,7 +5275,11 @@
     function show_contacts_tab_left_pane( ) {
     # ------------------------------------------------------------------------
 
-        show_revert_and_apply_buttons();
+        show_apply_button();
+
+        show_revert_button( );
+
+        plugins_buttons( );
     }
 
     # ------------------------------------------------------------------------
@@ -6677,7 +6702,11 @@
     function show_servicesets_tab_left_pane( ) {
     # ------------------------------------------------------------------------
 
-        show_revert_and_apply_buttons( );
+        show_apply_button( );
+
+        show_revert_button( );
+
+        plugins_buttons( );
     }
 
     # ------------------------------------------------------------------------
@@ -8400,6 +8429,8 @@
     # ------------------------------------------------------------------------
         global $g_tab, $g_hgfilter, $g_hfilter, $g_folders;
 
+        show_apply_button( );
+
         $hgfilter="";
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
         if( isset( $query_str['hgfilter'] ) ) {
@@ -8435,7 +8466,7 @@
             border-width: 1px;
             padding-top: 4px;
             margin-bottom: 8px;
-            border-color: #6AA4D0;
+            border-color: #B8D7ED;
             padding-bottom: 10px;
             padding-left: 6px;
             padding-right: 2px;}
@@ -8448,13 +8479,13 @@
             border-top-right-radius: 6px;
             text-align: center;
             font-weight: bold;
-            background-color: #89B7DA;
+            background-color: #B8D7ED;
             border-style: solid;
             border-width: 1px;
             border-bottom-style: none;
             margin-top: 6px;
             margin-bottom: 0px;
-            border-color: #6AA4D0;
+            border-color: #B8D7ED;
             padding-top: 0px;
             padding-bottom: 4px;
             padding-left: 2px;
@@ -8506,7 +8537,9 @@
         print "</div>";
         #print "<hr />";
 
-        show_revert_and_apply_buttons( );
+        show_revert_button( );
+
+        plugins_buttons( );
     }
 
     # ------------------------------------------------------------------------

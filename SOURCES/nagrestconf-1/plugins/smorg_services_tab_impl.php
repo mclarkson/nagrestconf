@@ -174,6 +174,8 @@
 
         global $g_tab, $g_sfilter, $g_hfilter, $g_folders;
 
+        show_apply_button();
+
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
         $hfilter="";
         if( isset( $query_str['hfilter'] ) ) {
@@ -195,7 +197,7 @@
             border-width: 1px;
             padding-top: 4px;
             margin-bottom: 8px;
-            border-color: #6AA4D0;
+            border-color: #B8D7ED;
             padding-bottom: 10px;
             padding-left: 6px;
             padding-right: 2px;}
@@ -208,13 +210,13 @@
             border-top-right-radius: 6px;
             text-align: center;
             font-weight: bold;
-            background-color: #89B7DA;
+            background-color: #B8D7ED;
             border-style: solid;
             border-width: 1px;
             border-bottom-style: none;
             margin-top: 6px;
             margin-bottom: 0px;
-            border-color: #6AA4D0;
+            border-color: #B8D7ED;
             padding-top: 0px;
             padding-bottom: 4px;
             padding-left: 2px;
@@ -254,9 +256,9 @@
         print "</script>";
         print "</div>";
 
-        #print "<hr />";
+        show_revert_button( );
 
-        show_revert_and_apply_buttons();
+        plugins_buttons( );
     }
 
     # ------------------------------------------------------------------------
