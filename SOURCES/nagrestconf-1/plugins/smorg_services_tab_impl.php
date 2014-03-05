@@ -189,6 +189,40 @@
         $g_sfilter = 0; # <-- don't include sfilter
         $url = create_url( );
 
+        print '<style>
+        #qfilter{
+            border-style: solid;
+            border-width: 1px;
+            padding-top: 4px;
+            margin-bottom: 8px;
+            border-color: #6AA4D0;
+            padding-bottom: 10px;
+            padding-left: 6px;
+            padding-right: 2px;}
+        #qfilterhead{
+            -webkit-border-top-left-radius: 6px;
+            -webkit-border-top-right-radius: 6px;
+            -moz-border-radius-topleft: 6px;
+            -moz-border-radius-topright: 6px;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            background-color: #89B7DA;
+            border-style: solid;
+            border-width: 1px;
+            border-bottom-style: none;
+            margin-top: 6px;
+            margin-bottom: 0px;
+            border-color: #6AA4D0;
+            padding-top: 0px;
+            padding-bottom: 4px;
+            padding-left: 2px;
+            padding-right: 2px;}
+        </style>';
+        print '<div id="qfilterhead"><p>Quick Filter</p>';
+        print '</div>';
+        print '<div id="qfilter">';
         print "<p style='margin-bottom:10px'>Filter by Name regex:<br>".
               "<input class='filtermain' id='hregex' name='hregex' type='text'".
               " style='width:100px;'".
@@ -218,8 +252,9 @@
         print "  }";
         print "});";
         print "</script>";
+        print "</div>";
 
-        print "<hr />";
+        #print "<hr />";
 
         show_revert_and_apply_buttons();
     }
