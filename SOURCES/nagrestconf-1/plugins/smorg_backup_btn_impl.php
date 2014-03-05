@@ -30,7 +30,7 @@
         print '<p style="padding-bottom: 4px; padding-left: 6px;">';
         print '<a href="#" id="backuptool">';
         print '<span class="ion-ios7-download-outline" style="font-size:16px"></span>';
-        print '&nbsp; Backup/Restore</a></p>';
+        print '&nbsp; Backup or Restore</a></p>';
         print '<script>';
         print ' $("#backuptool").bind("click", function() {';
         print "$('#backupdlg').".
