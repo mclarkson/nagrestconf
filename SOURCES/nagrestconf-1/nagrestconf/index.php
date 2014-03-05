@@ -16,7 +16,7 @@
     # ------------------------------------------------------------------------
 
     define( "SCRIPTNAME", "index.php" );
-    define( "VERSION", "v1.174" );
+    define( "VERSION", "v1.173" );
     define( "LIBDIR", "/usr/share/nagrestconf/htdocs/nagrestconf/" );
 
     # ------------------------------------------------------------------------
@@ -1097,6 +1097,7 @@
 <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="main.css">
+<link rel="stylesheet" type="text/css" href="css/ionicons.css">
 <script src = js/jquery-1.9.1.js></script>
 <script src = js/jquery.ajaxfileupload.js></script>
 <script src = js/jquery-ui-1.10.3.custom.min.js></script>
@@ -1169,16 +1170,10 @@
 
         $url = create_url( );
 
-        print '<input id="revert" type="button" value="Revert Changes" />';
-        print '<script>';
-        print ' $("#revert").bind("click", function() {';
-        print ' var ans = confirm( "Reverting to Last Known Good';
-        print ' configuration\nAll changes will be lost - Really Revert?" );';
-        print ' if( ans ) window.location="'.$url.'&revert=true";';
-        print '} );';
-        print '</script>';
-        print "<hr />";
-        print '<input id="apply" type="button" value="Apply Changes" />';
+        print '<div style="text-align: center">';
+        print '<input id="apply" type="button" value="Apply Changes"';
+        print ' style="width: 100%; margin: 6px 0 4px 0;"/>';
+        print '</div>';
         print '<script>';
         print ' $("#apply").bind("click", function() {';
         #print ' var ans = confirm( "Apply the current configuration?" );';
@@ -1190,7 +1185,19 @@
         #
         print '} );';
         print '</script>';
-        print "<hr />";
+        #print "<hr />";
+        #print '<input id="revert" type="button" value="Revert Changes" />';
+        print '<style>#revert:hover{font-weight: bold;}</style>';
+        print '<p style="padding: 4px 0px 4px 6px;"><a href="#" id="revert">';
+        print '<span class="ion-ios7-undo-outline" style="font-size:16px"></span>';
+        print '&nbsp; Revert Changes</a></p>';
+        print '<script>';
+        print ' $("#revert").bind("click", function() {';
+        print ' var ans = confirm( "Reverting to Last Known Good';
+        print ' configuration\nAll changes will be lost - Really Revert?" );';
+        print ' if( ans ) window.location="'.$url.'&revert=true";';
+        print '} );';
+        print '</script>';
 
         plugins_buttons( );
     }

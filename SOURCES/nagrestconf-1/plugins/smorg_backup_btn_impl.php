@@ -26,7 +26,11 @@
         $id = spi_get_tab_idx();
 
         #print '<input id="backuptool" type="button" value="Backup/Restore" />';
-        print '<p style="padding-bottom: 4px; padding-left: 6px;"><a href="#" id="backuptool">Backup/Restore...</a></p>';
+        print '<style>#backuptool:hover{font-weight: bold;}</style>';
+        print '<p style="padding-bottom: 4px; padding-left: 6px;">';
+        print '<a href="#" id="backuptool">';
+        print '<span class="ion-ios7-download-outline" style="font-size:16px"></span>';
+        print '&nbsp; Backup/Restore</a></p>';
         print '<script>';
         print ' $("#backuptool").bind("click", function() {';
         print "$('#backupdlg').".

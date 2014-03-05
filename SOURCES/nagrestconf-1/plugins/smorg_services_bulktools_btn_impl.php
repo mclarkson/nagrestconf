@@ -26,7 +26,11 @@
         $id = spi_get_tab_idx();
 
         #print '<input id="bulksvctool" type="button" value="Bulk Tools" />';
-        print '<p style="padding-bottom: 4px; padding-left: 6px;"><a href="#" id="bulksvctool">Bulk Tools...</a></p>';
+        print '<style>#bulksvctool:hover{font-weight: bold;}</style>';
+        print '<p style="padding-bottom: 4px; padding-left: 6px;">';
+        print '<a href="#" id="bulksvctool">';
+        print '<span class="ion-social-buffer-outline" style="font-size:16px"></span>';
+        print '&nbsp; Bulk Tools</a></p>';
         print '<script>';
         print ' $("#bulksvctool").bind("click", function() {';
         print "$('#bulksvctooldlg').".
