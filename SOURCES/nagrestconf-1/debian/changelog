@@ -1,3 +1,9 @@
+nagrestconf (1.173) UNRELEASED; urgency=low
+
+  * Upstream fixes and enhancements.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 06 Mar 2014 11:29:00 +0000
+
 nagrestconf (1.172) UNRELEASED; urgency=low
 
   * Minor fix.

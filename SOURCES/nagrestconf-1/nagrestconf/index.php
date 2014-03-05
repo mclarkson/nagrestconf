@@ -16,7 +16,7 @@
     # ------------------------------------------------------------------------
 
     define( "SCRIPTNAME", "index.php" );
-    define( "VERSION", "v1.173" );
+    define( "VERSION", "v1.174" );
     define( "LIBDIR", "/usr/share/nagrestconf/htdocs/nagrestconf/" );
 
     # ------------------------------------------------------------------------
