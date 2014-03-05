@@ -1126,8 +1126,9 @@
         print '<div id="nagrestconf"';
         print ' style="margin-top: 0px; padding-top: 0px; height: 53px;';
         print ' top: 0px;">';
+        print '<a href="http://nagrestconf.smorg.co.uk/" target="_blank">';
         print '<img src="images/meerkat_50x51_sinc.png" alt="Meerkat"';
-        print ' style="padding-top: 3px;">';
+        print ' style="padding-top: 3px;"></a>';
         print '<span style="vertical-align: top; padding-top: 9px;';
         print ' display: inline-block; padding-left: 6px;';
         print ' text-align: left;">Nagrestconf<br /><span style="';
