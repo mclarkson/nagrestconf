@@ -225,13 +225,13 @@
         print '<div id="qfilterhead"><p>Quick Filter</p>';
         print '</div>';
         print '<div id="qfilter">';
-        print "<p style='margin-bottom:10px'>Filter by Name regex:<br>".
+        print "<p style='margin-bottom:10px'>Filter by Name:<br>".
               "<input class='filtermain' id='hregex' name='hregex' type='text'".
               " style='width:100px;'".
               " value='".$hfilter."'".
               " />".
               "</p>";
-        print "<p style='margin-bottom:10px'>Filter by Service regex:<br>".
+        print "<p style='margin-bottom:10px'>Filter by Service:<br>".
               "<input class='filtermain' id='sregex' name='sregex' type='text'".
               " style='width:100px;'".
               " value='".$sfilter."'".

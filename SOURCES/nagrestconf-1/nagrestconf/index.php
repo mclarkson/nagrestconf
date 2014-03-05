@@ -8494,7 +8494,7 @@
         print '<div id="qfilterhead"><p>Quick Filter</p>';
         print '</div>';
         print '<div id="qfilter">';
-        print "<p style='margin-bottom:10px'>Filter by host regex:<br>".
+        print "<p style='margin-bottom:10px'>Filter by Name:<br>".
               "<input class='filtermain' id='hregex' name='hregex' type='text'".
               " style='width:100px;'".
               " value='".$hfilter."'".
@@ -8517,7 +8517,7 @@
         print "</script>";
         $g_hgfilter = 0; # <-- don't include hgfilter
         $url = create_url( );
-        print "<p>Filter by hostgroup:<br>";
+        print "<p>Filter by Hostgroup:<br>";
         print "<select id=\"hgsel\" name=\"Hostgroup\" onChange=\"".
               "var a=$('select#hgsel option:selected').val();".
               #"alert( 'hello '+a );".
