@@ -197,7 +197,8 @@
             border-width: 1px;
             padding-top: 4px;
             margin-bottom: 8px;
-            border-color: #B8D7ED;
+            margin-right: 4px;
+            border-color: #B0B0B0;
             padding-bottom: 10px;
             padding-left: 6px;
             padding-right: 2px;}
@@ -210,13 +211,14 @@
             border-top-right-radius: 6px;
             text-align: center;
             font-weight: bold;
-            background-color: #B8D7ED;
+            background-color: #EAEAEA;
             border-style: solid;
             border-width: 1px;
             border-bottom-style: none;
             margin-top: 6px;
+            margin-right: 4px;
             margin-bottom: 0px;
-            border-color: #B8D7ED;
+            border-color: #B0B0B0;
             padding-top: 0px;
             padding-bottom: 4px;
             padding-left: 2px;
