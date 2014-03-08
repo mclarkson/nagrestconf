@@ -233,7 +233,14 @@ class RestServer
                     "," => "`",
                     "\\" => "\\\\",
                     "%2c" => "%60",
-                    "%2C" => "%60" ) );
+                    "%2C" => "%60",
+                    # Undo json_decode escape char decoding
+                    "\n" => "\\n",
+                    "\r" => "\\r",
+                    "\b" => "\\b",
+                    "\f" => "\\f",
+                    "\t" => "\\t",
+                 ) );
                $item = trim( $item );
             }
         }
