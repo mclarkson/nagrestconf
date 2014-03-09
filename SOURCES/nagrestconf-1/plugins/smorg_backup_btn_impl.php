@@ -551,7 +551,7 @@
             $new_qs["folder"] = FOLDER;
             foreach( $moreitems as $item ) {
                 foreach( $item as $key => $val ) {
-                    if( empty($val) ) continue;
+                    if( strlen($val) == 0 ) continue;
                     $new_qs[$key] = $val;
                 }
             }
