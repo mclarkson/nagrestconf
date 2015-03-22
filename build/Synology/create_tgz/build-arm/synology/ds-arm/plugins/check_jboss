@@ -1,0 +1,85 @@
+#!/bin/bash
+# Copyright (C) 2010 Nokia
+#
+# File:     check_jboss
+# Author:   Mark Clarkson
+# Date:     6 Oct 2010
+# Version:  0.10
+# Modified:
+#           2010-09-30 XXXX
+#           * XXXX
+#
+# Purpose:  This a wrapper around check_jboss.pl that remaps the following chars
+#           -NNN to <NNN
+#           +NNN to >NNN
+#           ~NNN to !NNN
+#           ~SSS to !"SSS"
+#
+# Notes:
+#
+
+set -f
+shopt -u extglob
+
+# ---------------------------------------------------------------------------
+# SETINGS - MODIFY AS NEEDED
+# ---------------------------------------------------------------------------
+
+CHECK_JBOSS=/usr/lib64/nagios/plugins/check_jboss.pl
+
+#
+#
+# -------------------- DO NOT MODIFY ANYTHING BELOW -------------------------
+#
+#
+
+# ---------------------------------------------------------------------------
+# GLOBALS
+# ---------------------------------------------------------------------------
+
+# Program args
+ME="$0"
+CMDLINE="$@"
+
+cmdline=
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose:      Parse program options and set globals.
+# Arguments:    None
+# Returns:      Nothing
+{
+    local new
+
+    set -- $CMDLINE
+    while true
+    do
+        case $1 in
+            -[a-zA-Z]*) cmdline="$cmdline $1"
+            ;;
+            [-+~][0-9]*) cmdline="$cmdline `echo $1 | tr -- -+~ '<>!'`"
+            ;;
+            ~[a-zA-Z]*) cmdline="$cmdline !\"`echo $1 | tr -d \~`\""
+            ;;
+            ?*) cmdline="$cmdline $1"
+            ;;
+        esac
+        shift 1 || break
+    done
+}
+
+# ----------------------------------------------------------------------------
+main()
+# ----------------------------------------------------------------------------
+# Purpose:      Script starts here
+# Arguments:    None
+# Returns:      Nothing
+{
+    parse_options
+
+    $CHECK_JBOSS $cmdline
+    exit $?
+}
+
+main

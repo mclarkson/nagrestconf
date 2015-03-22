@@ -1,0 +1,101 @@
+#!/bin/bash
+# systemadmin.es
+# updated by IE 13/10/2010
+
+printusage()
+{
+        echo "$0 -v hitrate/getrate -H host -w warning -c critical"
+        echo ""
+}
+
+while getopts 'v:H:w:c:' OPTION
+do
+  case $OPTION in
+  v)    vflag=1
+        vval="$OPTARG"
+        ;;
+  H)    hflag=1
+        hval="$OPTARG"
+        ;;
+  C)    cflag=1
+        cval="$OPTARG"
+        ;;
+  w)    warningflag=1
+        warningval="$OPTARG"
+        ;;
+  c)    criticalflag=1
+        criticalval="$OPTARG"
+        ;;
+  ?)    echo Argument invalid: $OPTION
+        printusage
+        exit 3
+        ;;
+  esac
+done
+
+case $vval in
+        hitrate)
+        HITS=$(/usr/lib64/nagios/plugins/get_stats_memcache $hval | grep "get_hits" | awk '{print $3}' | sed 's/[^0-9]//ig')
+        MISSES=$(/usr/lib64/nagios/plugins/get_stats_memcache $hval | grep "get_misses" | awk '{print $3}' | sed 's/[^0-9]//ig')
+
+        SUMHITMISS=$(echo "(${HITS}*100)+(${HITS}+${MISSES})" | bc -l)
+
+        if [ $SUMHITMISS -eq 0 ]
+        then
+                HITRATE=0
+        else
+                HITRATE=$(echo "(${HITS}*100)/(${HITS}+${MISSES})" | bc -l)
+        fi
+
+        DISPHR=$(echo $HITRATE+0.5 | bc -l | sed 's/\..*$//ig')
+
+        if [ -z "$DISPHR" ];
+        then
+                DISPHR=0
+        fi
+
+        if [ -z "$HITRATE" ];
+        then
+                echo "UNKNOWN  - ERROR"
+                exit 3
+        fi
+
+        echo "memcached hit rate: ${DISPHR}%|hitrate=$HITRATE"
+        ;;
+
+        getrate)
+        CMDSET=$(/usr/lib64/nagios/plugins/get_stats_memcache $hval | grep "cmd_set" | awk '{print $3}' | sed 's/[^0-9]//ig')
+        CMDGET=$(/usr/lib64/nagios/plugins/get_stats_memcache $hval | grep "cmd_get" | awk '{print $3}' | sed 's/[^0-9]//ig')
+
+        SUMGETSET=$(echo "(${CMDGET}*100)+(${CMDGET}+${CMDSET})" | bc -l)
+
+        if [ $SUMGETSET -eq 0 ];
+        then
+                GETRATE=0
+        else
+                GETRATE=$(echo "(${CMDGET}*100)/(${CMDGET}+${CMDSET})" | bc -l)
+        fi
+
+        DISPGR=$(echo $GETRATE+0.5 | bc -l | sed 's/\..*$//ig')
+
+        if [ -z "$DISPGR" ];
+        then
+                DISPGR=0
+        fi
+
+        if [ -z "$GETRATE" ];
+        then
+                echo "UNKNOWN  - ERROR"
+                exit 3
+        fi
+
+        echo "memcached get rate: ${DISPGR}%|getrate=$GETRATE"
+        ;;
+        *)
+                echo UNKNOWN - no parameter
+                exit 3
+        ;;
+esac
+
+exit 0
+

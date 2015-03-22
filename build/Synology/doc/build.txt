@@ -1,0 +1,61 @@
+
+# --- X86
+
+ssh root@<vm>
+cd synology/
+./create_tgz.sh create_tgz.x86.conf
+# SAVE OUTPUT FOR INFO FILE
+du -bs /root/synology/synology/ds-x86/wheezy/nagios-chroot
+exit
+cd ~/CloudStation/Monitoring/Synology/synagios-x86
+scp root@<vm>:synology/synology/ds-x86/wheezy/tarball/*.tgz package.tgz
+# FOR INFO
+md5sum package.tgz
+# vim INFO
+#rm synagios*.spk
+tar cvf new.spk INFO LICENSE PACKAGE_ICON.PNG package.tgz scripts/ WIZARD_UIFILES/
+
+# --- ARM
+
+ssh root@<diskstation>
+cd /volume1/arm-build-chroot
+mount --bind /dev dev
+mount --bind /dev/pts dev/pts
+mount --bind /proc proc
+mount --bind /sys sys
+chroot .
+cd /root/synology
+./create_tgz.sh create_tgz.arm.conf
+# FOR INFO
+du -bs /root/synology/synology/ds-arm/wheezy/nagios-chroot
+umount dev proc sys
+umount dev/pts
+exit
+cd ~/CloudStation/Monitoring/Synology/synagios-arm
+scp root@<diskstation>:/volume1/arm-build-chroot/root/synology/synology/ds-arm/wheezy/tarball/*.tgz package.tgz
+# FOR INFO
+md5sum package.tgz
+# vim INFO
+#rm synagios*.spk
+tar cvf new.spk INFO LICENSE PACKAGE_ICON.PNG package.tgz scripts/ WIZARD_UIFILES/
+
+
+# Then test and upload to sourceforge
+
+
+# --- X86 BACKUP from workstation
+
+mkdir ~/tmp/build-x86
+cd ~/tmp
+rsync -avHS root@<vm>:/root/synology/ build-x86/ --exclude="base-chroot" --exclude "nagios-chroot" --exclude="nagios-chroot.tgz" --delete
+rm -rf ~/CloudStation/Monitoring/Synology/create_tgz/build-x86
+mv build-x86/ ~/CloudStation/Monitoring/Synology/create_tgz/
+
+# --- ARM BACKUP from workstation
+
+mkdir ~/tmp/build-arm
+cd ~/tmp
+rsync -avHS root@<diskstation>:/volume1/arm-build-chroot/root/synology/ build-arm/ --exclude="base-chroot" --exclude "nagios-chroot" --exclude="nagios-chroot.tgz" --delete
+rm -rf ~/CloudStation/Monitoring/Synology/create_tgz/build-arm
+mv build-arm/ ~/CloudStation/Monitoring/Synology/create_tgz/
+

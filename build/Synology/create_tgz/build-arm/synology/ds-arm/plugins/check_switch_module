@@ -1,0 +1,408 @@
+#!/bin/bash
+# Copyright(C) 2012 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#
+#    This software is provided under the terms of the GNU
+#    General Public License (GPL), as published at: 
+#    http://www.gnu.org/licenses/gpl.html .
+#
+# File:     check_switch_psu
+# Date:     21 Dec 2012
+# Version:  0.10
+# Changes:  0.11 4-Jan-2012 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#               New option, '-n', to specify number of PSUs to check for.
+#
+# Purpose:  Check that both psu units are present. A removed psu will not
+#           be detected by other hardware check scripts since there is no
+#           actual fault.
+#
+# Notes:
+#
+
+
+# ---------------------------------------------------------------------------
+# DEFAULTS (Change as necessary)
+# ---------------------------------------------------------------------------
+
+# Use snmpbulkwalk if it's available - it's more efficient
+SNMPWALK=snmpbulkwalk
+#SNMPWALK=snmpwalk
+
+# ---------------------------------------------------------------------------
+# DON'T TOUCH ANYTHING BELOW
+# ---------------------------------------------------------------------------
+
+declare -i gnumrecords=0
+
+ME="$0"
+CMDLINE="$@"
+TRUE=1
+FALSE=0
+VERSION="0.10"
+OK=0
+WARN=1
+CRIT=2
+UNKN=3
+
+COMMUNITY=
+LIST=$FALSE
+INCFILT=.
+EXCFILT=WonTmAtChIhoPe
+
+# Global arrays to store all details in - should all be the same size.
+declare -a entPhysicalDescr
+declare -a entPhysicalDescr_id
+declare -a entPhysicalContainedIn
+declare -a entPhysicalContainedIn_id
+declare -a entPhysicalClass
+declare -a entPhysicalClass_id
+declare -a cefcModuleOperStatus
+declare -a cefcModuleOperStatus_id
+declare -a show
+declare -a alert
+
+
+entPhysicalDescr_oid=.1.3.6.1.2.1.47.1.1.1.1.2
+entPhysicalContainedIn_oid=.1.3.6.1.2.1.47.1.1.1.1.4
+entPhysicalClass_oid=.1.3.6.1.2.1.47.1.1.1.1.5
+cefcModuleOperStatus_oid=1.3.6.1.4.1.9.9.117.1.2.1.1.2
+
+
+# See CISCO-ENTITY-FRU-CONTROL-MIB
+declare -a ModuleOperType=(
+                    "dummy"               # <- not used, dummy for index 0
+					"unknown"
+					"ok"
+					"disabled"
+					"okButDiagFailed"
+					"boot"
+					"selfTest"
+					"failed"
+					"missing"
+					"mismatchWithParent"
+					"mismatchConfig"
+					"diagFailed"
+					"dormant"
+					"outOfServiceAdmin"
+					"outOfServiceEnvTemp"
+					"poweredDown"
+					"poweredUp"
+					"powerDenied"
+					"powerCycled"
+					"okButPowerOverWarning"
+					"okButPowerOverCritical"
+					"syncInProgress"
+					"upgrading"
+					"okButAuthFailed"
+					"mdr"
+                  )
+
+# See ENTITY-MIB
+declare -a entPhysicalClass_t=(
+                    "dummy"               # <- not used, dummy for index 0
+                    "other"
+                    "unknown"
+                    "chassis"
+                    "backplane"
+                    "container"
+                    "powerSupply"
+                    "fan"
+                    "sensor"
+                    "module"
+                    "port"
+                    "stack"
+                    "cpu"
+                  )
+
+# Nagios status
+declare -a AlertStatus=(
+                    "OK"
+                    "WARNING"
+                    "CRITICAL"
+                    "Unknown"
+                  )
+
+# ---------------------------------------------------------------------------
+main()
+# ---------------------------------------------------------------------------
+# Execution begins and ends here.
+{
+    local -i numinterfaces candwidth col1width retval
+    local i t comma
+
+    retval=$OK
+
+    parse_options "$@"
+
+    pass_sanitychecks_or_quit
+
+    fill_arrays
+
+    [[ $LIST -eq $TRUE ]] && {
+        printf "%-9s %-47s %-13s %-10s\n" "id" \
+            "Description" \
+            "Class" \
+            "ContainedIn"
+        printf "%-9s %-47s %-13s %-10s\n" "--" \
+            "-----------" \
+            "-----" \
+            "-----------"
+        for i in `seq 0 $((gnumrecords-1))`; do
+            printf "%-9s %-47s %-13s %-10s\n" \
+                "${entPhysicalDescr_id[i]}" \
+                "${entPhysicalDescr[i]}" \
+                "${entPhysicalClass_t[${entPhysicalClass[i]}]}" \
+                "${entPhysicalContainedIn[i]}"
+        done
+        exit $OK
+    }
+
+    statustext=`psu_alert_status` ; retval=$?
+
+    if [[ $retval -eq $OK ]]; then
+        echo "OK: $statustext"
+    elif [[ $retval -eq $WARN ]]; then
+        echo "WARNING: $statustext"
+    elif [[ $retval -eq $CRIT ]]; then
+        echo "CRITICAL: $statustext"
+    else
+        echo "Unknown: $statustext"
+    fi
+
+    exit $retval
+}
+
+# ---------------------------------------------------------------------------
+pass_sanitychecks_or_quit()
+# ---------------------------------------------------------------------------
+{
+    if ! which $SNMPWALK >& /dev/null; then
+        echo "Unknown: Binary file, '$SNMPWALK', not found in path. Aborting."
+        exit $UNKN
+    fi
+
+    [[ -z $IP ]] && {
+        echo "Unknown: IP address or hostname was not supplied. Aborting."
+        exit $UNKN
+    }
+}
+
+# ----------------------------------------------------------------------------
+usage()
+# ----------------------------------------------------------------------------
+{
+    echo
+    echo "`basename $ME` - Switch Module checker."
+    echo
+    echo "Usage: `basename $ME` [-h] [-l] [-c SECRET] <host|IP>"
+    echo
+    echo " -h         :  Display this help text."
+    echo " -v         :  Display the version of this script."
+    echo " -l         :  List hardware."
+    echo " -C SECRET  :  Community string."
+    echo
+    echo "Check that modules are in OK state."
+    echo
+    echo "Examples"
+    echo
+    echo "List device hardware info:"
+    echo "    `basename $ME` -l -C secret 1.2.3.4"
+    echo
+    echo "Check modules are in OK state:"
+    echo "    `basename $ME` -C secret 1.2.3.4"
+    echo
+}
+
+# ---------------------------------------------------------------------------
+array_search()
+# ---------------------------------------------------------------------------
+# $1 - array to search.
+# $2 - value to search for.
+# Returns 0(Success),1(Fail)
+# Outputs all the indexes that matched separated by spaces.
+{
+    local -i i arrsize
+
+    arrsize=`eval echo "\\${#$1[*]}"`
+
+    for i in `seq 0 $((arrsize-1))`;
+    do
+        val=`eval echo "\\${$1[i]}"`
+        [[ $val == $2 ]] && echo -n "$i "
+    done
+
+    return 0
+}
+
+# ---------------------------------------------------------------------------
+show_module_parents()
+# ---------------------------------------------------------------------------
+# $1 - ID of item that parents are to be found.
+{
+    local x=0
+
+    x=`array_search entPhysicalDescr_id $1`
+    [[ -z $x ]] && return
+    echo -n "-->'${entPhysicalDescr[$x]}'"
+    [[ ${entPhysicalContainedIn[$x]} != "0" ]] && {
+        show_module_parents ${entPhysicalContainedIn[$x]}
+    }
+}
+
+# ---------------------------------------------------------------------------
+check_modules_have_good_status()
+# ---------------------------------------------------------------------------
+# The PSUs are present. Check that they have an ok status.
+# $1 - Space separated list of PSU IDs
+# Returns 0,1,2 or 3 (OK, WARN, CRITICAL, Unknown).
+# 0 - All okay
+# 1 - There's a problem
+# 2 - program error
+{
+    local retval=$OK i j cont
+
+    for i in `seq 0 $((${#cefcModuleOperStatus_id[*]}-1))`
+    do
+        cont=1
+        for j in $1; do
+            [[ ${cefcModuleOperStatus_id[i]} -eq $j ]] && cont=0
+        done
+        [[ $cont -eq 1 ]] && continue
+        [[ ${cefcModuleOperStatus[i]} -ne 2 ]] && {
+            retval=$CRIT
+            echo -n " ${ModuleOperType[${cefcModuleOperStatus[i]}]}"
+
+            show_module_parents ${cefcModuleOperStatus_id[i]}
+
+            echo -n "."
+        }
+    done
+
+    return $retval
+}
+
+# ---------------------------------------------------------------------------
+psu_alert_status()
+# ---------------------------------------------------------------------------
+# Outputs status text
+# Returns 0,1,2 or 3 (OK, WARN, CRITICAL, Unknown).
+# 0 - 2 psu
+# 1 - 1 psu
+# 2 - no psu (not possible)
+# 3 - program error
+{
+    local retval=$OK psus i= j= x=0 modlist=
+
+    # Find powerSupply(6)
+    psus=`array_search entPhysicalClass 9`
+
+    for i in $psus; do : $((++x)); done
+
+    if [[ $x -gt 0 ]]; then
+        for j in `seq 0 $(($x-1))`; do
+            modlist="$modlist${modlist:+ }${cefcModuleOperStatus_id[j]}"
+        done
+        check_modules_have_good_status "$modlist"
+        retval=$?
+        [[ $retval -eq $OK ]] && echo "$x modules are ok."
+    else
+        echo "No modules detected!"
+        retval=$UNKN
+    fi
+
+    return $retval
+}
+
+
+# ---------------------------------------------------------------------------
+get_snmp_tree()
+# ---------------------------------------------------------------------------
+# $1 - Name of an array to store the tree in.
+# $2 - The numerical oid
+{
+    local array_name=$1 oid=$2
+
+    eval `x=0 ; \
+    for i in $array_name; do \
+        $SNMPWALK -v 2c -One -c $COMMUNITY $IP $oid \
+        | tr -d \" \
+        | while read a b c d; do \
+            echo "$i[$x]=\"$d\""; \
+            echo "${i}_id[$x]=\"${a##*.}\""; \
+            : $((++x)); \
+        done \
+    done 2>/dev/null`
+}
+
+# ---------------------------------------------------------------------------
+fill_arrays()
+# ---------------------------------------------------------------------------
+{
+    local i donebefore=0 tnum=0
+
+    get_snmp_tree "entPhysicalDescr" "$entPhysicalDescr_oid"
+
+    gnumrecords=${#entPhysicalDescr[*]}
+
+    [[ $gnumrecords -lt 2 ]] && {
+        echo "Unknown: No records. Check the community string. Aborting."
+        exit $UNKN
+    }
+
+    get_snmp_tree "entPhysicalContainedIn" "$entPhysicalContainedIn_oid"
+
+    tnum=${#entPhysicalContainedIn[*]}
+
+    [[ $tnum -lt 2 ]] && {
+        echo "Unknown: No records. Check the community string. Aborting."
+        exit $UNKN
+    }
+
+    get_snmp_tree "entPhysicalClass" "$entPhysicalClass_oid"
+
+    tnum=${#entPhysicalClass[*]}
+
+    [[ $tnum -lt 2 ]] && {
+        echo "Unknown: No records. Check the community string. Aborting."
+        exit $UNKN
+    }
+
+    get_snmp_tree "cefcModuleOperStatus" "$cefcModuleOperStatus_oid"
+
+    tnum=${#cefcModuleOperStatus[*]}
+
+    [[ $tnum -lt 2 ]] && {
+        echo "Unknown: No records. Check the community string. Aborting."
+        exit $UNKN
+    }
+}
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose:      Parse program options and set globals.
+# Arguments:    None
+# Returns:      Nothing
+{
+    set -- $CMDLINE
+    while true
+    do
+        case $1 in
+            -h|--help) usage; exit 0
+            ;;
+            -C) COMMUNITY="$2"; shift
+            ;;
+            -l) LIST=1
+            ;;
+            -v|--version) echo "$VERSION"; exit 0
+            ;;
+            ?*) IP="$1"
+            ;;
+        esac
+        shift 1 || break
+    done
+}
+
+main "$@"
+
+exit 0
+

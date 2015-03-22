@@ -1,0 +1,31 @@
+[{
+    "step_title": "Step 1: Web Interface Port",
+    "items": [{
+        "type": "textfield",
+        "desc": "Specify the port that all the Web interfaces (nagrestconf, nagios and pnp4nagios) will listen on. The installer will check that this port is unused.",
+        "subitems": [{
+            "key": "WEBINTERFACE_PORT",
+            "desc": "Port",
+            "defaultValue": "8888"
+        }]
+    }]
+},{
+    "step_title": "Step 2: Web Interface Passwords",
+    "items": [{
+        "type": "password",
+        "desc": "Enter the password for the Nagios admin user.",
+        "subitems": [{
+            "key": "NAGIOS_PASSWORD",
+            "desc": "nagiosadmin"
+        }]
+    },{
+        "type": "password",
+        "desc": "Enter the password for the Nagrestconf admin user.",
+        "subitems": [{
+            "key": "NAGRESTCONF_PASSWORD",
+            "desc": "nagrestconfadmin"
+        }]
+    }]
+}]
+
+

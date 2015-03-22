@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# About:	A script for monitoring Linux HA status, to be used as a
+#		NRPE Plugin for Opsview.
+# Author:	Michael Trewartha <miketrewartha@gmail.com>
+# Date:		2010-04-30
+#############################################################################
+
+# Variables #
+NODE_NAME=`uname -n`
+CRM_MON=`which crm_mon`
+GREP=`which grep`
+AWK=`which awk`
+
+# Nagios Error Codes #
+OK=0 # = OK
+WARNING=1 # = Warning
+CRITICAL=2 # = Fatal Error
+
+# Program Start #
+res=`($CRM_MON -1 | $GREP -i ^Node | $GREP -i $NODE_NAME | $AWK {' print $4'})`
+
+if [[ $res == "online" ]]; then
+	echo Heartbeat OK
+	exit $OK
+elif [[ $res == "standby" ]]; then
+	echo "WARNING: Heartbeat is running in standby"
+	exit $WARNING
+else
+	echo "CRITICAL: Heartbeat is stopped or offline"
+	exit $CRITICAL
+fi

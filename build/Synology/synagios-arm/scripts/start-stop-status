@@ -1,0 +1,132 @@
+#!/bin/sh
+NAGCHROOT="$SYNOPKG_PKGDEST/nagios-chroot"
+SYNDESKTOP="/usr/syno/synoman/webman/3rdparty/${SYNOPKG_PKGNAME}"
+
+err() {
+    echo "$1" >> $SYNOPKG_TEMP_LOGFILE
+    exit 1
+}
+
+start() {
+    ln -sf "${SYNOPKG_PKGDEST}" "${SYNDESKTOP}"
+    cd /dev
+    ln -s /proc/self/fd/0 stdin
+    ln -s /proc/self/fd/1 stdout
+    ln -s /proc/self/fd/2 stderr
+    ln -s /proc/self/fd
+    cd $NAGCHROOT
+    mount --bind /dev dev
+    mount --bind /proc proc
+    mount --bind /sys sys
+    cp /etc/mtab $NAGCHROOT/etc/
+    cp /etc/resolv.conf $NAGCHROOT/etc/
+    chroot . /etc/init.d/rsyslog start
+    [[ $? -ne 0 ]] && err "Failed to start rsyslog."
+    chroot . /etc/init.d/cron start
+    [[ $? -ne 0 ]] && {
+        chroot . /etc/init.d/rsyslog stop
+        err "Failed to start cron."
+    }
+    chroot . /etc/init.d/apache2 start
+    [[ $? -ne 0 ]] && {
+        chroot . /etc/init.d/cron stop
+        chroot . /etc/init.d/rsyslog stop
+        err "Failed to start apache2."
+    }
+    chroot . /etc/init.d/npcd start
+    [[ $? -ne 0 ]] && {
+        chroot . /etc/init.d/apache2 stop
+        chroot . /etc/init.d/cron stop
+        chroot . /etc/init.d/rsyslog stop
+        err "Failed to start npcd."
+    }
+    # Try to start it but if it fails it is not
+    # an error (necessarily) since nagrestconf
+    # will try to start nagios3.
+    chroot . /etc/init.d/nagios3 start
+    echo "All services started succesfully." >> $SYNOPKG_TEMP_LOGFILE
+    exit 0
+}
+
+stop() {
+    rm -f "${SYNDESKTOP}"
+    cd $NAGCHROOT
+    chroot . /etc/init.d/npcd stop
+    chroot . /etc/init.d/nagios3 stop
+    chroot . /etc/init.d/apache2 stop
+    chroot . /etc/init.d/cron stop
+    chroot . /etc/init.d/rsyslog stop
+    # Make absolutely sure they are dead
+    cd ..
+    ls -ld /proc/[0-9]*/cwd 2>/dev/null | grep Synagios | \
+        grep -v $$ | while read a; do echo "$a" | \
+            sed -n 's#.*/proc/\([0-9]*\).*#\1#p' | xargs kill -9; \
+        done
+    cd $NAGCHROOT
+    umount dev proc sys
+    echo "All services stopped succesfully." >> $SYNOPKG_TEMP_LOGFILE
+    exit 0
+}
+
+status() {
+    cd $NAGCHROOT
+    txt="Service status:"
+    retval=3
+    chroot . /etc/init.d/npcd status
+    if [[ $? -eq 0 ]]; then
+        txt="$txt npcd(running)"
+        retval=0
+    else
+        txt="$txt npcd(stopped)"
+    fi
+    chroot . /etc/init.d/apache2 status
+    if [[ $? -eq 0 ]]; then
+        txt="$txt apache2(running)"
+        retval=0
+    else
+        txt="$txt apache2(stopped)"
+    fi
+    chroot . /etc/init.d/cron status
+    if [[ $? -eq 0 ]]; then
+        txt="$txt cron(running)"
+        retval=0
+    else
+        txt="$txt cron(stopped)"
+    fi
+    chroot . /etc/init.d/rsyslog status
+    if [[ $? -eq 0 ]]; then
+        txt="$txt rsyslog(running)"
+        retval=0
+    else
+        txt="$txt rsyslog(stopped)"
+    fi
+    echo "$txt" >> $SYNOPKG_TEMP_LOGFILE
+    exit $retval
+}
+ 
+case $1 in
+	start)
+        start
+	;;
+	stop)
+        stop
+	;;
+	restart)
+        stop
+        start
+	;;
+	status)
+        status
+	;;
+	log)
+        cat $NAGCHROOT/var/log/syslog \
+            $NAGCHROOT/var/log/nagios/nagios.log > /tmp/synagios.log
+        echo "/tmp/synagios.log"
+		exit 0
+	;;
+	*)
+		exit 0
+	;;
+esac
+exit 0
+

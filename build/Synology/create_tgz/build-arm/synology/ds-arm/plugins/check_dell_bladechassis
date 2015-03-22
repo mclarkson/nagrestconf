@@ -1,0 +1,725 @@
+#!/usr/bin/perl
+#
+# DESCRIPTION: Nagios plugin for checking the status of Dell(tm)
+#              blade chassis via SNMP.
+#
+# AUTHOR: Trond H. Amundsen <t.h.amundsen@usit.uio.no>
+#
+# $Id: check_dell_bladechassis 14613 2009-08-04 13:09:52Z trondham $
+#
+# Copyright (C) 2009 Trond H. Amundsen
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use warnings;
+use POSIX qw(isatty);
+use Getopt::Long qw(:config no_ignore_case);
+
+# Global (package) variables used throughout the code
+use vars qw( $NAME $VERSION $AUTHOR $CONTACT $E_OK $E_WARNING $E_CRITICAL
+	     $E_UNKNOWN $USAGE $HELP $VERSION
+	     $snmp_session $snmp_error $linebreak $exit_code
+	     %opt %reverse_exitcode %status2nagios %snmp_status %sysinfo
+	     %nagios_alert_count
+	     @reports @readings @perfdata
+	  );
+
+#---------------------------------------------------------------------
+# Initialization and global variables
+#---------------------------------------------------------------------
+
+# Version and similar info
+$NAME    = 'check_dell_bladechassis';
+$VERSION = '1.0.0';
+$AUTHOR  = 'Trond H. Amundsen';
+$CONTACT = 't.h.amundsen@usit.uio.no';
+
+# Exit codes
+$E_OK       = 0;
+$E_WARNING  = 1;
+$E_CRITICAL = 2;
+$E_UNKNOWN  = 3;
+
+# Usage text
+$USAGE = <<"END_USAGE";
+Usage: $NAME -H <HOSTNAME> [OPTION]...
+END_USAGE
+
+# Help text
+$HELP = <<'END_HELP';
+
+OPTIONS:
+   -H, --hostname      Hostname or IP of the enclosure
+   -C, --community     SNMP community string
+   -P, --protocol      SNMP protocol version
+   --port              SNMP port number
+   -p, --perfdata      Ouput performance data
+   -t, --timeout       Plugin timeout in seconds
+   -i, --info          Prefix any alerts with the service tag
+   -e, --extinfo       Append system info to alerts
+   -s, --state         Prefix alerts with alert state
+   --short-state       Prefix alerts with alert state (abbreviated)
+   -d, --debug         Debug output, reports everything
+   -h, --help          Display this help text
+   -V, --version       Display version info
+
+For more information and advanced options, see the manual page.
+END_HELP
+
+# Version text
+$VERSION = <<"END_VERSION";
+$NAME $VERSION
+Copyright (C) 2009 $AUTHOR
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by $AUTHOR <$CONTACT>
+END_VERSION
+
+# Options with default values
+%opt
+  = (
+     'port'         => 161, # default SNMP port
+     'hostname'     => undef,
+     'community'    => 'public',  # SMNP v1 or v2c
+     'protocol'     => 2,   # default is SNMPv2c
+     'username'     => undef, # SMNP v3
+     'authpassword' => undef, # SMNP v3
+     'authkey'      => undef, # SMNP v3
+     'authprotocol' => undef, # SMNP v3
+     'privpassword' => undef, # SMNP v3
+     'privkey'      => undef, # SMNP v3
+     'privprotocol' => undef, # SMNP v3
+     'timeout'      => 15,  # default timeout is 15 seconds
+     'info'         => 0,
+     'extinfo'      => 0,
+     'help'         => 0,
+     'version'      => 0,
+     'state'        => 0,
+     'short-state'  => 0,
+     'linebreak'    => undef,
+     'perfdata'     => undef,
+     'debug'        => 0,
+    );
+
+# Get options
+GetOptions('H|hostname=s'   => \$opt{hostname},
+	   'C|community=s'  => \$opt{community},
+	   'P|protocol=i'   => \$opt{protocol},
+	   'port=i'         => \$opt{port},
+	   'U|username=s'   => \$opt{username},
+	   'authpassword=s' => \$opt{authpassword},
+	   'authkey=s'      => \$opt{authkey},
+	   'authprotocol=s' => \$opt{authprotocol},
+	   'privpassword=s' => \$opt{privpassword},
+	   'privkey=s'      => \$opt{privkey},
+	   'privprotocol=s' => \$opt{privprotocol},
+	   't|timeout=i'    => \$opt{timeout},
+	   'i|info'         => \$opt{info},
+	   'e|extinfo'      => \$opt{extinfo},
+	   'h|help'         => \$opt{help},
+	   'V|version'      => \$opt{version},
+	   's|state'        => \$opt{state},
+	   'short-state'    => \$opt{shortstate},
+	   'linebreak=s'    => \$opt{linebreak},
+	   'p|perfdata:s'   => \$opt{perfdata},
+	   'd|debug'        => \$opt{debug},
+	  ) or do { print $USAGE; exit $E_UNKNOWN; };
+
+# If user requested help
+if ($opt{'help'}) {
+    print $USAGE, $HELP;
+    exit $E_OK;
+}
+
+# If user requested version info
+if ($opt{'version'}) {
+    print $VERSION;
+    exit $E_OK;
+}
+
+# Error if hostname option is not present
+if (!defined $opt{hostname}) {
+    print "ERROR: No hostname or address given on command line. Use the '-H' or '--hostname' option\n";
+    exit $E_UNKNOWN;
+}
+
+# Nagios error levels reversed
+%reverse_exitcode
+  = (
+     0 => 'OK',
+     1 => 'WARNING',
+     2 => 'CRITICAL',
+     3 => 'UNKNOWN',
+    );
+
+# Dell SNMP error levels
+%status2nagios
+  = (
+     'Unknown'         => $E_CRITICAL,
+     'Critical'        => $E_CRITICAL,
+     'Non-Critical'    => $E_WARNING,
+     'Ok'              => $E_OK,
+     'Non-Recoverable' => $E_CRITICAL,
+     'Other'           => $E_CRITICAL,
+    );
+
+# Status via SNMP
+%snmp_status
+  = (
+     1 => 'Other',
+     2 => 'Unknown',
+     3 => 'Ok',
+     4 => 'Non-Critical',
+     5 => 'Critical',
+     6 => 'Non-Recoverable',
+    );
+
+# Reports (messages) are gathered in this array
+@reports = ();
+
+# Readings are gathered in this array
+@readings = ();
+
+# Setting timeout
+$SIG{ALRM} = sub {
+    print "PLUGIN TIMEOUT: $NAME timed out after $opt{timeout} seconds\n";
+    exit $E_UNKNOWN;
+};
+alarm $opt{timeout};
+
+# Default line break
+$linebreak = isatty(*STDOUT) ? "\n" : '<br/>';
+
+# Line break from option
+if (defined $opt{linebreak}) {
+    if ($opt{linebreak} eq 'REG') {
+	$linebreak = "\n";
+    }
+    elsif ($opt{linebreak} eq 'HTML') {
+	$linebreak = '<br/>';
+    }
+    else {
+	$linebreak = $opt{linebreak};
+    }
+}
+
+# System information gathered
+%sysinfo
+  = (
+     'serial'   => 'N/A',  # serial number (service tag)
+     'product'  => 'N/A',  # system model
+     'firmware' => 'N/A',  # firmware version
+    );
+
+# Counter variable
+%nagios_alert_count
+  = (
+     'OK'       => 0,
+     'WARNING'  => 0,
+     'CRITICAL' => 0,
+     'UNKNOWN'  => 0,
+    );
+
+# Initialize SNMP
+snmp_initialize();
+
+# Check that SNMP works
+snmp_check();
+
+#---------------------------------------------------------------------
+# Functions
+#---------------------------------------------------------------------
+
+#
+# Store a message in the message array
+#
+sub report {
+    my ($msg, $exval) = @_;
+    return push @reports, [ $msg, $exval ];
+}
+
+#
+# Give an error and exit with unknown state
+#
+sub unknown_error {
+    my $msg = shift;
+    print "ERROR: $msg\n";
+    exit $E_UNKNOWN;
+}
+
+#
+# Initialize SNMP
+#
+sub snmp_initialize {
+    # Legal SNMP v3 protocols
+    my $snmp_v3_privprotocol = qr{\A des|aes|aes128|3des|3desde \z}xms;
+    my $snmp_v3_authprotocol = qr{\A md5|sha \z}xms;
+
+    # Parameters to Net::SNMP->session()
+    my %param
+      = (
+	 '-port'     => $opt{port},
+	 '-hostname' => $opt{hostname},
+	 '-version'  => $opt{protocol},
+	);
+
+    # Parameters for SNMP v3
+    if ($opt{protocol} == 3) {
+
+	# Username is mandatory
+	if (defined $opt{username}) {
+	    $param{'-username'} = $opt{username};
+	}
+	else {
+	    print "SNMP ERROR: With SNMPv3 the username must be specified\n";
+	    exit $E_UNKNOWN;
+	}
+
+	# Authpassword is optional
+	if (defined $opt{authpassword}) {
+	    $param{'-authpassword'} = $opt{authpassword};
+	}
+
+	# Authkey is optional
+	if (defined $opt{authkey}) {
+	    $param{'-authkey'} = $opt{authkey};
+	}
+
+	# Privpassword is optional
+	if (defined $opt{privpassword}) {
+	    $param{'-privpassword'} = $opt{privpassword};
+	}
+
+	# Privkey is optional
+	if (defined $opt{privkey}) {
+	    $param{'-privkey'} = $opt{privkey};
+	}
+
+	# Privprotocol is optional
+	if (defined $opt{privprotocol}) {
+	    if ($opt{privprotocol} =~ m/$snmp_v3_privprotocol/xms) {
+		$param{'-privprotocol'} = $opt{privprotocol};
+	    }
+	    else {
+		print "SNMP ERROR: Unknown privprotocol '$opt{privprotocol}', "
+		  . "must be one of [des|aes|aes128|3des|3desde]\n";
+		exit $E_UNKNOWN;
+	    }
+	}
+
+	# Authprotocol is optional
+	if (defined $opt{authprotocol}) {
+	    if ($opt{authprotocol} =~ m/$snmp_v3_authprotocol/xms) {
+		$param{'-authprotocol'} = $opt{authprotocol};
+	    }
+	    else {
+		print "SNMP ERROR: Unknown authprotocol '$opt{authprotocol}', "
+		  . "must be one of [md5|sha]\n";
+		exit $E_UNKNOWN;
+	    }
+	}
+    }
+    # Parameters for SNMP v2c or v1
+    elsif ($opt{protocol} == 2 or $opt{protocol} == 1) {
+	$param{'-community'} = $opt{community};
+    }
+    else {
+	print "SNMP ERROR: Unknown SNMP version '$opt{protocol}'\n";
+	exit $E_UNKNOWN;
+    }
+
+    # Try to initialize the SNMP session
+    if ( eval { require Net::SNMP; 1 } ) {
+	($snmp_session, $snmp_error) = Net::SNMP->session( %param );
+	if (!defined $snmp_session) {
+	    printf "SNMP: %s\n", $snmp_error;
+	    exit $E_UNKNOWN;
+	}
+    }
+    else {
+	print "ERROR: Required perl module Net::SNMP not found\n";
+	exit $E_UNKNOWN;
+    }
+    return;
+}
+
+#
+# Checking if SNMP works by probing for "chassisModelName", which all
+# servers should have
+#
+sub snmp_check {
+    my $drsProductShortName = '1.3.6.1.4.1.674.10892.2.1.1.2.0';
+    my $result = $snmp_session->get_request(-varbindlist => [$drsProductShortName]);
+
+    # Typically if remote host isn't responding
+    if (!defined $result) {
+	printf "SNMP CRITICAL: %s\n", $snmp_session->error;
+	exit $E_CRITICAL;
+    }
+
+    # If OpenManage isn't installed or is not working
+    if ($result->{$drsProductShortName} =~ m{\A noSuch (Instance|Object) \z}xms) {
+	print "SNMP ERROR: Can't determine product name\n";
+	exit $E_UNKNOWN;
+    }
+
+    # Store the product name
+    $sysinfo{product} = $result->{$drsProductShortName};
+    $sysinfo{product} =~ s{\s+\z}{}xms; # remove trailing whitespace
+
+    return;
+}
+
+# Gets the output from SNMP result according to the OIDs checked
+sub get_snmp_output {
+    my ($result,$oidref) = @_;
+    my @output = ();
+
+    foreach my $oid (keys %{ $result }) {
+	my @dummy = split m{\.}xms, $oid;
+	my $id = pop @dummy;
+	my $foo = join q{.}, @dummy;
+	if (exists $oidref->{$foo}) {
+	    $output[$id]{$oidref->{$foo}} = $result->{$oid};
+	}
+    }
+    return \@output;
+}
+
+# Get blade chassis status and firmware info
+sub get_status {
+    my @output = ();
+
+    my $global = undef;
+    my $iom    = undef;
+    my $kvm    = undef;
+    my $red    = undef;
+    my $power  = undef;
+    my $fan    = undef;
+    my $blade  = undef;
+    my $temp   = undef;
+    my $cmc    = undef;
+
+    # OIDs we are interested in
+    my %oid
+      = (
+	 '1.3.6.1.4.1.674.10892.2.2.1'   => 'drsGlobalSystemStatus', # global system status
+	 '1.3.6.1.4.1.674.10892.2.1.1.6' => 'drsChassisServiceTag',  # service tag
+	 '1.3.6.1.4.1.674.10892.2.1.2.1' => 'drsFirmwareVersion',    # firmware version
+	 '1.3.6.1.4.1.674.10892.2.3.1.2' => 'drsIOMCurrStatus',      # IOM subsystem status
+	 '1.3.6.1.4.1.674.10892.2.3.1.3' => 'drsKVMCurrStatus',      # iKVM subsystem status
+	 '1.3.6.1.4.1.674.10892.2.3.1.4' => 'drsRedCurrStatus',      # Redundancy status
+	 '1.3.6.1.4.1.674.10892.2.3.1.5' => 'drsPowerCurrStatus',    # Power subsystem status
+	 '1.3.6.1.4.1.674.10892.2.3.1.6' => 'drsFanCurrStatus',      # Fan subsystem status
+	 '1.3.6.1.4.1.674.10892.2.3.1.7' => 'drsBladeCurrStatus',    # Blade subsystem status
+	 '1.3.6.1.4.1.674.10892.2.3.1.8' => 'drsTempCurrStatus',     # Temp Sensor subsystem status
+	 '1.3.6.1.4.1.674.10892.2.3.1.9' => 'drsCMCCurrStatus',      # CMC health status
+	);
+
+    my $result = $snmp_session->get_entries(-columns => [keys %oid]);
+
+    # Error if we don't get anything
+    if (!defined $result) {
+	printf "SNMP CRITICAL: %s\n", $snmp_session->error;
+	exit $E_CRITICAL;
+    }
+
+    @output = @{ get_snmp_output($result, \%oid) };
+
+    foreach my $out (@output) {
+	$sysinfo{'serial'}   = $out->{drsChassisServiceTag};
+	$sysinfo{'firmware'} = $out->{drsFirmwareVersion};
+
+	$global  = $out->{drsGlobalSystemStatus};
+	$iom     = exists $out->{drsIOMCurrStatus} ? $out->{drsIOMCurrStatus} : undef;
+	$kvm     = exists $out->{drsKVMCurrStatus} ? $out->{drsKVMCurrStatus} : undef;
+	$red     = exists $out->{drsRedCurrStatus} ? $out->{drsRedCurrStatus} : undef;
+	$power   = exists $out->{drsPowerCurrStatus} ? $out->{drsPowerCurrStatus} : undef;
+	$fan     = exists $out->{drsFanCurrStatus} ? $out->{drsFanCurrStatus} : undef;
+	$blade   = exists $out->{drsBladeCurrStatus} ? $out->{drsBladeCurrStatus} : undef;
+	$temp    = exists $out->{drsTempCurrStatus} ? $out->{drsTempCurrStatus} : undef;
+	$cmc     = exists $out->{drsCMCCurrStatus} ? $out->{drsCMCCurrStatus} : undef;
+    }
+
+    # report IOM status
+    if (defined $iom) {
+	report( (sprintf q{IO Module (IOM) subsytem health status is %s}, $snmp_status{$iom}),
+		$status2nagios{$snmp_status{$iom}} );
+    }
+
+    # report KVM status
+    if (defined $kvm) {
+	report( (sprintf q{KVM subsystem health status is %s}, $snmp_status{$kvm}),
+		$status2nagios{$snmp_status{$kvm}} );
+    }
+
+    # report redundancy status
+    if (defined $red) {
+	report( (sprintf q{Redundancy status is %s}, $snmp_status{$red}),
+		$status2nagios{$snmp_status{$red}} );
+    }
+
+    # report power status
+    if (defined $power) {
+	report( (sprintf q{Power subsystem health status is %s}, $snmp_status{$power}),
+		$status2nagios{$snmp_status{$power}} );
+    }
+
+    # report fan status
+    if (defined $fan) {
+	report( (sprintf q{Fan subsystem health status is %s}, $snmp_status{$fan}),
+		$status2nagios{$snmp_status{$fan}} );
+    }
+
+    # report blade status
+    if (defined $blade) {
+	report( (sprintf q{Blade subsystem health status is %s}, $snmp_status{$blade}),
+		$status2nagios{$snmp_status{$blade}} );
+    }
+
+    # report temperature status
+    if (defined $temp) {
+	report( (sprintf q{Temperature sensor subsystem health status is %s}, $snmp_status{$temp}),
+		$status2nagios{$snmp_status{$temp}} );
+    }
+
+    # report CMC status
+    if (defined $cmc) {
+	report( (sprintf q{Chassis Management Controller (CMC) health status is %s}, $snmp_status{$cmc}),
+		$status2nagios{$snmp_status{$cmc}} );
+    }
+
+    # report global status
+    report( (sprintf q{Global system health status is %s}, $snmp_status{$global}),
+	    $status2nagios{$snmp_status{$global}} );
+
+
+    return;
+}
+
+
+# Get PSU info and gather performance data
+sub get_psu_info {
+    my @output = ();
+
+    my $watts    = undef;
+    my $amps     = undef;
+    my $max_watt = undef;
+    my %ps       = ();
+
+    # OIDs we are interested in
+    my %oid
+      = (
+	 '1.3.6.1.4.1.674.10892.2.4.1.1.4'   => 'drsMaxPowerSpecification',
+	 '1.3.6.1.4.1.674.10892.2.4.1.1.13'  => 'drsWattsReading',
+	 '1.3.6.1.4.1.674.10892.2.4.1.1.14'  => 'drsAmpsReading',
+	 '1.3.6.1.4.1.674.10892.2.4.2.1.2.1' => 'drsPSUIndex',
+	 '1.3.6.1.4.1.674.10892.2.4.2.1.3.1' => 'drsPSULocation',
+	 '1.3.6.1.4.1.674.10892.2.4.2.1.5.1' => 'drsPSUVoltsReading',
+	 '1.3.6.1.4.1.674.10892.2.4.2.1.6.1' => 'drsPSUAmpsReading',
+	 '1.3.6.1.4.1.674.10892.2.4.2.1.7.1' => 'drsPSUWattsReading',
+	);
+
+    my $result = $snmp_session->get_entries(-columns => [keys %oid]);
+
+    # No response is OK (old type bladechassis)
+    if (!defined $result) {
+	return;
+    }
+
+    @output = @{ get_snmp_output($result, \%oid) };
+
+    foreach my $out (@output) {
+	# get total watt usage
+	if (!defined $watts && exists $out->{drsWattsReading}) {
+	    $watts = $out->{drsWattsReading};
+	}
+	# get total amperage input
+	if (!defined $amps && exists $out->{drsAmpsReading}) {
+	    $amps =  $out->{drsAmpsReading};
+	}
+	# get max wattage
+	if (!defined $max_watt && exists $out->{drsMaxPowerSpecification}) {
+	    $max_watt = $out->{drsMaxPowerSpecification};
+	}
+
+	next if !exists $out->{drsPSUIndex};
+
+	my $i = $out->{drsPSUIndex};
+	$ps{$i}->{index}    = $out->{drsPSUIndex};
+	$ps{$i}->{location} = $out->{drsPSULocation};
+	$ps{$i}->{watts}    = $out->{drsPSUWattsReading};
+	$ps{$i}->{volts}    = $out->{drsPSUVoltsReading};
+	$ps{$i}->{amps}     = $out->{drsPSUAmpsReading};
+
+    }
+
+    # register PSU voltage
+    foreach my $i (sort keys %ps) {
+	push @readings, sprintf q{   Power Supply %d (%s) voltage reading: %.1f V},
+	  $ps{$i}->{index}, $ps{$i}->{location}, $ps{$i}->{volts};
+    }
+    push @readings, '-' x 60;
+
+    # register PSU amperage
+    foreach my $i (sort keys %ps) {
+	push @readings, sprintf q{   Power Supply %d (%s) amperage reading: %.2f A},
+	  $ps{$i}->{index}, $ps{$i}->{location}, $ps{$i}->{amps};
+    }
+    push @readings, '-' x 60;
+
+    # register total values
+    push @readings, sprintf q{   Total chassis power usage: %.0f W}, $watts;
+    push @readings, sprintf q{   Total chassis current usage: %.3f A}, $amps;
+
+    # Collect performance data
+    if (defined $opt{perfdata}) {
+
+	push @perfdata, "'total_watt'=$watts" . "W;0;$max_watt";
+	push @perfdata, "'total_amp'=$amps" . 'A;0;0';
+
+	foreach my $i (sort keys %ps) {
+	    my $pkey = 'volt_ps' . $ps{$i}->{index};
+	    my $pval = $ps{$i}->{volts} . 'V;0;0';
+	    push @perfdata, "'$pkey'=$pval";
+	}
+	foreach my $i (sort keys %ps) {
+	    my $pkey = 'amp_ps' . $ps{$i}->{index};
+	    my $pval = $ps{$i}->{amps} . 'A;0;0';
+	    push @perfdata, "'$pkey'=$pval";
+	}
+    }
+
+    return;
+}
+
+# Default plugin output
+sub output_default {
+    my $c = 0;  # counter to determine linebreaks
+
+    # Run through each message, sorted by severity level
+  ALERT:
+    foreach (sort {$a->[1] < $b->[1]} @reports) {
+	my ($msg, $level) = @{ $_ };
+	next ALERT if $level == $E_OK;
+
+	# Prefix with service tag if specified with option '-i|--info'
+	if ($opt{info}) {
+	    $msg = "[$sysinfo{serial}] " . $msg;
+	}
+
+	# Prefix with nagios level if specified with option '--state'
+	$msg = $reverse_exitcode{$level} . ": $msg" if $opt{state};
+
+	# Prefix with one-letter nagios level if specified with option '--short-state'
+	$msg = (substr $reverse_exitcode{$level}, 0, 1) . ": $msg" if $opt{shortstate};
+
+	($c++ == 0) ? print $msg : print $linebreak, $msg;
+
+	$nagios_alert_count{$reverse_exitcode{$level}}++;
+    }
+
+    return;
+}
+
+# Debug plugin output
+sub output_debug {
+    print "   System:      $sysinfo{product}\n";
+    print "   ServiceTag:  $sysinfo{serial}\n";
+    print "   Firmware:    $sysinfo{firmware}\n";
+    if ($#reports >= 0) {
+	print "-----------------------------------------------------------------------------\n";
+	print "   System Component Status                                                   \n";
+	print "=============================================================================\n";
+	print "  STATE  |  MESSAGE TEXT                                                     \n";
+	print "---------+-------------------------------------------------------------------\n";
+	foreach (@reports) {
+	    my ($msg, $level, $nexus) = @{$_};
+	    print q{ } x (8 - length $reverse_exitcode{$level}) . "$reverse_exitcode{$level} | $msg\n";
+	    $nagios_alert_count{$reverse_exitcode{$level}}++;
+	}
+    }
+    if ($#readings >= 0) {
+	print "-----------------------------------------------------------------------------\n";
+	print "   System Power Readings                                                     \n";
+	print "=============================================================================\n";
+	foreach my $msg (@readings) {
+	    print $msg, "\n";
+	}
+    }
+
+    return;
+}
+
+# Performance data output
+sub output_perfdata {
+    my $lb = $opt{perfdata} eq 'multiline' ? "\n" : q{ };  # line break for perfdata
+    print q{|};
+    print join $lb, @perfdata;
+    return;
+}
+
+
+#=====================================================================
+# Main program
+#=====================================================================
+
+# Probe the blade chassis via SNMP
+get_status();
+
+# Get PSU and performance data info, if needed
+if ($opt{debug} or defined $opt{perfdata}) {
+    get_psu_info();
+}
+
+# Print output
+if ($opt{debug}) {
+    output_debug();
+}
+else {
+    output_default();
+}
+
+# Determine our exit code
+$exit_code = $E_OK;
+if ($nagios_alert_count{UNKNOWN} > 0)  { $exit_code = $E_UNKNOWN;  }
+if ($nagios_alert_count{WARNING} > 0)  { $exit_code = $E_WARNING;  }
+if ($nagios_alert_count{CRITICAL} > 0) { $exit_code = $E_CRITICAL; }
+
+# OK message
+if ($exit_code == $E_OK && !$opt{debug}) {
+    printf q{OK - System: '%s', SN: '%s', Firmware: '%s', hardware working fine},
+      $sysinfo{product}, $sysinfo{serial}, $sysinfo{firmware};
+}
+
+# Extended info output
+if ($opt{extinfo} && !$opt{debug} && $exit_code != $E_OK) {
+    print $linebreak;
+    printf '------ SYSTEM: %s, SN: %s, FW: %s',
+      $sysinfo{product}, $sysinfo{serial}, $sysinfo{firmware};
+}
+
+# Print performance data
+if (defined $opt{perfdata} && !$opt{debug} && @perfdata) {
+    output_perfdata();
+}
+
+print "\n" if !$opt{debug};
+
+# Exit with proper exit code
+exit $exit_code;

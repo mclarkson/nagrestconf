@@ -1,0 +1,238 @@
+#!/bin/bash
+# Copyright(C) 2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#
+#    This software is provided under the terms of the GNU
+#    General Public License (GPL), as published at:
+#    http://www.gnu.org/licenses/gpl.html .
+#
+# File:     check_nagios_config
+# Date:     26 Apr 2013
+# Version:  0.11
+# Modified: 
+#           abooitt 29 Nov 2013
+#             Handle errors and warnings before preflight check.
+#
+# Purpose:  Check the nagios.cfg file using 'nagios -v'.
+#
+# Notes:
+#
+
+
+# ---------------------------------------------------------------------------
+# DEFAULTS (Change as necessary)
+# ---------------------------------------------------------------------------
+
+# Location of the configuration file
+CONFFILE="/etc/nagios/nagios.cfg"
+NAGIOSBIN="/usr/sbin/nagios"
+CHROOT="/usr/sbin/chroot"
+
+# ---------------------------------------------------------------------------
+# DON'T TOUCH ANYTHING BELOW
+# ---------------------------------------------------------------------------
+
+ME="$0"
+CMDLINE="$@"
+TRUE=1
+FALSE=0
+VERSION="0.11"
+OK=0
+WARN=1
+CRIT=2
+UNKN=3
+
+CHROOTBASE=
+USESUDO=0
+LONGOUTPUT=0
+WITHPERF=0
+SUDO="sudo "
+
+NSVCS=0
+NHSTS=0
+NWARN=0
+NERRS=0
+
+CRITLVL=0
+WARNLVL=0
+
+# ---------------------------------------------------------------------------
+main()
+# ---------------------------------------------------------------------------
+{
+    retval=$OK
+    type="OK"
+
+    parse_options "$@"
+
+    sanity_checks
+
+    # Fill in the stats variables
+    do_check
+
+    txt="OK:"
+    if [[ $NERRS -gt $CRITLVL ]]; then
+        retval=$CRIT ; txt="CRITICAL: "
+    elif [[ $NWARN -gt $WARNLVL ]]; then
+        retval=$WARN ; txt="WARNING: "
+    fi
+
+    out="$txt $NWARN warnings, $NERRS errors, $NHSTS hosts, $NSVCS services."
+    [[ $WITHPERF -eq 1 ]] && {
+        out="$out | warnings=$NWARN errors=$NERRS"
+        out="$out num_hosts=$NHSTS num_services=$NSVCS"
+    }
+
+    [[ $LONGOUTPUT -eq 1 ]] && out="$out\n$LONGO"
+
+    echo -e "$out"
+
+    exit $retval
+}
+
+# ---------------------------------------------------------------------------
+sanity_checks()
+# ---------------------------------------------------------------------------
+{
+    [[ -n $CHROOTBASE && ! -d $CHROOTBASE ]] && {
+        echo "Cannot find chroot directory at '$CHROOTBASE'"
+        exit 2
+    }
+
+    [[ ! -r $CHROOTBASE$CONFFILE || -d $CHROOTBASE$CONFFILE ]] && {
+        echo "Cannot find nagios.cfg at '$CHROOTBASE$CONFFILE'"
+        exit 2
+    }
+
+    [[ ! -r $CHROOTBASE$NAGIOSBIN || -d $CHROOTBASE$NAGIOSBIN ]] && {
+        echo "Cannot find nagios executable at '$CHROOTBASE$NAGIOSBIN'"
+        exit 2
+    }
+
+    [[ -n $CHROOTBASE ]] && {
+        # Exiting with error status 254 is good - it ran ok!
+        $SUDO$CHROOT $CHROOTBASE $NAGIOSBIN -h >& /dev/null
+        [[ $? -ne 254 ]] && {
+            echo "Problem running nagios in the chroot. Aborting"
+            exit $UNKN
+        }
+    }
+}
+
+# ----------------------------------------------------------------------------
+usage()
+# ----------------------------------------------------------------------------
+{
+    echo
+    echo "Usage: `basename $ME` [options]"
+    echo
+    echo " -h      :  Display this help text."
+    echo " -c FILE :  Location of nagios configuration file, nagios.cfg."
+    echo "            (Default is: $CONFFILE)"
+    echo " -n FILE :  Location of nagios main executable file, nagios."
+    echo "            (Default is: $NAGIOSBIN)"
+    echo " -x DIR  :  Run in a chroot environment based at DIR."
+    echo " -X FILE :  Location of the chroot executable file."
+    echo "            (Default is: $CHROOT)"
+    echo " -s      :  Use sudo to run the command."
+    echo " -p      :  Add performance data output for graphing."
+    echo " -l      :  Add long output excluding the lines starting with 'Processing'."
+    echo " -W NUM  :  Don't alert until NUM warnings have been reached."
+    echo "            (Default is: $WARNLVL)"
+    echo " -C NUM  :  Don't alert until NUM errors have been reached."
+    echo "            (Usually zero unless there's a really good reason.)"
+    echo "            (Default is: $CRITLVL)"
+    echo
+    echo "Example:"
+    echo "  Check the configuration, alerting on any errors or warnings that"
+    echo "  Nagios reports. Also create performance data for graphing."
+    echo
+    echo "    ./`basename $ME` -p"
+    echo
+}
+
+# ---------------------------------------------------------------------------
+do_check()
+# ---------------------------------------------------------------------------
+{
+    local F="/var/tmp/check_nagios_config.$$"
+
+    if [[ -z $CHROOTBASE ]]; then
+        ${SUDO}$NAGIOSBIN -v $CONFFILE >$F
+    else
+        ${SUDO}${CHROOT} $CHROOTBASE $NAGIOSBIN -v $CONFFILE >$F
+    fi
+
+    NSVCS=`grep -o "Checked [0-9]\+ services." $F | ( read a b c d; echo $b )`
+    NHSTS=`grep -o "Checked [0-9]\+ hosts" $F | ( read a b c d; echo $b )`
+    NWARN=`grep -o "Total Warnings: *[0-9]\+" $F | ( read a b c d; echo $c )`
+    NERRS=`grep -o "Total Errors: *[0-9]\+" $F | ( read a b c d; echo $c )`
+    LONGO=`grep -v '^Processing' $F`
+
+    if [[ -z "$NSVCS" ]]; then
+        NSVCS=0
+    fi
+
+    if [[ -z "$NHSTS" ]]; then
+        NHSTS=0
+    fi
+
+    if [[ -z "$NWARN" ]]; then
+        NWARN=`grep -c 'Warning: ' $F`
+    fi
+
+    if [[ -z "$NERRS" ]]; then
+        NERRS=`grep -c 'Error: ' $F`
+    fi
+
+    rm $F
+}
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose:      Parse program options and set globals.
+# Arguments:    None
+# Returns:      Nothing
+{
+    set -- $CMDLINE
+    while true
+    do
+        case $1 in
+            -c) CONFFILE="$2" ; shift
+            ;;
+            -n) NAGIOSBIN="$2" ; shift
+            ;;
+            -X) CHROOT="$2" ; shift
+            ;;
+            -x) CHROOTBASE="$2" ; shift
+                # Append '/' if not already appended
+                CHROOTBASE="${CHROOTBASE%/}${CHROOTBASE:+/}"
+            ;;
+            -l) LONGOUTPUT=1
+            ;;
+            -s) USESUDO=1
+            ;;
+            -p) WITHPERF=1
+            ;;
+            -h) usage
+                exit 0
+            ;;
+            -W) WARNLVL="$2" ; shift
+            ;;
+            -C) CRITLVL="$2" ; shift
+            ;;
+            ?*) usage
+                echo -e "\nInvalid option\n"
+                exit 4
+            ;;
+        esac
+        shift 1 || break
+    done
+
+    [[ $USESUDO -ne 1 ]] && SUDO=
+}
+
+main "$@"
+
+exit 0
+

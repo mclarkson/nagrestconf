@@ -1,0 +1,33 @@
+#!/bin/sh
+
+[[ $SYNOPKG_PKG_STATUS == "UPGRADE" ]] && {
+    # Skip this file for upgrades
+    exit 0
+}
+
+[ "$WEBINTERFACE_PORT" -lt "5000" ] && {
+    t="Port $WEBINTERFACE_PORT is too low."
+    t="$t Please choose a port above 5000."
+    echo "$t" >$SYNOPKG_TEMP_LOGFILE
+    exit 1
+}
+
+num_portprogs=`find /var/packages/ -name INFO -exec grep -H "adminport=\"*$WEBINTERFACE_PORT\>" {} \; | wc -l`
+
+[ "$num_portprogs" != "0" ] && {
+    t="Port $WEBINTERFACE_PORT is used by another package."
+    t="$t Please choose a different port."
+    echo "$t" >$SYNOPKG_TEMP_LOGFILE
+    exit 1
+}
+
+num_netstatcheck=`netstat -l -t -n | grep ":$WEBINTERFACE_PORT\>" | wc -l`
+
+[ "$num_netstatcheck" != "0" ] && {
+    t="Port $WEBINTERFACE_PORT is used by another service."
+    t="$t Please choose a different port."
+    echo "$t" >$SYNOPKG_TEMP_LOGFILE
+    exit 1
+}
+
+exit 0

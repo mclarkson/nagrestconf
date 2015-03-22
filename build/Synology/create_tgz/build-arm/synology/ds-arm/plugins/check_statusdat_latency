@@ -1,0 +1,235 @@
+#!/bin/bash
+# Copyright(C) 2012 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#
+#    This software is provided under the terms of the GNU
+#    General Public License (GPL), as published at: 
+#    http://www.gnu.org/licenses/gpl.html .
+#
+# File:     check_nagios_latency
+# Date:     22 Nov 2012
+# Version:  0.10
+# Modified:
+#
+# Purpose:  Check latency of nagios checks taking the age of status.dat
+#           into consideration so results are not skewed.
+#
+# Notes:
+#
+
+
+# ---------------------------------------------------------------------------
+# DEFAULTS (Change as necessary)
+# ---------------------------------------------------------------------------
+
+# Location of the status.dat file
+statusdat="/var/log/nagios/status/status.dat"
+
+# Percentage of checks that were late.
+percentlate_warn=5
+percentlate_crit=50
+
+# Average of how late a check was, in seconds. 
+avelatetime_warn=60
+avelatetime_crit=300
+
+# How often checks are set to run in seconds 
+interval=300
+
+# ---------------------------------------------------------------------------
+# DON'T TOUCH ANYTHING BELOW
+# ---------------------------------------------------------------------------
+
+# These are the stats that are sampled
+declare -i unixtime=0
+declare -i numlate=0
+declare -i numchecks=0
+declare -i percentlate=0
+declare -i maxlatetime=0
+declare -i avelatetime=0
+declare -i pending=0
+declare -i disabled=0
+declare -i numnotok=0
+
+ME="$0"
+CMDLINE="$@"
+TRUE=1
+FALSE=0
+VERSION="0.10"
+OK=0
+WARN=1
+CRIT=2
+UNKN=3
+
+NO_PERF=$FALSE
+
+# ---------------------------------------------------------------------------
+main()
+# ---------------------------------------------------------------------------
+{
+    retval=$OK
+    type="OK"
+
+    parse_options "$@"
+
+    statfile_exists_or_quit
+
+    # Fill in the stats variables 
+    get_stats
+
+    # Simple checks
+    if [[ $numchecks -eq 0 ]];then
+        echo "WARNING: This server has 0 service checks."
+        exit $WARN
+    elif [[ $percentlate -gt $percentlate_warn ]]; then
+        [[ $avelatetime -gt $avelatetime_warn ]] && {
+            type="WARNING"
+            retval=$WARN
+        }
+        [[ $avelatetime -gt $avelatetime_crit ]] && {
+            type="CRITICAL"
+            retval=$CRIT
+        }
+    elif [[ $percentlate -gt $percentlate_crit ]]; then
+        [[ $avelatetime -gt $avelatetime_warn ]] && {
+            type="CRITICAL"
+            retval=$CRIT
+        }
+    fi
+
+    string="$type: $numlate checks ($percentlate%) are ${avelatetime}s late"
+    if [[ $NO_PERF -ne $TRUE ]]; then
+        string="$string | 'Num checks'=$numchecks;"
+        string="$string 'Num late'=$numlate;$avelatetime_warn;$avelatetime_crit"
+        string="$string 'Percent late'=$percentlate%;"
+        string="$string$percentlate_warn;$percentlate_crit"
+        string="$string 'Ave. lateness'=${avelatetime}s;"
+    fi
+
+    echo $string
+
+    exit $retval
+}
+
+# ---------------------------------------------------------------------------
+statfile_exists_or_quit()
+# ---------------------------------------------------------------------------
+{
+    [[ ! -r $statusdat || -d $statusdat ]] && {
+        echo "Cannot find status.dat at '$statusdat'"
+        exit 2
+    }
+}
+
+# ----------------------------------------------------------------------------
+usage()
+# ----------------------------------------------------------------------------
+{
+    echo
+    echo "Usage: `basename $ME` [options]"
+    echo
+    echo " -h   :  Display this help text."
+    echo " -np  :  Don't output performance data."
+    echo " -wp  :  Warning threshold for percentage of checks that are late."
+    echo " -cp  :  Critical threshold for percentage of checks that are late."
+    echo " -wl  :  Warning threshold for average lateness of late checks."
+    echo " -cl  :  Critical threshold for average lateness of late checks."
+    echo " -i   :  Check interval of most checks."
+    echo " -s   :  Location of nagios status.dat."
+    echo
+    echo "Running with no options is equivalent to:"
+    echo -n "    `basename $ME`" 
+    echo -n " -wp $percentlate_warn -cp $percentlate_crit"
+    echo " -wl $avelatetime_warn -cl $avelatetime_crit"
+    echo
+}
+
+# ---------------------------------------------------------------------------
+get_stats()
+# ---------------------------------------------------------------------------
+{
+    local offset stat
+
+    offset=$((`date +%s`-`stat -c %Z $statusdat`))
+
+    stat=`sed -n '/servicestatus {/,/ *}/p' $statusdat | \
+        awk -v interval=$interval -v offset=$offset '
+            BEGIN { tt=0;t=0;ttn=0;min=1000;
+            "/bin/date +%s" | getline b
+            b=b-offset} /current_state=[123]/ { num_warncrit=num_warncrit+1; }
+            /last_check=/ { 
+                tot=tot+1;
+                a=substr( $0, index($0, "=")+1 );
+                if(a<=1) { pending=pending+1; next };
+                if(b-a>interval) {
+                    tnew=t+1;
+                    ttnew=tt+(b-a-interval);
+                    ttnnew=ttn+1;
+                    if(b-a-interval>max) maxnew=b-a-interval;
+                    if(b-a-interval<min) minnew=b-a-interval;
+                }
+                next;
+            };
+            /active_checks_enabled=1/ {
+                if(b-a>interval) {
+                    t=tnew; tt=ttnew; ttn=ttnnew; max=maxnew; min=minnew;
+                }
+            };
+            /active_checks_enabled=0/ {
+                if(b-a>interval){disabled=disabled+1;maxnew=0;}
+            };
+            END {
+                total=tot;
+                if(t==0) { min=0;max=0;tt=0;ttn=1;tot=1; }
+                if(ttn==0){ ttn=1; };
+                printf( "%s %d %d %d %d %d %d %d %d",
+                    b, t, total, int((t/tot)*100), max, int(tt/ttn),
+                    pending, disabled, num_warncrit );
+            }'`
+
+    # Set the globals
+    read unixtime numlate numchecks percentlate maxlatetime avelatetime \
+        pending disabled numnotok < <(echo "$stat")
+}
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose:      Parse program options and set globals.
+# Arguments:    None
+# Returns:      Nothing
+{
+    set -- $CMDLINE
+    while true
+    do
+        case $1 in
+            -np) NO_PERF=$TRUE
+            ;;
+            -h|--help) usage; exit 0
+            ;;
+            -v|--version) echo "$VERSION"; exit 0
+            ;;
+            -wp) percentlate_warn="$2" ; shift
+            ;;
+            -cp) percentlate_crit="$2" ; shift
+            ;;
+            -wl) avelatetime_warn="$2" ; shift
+            ;;
+            -cl) avelatetime_crit="$2" ; shift
+            ;;
+            -i) interval="$2" ; shift
+            ;;
+            -s) statusdat="$2" ; shift
+            ;;
+            ?*) usage
+                echo -e "\nInvalid command\n"
+                exit 4
+            ;;
+        esac
+        shift 1 || break
+    done
+}
+
+main "$@"
+
+exit 0
+

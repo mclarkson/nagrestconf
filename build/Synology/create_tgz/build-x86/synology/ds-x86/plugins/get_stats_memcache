@@ -1,0 +1,8 @@
+#!/usr/bin/expect
+
+spawn telnet $argv 11211
+send "stats\r"
+expect "END\r"
+send "quit\r"
+expect eof
+

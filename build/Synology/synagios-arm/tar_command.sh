@@ -1,0 +1,1 @@
+tar cvf new.spk INFO LICENSE PACKAGE_ICON.PNG PACKAGE_ICON_120.PNG package.tgz scripts/ WIZARD_UIFILES/

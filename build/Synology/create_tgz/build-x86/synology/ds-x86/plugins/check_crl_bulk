@@ -1,0 +1,318 @@
+#!/bin/bash
+# Copyright(C) 2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#
+# This software is provided under the terms of the GNU
+# General Public License (GPL), as published at:
+# http://www.gnu.org/licenses/gpl.html .
+#
+# File: check_crl_bulk
+# Date: 7 May 2013
+# Version: 0.10
+# Modified:
+#
+# Purpose: Check a number of CRL files in a directory.
+#
+# Notes:
+#
+
+
+# ---------------------------------------------------------------------------
+# DEFAULTS (Change as necessary)
+# ---------------------------------------------------------------------------
+
+# Default crl location
+CRLDIR="/etc/crl"
+
+# ---------------------------------------------------------------------------
+# DON'T TOUCH ANYTHING BELOW
+# ---------------------------------------------------------------------------
+
+ME="$0"
+CMDLINE="$@"
+TRUE=1
+FALSE=0
+VERSION="0.10"
+OK=0
+WARN=1
+CRIT=2
+UNKN=3
+
+INCL="."
+EXCL="ThIsWoNtMaTcHiHoPe"
+FBLOB=0
+FINCL=
+FEXCL=
+UNITS=
+NUMFILES=
+MESSAGE=""
+declare -i WITHPERF=0 VERSION=0 REMAINING=0 WARNTHR=0
+declare -i NEXPIRING=0 NINVALID=0 NEXPIRED=0 NOK=0
+
+# ---------------------------------------------------------------------------
+main()
+# ---------------------------------------------------------------------------
+{
+    local nfiles=0
+
+    retval=$OK
+
+    parse_options "$@"
+
+    sanity_checks
+
+    do_check
+
+    nfiles=$(($NINVALID+$NEXPIRED+$NOK+$NEXPIRING))
+
+    txt="OK:"
+
+    if [[ $nfiles -eq 0 ]]; then
+        [[ $WITHPERF -eq 1 ]] && {
+            out="| ok=0 expired=0 invalid=0 expiring=0"
+        }
+        txt="CRITICAL: No CRL files found."
+        printf "$txt $out\n"
+        exit $CRIT
+    fi
+
+    if [[ $NEXPIRING -gt 0 ]]; then
+        retval=$WARN ; txt="WARNING:"
+        out="CRLs expiring soon. "
+    fi
+
+    if [[ $NEXPIRED -gt 0 || $NINVALID -gt 0 ]]; then
+        retval=$CRIT ; txt="CRITICAL:"
+    fi
+
+    if [[ -n $NUMFILES && $NUMFILES -ne $nfiles ]];
+    then
+        retval=$CRIT
+        txt="CRITICAL:"
+        out="Unexpected number of files"
+        out+=" ( $NUMFILES expected, found $nfiles ). "
+    fi
+
+    out="$txt $out$NOK OK, $NEXPIRED expired, $NEXPIRING expiring, "
+    out+="$NINVALID invalid."
+    [[ $VERBOSE -eq 1 ]] && {
+        out+="$MESSAGE"
+    }
+    [[ $WITHPERF -eq 1 ]] && {
+        out+=" | ok=$NOK expired=$NEXPIRED expiring=$NEXPIRING "
+        out+="invalid=$NINVALID"
+    }
+
+    printf "$out\n"
+
+    exit $retval
+}
+
+# ---------------------------------------------------------------------------
+sanity_checks()
+# ---------------------------------------------------------------------------
+{
+    local binary
+
+    [[ ! -r $CRLDIR || ! -d $CRLDIR ]] && {
+        echo "Cannot access crl dir at '$CRLDIR'"
+        exit 2
+    }
+
+    for binary in openssl find date grep; do
+        if ! which $binary >& /dev/null; then
+            echo "Unknown: $binary binary not found in path. Aborting."
+            exit $UNKN
+        fi
+    done
+
+}
+
+# ----------------------------------------------------------------------------
+usage()
+# ----------------------------------------------------------------------------
+{
+    echo
+    echo "`basename $ME` - Check the 'Next Update' field of a number of CRL,"
+    echo "Certificate Revocation List, files in bulk."
+    echo
+    echo "Usage: `basename $ME` [options]"
+    echo
+    echo " -h      : Display this help text."
+    echo " -c DIR  : Location of the directory containing CRL files."
+    echo "           (Default is: $CRLDIR)"
+    echo " -i REGX : Include files matching the REGX regular expression."
+    echo "           Specify more than once to add more include expressions."
+    echo " -x REGX : Exclude files matching the REGX regular expression."
+    echo "           Specify more than once to add more exclude expressions."
+    echo " -f      : Make REGX searches FILE GLOBS instead. In this case a"
+    echo "           '.' will match a dot only and '*' will be needed."
+    echo " -n NUM  : Expected number of files."
+    echo " -p      : Add performance data for graphing."
+    echo " -v      : Be more verbose. Show file names and status."
+    echo " -w NUM  : Warn if a CRL is within NUM hours of expiring."
+    echo
+    echo "Examples:"
+    echo
+    echo " Check all files in the default directory, '$CRLDIR':"
+    echo
+    echo " ./`basename $ME`"
+    echo
+    echo " Check all files. Show a warning if a CRL will expire within 2 days."
+    echo
+    echo " ./`basename $ME` -w 48"
+    echo
+    echo " Exclude all files names containing \".p7\" and 5178 in their name:"
+    echo
+    echo " ./`basename $ME` -x \"\.p7\" -x \"5178\""
+    echo
+    echo " Same as the previous search but using file globbing:"
+    echo
+    echo " ./`basename $ME` -f -x \"*.p7*\" -x \"*5178*\""
+    echo
+    echo " Exclude all files ending in .old and check that there are 6 files:"
+    echo
+    echo " ./`basename $ME` -f -x \"*.old\" -n 6"
+    echo
+    echo " Check all files, show their status, and add performance stats."
+    echo
+    echo " ./`basename $ME` -v -p"
+    echo
+}
+
+# ---------------------------------------------------------------------------
+timeleft()
+# ---------------------------------------------------------------------------
+# Roughly convert and truncate hours to hours, days, months, years.
+# Sets the globals REMAINING and UNITS
+# $1 - hours
+{
+  local -i hours=$1
+
+  if [[ $hours -lt 48 ]]; then
+    REMAINING=$hours
+    UNITS="hours" ; [[ $hours -eq 1 ]] && UNITS="hour"
+  elif [[ $hours -lt $((30*24)) ]]; then
+    REMAINING=$((hours/24))
+    UNITS="days" ; [[ $REMAINING -eq 1 ]] && UNITS="day"
+  elif [[ $hours -lt $((365*24)) ]]; then
+    REMAINING=$((hours/(30*24)))
+    UNITS="months" ; [[ $REMAINING -eq 1 ]] && UNITS="month"
+  else
+    REMAINING=$((hours/(365*24)))
+    UNITS="years" ; [[ $REMAINING -eq 1 ]] && UNITS="year"
+  fi
+}
+
+# ---------------------------------------------------------------------------
+do_check()
+# ---------------------------------------------------------------------------
+{
+    local fn output M date secs T="/var/tmp/check_crl_bulk_tmpfile.$$"
+    local -i hrs secs now
+
+    if [[ $FGLOB -eq 1 ]]; then
+        F="$FINCL $FEXCL"
+    else
+        F="| grep -E \"$INCL\" | grep -E -v \"$EXCL\""
+    fi
+
+    while read fn; do
+        :>$T
+        openssl crl -noout -text -in "$fn" -out $T >& /dev/null
+        if grep -qs 'Next Update:' $T; then
+            date=`sed -n \
+                  's/[[:space:]]*Next Update:[[:space:]]*\(.*\)/\1/p' $T`
+            secs=`date -d "$date" +%s`
+            now=`date +%s`
+            hrs=$((($now/60/60)-($secs/60/60)))
+            if [[ $hrs -lt 0 ]]; then
+                (( hrs*=-1 ))
+                timeleft $hrs
+                if [[ $hrs -le $WARNTHR ]]; then
+                    NEXPIRING+=1
+                    M="${fn##*/} - $REMAINING $UNITS left (!)"
+                else
+                    NOK+=1
+                    M="${fn##*/} - $REMAINING $UNITS left"
+                fi
+            else
+                timeleft $hrs
+                M="${fn##*/} - EXPIRED"
+                M+=" ($REMAINING $UNITS ago)"
+                NEXPIRED+=1
+            fi
+        else
+            M="${fn##*/} - INVALID FILE."
+            NINVALID+=1
+        fi
+        MESSAGE+="\n$M"
+    done < <( eval find $CRLDIR -type f $F )
+
+    if [[ -e $T ]]; then
+        rm $T
+    fi
+}
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose: Parse program options and set globals.
+# Arguments: None
+# Returns: Nothing
+{
+    set -- $CMDLINE
+    while true
+    do
+    case $1 in
+            -c) CRLDIR="$2" ; shift
+            ;;
+            -w) WARNTHR="$2" ; shift
+            ;;
+            -n) NUMFILES="$2" ; shift
+            ;;
+            -i) if [[ $INCL = "." ]]; then
+                    INCL="$2"
+                    FINCL=" -name \"$2\""
+                else
+                    INCL+="|$2"
+                    FINCL+=" -name \"$2\""
+                fi
+                shift
+            ;;
+            -x) if [[ $EXCL = "ThIsWoNtMaTcHiHoPe" ]]; then
+                    EXCL="$2"
+                    FEXCL="! -name \"$2\""
+                else
+                    EXCL+="|$2"
+                    FEXCL+=" ! -name \"$2\""
+                fi
+                shift
+            ;;
+            -f) FGLOB=1
+            ;;
+            -p) WITHPERF=1
+            ;;
+            -v) VERBOSE=1
+            ;;
+            -h) usage
+                exit 0
+            ;;
+            ?*) usage
+                echo -e "\nInvalid option\n"
+                exit 4
+            ;;
+        esac
+    shift 1 || break
+    done
+
+    CRLDIR="${CRLDIR%/}${CRLDIR:+/}"
+}
+
+main "$@"
+
+#for (( a=24 ; a<365*30 ; a++ )) ; do
+#    timeleft $a
+#    echo "$REMAINING $UNITS"
+#done
+
+exit 0

@@ -1,0 +1,383 @@
+#!/bin/sh
+#
+# check_ssl_cert
+#
+# Checks an X.509 certificate:
+# - checks if the server is running and delivers a valid certificate
+# - checks if the CA matches a given pattern
+# - checks the validity
+#
+# See  the INSTALL file for installation instructions
+#
+# Copyright (c) 2007, 2008 ETH Zurich.
+#
+# This module is free software; you can redistribute it and/or modify it
+# under the terms of GNU general public license (gpl) version 3.
+# See the LICENSE file for details.
+#
+# RCS information
+# enable substitution with:
+#   $ svn propset svn:keywords "Id Revision HeadURL Source Date"
+#
+#   $Id: check_ssl_cert 1171 2010-07-01 07:17:43Z corti $
+#   $Revision: 1171 $
+#   $HeadURL: https://svn.id.ethz.ch/nagios_plugins/check_ssl_cert/check_ssl_cert $
+#   $Date: 2010-07-01 09:17:43 +0200 (Thu, 01 Jul 2010) $
+
+################################################################################
+# Constants
+
+VERSION=1.5.1
+SHORTNAME="SSL_CERT"
+
+################################################################################
+# Functions
+
+################################################################################
+# Prints usage information
+# Params
+#   $1 error message (optional)
+usage() {
+
+    if [ -n "$1" ] ; then
+        echo "Error: $1" 1>&2
+    fi
+    
+    echo
+    echo "Usage: check_ssl_cert -H server [OPTIONS]"
+    echo
+    echo "Options:"
+    echo "   -d days    minimum number of days a certificate has to be valid"
+    echo "   -e address pattern to match the email address contained in the certificate"
+    echo "   -h, -?     this help message"
+    echo "   -H host    server"
+    echo "   -i issuer  pattern to match the issuer of the certificate"
+    echo "   -n name    pattern to match the CN of the certificate"
+    echo "   -N         match CN with the host name (will not work for wildcards)"
+    echo "   -o org     pattern to match the organization of the certificate"
+    echo "   -P         switch to TLS and use specific protocol {smtp|pop3|imap|ftp}"
+    echo "   -p port    TCP port"
+    echo "   -s         allows self-signed certificates"
+    echo "   -r rootcrt root cert to be used for certficate validation"
+    echo "   -t seconds timeout after the specified time (defaults to 15 seconds"
+    echo "   -v         verbose output"
+    echo "   -V         version"
+    echo
+    echo "Report bugs to: Matteo Corti <matteo.corti@id.ethz.ch>"
+    echo
+
+    exit 3
+
+}
+
+################################################################################
+# Exits with a critical message
+# Params
+#   $1 error message
+critical() {
+    if [ -n "${CN}" ] ; then
+        tmp=" ${CN}"
+    fi
+    printf "${SHORTNAME} CRITICAL$tmp: $1\n"
+    exit 2
+}
+
+################################################################################
+# Exits with a warning message
+# Param
+#   $1 warning message
+warning() {
+    if [ -n "${CN}" ] ; then
+        tmp=" ${CN}"
+    fi
+    printf "${SHORTNAME} WARN$tmp: $1\n"
+    exit 1
+}
+
+################################################################################
+# Exits with an 'unkown' status
+# Param
+#   $1 message
+unknown() {
+    if [ -n "${CN}" ] ; then
+        tmp=" ${CN}"
+    fi
+    printf "${SHORTNAME} UNKNOWN$tmp: $1\n"
+    exit 3
+}
+
+################################################################################
+# Executes command with a timeout
+# Params:
+#   $1 timeout in seconds
+#   $2 command
+# Returns 1 if timed out 0 otherwise
+timeout() {
+
+    time=$1
+
+    # start the command in a subshell to avoid problem with pipes
+    # (spawn accepts one command)
+    command="/bin/sh -c \"$2\""
+
+    if [ -n "${EXPECT}" ] ; then
+        expect -c "set echo \"-noecho\"; set timeout $time; spawn -noecho $command; expect timeout { exit 1 } eof { exit 0 }"    
+
+        if [ $? = 1 ] ; then
+            critical "Timeout after $TIMEOUT seconds"
+        fi
+
+    else
+        eval ${command}
+    fi
+            
+}
+
+################################################################################
+# Checks if a given program is available and executable
+# Params
+#   $1 program name
+# Returns 1 if the program exists and is executable
+check_required_prog() {
+
+    PROG=$(which $1 2> /dev/null)
+
+    if [ -z "$PROG" ] ; then
+        critical "cannot find $1"
+    fi
+
+    if [ ! -x "$PROG" ] ; then
+        critical "$PROG is not executable"
+    fi
+
+}
+
+################################################################################
+# Main
+################################################################################
+
+# default values
+PORT=443
+TIMEOUT=15
+
+# process command line options
+while getopts "vh?H:Vp:d:i:o:e:P:r:t:n:Ns" opt; do
+    case $opt in
+        d )      DAYS=$OPTARG;           ;;
+        e )      ADDR=$OPTARG;           ;;
+        H )      HOST=$OPTARG;           ;;
+        h | \? ) usage ; exit 3;         ;;
+        i )      ISSUER=$OPTARG;         ;;
+        n )      COMMON_NAME=$OPTARG;    ;;
+        N )      COMMON_NAME="__HOST__"; ;;
+        o )      ORGANIZATION=$OPTARG    ;;
+        p )      PORT=$OPTARG;           ;;
+        P )      PROTOCOL=$OPTARG        ;;
+        r )      ROOT_CA=$OPTARG         ;;
+        t )      TIMEOUT=$OPTARG;        ;;
+        s )      SELFSIGNED=1            ;;
+        V )      echo "check_ssl_cert version ${VERSION}"; exit 3; ;;
+        v )      VERBOSE=1;              ;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+################################################################################
+# Set COMMON_NAME to hostname if -N was given as argument
+if [ "$COMMON_NAME" = "__HOST__" ]; then
+    COMMON_NAME=$(hostname)
+fi
+
+################################################################################
+# sanity checks
+
+###############
+# Check options
+if [ -z "${HOST}" ] ; then
+    usage "No host specified"
+fi
+
+if [ -n "${ROOT_CA}" ] ; then
+    if [ ! -r ${ROOT_CA} ] ; then
+        critical "Cannot read root certificate ${ROOT_CA}"
+    fi
+    ROOT_CA="-CAfile ${ROOT_CA}"
+fi
+
+#######################
+# Check needed programs
+
+check_required_prog openssl
+OPENSSL=$PROG
+
+EXPECT=$(which expect 2> /dev/null)
+if [ -z "${EXPECT}" -a -n "${VERBOSE}" ] ; then
+    echo "Expect not found: disabling timeouts"
+fi
+
+################################################################################
+# fetch the X.509 certificate
+
+# temporary storage for the certificate and the errors
+CERT=$( mktemp -t "$( basename $0 )XXXXXX" )
+ERROR=$( mktemp -t "$( basename $0 )XXXXXX" )
+
+trap "rm -f $CERT $ERROR" 0
+
+if [ -n "${PROTOCOL}" ] ; then
+
+    case "${PROTOCOL}" in
+
+        smtp|pop3|imap|ftp)
+    
+        timeout $TIMEOUT "echo 'Q' | $OPENSSL s_client -starttls ${PROTOCOL} -connect $HOST:$PORT 2> ${ERROR} 1> ${CERT}"
+        ;;
+    
+        *)
+
+        unknown "Error: unsupported protocol ${PROTOCOL}"
+
+    esac
+
+else
+
+    timeout $TIMEOUT "echo 'Q' | $OPENSSL s_client -connect $HOST:$PORT -verify 6 ${ROOT_CA} 2> ${ERROR} 1> ${CERT}"
+    
+fi
+
+if [ $? -ne 0 ] ; then
+    critical "Error: $(cat $ERROR | head -n 1)"
+fi
+
+if ! grep -q "CERTIFICATE" ${CERT} ; then
+    critical "No certificate returned"
+fi
+
+################################################################################
+# Check if the certificate was verified
+
+if grep -q '^verify\ error:' ${ERROR} ; then
+
+    if grep -q '^verify\ error:num=18:self\ signed\ certificate' ${ERROR} ; then
+
+        if [ -z "${SELFSIGNED}" ] ; then
+            critical "Cannot verify certificate\nself signed certificate"
+        else
+            SELFSIGNEDCERT="self signed "
+        fi
+
+    else 
+
+        # process errors
+        details=$(grep  '^verify\ error:' ${ERROR} | sed -e "s/verify\ error:num=[0-9]*:/verification error: /" )
+
+        critical "Cannot verify certificate\n${details}"
+
+    fi
+    
+fi
+
+################################################################################
+# parse the X.509 certificate
+
+DATE=$($OPENSSL x509 -in ${CERT} -enddate -noout | sed -e "s/^notAfter=//")
+CN=$($OPENSSL x509 -in ${CERT} -subject -noout | sed -e "s/^.*\/CN=//" -e "s/\/[A-Za-z][A-Za-z]*=.*$//")
+
+CA_O=$($OPENSSL x509 -in ${CERT} -issuer -noout | sed -e "s/^.*\/O=//" -e "s/\/[A-Z][A-Z]*=.*$//")
+CA_CN=$($OPENSSL x509 -in ${CERT} -issuer -noout  | sed -e "s/^.*\/CN=//" -e "s/\/[A-Za-z][A-Za-z]*=.*$//")
+
+################################################################################
+# check the CN (this will not work as expected with wildcard certificates)
+
+if [ -n "$COMMON_NAME" ] ; then
+
+    ok=''
+
+    if echo $CN | grep -q "^$COMMON_NAME$" ; then
+        ok='true'
+    fi
+
+    if [ -z "$ok" ] ; then
+        critical "invalid CN ('$CN' does not match '$COMMON_NAME')"
+    fi
+    
+fi
+
+################################################################################
+# check the issuer
+
+if [ -n "$ISSUER" ] ; then
+
+    ok=''
+    CA_ISSUER_MATCHED=''
+
+    if echo $CA_CN | grep -q "^$ISSUER$" ; then
+        ok='true'
+        CA_ISSUER_MATCHED="${CA_CN}"
+    fi
+
+    if echo $CA_O | grep -q "^$ISSUER$" ; then
+        ok='true'
+        CA_ISSUER_MATCHED="${CA_O}"
+    fi
+
+    if [ -z "$ok" ] ; then
+        critical "invalid CA ('$ISSUER' does not match '$CA_O' or '$CA_CN')"
+    fi
+    
+else
+
+    CA_ISSUER_MATCHED="${CA_CN}"
+
+fi
+
+################################################################################
+# check the validity
+
+if [ -n "$DAYS" ] ; then
+
+    if ! echo $DAYS | grep -q [1-9][0-9]* ; then
+        critical "invalid number of days ($DAYS)"
+    fi
+
+    if ! $OPENSSL x509 -in ${CERT} -noout -checkend 0 ; then
+        critical "certificate is expired (was valid until $DATE)"
+    fi
+
+    if ! $OPENSSL x509 -in ${CERT} -noout -checkend $(( $DAYS * 86400 )) ; then
+        warning "certificate will expire on $DATE"
+    fi
+
+fi
+
+################################################################################
+# check the organization
+
+if [ -n "$ORGANIZATION" ] ; then
+
+    ORG=$($OPENSSL x509 -in ${CERT} -subject -noout | sed -e "s/.*\/O=//" -e "s/\/.*//")
+
+    if ! echo $ORG | grep -q "^$ORGANIZATION" ; then
+        critical "invalid organization ('$ORGANIZATION' does not match '$ORG')"
+    fi
+
+fi
+
+################################################################################
+# check the organization
+
+if [ -n "$ADDR" ] ; then
+
+    EMAIL=$($OPENSSL x509 -in ${CERT} -email -noout)
+
+    if ! echo $EMAIL | grep -q "^$ADDR" ; then
+        critical "invalid email ($ADDR does not match $EMAIL)"
+    fi
+
+fi
+
+################################################################################
+# If we get this far, assume all is well. :)
+echo "${SHORTNAME} OK - X.509 ${SELFSIGNEDCERT}certificate for '$CN' from '$CA_ISSUER_MATCHED' valid until $DATE"
+
+exit 0

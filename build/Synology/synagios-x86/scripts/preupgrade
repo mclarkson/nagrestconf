@@ -1,0 +1,33 @@
+#!/bin/sh
+
+TMPDIR="$SYNOPKG_PKGDEST_VOL/@tmp/Synagios_upgrade_temp"
+
+[[ -e "$TMPDIR" ]] && {
+    rm -rf "$TMPDIR"
+}
+
+mkdir -p $TMPDIR
+
+# Save the port number for restoring later
+
+cd $SYNOPKG_PKGDEST
+port=`grep SYNAGIOS_PORT= redirect.cgi`; port=${port#*=}
+echo "SYNAGIOS_PORT=\"$port\"" >$TMPDIR/PORT
+
+# Save config and state files
+
+cd $SYNOPKG_PKGDEST/nagios-chroot/
+
+tar czf $TMPDIR/config.tgz \
+    etc/nagios3/ \
+    etc/nagrestconf/ \
+    etc/pnp4nagios/ \
+    etc/apache2/ \
+    var/lib/pnp4nagios/ \
+    var/cache/nagios3/objects.cache \
+    var/lib/nagios3/retention.dat \
+    var/log/nagios3/ \
+    usr/share/pnp4nagios/html/templates.dist/
+
+exit 0
+

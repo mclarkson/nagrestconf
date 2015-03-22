@@ -1,0 +1,344 @@
+#!/bin/bash
+# Copyright(C) 2012 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#
+#    This software is provided under the terms of the GNU
+#    General Public License (GPL), as published at: 
+#    http://www.gnu.org/licenses/gpl.html .
+#
+# File:     check_switch_ifs_zeroconf
+# Date:     12 Dec 2012
+# Version:  0.12
+# Modified: 0.11 - Mark Clarkson <mark.clarkson@smorg.co.uk>
+#                  Added support for snmpbulkwalk as it's more efficient.
+#           0.12 - 7-Jan-13 by Mark Clarkson <mark.clarkson@smorg.co.uk>
+#                  Show the interface description field.
+#           0.13 - 31-Jan-13 by Mark Clarkson <mark.clarkson@smorg.co.uk>
+#                  Corrected the up/down count.
+#
+# Purpose:  Check that ifAdminStatus matches ifOperStatus. I.e. Check
+#           that the interface is in the state the network admin requested.
+#
+# Notes:
+#
+
+
+# ---------------------------------------------------------------------------
+# DEFAULTS (Change as necessary)
+# ---------------------------------------------------------------------------
+
+# Use snmpbulkwalk if it's available - it's more efficient
+snmpwalk=snmpbulkwalk
+#snmpwalk=snmpwalk
+
+# ---------------------------------------------------------------------------
+# DON'T TOUCH ANYTHING BELOW
+# ---------------------------------------------------------------------------
+
+declare -i gnumrecords=0
+
+ME="$0"
+CMDLINE="$@"
+TRUE=1
+FALSE=0
+VERSION="0.13"
+OK=0
+WARN=1
+CRIT=2
+UNKN=3
+
+COMMUNITY=
+LIST=$FALSE
+INCFILT=.
+EXCFILT=WonTmAtChIhoPe
+
+# Global arrays to store all details in - should all be the same size.
+declare -a ifDescr
+declare -a ifAlias
+declare -a ifAdminStatus
+declare -a ifOperStatus
+declare -a show
+declare -a alert
+declare -a up
+
+# Status values for ifAdminStatus and ifOperStatus
+declare -a Status=(
+                    "dummy"               # <- not used, dummy for index 0
+                    "up"
+                    "down"
+                    "testing"
+                    "unknown"             # <- ifOperStatus only
+                    "dormant"             # <- ifOperStatus only
+                    "notPresent"          # <- ifOperStatus only
+                    "lowerLayerDown"      # <- ifOperStatus only
+                  )
+
+# Nagios status
+declare -a AlertStatus=(
+                    "OK"
+                    "WARNING"
+                    "CRITICAL"
+                    "Unknown"
+                  )
+# IF-MIB oids
+ifmib_ifentry=".1.3.6.1.2.1.2.2.1"
+ifmib_ifXentry=".1.3.6.1.2.1.31.1.1.1"
+
+# Sequence number to append to the OID.
+ifDescr_num=2
+ifAdminStatus_num=7
+ifOperStatus_num=8
+ifAlias_num=18              # <- The interface description
+
+# ---------------------------------------------------------------------------
+main()
+# ---------------------------------------------------------------------------
+# Execution begins and ends here.
+{
+    local -i numinterfaces=0 numdownints=0 candwidth col1width retval
+    local i t comma
+
+    retval=$OK
+
+    parse_options "$@"
+
+    pass_sanitychecks_or_quit
+
+    fill_arrays
+
+    [[ $LIST -eq $TRUE ]] && {
+        for i in `seq 0 $(($gnumrecords-1))`; do
+            candwidth=`echo ${ifDescr[i]} | wc -c`
+            [[ $col1width -lt $candwidth ]] && col1width=$candwidth
+        done
+        printf "%-${col1width}s %-13s %-13s %-13s %s\n" \
+            "ifDescr" "ifAdminStatus" "ifOperStatus" "AlertStatus" \
+            "ifAlias"
+        for i in `seq 0 $(($gnumrecords-1))`; do
+            [[ ${show[i]} -eq 0 ]] && continue
+            printf "%-${col1width}s %-13s %-13s %-13s %s\n" \
+                "${ifDescr[i]}" \
+                "${Status[${ifAdminStatus[i]}]}" \
+                "${Status[${ifOperStatus[i]}]}" \
+                "${AlertStatus[${alert[i]}]}" \
+                "${ifAlias[i]}"
+        done
+        exit $OK
+    }
+
+    t="CRITICAL: IFs down: " ; comma=
+    for i in `seq 0 $(($gnumrecords-1))`; do
+        [[ ${show[i]} -eq 0 ]] && continue
+        if [[ ${up[i]} -eq 1 ]]; then
+            : $((numinterfaces++))
+        else
+            : $((numdownints++))
+        fi
+        [[ ${alert[i]} -gt 0 ]] && {
+            t="$t$comma ${ifDescr[i]} (${ifAlias[i]})"
+            [[ ${alert[i]} -gt $retval ]] && retval=${alert[i]}
+            comma=","
+        }
+    done
+
+    if [[ $retval -eq $OK ]]; then
+        echo -n "OK: $numinterfaces interfaces are UP. $numdownints are "
+        echo "administratively disabled."
+    else
+        echo "$t"
+    fi
+
+    exit $retval
+}
+
+# ---------------------------------------------------------------------------
+pass_sanitychecks_or_quit()
+# ---------------------------------------------------------------------------
+{
+    if ! which $snmpwalk >& /dev/null; then
+        echo "Unknown: snmpwalk binary not found in path. Aborting."
+        exit $UNKN
+    fi
+
+    [[ -z $IP ]] && {
+        echo "Unknown: IP address or hostname was not supplied. Aborting."
+        exit $UNKN
+    }
+}
+
+# ----------------------------------------------------------------------------
+usage()
+# ----------------------------------------------------------------------------
+{
+    echo
+    echo "`basename $ME` - Zero-conf bulk interface checker."
+    echo
+    echo "Usage: `basename $ME` [-h] [-l] [-c SECRET]"
+    echo "       [-f REGEX] [-F REGEX] host|IP"
+    echo
+    echo " -h         :  Display this help text."
+    echo " -v         :  Display the version of this script."
+    echo " -l         :  List all available ports and their status."
+    echo " -C SECRET  :  Community string."
+    echo " -f REGEX   :  Inclusive regular expression (these)."
+    echo " -F REGEX   :  Exclusive regular expression (but not these)."
+    echo
+    echo "Check that interfaces are in the state that the network admin"
+    echo "requested them to be in. For example, 'shutdown' interfaces"
+    echo "should be down and 'no shutdown' interfaces should be up."
+    echo
+    echo "Examples"
+    echo
+    echo "List all interfaces on the device:"
+    echo "    `basename $ME` -l -C secret 1.2.3.4"
+    echo
+    echo "List only Ethernet1/1/1 interfaces on the device:"
+    echo "    `basename $ME` -l -f Ethernet1/1/1$ -C secret 1.2.3.4"
+    echo
+    echo "List only Ethernet interfaces on the device:"
+    echo "    `basename $ME` -l -f Ethernet -C secret 1.2.3.4"
+    echo
+    echo "Check all interface on the device:"
+    echo "    `basename $ME` -C secret 1.2.3.4"
+    echo
+    echo "Check all interfaces on the device except vlan and port channels:"
+    echo "    `basename $ME` -C secret -F 'vlan|port' 1.2.3.4"
+    echo
+    echo "NOTE: Do not use this plugin to check individual interfaces."
+    echo "      It is for bulk checks only - individual checks will be slow"
+    echo
+    echo "NOTE: Searches with -f and -F are case-insensitive"
+    echo
+}
+
+# ---------------------------------------------------------------------------
+alert_logic()
+# ---------------------------------------------------------------------------
+# UP(1) UP   = OK
+# UP DOWN(2) = CRITICAL
+# DOWN UP    = WARNING
+# DOWN DOWN  = OK
+#
+# $1 - ifAdminStatus
+# $2 - ifOperStatus
+#
+# Returns 0,1,2 or 3 (OK, WARN, CRITICAL, Unknown).
+{
+    local retval=$OK
+
+    if [[ $1 -eq 1 && $2 -ge 2 ]]; then
+        retval=$CRIT
+    elif [[ $1 -ge 2 && $2 -eq 1 ]]; then
+        retval=$WARN
+    fi
+
+    return $retval
+}
+
+# ---------------------------------------------------------------------------
+fill_arrays()
+# ---------------------------------------------------------------------------
+{
+    local i donebefore=0
+
+    # A retry loop
+    while true; do
+
+        eval `x=0 ; \
+        for i in ifDescr; do \
+            id=$(eval echo "\\$${i}_num"); \
+            $snmpwalk -v 2c -One -c $COMMUNITY $IP $ifmib_ifentry.$id \
+            | tr -d \" \
+            | while read a b c d; do \
+                if echo "$d" | grep -Eiv "($EXCFILT)" | \
+                  grep -Ei -qs "($INCFILT)"; \
+                    then echo "show[$x]=1"; else echo "show[$x]=0"; fi; \
+                echo "$i[$x]=\"$d\""; : $((++x)); \
+            done \
+        done 2>/dev/null`
+
+        gnumrecords=${#ifDescr[*]}
+
+        [[ $gnumrecords -lt 2 ]] && {
+            echo "Unknown: No records. Check the community string. Aborting."
+            exit $UNKN
+        }
+
+        eval `x=0 ; \
+        for i in ifAdminStatus ifOperStatus; do \
+            id=$(eval echo "\\$${i}_num"); \
+            $snmpwalk -v 2c -One -c $COMMUNITY $IP $ifmib_ifentry.$id \
+            | tr -d \" \
+            | while read a b c d; do \
+                echo "$i[$x]=\"$d\""; \
+                : $((++x)); \
+            done \
+        done 2>/dev/null`
+
+        eval `x=0 ; \
+        for i in ifAlias; do \
+            id=$(eval echo "\\$${i}_num"); \
+            $snmpwalk -v 2c -One -c $COMMUNITY $IP $ifmib_ifXentry.$id \
+            | tr -d \" \
+            | while read a b c d; do \
+                echo "$i[$x]=\"$d\""; \
+                : $((++x)); \
+            done \
+        done 2>/dev/null`
+
+        [[ $gnumrecords -ne ${#ifAdminStatus[*]} ||
+           $gnumrecords -ne ${#ifOperStatus[*]} ||
+           $gnumrecords -ne ${#ifAlias[*]} ]] && {
+            [[ $donebefore -ne 1 ]] && {
+                donebefore=1
+                continue
+            }
+            echo "Unknown: SNMP records mismatch in second walk. Aborting."
+            exit $UNKN
+        }
+
+        break
+    done
+
+    # Work out alert logic for each entry
+    for i in `seq 0 $((gnumrecords-1))`; do
+        alert_logic "${ifAdminStatus[i]}" "${ifOperStatus[i]}"
+        alert[i]=$?
+        up[i]=0
+        [[ "${ifAdminStatus[i]}" -eq 1 ]] && up[i]=1
+    done
+}
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose:      Parse program options and set globals.
+# Arguments:    None
+# Returns:      Nothing
+{
+    set -- $CMDLINE
+    while true
+    do
+        case $1 in
+            -h|--help) usage; exit 0
+            ;;
+            -f) INCFILT="$2"; shift
+            ;;
+            -F) EXCFILT="$2"; shift
+            ;;
+            -[cC]) COMMUNITY="$2"; shift
+            ;;
+            -l) LIST=1
+            ;;
+            -v|--version) echo "$VERSION"; exit 0
+            ;;
+            ?*) IP="$1"
+            ;;
+        esac
+        shift 1 || break
+    done
+}
+
+main "$@"
+
+exit 0
+

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+TMPDIR="$SYNOPKG_PKGDEST_VOL/@tmp/Synagios_upgrade_temp"
+
+[[ -e "$TMPDIR" ]] || {
+    echo "ERROR 1001: '$TMPDIR' does not exist." >$SYNOPKG_TEMP_LOGFILE
+    exit 1
+}
+
+# Copy config and state files back
+
+cd $SYNOPKG_PKGDEST/nagios-chroot/
+
+tar xzf $TMPDIR/config.tgz
+
+exit 0
+

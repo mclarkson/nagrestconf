@@ -1,0 +1,241 @@
+#!/bin/bash
+# Copyright(C) 2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#
+#    This software is provided under the terms of the GNU
+#    General Public License (GPL), as published at: 
+#    http://www.gnu.org/licenses/gpl.html .
+#
+# File:     check_nagios_config
+# Date:     26 Apr 2013
+# Version:  0.10
+# Modified:
+#
+# Purpose:  Check the nagios.cfg file using 'nagios -v'.
+#
+# Notes:
+#
+
+
+# ---------------------------------------------------------------------------
+# DEFAULTS (Change as necessary)
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# DON'T TOUCH ANYTHING BELOW
+# ---------------------------------------------------------------------------
+
+ME="$0"
+CMDLINE="$@"
+TRUE=1
+FALSE=0
+VERSION="0.10"
+OK=0
+WARN=1
+CRIT=2
+UNKN=3
+
+USESUDO=0
+WITHPERF=0
+SUDO="sudo "
+
+DIR=
+FILE=
+declare -i INVERTFILE=0 INVERTDIR=0 USESUDO=0 WITHPERF=0
+declare -i ALERTDIR=0 CRITLVL=1 WARNLVL=1 NFILES=0
+
+# ---------------------------------------------------------------------------
+main()
+# ---------------------------------------------------------------------------
+{
+    local retval txt msg
+
+    retval=$OK
+
+    parse_options "$@"
+
+    sanity_checks
+
+    # Fill in the stats variables 
+    do_check
+
+    txt="OK:"
+    [[ $INVERTFILE -eq 0 ]] && msg="File '$FILE' is present, good."
+    [[ $INVERTFILE -eq 1 ]] && msg="File '$FILE' is absent, good."
+    if [[ $ALERTFILE -eq 1 ]]; then
+        retval=$CRIT
+        txt="OK: "
+        [[ $NFILES -ge $WARNLVL ]] && txt="WARNING: "
+        [[ $NFILES -ge $CRITLVL ]] && txt="CRITICAL: "
+        msg="File does not exist, '$FILE'."
+        [[ $INVERTFILE -eq 1 ]] && msg="File '$FILE' found in '$DIR'."
+        [[ $ALERTDIR -eq 1 ]] && msg+=" Directory does not exist, '$DIR'."
+    elif [[ $ALERTDIR -eq 1 ]]; then
+        retval=$CRIT
+        txt="CRITICAL: "
+        msg="Directory does not exist, '$DIR'."
+    fi
+
+    out="$txt $msg"
+    [[ $WITHPERF -eq 1 ]] && {
+        : $((++NFILES));: $((--NFILES))
+        out="$out | \"$FILE\"=$NFILES"
+    }
+
+    echo "$out"
+
+    exit $retval
+}
+
+# ---------------------------------------------------------------------------
+sanity_checks()
+# ---------------------------------------------------------------------------
+{
+    [[ -z $DIR ]] && {
+        usage
+        echo "ERROR: The DIRectory must be specified."
+        exit 0
+    }
+
+    [[ -z $FILE ]] && {
+        usage
+        echo "ERROR: The FILE name must be specified."
+        exit 0
+    }
+    
+    [[ $WARNLVL -gt $CRITLVL ]] && {
+        usage
+        echo "ERROR: The warning level is greater than the critical level."
+        exit 0
+    }
+}
+
+# ----------------------------------------------------------------------------
+usage()
+# ----------------------------------------------------------------------------
+{
+    echo
+    echo "`basename $ME` - Alert if a FILE does not exist."
+    echo
+    echo "Usage: `basename $ME` [options] -d DIR FILE"
+    echo
+    echo " FILE    :  The file to search for. Can glob using '*' etc, but"
+    echo "            place file names with glob patterns within quotes."
+    echo "            Mandatory. The FILE must always be specified."
+    echo " -d DIR  :  Base directory to search in."
+    echo "            Mandatory option - the DIR must always be specified."
+    echo " -i      :  Invert FILE, so alert if FILE does exist."
+    echo " -I      :  Alert if DIR does not exist."
+    echo " -p      :  Add performance data output for graphing."
+    echo " -w NUM  :  Warning alert if >=NUM files are found and invert"
+    echo "            files '-i' is on. (Default is: 1)"
+    echo " -c NUM  :  Critical alert if >=NUM files are found and invert"
+    echo "            files '-i' is on. (Default is: 1)"
+    echo " -h      :  Display this help text."
+    echo
+    echo "Example:"
+    echo
+    echo "  Check that /tmp/dir/file exists."
+    echo
+    echo "    ./`basename $ME` -d /tmp/dir file"
+    echo
+    echo "  Check that /tmp/dir/file does NOT exist."
+    echo
+    echo "    ./`basename $ME` -d /tmp/dir -i file"
+    echo
+    echo "  Again check that /tmp/dir/file does NOT exist but this time alert"
+    echo "  if the directory it could be found in, /tmp/dir, is missing."
+    echo
+    echo "    ./`basename $ME` -d /tmp -i -I file"
+    echo
+    echo "  Check for files matching the glob 'fi*' and alert if found in"
+    echo "  /tmp/dir. Alert if /tmp/dir does not exist. Provide performance"
+    echo "  data for graphing, showing the number of files matching the"
+    echo "  glob pattern."
+    echo
+    echo "    ./`basename $ME` -d /tmp/dir -i -I -p \"fi*\""
+    echo
+    echo "  Same as previous but only alert if thresholds are exceeded. In"
+    echo "  this case issue a warning alert when there are 20 or more files"
+    echo "  found, critical for 30 or more."
+    echo
+    echo "    ./`basename $ME` -d /tmp/dir -i -I -p -w 20 -c 30 \"fi*\""
+    echo
+}
+
+# ---------------------------------------------------------------------------
+do_check()
+# ---------------------------------------------------------------------------
+{
+    local -i found=0
+
+    cd /
+    [[ $INVERTFILE -eq 0 && $INVERTDIR -eq 1 && ! -d $DIR ]] && \
+        { ALERTDIR=1 ; return ; }
+    [[ $INVERTFILE -eq 1 && $INVERTDIR -eq 1 && ! -d $DIR ]] && \
+        ALERTDIR=1
+    [[ $INVERTFILE -eq 0 ]] && {
+        found=`find $DIR -maxdepth 1 -name "$FILE" 2>/dev/null | wc -l`
+        NFILES=$found
+        [[ $found -eq 0 ]] && {
+            ALERTFILE=1
+            return
+        }
+    }
+    [[ $INVERTFILE -eq 1 ]] && {
+        found=`find $DIR -maxdepth 1 -name "$FILE" 2>/dev/null | wc -l`
+        NFILES=$found
+        [[ $found -ge 1 ]] && {
+            ALERTFILE=1
+            return
+        }
+    }
+}
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose:      Parse program options and set globals.
+# Arguments:    None
+# Returns:      Nothing
+{
+    set -- "$@"
+    while true
+    do
+        case $1 in
+            -d) DIR="$2" ; shift
+                # Append '/' if not already appended
+                DIR="${DIR%/}${DIR:+/}"
+            ;;
+            -i) INVERTFILE=1
+            ;;
+            -I) INVERTDIR=1
+            ;;
+            -s) USESUDO=1
+            ;;
+            -p) WITHPERF=1
+            ;;
+            -h) usage
+                exit 0
+            ;;
+            -w) WARNLVL="$2" ; shift
+            ;;
+            -c) CRITLVL="$2" ; shift
+            ;;
+            ?*) FILE="$1"
+                [[ -n $2 ]] && {
+                    usage
+                    echo "ERROR: Only one filename allowed."
+                    exit 4
+                }
+            ;;
+        esac
+        shift 1 || break
+    done
+
+    [[ $USESUDO -ne 1 ]] && SUDO=
+}
+
+main "$@"
+
+exit 0
+

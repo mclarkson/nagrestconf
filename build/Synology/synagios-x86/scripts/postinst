@@ -1,0 +1,55 @@
+#!/bin/sh
+NAGCHROOT="$SYNOPKG_PKGDEST/nagios-chroot"
+
+run()
+{
+    echo "$1" | chroot $NAGCHROOT
+    [[ $? -ne 0 ]] && {
+        echo -e "\n ---- ERROR ----\n"
+        exit 1
+    }
+}
+
+change_port()
+{
+    cd $SYNOPKG_PKGDEST
+    PORT=$WEBINTERFACE_PORT
+    sed -i 's/\(port =\).*/\1 '$PORT'/' \
+            application.cfg
+    sed -i 's/\(SYNAGIOS_PORT=\).*/\1'$PORT'/' \
+            redirect.cgi
+    sed -i 's/\(NameVirtualHost.*:\).*/\1'$PORT'/' \
+            nagios-chroot/etc/apache2/ports.conf
+    sed -i 's/\(<VirtualHost .*:\).*/\1'$PORT'>/' \
+            nagios-chroot/etc/apache2/sites-enabled/000-default
+    sed -i 's/^\(Listen \).*/\1'$PORT'/' \
+            nagios-chroot/etc/apache2/ports.conf
+    sed -i 's/\(^.*127.0.0.1\)[^\/]*/\1:'$PORT'/' \
+            nagios-chroot/etc/nagrestconf/nagrestconf.ini
+    sed -i 's/^\(adminport="\).*/\1'$PORT'"/' \
+            /var/packages/Synagios/INFO
+}
+
+[[ -z "$WEBINTERFACE_PORT" ]] && {
+    # Assume this is an upgrade and load the port
+    TMPDIR="$SYNOPKG_PKGDEST_VOL/@tmp/Synagios_upgrade_temp"
+    source $TMPDIR/PORT
+    WEBINTERFACE_PORT=$SYNAGIOS_PORT
+}
+
+change_port
+
+if [ "${NAGIOS_PASSWORD}x" = "x" ]; then
+    run "htpasswd -bc /etc/nagios3/htpasswd.users nagiosadmin \"\""
+else
+    run "htpasswd -bc /etc/nagios3/htpasswd.users nagiosadmin \"$NAGIOS_PASSWORD\""
+fi
+
+if [ "${NAGRESTCONF_PASSWORD}x" = "x" ]; then
+    #run "sed -i 's/\(require *valid-user\)/#\1/i' /etc/apache2/conf.d/nagrestconf.conf"
+    run "htpasswd -bc /etc/nagios3/nagrestconf.users nagrestconfadmin \"\""
+else
+    run "htpasswd -bc /etc/nagios3/nagrestconf.users nagrestconfadmin \"$NAGRESTCONF_PASSWORD\""
+fi
+
+exit 0

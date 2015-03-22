@@ -1,0 +1,115 @@
+#!/bin/bash
+
+# This script checks swap space activity on the machine it is run on. It outputs the 
+# mumber of bytes moved from physical to swap space in the last DURATION seconds.
+#
+# Usage: "check_swap_activity -d DURATION(INTEGER) -w WARNING(INTEGER) -c CRITICAL(INTEGER)"
+#
+# WARNING < CRIT
+#
+# WARNING and CRIT are measured in bytes
+#
+# Returns the nagios native status codes:
+#
+# Nagios Status
+#
+# 0 = OK (SWAP usage below WARNING) 1 = WARNING (SWAP usage between
+# WARNING AND CRITICAL) 2 = CRITICAL (SWAP usage higher than CRITICAL) 3
+# = UNKNOWN (Wrong usage)
+#
+# Tested on:
+# - Ubuntu 12.04
+#
+# Copyright 2012 Shu Wei Tan (webblazers@yahoo.com)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# 
+# Change History:
+# 10/05/2012 - Version 1.0 - Shu Wei Tan (webblazers@yahoo.com)
+#
+## USAGE MESSAGE
+usage() { 
+cat << EOF
+usage: $0 options
+
+This script runs a swap space activity test on the machine.
+
+OPTIONS:
+   -h Show this message
+   -d Duration in seconds to monitor for swap activity (not optional)
+   -w Warning Level (not optional)
+   -c Critical Level (not optional)
+
+Warning Level should be lower than Critical Level!
+
+EOF
+}
+
+SWAP_WARN=
+SWAP_CRIT=
+## FETCH ARGUMENTS
+while getopts "hd:w:c:" OPTION; do
+        case "${OPTION}" in
+                h)
+                        usage
+                        exit 3
+                        ;;
+        d)
+            DURATION=${OPTARG}
+            ;;
+                w)
+                        SWAP_WARN=${OPTARG}
+                        ;;
+                c)
+                        SWAP_CRIT=${OPTARG}
+                        ;;
+                ?)
+                        usage
+                        exit 3
+                        ;;
+        esac
+done
+
+## CHECK ARGUMENTS
+if [ -z ${DURATION} ] ||  [ -z ${SWAP_WARN} ] || [ -z ${SWAP_CRIT} ] || [ ${SWAP_WARN} -gt ${SWAP_CRIT} ] ; then
+        usage
+        exit 3
+fi
+
+## GET SWAP INFO FROM MACHINE
+SWAPOUT_ACTIVITY=$(vmstat ${DURATION} 2 | tail -n 1 | awk '{print $8}')
+
+## CHECK SWAPPING ON MACHINE
+if [ ${SWAPOUT_ACTIVITY} -lt ${SWAP_WARN} ]; then
+    ## SWAP IS OK
+        LINE="OK! Swapout size in last ${DURATION} second(s): ${SWAPOUT_ACTIVITY} | swapout_size=${SWAPOUT_ACTIVITY}B;${SWAP_WARN};${SWAP_CRIT};"
+        echo $LINE
+    exit 0
+elif [ ${SWAPOUT_ACTIVITY} -gt ${SWAP_WARN} ] && [ ${SWAPOUT_ACTIVITY} -lt ${SWAP_CRIT} ] || [ ${SWAPOUT_ACTIVITY} -eq ${SWAP_WARN} ]; then
+    ## SWAP IS IN WARNING STATE
+        LINE="WARNING! Swapout size in last ${DURATION} second(s): ${SWAPOUT_ACTIVITY} | swapout_size=${SWAPOUT_ACTIVITY}B;${SWAP_WARN};${SWAP_CRIT};"
+        echo $LINE
+    exit 1
+elif [ ${USED_SWAP} -gt ${SWAP_CRIT} ] || [ ${USED_SWAP} -eq ${SWAP_CRIT} ]; then
+    ## SWAP IS IN CRITICAL STATE
+        LINE="CRITICAL! Swapout size in last ${DURATION} second(s): ${SWAPOUT_ACTIVITY} | swapout_size=${SWAPOUT_ACTIVITY}B;${SWAP_WARN};${SWAP_CRIT};"
+        echo $LINE
+        exit 2
+else
+
+    ## SHOULD NEVER REACH THIS POINT, MUST BE USAGE :)
+        usage
+        exit 3
+fi
+
