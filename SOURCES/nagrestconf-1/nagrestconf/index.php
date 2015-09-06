@@ -3744,6 +3744,11 @@
         print '<input class="field" type="text" id="icon_image_alt" '.
               'value="" name="icon_image_alt" />';
         print '</p>';
+        print '<p>';
+        print '<label for="sstatusmapimage">Status Map Image</label>';
+        print '<input class="field" type="text" id="statusmap_image" '.
+              'value="" name="statusmap_image" />';
+        print '</p>';
         print '</div>';
 
         print '</div>';
@@ -4219,6 +4224,11 @@
         print '<input class="field" type="text" id="icon_image_alt" '.
               'value="'.$icon_image_alt.'" name="icon_image_alt" />';
         print '</p>';
+        print '<p>';
+        print '<label for="sstatusmapimage">Status Map Image</label>';
+        print '<input class="field" type="text" id="statusmap_image" '.
+              'value="" name="statusmap_image" />';
+        print '</p>';
         print '</div>';
 
         print '</div>';
@@ -4389,6 +4399,8 @@
             $query_str["icon_image"] = "-";
         if( ! strlen( $query_str["icon_image_alt"] ) )
             $query_str["icon_image_alt"] = "-";
+        if( ! strlen( $query_str["statusmap_image"] ) )
+            $query_str["statusmap_image"] = "-";
         $json = json_encode( $query_str );
 
         # Do the REST edit hosttemplate request
@@ -4569,6 +4581,10 @@
               'value="" name="icon_image_alt" />';
         print '</p>';
         print '<p>';
+        print '<label for="sstatusmapimage">Status Map Image</label>';
+        print '<input class="field" type="text" id="statusmap_image" '.
+              'value="" name="statusmap_image" />';
+        print '</p>';
         print '</div>';
 
         print '</div>';
@@ -5024,6 +5040,10 @@
               'value="'.$icon_image_alt.'" name="icon_image_alt" />';
         print '</p>';
         print '<p>';
+        print '<label for="sstatusmapimage">Status Map Image</label>';
+        print '<input class="field" type="text" id="statusmap_image" '.
+              'value="" name="statusmap_image" />';
+        print '</p>';
         print '</div>';
 
         print '</div>';
@@ -5180,6 +5200,8 @@
             $query_str["icon_image"] = "-";
         if( ! strlen( $query_str["icon_image_alt"] ) )
             $query_str["icon_image_alt"] = "-";
+        if( ! strlen( $query_str["statusmap_image"] ) )
+            $query_str["statusmap_image"] = "-";
         $json = json_encode( $query_str );
 
         # Do the REST edit svctemplate request
