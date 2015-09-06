@@ -10119,7 +10119,13 @@
         print '<input class="field" type="text" id="chostname" name="copyto"'.
               ' required="required" />';
         print '</p>';
-        # Hostname
+        # Alias
+        print '<p>';
+        print '<label for="calias">New alias *</label>';
+        print '<input class="field" type="text" id="calias" name="alias"'.
+              ' required="required" />';
+        print '</p>';
+        # IP Address
         print '<p>';
         print '<label for="ipaddress">New IP Address *</label>';
         print '<input class="field" type="text" id="ipaddress" name="ipaddress"'.
@@ -10155,6 +10161,12 @@
             $retval["code"] = "400";
             print( json_encode( $retval ) );
             exit( 0 );
+        } else if( ! isset( $query_str["alias"] )
+                   || empty( $query_str["alias"] ) ) {
+            $retval["message"] = "A required field is empty.";
+            $retval["code"] = "400";
+            print( json_encode( $retval ) );
+            exit( 0 );
         } else if( ! isset( $query_str["copyto"] )
                    || empty( $query_str["copyto"] ) ) {
             $retval["message"] = "A required field is empty.";
@@ -10171,6 +10183,7 @@
         $tohost = trim( $query_str["copyto"] );
         $fromhost = $query_str["name"];
         $newipaddress = $query_str["ipaddress"];
+        $newalias = $query_str["alias"];
 
         # Clone the host
 
@@ -10190,6 +10203,7 @@
         }
         $new_qs["name"] = $tohost;
         $new_qs["ipaddress"] =  $newipaddress;
+        $new_qs["alias"] =  $newalias;
         # Don't create with servicesets field set otherwise
         # the host will be created from service sets. Save
         # and add servicesets field later.
