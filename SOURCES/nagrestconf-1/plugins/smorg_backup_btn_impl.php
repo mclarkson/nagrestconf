@@ -105,6 +105,7 @@
         print '    $(".flash.notice").html("Success: "+message).show();';
         print '    if( filename != null )';
         print '    window.location.href = "/nagrestconf/download/"+filename;';
+        $url = \create_url( );                                                                                                                         print '    $("#hoststable").html("").';                                                                                                        print '      load("'.$url.'&hoststable=true");';
         print '  } else {';
         print '    $(".flash.notice").hide();';
         print '    $(".flash.error").html("Fail: "+message).show();';
