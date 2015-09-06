@@ -119,8 +119,11 @@ case $1 in
         status
 	;;
 	log)
-        cat $NAGCHROOT/var/log/syslog \
-            $NAGCHROOT/var/log/nagios/nagios.log > /tmp/synagios.log
+        # Output last 50 lines of nagios.log, perfdata.log mail.log and apache access/error logs.
+        ( for i in nagios3/nagios.log pnp4nagios/perfdata.log mail.log apache2/access.log apache2/error.log; do echo -e "\n$i\n------------------------\n"; tail -50 $NAGCHROOT/var/log/$i; done; echo ) >/tmp/synagios.log
+        # Output all processes running in the chroot
+        echo -e "\nRunning Processes\n-----------------\n" >>/tmp/synagios.log
+        ls -ld /proc/[0-9]*/cwd 2>/dev/null | grep Synagios | grep -v $$ | while read a; do echo "$a" | sed -n 's#.*/proc/\([0-9]*\).*#\1#p'; done | while read a; do ps | grep "$a" | grep -v grep; done >>/tmp/synagios.log
         echo "/tmp/synagios.log"
 		exit 0
 	;;
