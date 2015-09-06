@@ -9513,6 +9513,13 @@
 
         ###:TAB3
         print '<div id="fragment-3">';
+        # Contact
+        print '<p>';
+        print '<label for="fcontact">Parents</label>';
+        print '<input class="field" type="text" id="fparents"';
+        print ' value="'.$parents.'" name="parents">';
+        print '</p>';
+        #
         print '<p>';
         print '<label for="srsi">Retain Status Info</label>';
         print '<select name="retainstatusinfo" id="srsi" class="field">';
@@ -9949,6 +9956,13 @@
 
         ###:TAB3
         print '<div id="fragment-3">';
+        # Contact
+        print '<p>';
+        print '<label for="fcontact">Parents</label>';
+        print '<input class="field" type="text" id="fparents"';
+        print ' value="" name="parents">';
+        print '</p>';
+        #
         print '<p>';
         print '<label for="srsi">Retain Status Info</label>';
         print '<select name="retainstatusinfo" id="srsi" class="field">';
