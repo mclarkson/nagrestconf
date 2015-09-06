@@ -152,6 +152,7 @@ EnD
 
     run "gdebi --apt-line nagrestconf_* | tail -2 | head -1 | xargs apt-get -qy install"
     run "apt-get install -qy pnp4nagios"
+    run "apt-get install -qy nagios-nrpe-plugin"
 
     run "dpkg -i *.deb"
     run "nagrestconf_install -a"
