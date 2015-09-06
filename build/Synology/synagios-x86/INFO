@@ -1,6 +1,6 @@
 package="Synagios"
 dsmappname="com.Synagios.Synagios"
-version="0.13"
+version="0.14"
 description="Synagios is a complete monitoring solution for your network that includes three core components: monitoring with Nagios, configuration with Nagrestconf, and graphing with Pnp4Nagios."
 support_url="http://nagrestconf.smorg.co.uk/support.php"
 maintainer="Mark Clarkson"
