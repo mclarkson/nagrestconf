@@ -4227,7 +4227,7 @@
         print '<p>';
         print '<label for="sstatusmapimage">Status Map Image</label>';
         print '<input class="field" type="text" id="statusmap_image" '.
-              'value="" name="statusmap_image" />';
+              'value="'.$statusmap_image.'" name="statusmap_image" />';
         print '</p>';
         print '</div>';
 
