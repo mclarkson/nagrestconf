@@ -1,0 +1,245 @@
+#!/bin/bash
+# Copyright (C) 2010 Mark Clarkson
+#
+# File:     check_cluster.sh
+# Author:   Mark Clarkson
+# Date:     11 Feb 2014
+# Version:  0.10
+# Modified:
+#           2014-09-30 XXXX
+#           * XXXX
+#
+# Notes:
+#
+
+set -f
+shopt -u extglob
+
+# ---------------------------------------------------------------------------
+# SETINGS - MODIFY AS NEEDED
+# ---------------------------------------------------------------------------
+
+#
+#
+# -------------------- DO NOT MODIFY ANYTHING BELOW -------------------------
+#
+#
+
+# ---------------------------------------------------------------------------
+# GLOBALS
+# ---------------------------------------------------------------------------
+
+# Program args
+ME="$0"
+
+SERVICECHECK=0
+HOSTCHECK=0
+STATUSES=
+CRITNUM=2
+declare -a VALIDCOLS
+
+NAGOK=0
+NAGWARN=1
+NAGCRIT=2
+NAGUNKN=3
+
+# ----------------------------------------------------------------------------
+usage()
+# ----------------------------------------------------------------------------
+{
+    echo
+    echo "`basename $ME` - Check a number of results against a table."
+    echo
+    echo "Usage: `basename $ME` (-s | -H) (-t col1[,col2,..,colN])* "
+    echo "    -c NUM -d col1[,col2,..,colN]"
+    echo
+    echo " -h      : Display this help text."
+    echo " -S      : Check services."
+    echo " -H      : Check hosts."
+    echo " -t STR  : Valid statuses. Use one or more times. Comma delimited."
+    echo "           Use 1 or 0 only."
+    echo " -d STR  : The current service or host statuses. Comma delimited."
+    echo " -c NUM  : If the number of criticals in the '-d' option exceeds"
+    echo "           NUM then this plugin will return critical. Default 2."
+    echo "           For Host checks this option relates to the number of"
+    echo "           host that are in a non-OK state."
+    echo
+    echo "Examples:"
+    echo
+    echo "If -d option represents Load, CPU, Swap Activity then the following"
+    echo "will NOT alert when cpu and load are both warning/critical nor when"
+    echo "CPU usage alone is warning/critical."
+    echo
+    echo " ./`basename $ME` -S -t 1,1,1 -t 0,1,1 -t 1,0,1 -t 0,0,1 -t 1,0,0 \\"
+    echo "    -d 0,1,0"
+    echo
+}
+
+# ----------------------------------------------------------------------------
+parse_options()
+# ----------------------------------------------------------------------------
+# Purpose:      Parse program options and set globals.
+# Arguments:    The command line
+# Returns:      Nothing
+{
+    local new
+
+    set -- "$@"
+    while true
+    do
+        case $1 in
+            #-v) shift ; gVersion=$1
+            #;;
+            -h) usage ; exit 0
+            ;;
+            -S) SERVICECHECK=1
+            ;;
+            -H) HOSTCHECK=1
+            ;;
+            -t) VALIDCOLS+=(${2// /})
+                shift
+            ;;
+            -d) STATUSES=${2// /}
+                shift
+            ;;
+            -c) CRITNUM=$2
+                shift
+            ;;
+            ?*) echo "Syntax error." ; exit 1
+            ;;
+        esac
+        shift 1 || break
+    done
+}
+
+# ----------------------------------------------------------------------------
+sanity_check()
+# ----------------------------------------------------------------------------
+# Purpose:      Check various options are correct
+# Arguments:    None
+# Returns:      Nothing
+{
+    [[ $SERVICECHECK -eq 0 && $HOSTCHECK -eq 0 ]] && {
+        usage
+        echo "ERROR: Must specify one of '-S' or '-H'"
+        exit 0
+    }
+
+    [[ $SERVICECHECK -eq 1 && $HOSTCHECK -eq 1 ]] && {
+        usage
+        echo "ERROR: Must specify only one of '-S' or '-H'"
+        exit 0
+    }
+
+    [[ -z $STATUSES ]] && {
+        usage
+        echo "ERROR: Must have at least one '-d' option."
+        exit 0
+    }
+
+    [[ ${#VALIDCOLS[*]} -eq 0 ]] && {
+        usage
+        echo "ERROR: Must have at least one '-t' option."
+        exit 0
+    }
+}
+
+# ----------------------------------------------------------------------------
+main()
+# ----------------------------------------------------------------------------
+# Purpose:      Script starts here
+# Arguments:    None
+# Returns:      Nothing
+{
+    parse_options "$@"
+
+    sanity_check
+
+    retval=$NAGOK
+
+    IFS=, read -a sta < <(echo "${STATUSES[x]}")
+
+    declare -i allbad=0
+    declare -i bad=0
+    declare -i allcrit=0
+    declare -i crit=0
+    declare -i allwarn=0
+    declare -i warn=0
+    declare -i count=0
+    declare -i x=0
+
+    while :; do
+        [[ -z ${VALIDCOLS[x]} ]] && break
+        IFS=, read -a col < <(echo "${VALIDCOLS[x]}")
+        allbad=0
+        allcrit=0
+        allwarn=0
+        for j in `seq 0 $((${#col[*]}-1))`; do
+            [[ ${sta[j]} -gt 0 ]] && allbad+=1
+            [[ ${sta[j]} -eq 1 ]] && allwarn+=1
+            [[ ${sta[j]} -eq 2 ]] && allcrit+=1
+        done
+        x+=1
+    done
+
+    x=0
+
+    while :; do
+        [[ -z ${VALIDCOLS[x]} ]] && break
+        IFS=, read -a col < <(echo "${VALIDCOLS[x]}")
+        bad=0
+        crit=0
+        count=0
+        warn=0
+        for j in `seq 0 $((${#col[*]}-1))`; do
+            [[ ${col[j]} -eq 1 ]] && {
+                count+=1
+                [[ ${sta[j]} -gt 0 ]] && bad+=1
+                [[ ${sta[j]} -eq 1 ]] && warn+=1
+                [[ ${sta[j]} -eq 2 ]] && crit+=1
+            }
+            [[ ${col[j]} -eq 0 ]] && {
+                [[ ${sta[j]} -gt 0 ]] && bad=0
+            }
+        done
+        [[ $bad -eq $count ]] && {
+            match=${VALIDCOLS[x]}
+            retval=$NAGWARN
+            [[ $crit -ge $CRITNUM ]] && retval=$NAGCRIT
+            [[ $HOSTCHECK -eq 1 && $bad -ge $CRITNUM ]] && retval=$NAGCRIT
+            break
+        }
+        x+=1
+    done
+
+    [[ $bad -ne 1 ]] && s="s"
+    smtxt="Match for '$match'. $allwarn warning, $allcrit critical."
+    hmtxt="Match for '$match'. $allbad host$s down."
+
+    if [[ $retval -eq $NAGCRIT ]]; then
+        if [[ $SERVICECHECK -eq 1 ]]; then
+            echo "CLUSTER CRITICAL: $smtxt"
+        else
+            echo "CLUSTER CRITICAL: $hmtxt"
+        fi
+    elif [[ $retval -eq $NAGWARN ]]; then
+        if [[ $SERVICECHECK -eq 1 ]]; then
+            echo "CLUSTER WARNING: $smtxt"
+        else
+            echo "CLUSTER WARNING: $hmtxt"
+        fi
+    else
+        [[ $allbad -ne 1 ]] && s="s"
+        if [[ $SERVICECHECK -eq 1 ]]; then
+            soktxt="$allwarn warning, $allcrit critical."
+            echo "CLUSTER OK: $soktxt"
+        else
+            hoktxt="$allbad host$s down."
+            echo "CLUSTER OK: $hoktxt"
+        fi
+    fi
+
+    exit $retval
+}
+
+main "$@"
