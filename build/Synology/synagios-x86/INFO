@@ -13,7 +13,7 @@ report_url="http://nagrestconf.smorg.co.uk/support.php"
 install_reboot="no"
 startable="yes"
 extractsize="431739614"
-checksum="104ec399b164fb68504cbe2b95521001"
+checksum="e7b98c8a4f9a647e7c59c19bbe955cfe"
 distributor_url="http://nagrestconf.smorg.co.uk/documentation/gettingstartedguid.php"
 package_icon="iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAABmJLR0QA/wD/AP+g
 vaeTAAAACXBIWXMAAA3UAAAN1AHvkboVAAAAB3RJTUUH3gEPCTEXy7xX4wAAHflJ
