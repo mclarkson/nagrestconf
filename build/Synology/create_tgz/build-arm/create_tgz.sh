@@ -272,7 +272,7 @@ EnD
             "allUsers": false,
             "title": "Synagios",
             "desc": "Synagios - monitoring with your NAS.",
-            "icon": "images/meerkat_{0}x{0}.png",
+            "icon": "images/meerkat_{0}.png",
             "url": "3rdparty/Synagios/redirect.cgi"
         }
     }
