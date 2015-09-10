@@ -7763,8 +7763,8 @@
         print '</p>';
         # Custom Variables
         print '<p>';
-        print '<label for="customvars">Custom Variables</label>';
-        print '<input class="field" type="text" id="customvars"';
+        print '<label for="ecustomvars">Custom Variables</label>';
+        print '<input class="field" type="text" id="ecustomvars"';
         print ' value="'.$customvars.'" name="customvars">';
         print '</p>';
         print '</div>';
@@ -7832,6 +7832,12 @@
         if( $activechecks == "0" ) $checked="";
         print '<input class="field" type="checkbox" id="sactivechecks"';
         print ' name="activechecks" '.$checked.' />';
+        print '</p>';
+        # Notes
+        print '<p>';
+        print '<label for="snotes">Custom Variables</label>';
+        print '<input class="field" type="text" id="snotes"';
+        print ' value="'.$notes.'" name="notes">';
         print '</p>';
         print '</div>';
 
@@ -8006,6 +8012,8 @@
             $query_str["freshnessthresh"] = "-";
         if( empty( $query_str["svcgroup"] ) )
             $query_str["svcgroup"] = "-";
+        if( empty( $query_str["notes"] ) )
+            $query_str["notes"] = "-";
         $json = json_encode( $query_str );
 
         # Do the REST add host request
@@ -9515,6 +9523,12 @@
         print '<input class="field" type="text" id="emaxcheckattempts"';
         print ' value="'.$maxcheckattempts.'" name="maxcheckattempts">';
         print '</p>';
+        # Notes
+        print '<p>';
+        print '<label for="notes">Notes</label>';
+        print '<input class="field" type="text" id="notes"';
+        print ' value="'.$notes.'" name="notes">';
+        print '</p>';
         print '</div>';
 
         ###:TAB3
@@ -9732,6 +9746,10 @@
             $query_str["maxcheckattempts"] = "-";
         if( empty( $query_str["servicesets"] ) )
             $query_str["servicesets"] = "-";
+        if( empty( $query_str["customvars"] ) )
+            $query_str["customvars"] = "-";
+        if( empty( $query_str["notes"] ) )
+            $query_str["notes"] = "-";
         $json = json_encode( $query_str );
 
         # Do the REST add host request
@@ -9963,6 +9981,12 @@
         print '<label for="emaxcheckattempts">Max check attempts</label>';
         print '<input class="field" type="text" id="emaxcheckattempts"';
         print ' value="" name="maxcheckattempts">';
+        print '</p>';
+        # Notes
+        print '<p>';
+        print '<label for="enotes">Notes</label>';
+        print '<input class="field" type="text" id="enotes"';
+        print ' value="" name="notes">';
         print '</p>';
         print '</div>';
 
@@ -10531,6 +10555,7 @@
         $newservice["checkfreshness"] = $checkfreshness;
         $newservice["retainstatusinfo"] = $retainstatusinfo;
         $newservice["retainnonstatusinfo"] = $retainnonstatusinfo;
+        $newservice["notes"] = $notes;
         $json = json_encode( $newservice );
         $request = new RestRequest(
           RESTURL.'/add/services',
@@ -10915,6 +10940,12 @@
         print '<input class="field" type="checkbox" id="sactivechecks"';
         print ' name="activechecks" '.$checked.' />';
         print '</p>';
+        # Notes
+        print '<p>';
+        print '<label for="snotes">Notes</label>';
+        print '<input class="field" type="text" id="snotes"';
+        print ' value="" name="notes">';
+        print '</p>';
         print '</div>';
 
         ###:TAB3
@@ -11082,6 +11113,8 @@
             $query_str["freshnessthresh"] = "-";
         if( empty( $query_str["svcgroup"] ) )
             $query_str["svcgroup"] = "-";
+        if( empty( $query_str["notes"] ) )
+            $query_str["notes"] = "-";
         $json = json_encode( $query_str );
 
         # Do the REST add host request
@@ -11345,6 +11378,12 @@
         print '<label for="sactivechecks">Active Check</label>';
         print '<input class="field" type="checkbox" id="sactivechecks"';
         print ' name="activechecks" checked />';
+        print '</p>';
+        # Notes
+        print '<p>';
+        print '<label for="notes">Notes</label>';
+        print '<input class="field" type="text" id="notes"';
+        print ' value="" name="notes">';
         print '</p>';
         print '</div>';
 
