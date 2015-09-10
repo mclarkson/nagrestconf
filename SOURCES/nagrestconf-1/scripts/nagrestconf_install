@@ -98,12 +98,9 @@ add_root_crontab_dcc()
 {
     # Add crontab
     echo "Attempting to delete any existing crontab entry."
-    sed -i '/update_nagios/d' /var/spool/cron/root
+    crontab -l | sed '/update_nagios/d' | crontab -
     echo "Appending crontab entry:"
-    cat >>/var/spool/cron/root <<EnD
-* * * * * /usr/bin/update_nagios
-EnD
-    touch /var/spool/cron/
+    (crontab -l; echo "* * * * * /usr/bin/update_nagios") | crontab -
 }
 
 # ---------------------------------------------------------------------------
@@ -112,12 +109,9 @@ add_root_crontab()
 {
     # Add crontab
     echo "Attempting to delete any existing crontab entry."
-    sed -i '/nagios_restart_request/d' /var/spool/cron/root
+    crontab -l | sed '/nagios_restart_request/d' | crontab -
     echo "Appending crontab entry:"
-    cat >>/var/spool/cron/root <<EnD
-* * * * * /usr/bin/test -e /tmp/nagios_restart_request && ( /bin/rm /tmp/nagios_restart_request; /usr/bin/restart_nagios; )
-EnD
-    touch /var/spool/cron/
+    (crontab -l; echo "* * * * * /usr/bin/test -e /tmp/nagios_restart_request && ( /bin/rm /tmp/nagios_restart_request; /usr/bin/restart_nagios; )") | crontab -
 }
 
 # ---------------------------------------------------------------------------

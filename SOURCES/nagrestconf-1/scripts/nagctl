@@ -1523,7 +1523,7 @@ modify_host_line()
                 unlockdir
                 exit 16
             fi
-        done <<<$( item_search 1 $FILE_SERVICES "$name" )
+        done <<<"$( item_search 1 $FILE_SERVICES \"$name\" )"
 
         if item_exists "1" $FILE_HOSTEXTINFO "$name"
         then
@@ -1542,7 +1542,7 @@ modify_host_line()
                 unlockdir
                 exit 16
             fi
-        done <<<$( item_search 1 $FILE_SERVICES "$name" )
+        done <<<"$( item_search 1 $FILE_SERVICES \"$name\" )"
 
         if item_exists "1" $FILE_HOSTEXTINFO "$name"
         then
@@ -3512,7 +3512,7 @@ check_nagiosconfig()
         while read a; do
             [[ $a == "Total Warnings"* ]] && b=$a
             [[ $a == "Total Errors"* ]] && c=$a
-        done <<<$( sudo $NAGIOSBIN -v $NAG_CONFIG )
+        done <<<"$( sudo $NAGIOSBIN -v $NAG_CONFIG )"
     else
         sudo $NAGIOSBIN -v $NAG_CONFIG | tee $tmp
         if grep -qs "Total Warnings" $tmp; then
@@ -4238,7 +4238,7 @@ pipecmd_enablehostsvcchecks()
             desc=`echo $a | cut -d, -f4`
             printf "[%lu] ENABLE_PASSIVE_SVC_CHECKS;$name;$desc\n" \
                 $now > $COMMANDFILE
-        done <<<$( item_search 1 $FILE_SERVICES "$name" )
+        done <<<"$( item_search 1 $FILE_SERVICES \"$name\" )"
 
         sleep 1
 
@@ -4251,7 +4251,7 @@ pipecmd_enablehostsvcchecks()
                 printf "[%lu] ENABLE_SVC_CHECK;$name;$desc\n" $now \
                     > $COMMANDFILE
             }
-        done <<<$( item_search 1 $FILE_SERVICES "$name" )
+        done <<<"$( item_search 1 $FILE_SERVICES \"$name\" )"
     fi
     unlockdir
 
@@ -4292,7 +4292,7 @@ pipecmd_disablehostsvcchecks()
             printf \
                 "[%lu] PROCESS_SERVICE_CHECK_RESULT;$name;$desc;0;$comment\n" \
                 $now >$COMMANDFILE
-        done <<<$( item_search 1 $FILE_SERVICES "$name" )
+        done <<<"$( item_search 1 $FILE_SERVICES \"$name\" )"
 
         # TODO: Nagios does not seem to process its external command queue in
         # the order in which items are queued, hence these silly sleeps.
@@ -4314,7 +4314,7 @@ pipecmd_disablehostsvcchecks()
             desc=`echo $a | cut -d, -f4`
             printf "[%lu] DISABLE_PASSIVE_SVC_CHECKS;$name;$desc\n" \
                 $now > $COMMANDFILE
-        done <<<$( item_search 1 $FILE_SERVICES "$name" )
+        done <<<"$( item_search 1 $FILE_SERVICES \"$name\" )"
     fi
     unlockdir
 
@@ -4499,9 +4499,9 @@ pipecmd_delhostdowntime()
         now=`date +%s`
         while read id; do
             echo "[$now] DEL_HOST_DOWNTIME;$id" >$COMMANDFILE
-        done <<<$( sed -n "/hostdowntime/,/downtime_id/ {
+        done <<<"$( sed -n \"/hostdowntime/,/downtime_id/ {
             /host_name=$name/,/downtime_id/ {
-            s/[[:space:]]*downtime_id=//p} }" $STATUSFILE )
+            s/[[:space:]]*downtime_id=//p} }\" $STATUSFILE )"
     fi
     unlockdir
 

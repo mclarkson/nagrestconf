@@ -6,7 +6,7 @@
         <!-- Content -->
         <div class="row" style="padding-left:10px;padding-right:20px;">
           <h1>Ubuntu Installation Guide</h1>
-          <p>This page details how to install nagrestonf on <a href="http://www.ubuntu.com/">Ubuntu</a>.</p>
+          <p>This page details how to install nagrestonf on <a href="http://www.ubuntu.com/">Ubuntu Trusty</a>.</p>
           <p>Packages that nagrestconf depends on, such as Nagios and Apache, will be installed
              automatically.</p>
           <h3>Before installation</h3>
@@ -26,35 +26,30 @@
           <p>Get the packages for Ubuntu from the <a href="/downloads.php">download page</a> then copy them to the server.</p>
           <p>Open a terminal window or ssh session then install nagrestconf and all plugins:</p>
           <pre>apt-get update
-apt-get install gdebi-core
-gdebi nagrestconf_1.173_all.deb
-dpkg -i nagrestconf-services-plugin_1.173_all.deb \
-      nagrestconf-services-bulktools-plugin_1.173_all.deb \
-      nagrestconf-hosts-bulktools-plugin_1.173_all.deb \
-      nagrestconf-backup-plugin_1.173_all.deb</pre>
+sudo apt-get install gdebi-core
+sudo gdebi nagrestconf_1.174_all.deb
+sudo dpkg -i nagrestconf-services-plugin_1.174_all.deb \
+      nagrestconf-services-bulktools-plugin_1.174_all.deb \
+      nagrestconf-hosts-bulktools-plugin_1.174_all.deb \
+      nagrestconf-backup-plugin_1.174_all.deb</pre>
 
           <h3>Configure the Operating System</h3>
           <p>Use the two helper scripts 'nagrestconf_install' and 'slc_configure'.</p>
-          <pre>nagrestconf_install -a
-slc_configure --folder=local</pre>
-          <p>The following two lines are needed for Ubuntu 13.</p>
-          <p>They are not needed for Ubuntu 12.</p>
-          <pre>ln -s /etc/apache2/conf.d/nagrestconf.conf /etc/apache2/conf-enabled/
-ln -s /etc/apache2/conf.d/rest.conf /etc/apache2/conf-enabled/</pre>
-          <p>Add the crontab to the correct location.</p>
-          <pre>cat /var/spool/cron/root &gt;&gt;/var/spool/cron/crontabs/root
-chmod 0600 /var/spool/cron/crontabs/root
-service cron restart</pre>
+          <pre>sudo nagrestconf_install -a
+sudo slc_configure --folder=local</pre>
+          <p>Enable the REST and GUI applications.</p>
+          <pre>sudo ln -s /etc/apache2/conf.d/nagrestconf.conf /etc/apache2/conf-enabled/
+sudo ln -s /etc/apache2/conf.d/rest.conf /etc/apache2/conf-enabled/</pre>
           <p>Change two variables in nagios.cfg</p>
-          <pre>sed -i 's/check_external_commands=0/check_external_commands=1/g' /etc/nagios3/nagios.cfg
-sed -i 's/enable_embedded_perl=1/enable_embedded_perl=0/g' /etc/nagios3/nagios.cfg</pre>
+          <pre>sudo sed -i 's/check_external_commands=0/check_external_commands=1/g' /etc/nagios3/nagios.cfg
+sudo sed -i 's/enable_embedded_perl=1/enable_embedded_perl=0/g' /etc/nagios3/nagios.cfg</pre>
           <p>Relax permissions for the pipes</p>
-          <pre>chmod 770 /var/lib/nagios3/rw/</pre>
+          <pre>sudo chmod 770 /var/lib/nagios3/rw/</pre>
           <!--<p>Create a password for nagiosadmin - for GUI access to nagios.</p>
           <pre>htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin a_password</pre>
           -->
           <p>Create a password for nagrestconfadmin - for GUI access to nagrestconf.</p>
-          <pre>htpasswd -bc /etc/nagios3/nagrestconf.users nagrestconfadmin a_password</pre>
+          <pre>sudo htpasswd -bc /etc/nagios3/nagrestconf.users nagrestconfadmin a_password</pre>
           <p>Note that, by default, the nagrestconf GUI can only be reached from the host it was installed on, localhost. To enable connecting to nagrestconf from other hosts edit the apache configuration.</p>
           <p>For example,</p>
           <!--<p>Edit /etc/apache2/conf.d/nagios.conf:</p>
@@ -63,16 +58,16 @@ sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/htpasswd.users#i' \
     /etc/apache2/conf.d/nagios3.conf</pre>
           -->
           <p>Edit /etc/apache2/conf.d/nagrestconf.conf:</p>
-          <pre>cp /etc/apache2/conf.d/nagrestconf.conf /tmp
-sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios3/nagrestconf.users#i' \
+          <pre>sudo cp /etc/apache2/conf.d/nagrestconf.conf /tmp
+sudo sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios3/nagrestconf.users#i' \
     /etc/apache2/conf.d/nagrestconf.conf
-sed -i 's/allow from 127.0.0.1/allow from all/i' \
+sudo sed -i 's/allow from 127.0.0.1/allow from all/i' \
     /etc/apache2/conf.d/nagrestconf.conf
-sed -i 's/#Require/Require/i'     /etc/apache2/conf.d/nagrestconf.conf
-sed -i 's/#Auth/Auth/i'     /etc/apache2/conf.d/nagrestconf.conf</pre>
+sudo sed -i 's/#Require/Require/i'     /etc/apache2/conf.d/nagrestconf.conf
+sudo sed -i 's/#Auth/Auth/i'     /etc/apache2/conf.d/nagrestconf.conf</pre>
           <p>Restart apache and nagios</p>
-          <pre>service apache2 restart
-service nagios3 restart</pre>
+          <pre>sudo service apache2 restart
+sudo service nagios3 restart</pre>
           <p>The nagios restart will show errors since the configuration is empty.</p>
 
           <h3>Test nagrestconf and nagios</h3>

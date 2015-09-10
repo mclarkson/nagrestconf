@@ -88,7 +88,7 @@ do
             [[ $a == "M" ]] && {
                  CHANGES=1
             }
-        done <<<$( svn st )
+        done <<<"$( svn st )"
         [[ $CHANGES -eq 1 ]] && {
             svn ci -m "Changes saved"
             [[ -n $dcc ]] && {

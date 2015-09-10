@@ -921,7 +921,7 @@ create_hostgroups()
         }
         echo "}"
         echo
-    done <<<$( cat $gfnhostgrpsetupauto | sed "s/^${prefix}//" )
+    done <<<"$( cat $gfnhostgrpsetupauto | sed \"s/^${prefix}//\" )"
     exec 1>&3 3>&-
 
 }

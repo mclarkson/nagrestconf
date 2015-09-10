@@ -26,7 +26,7 @@
           <tr>
           <td>Ubuntu</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Ubuntu/">Latest Ubuntu packages</a></td>
-          <td>1.172</td>
+          <td>1.174</td>
           <td><a href="/installguides/ubuntu.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
