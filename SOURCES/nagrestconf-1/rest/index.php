@@ -1446,6 +1446,7 @@ class WriteCmd
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
         $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$customvars;
 
         $this->newcmdline .= "'";
 
@@ -1507,6 +1508,7 @@ class WriteCmd
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
         $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$customvars;
 
         $this->newcmdline .= "'";
 
@@ -2132,6 +2134,7 @@ class WriteCmd
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
         $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$customvars;
 
         $this->newcmdline .= "'";
 
@@ -2751,6 +2754,7 @@ class WriteCmd
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
         $this->newcmdline .= ",".$action_url;
+        $this->newcmdline .= ",".$customvars;
 
         $this->newcmdline .= "'";
 
@@ -3632,6 +3636,7 @@ function csv2array( $output, $subcmd )
             44 => "coords2d",
             45 => "coords3d",
             46 => "action_url",
+            47 => "customvars",
         ),
         'services' => array(
             1 => "name",
