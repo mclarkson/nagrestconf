@@ -68,7 +68,7 @@ for i in `ls /tmp/nagios_update_* 2>/dev/null` ; do
         cd $basedir/setup
         while read a b; do
             UPDATE=1
-        done < <( svn up | tail -n+2 )
+        done <<<$( svn up | tail -n+2 )
     }
     [[ $UPDATE -eq 1 ]] && {
         cd $basedir

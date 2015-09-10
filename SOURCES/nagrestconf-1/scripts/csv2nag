@@ -588,7 +588,7 @@ create_host_files()
             stalkingoptions notes notes_url icon_image icon_image_alt \
             vrml_image statusmap_image coords2d coords3d action_url \
             customvars x \
-            < <(echo "$a")
+            <<<"$a"
 
         [[ "$disable" == "1" || \
            ( $DCC -eq 1 && "$disable" == "2" ) ]] && continue
@@ -653,7 +653,7 @@ create_host_files()
             while read -d"," cv
             do
                 echo "        ${cv%%|*}                  ${cv##*|}"
-            done < <(echo "$customvars,")
+            done <<<"$customvars,"
         }
         [[ -n $displayname ]] && {
             echo "       display_name $displayname"
@@ -834,7 +834,7 @@ create_servicegroups()
         exec 1>&3 3>&-
         line=`get_servicegroup_line "$a"`
         IFS=, read dummy alias disable members servicegroupmembers \
-            notes notes_url action_url x < <( echo "$line")
+            notes notes_url action_url x <<<"$line"
         [[ "$disable" == "1" ]] && continue
         [[ -z "$alias" ]] && {
             echo
@@ -891,7 +891,7 @@ create_hostgroups()
         exec 1>&3 3>&-
         line=`get_hostgroup_line "$a"`
         IFS=, read dummy alias disable members hostgroupmembers \
-            notes notes_url action_url x < <( echo "$line")
+            notes notes_url action_url x <<<"$line"
         [[ "$disable" == "1" ]] && continue
         [[ -z "$alias" ]] && {
             echo "ERROR: Entry for hostgroup, $a, is not defined in the "
@@ -921,7 +921,7 @@ create_hostgroups()
         }
         echo "}"
         echo
-    done < <( cat $gfnhostgrpsetupauto | sed "s/^${prefix}//" )
+    done <<<$( cat $gfnhostgrpsetupauto | sed "s/^${prefix}//" )
     exec 1>&3 3>&-
 
 }
@@ -945,7 +945,7 @@ create_service_entries()
     while read a; do 
         [[ -z $a || $a == "#"* ]] && continue
 
-        IFS=, read hostname x x x x x x x x disable x < <(echo "$a")
+        IFS=, read hostname x x x x x x x x disable x <<<"$a"
         
         [[ "$disable" == "1" || \
            ( $DCC -eq 1 && "$disable" == "2" ) ]] && continue
@@ -980,7 +980,7 @@ create_service_entries()
                 notifperiod notifopts notifications_enabled stalkingoptions \
                 notes notes_url action_url icon_image icon_image_alt \
                 vrml_image statusmap_image coords2d coords3d x \
-                < <(echo "$b")
+                <<<"$b"
 
             [[ "$disable" == "1" || \
                ( $DCC -eq 1 && "$disable" == "2" ) ]] && continue
@@ -1070,7 +1070,7 @@ create_service_entries()
                 while read -d"," cv
                 do
                     echo "        ${cv%%|*}                  ${cv##*|}"
-                done < <(echo "$customvars,")
+                done <<<"$customvars,"
             }
             [[ -n $isvolatile ]] && {
                 echo "       is_volatile $isvolatile"
@@ -1207,7 +1207,7 @@ create_service_entries()
             echo "}"
             echo
 
-        done # < <( grep "^$hostname," $gfnsvcsetup )
+        done # <<<$( grep "^$hostname," $gfnsvcsetup )
         # Bash bug? when run in a function file descriptors are left open.
 
         exec 1>&3 3>&-
@@ -1253,7 +1253,7 @@ create_servicetemplates()
             notifications_enabled stalkingoptions notes notes_url \
             action_url icon_image icon_image_alt vrml_image \
             statusmap_image coords2d coords3d \
-            < <(echo "$a")
+            <<<"$a"
 
         [[ "$disable" == "1" ]] && continue
 
@@ -1311,7 +1311,7 @@ create_servicetemplates()
             while read -d"," cv
             do
                 echo "        ${cv%%|*}                  ${cv##*|}"
-            done < <(echo "$customvars,")
+            done <<<"$customvars,"
         }
         [[ -n $isvolatile ]] && {
             echo "       is_volatile $isvolatile"
@@ -1494,7 +1494,7 @@ create_hosttemplates()
             stalkingoptions notes notes_url icon_image \
             icon_image_alt vrml_image statusmap_image coords2d \
             coords3d action_url x \
-            < <(echo "$a")
+            <<<"$a"
 
         echo "define host {"
         # not in nagios 3
@@ -1692,7 +1692,7 @@ create_contacts()
             svcnotifenabled hstnotifenabled pager address1 address2 \
             address3 address4 address5 address6 retainstatusinfo \
             retainnonstatusinfo contactgroups x \
-            < <(echo "$a")
+            <<<"$a"
 
         echo "define contact {"
         Echo "       contact_name                  $cname"
@@ -1780,7 +1780,7 @@ create_contacts()
     while read a; do 
         [[ -z $a || $a == "#"* ]] && continue
 
-        IFS=, read cname use members < <(echo "$a")
+        IFS=, read cname use members <<<"$a"
 
         echo "define contactgroup {"
         Echo "       contactgroup_name             $cname"
@@ -1821,7 +1821,7 @@ create_timeperiods()
         [[ -z $a || $a == "#"* ]] && continue
 
         IFS=, read name alias definition exclude disable exception x \
-            < <(echo "$a")
+            <<<"$a"
 
         [[ -n $definition ]] && definition=$(echo "$definition" | tr '`' ',')
         [[ -n $exception ]] && exception=$(echo "$exception" | tr '`' ',')
@@ -1834,13 +1834,13 @@ create_timeperiods()
             while read -d"," b
             do
                 printf "       %-17s ${b##*|}\n" "${b%%|*}"
-            done < <(echo "$definition,")
+            done <<<"$definition,"
         }
         [[ -n $exception ]] && {
             while read -d"," b
             do
                 printf "       %-17s ${b##*|}\n" "${b%%|*}"
-            done < <(echo "$exception,")
+            done <<<"$exception,"
         }
         [[ -n $exclude ]] && {
             t="${exclude// /,}"
@@ -1877,7 +1877,7 @@ create_commands()
     while read -r a; do 
         [[ -z $a || $a == "#"* ]] && continue
 
-        IFS=, read -r name command disable x < <(echo "$a")
+        IFS=, read -r name command disable x <<<"$a"
 
         name=`urldecode "$name"`
         command=`urldecode "$command"`
@@ -1921,7 +1921,7 @@ create_servicedeps()
         IFS=, read dephostname dephostgroupname depsvcdesc \
             hostname hostgroupname svcdesc inheritsparent \
             execfailcriteria notiffailcriteria period disable x \
-            < <( echo "$a" )
+            <<<"$a" 
 
         [[ "$disable" == "1" ]] && continue
 
@@ -1994,7 +1994,7 @@ create_hostdeps()
         IFS=, read dephostname dephostgroupname \
             hostname hostgroupname inheritsparent \
             execfailcriteria notiffailcriteria period disable x \
-            < <( echo "$a" )
+            <<<"$a" 
 
         [[ "$disable" == "1" ]] && continue
 
@@ -2060,7 +2060,7 @@ create_serviceesc()
 
         IFS=, read hostname hostgroupname svcdesc contacts contactgroups \
             firstnotif lastnotif notifinterval period escopts disable x \
-            < <( echo "$a" )
+            <<<"$a" 
 
         [[ "$disable" == "1" ]] && continue
 
@@ -2128,7 +2128,7 @@ create_hostesc()
 
         IFS=, read hostname hostgroupname contacts contactgroups \
             firstnotif lastnotif notifinterval period escopts disable x \
-            < <( echo "$a" )
+            <<<"$a" 
 
         [[ "$disable" == "1" ]] && continue
 
@@ -2195,7 +2195,7 @@ create_serviceext()
 
         IFS=, read hostname svcdesc notes notes_url action_url \
             icon_image icon_image_alt disable x \
-            < <( echo "$a" )
+            <<<"$a" 
 
         [[ "$disable" == "1" ]] && continue
 
@@ -2255,7 +2255,7 @@ create_hostext()
         IFS=, read hostname notes notes_url action_url \
             icon_image icon_image_alt vrml_image statusmap_image \
             coords2d coords3d disable x \
-            < <( echo "$a" )
+            <<<"$a" 
 
         [[ "$disable" == "1" ]] && continue
 

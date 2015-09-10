@@ -745,7 +745,7 @@ item_deleteN()
     local query i ncols=${gfile_ncols[$2]}
 
     declare -a colnos=($1)
-    IFS=, read -a txt < <( echo "$3" )
+    IFS=, read -a txt <<<"$3" 
 
     [[ ${colnos[0]} -eq 1 ]] && {
         query="^"
@@ -835,7 +835,7 @@ item_existsN_new()
     local query i ncols=${gfile_ncols[$2]}
 
     declare -a colnos=($1)
-    IFS=, read -a txt < <( echo "$3" )
+    IFS=, read -a txt <<<"$3" 
 
     #[[ ${colnos[0]} -eq 1 ]] && {
         query="^"
@@ -869,7 +869,7 @@ item_existsN()
     local query i ncols=${gfile_ncols[$2]}
 
     declare -a colnos=($1)
-    IFS=, read -a txt < <( echo "$3" )
+    IFS=, read -a txt <<<"$3" 
 
     [[ ${colnos[0]} -eq 1 ]] && {
         query="^"
@@ -955,7 +955,7 @@ item_searchN()
     local query i ncols=${gfile_ncols[$2]}
 
     declare -a colnos=($1)
-    IFS=, read -a txt < <( echo "$3" )
+    IFS=, read -a txt <<<"$3" 
 
     [[ ${colnos[0]} -eq 1 ]] && {
         query="^"
@@ -987,8 +987,8 @@ item_merge()
 {
     local i newcsv= comma=
 
-    IFS=, read -ra oldcols < <( echo "$2" )
-    IFS=, read -ra newcols < <( echo "$3" )
+    IFS=, read -ra oldcols <<<"$2" 
+    IFS=, read -ra newcols <<<"$3" 
 
     for i in `seq 0 $(($1-1))`; do
         oldcol=${oldcols[i]}
@@ -1241,7 +1241,7 @@ modify_hosttemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups x x x notifperiod \
-        notifopts x checkperiod x check_command x < <( echo "$gcsv" )
+        notifopts x checkperiod x check_command x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -1339,7 +1339,7 @@ modify_servicetemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups notifopts x x x x notifperiod \
-        x checkperiod x x < <( echo "$gcsv" )
+        x checkperiod x x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -1428,7 +1428,7 @@ modify_host_line()
     local name disabled a is_ip
 
     IFS=, read name x ipaddress template hostgroups contacts contactgroups \
-        x servicesets disable x x command x < <( echo "$gcsv" )
+        x servicesets disable x x command x <<<"$gcsv" 
 
     # IP check is disabled (Issue #26)
     #is_ip='^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.)){3}'
@@ -1523,7 +1523,7 @@ modify_host_line()
                 unlockdir
                 exit 16
             fi
-        done < <( item_search 1 $FILE_SERVICES "$name" )
+        done <<<$( item_search 1 $FILE_SERVICES "$name" )
 
         if item_exists "1" $FILE_HOSTEXTINFO "$name"
         then
@@ -1542,7 +1542,7 @@ modify_host_line()
                 unlockdir
                 exit 16
             fi
-        done < <( item_search 1 $FILE_SERVICES "$name" )
+        done <<<$( item_search 1 $FILE_SERVICES "$name" )
 
         if item_exists "1" $FILE_HOSTEXTINFO "$name"
         then
@@ -1570,7 +1570,7 @@ modify_service_line()
     local name svcdesc
 
     IFS=, read name template command svcdesc servicegroups \
-        contacts contactgroups x x x disable x x < <( echo "$gcsv" )
+        contacts contactgroups x x x disable x x <<<"$gcsv" 
 
     #[[ -n $command ]] && command=`echo "$command" | grep -o '^[-A-Za-z0-9_]*'`
     [[ -n $command ]] && command=`echo "$command" | \
@@ -1675,7 +1675,7 @@ modify_hostgroups_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -1706,7 +1706,7 @@ modify_servicegroups_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -1737,7 +1737,7 @@ modify_contacts_line()
 {
     local name
 
-    IFS=, read name x x x svcnp svcopt x hstnp hstopt x < <( echo "$gcsv" )
+    IFS=, read name x x x svcnp svcopt x hstnp hstopt x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #svcnp=`echo "$gcsv" | cut -d, -f5`
@@ -1809,7 +1809,7 @@ modify_contactgroups_line()
 {
     local name
 
-    IFS=, read name x memberlist x < <( echo "$gcsv" )
+    IFS=, read name x memberlist x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #memberlist=`echo "$gcsv" | cut -d, -f3`
@@ -1854,7 +1854,7 @@ modify_servicesets_line()
     local name svcdesc
 
     IFS=, read name template command svcdesc servicegroups contacts \
-        contactgroups x < <( echo "$gcsv" )
+        contactgroups x <<<"$gcsv" 
 
     command=`echo "$command" | sed -nr 's/%21/!/g;s/(^[^!]*)(!|%21|$).*/\1/p'`
 
@@ -1935,7 +1935,7 @@ modify_timeperiods_line()
 {
     local name
 
-    IFS=, read name x x exclude x < <( echo "$gcsv" )
+    IFS=, read name x x exclude x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #exclude=`echo "$gcsv" | cut -d, -f4`
@@ -1979,7 +1979,7 @@ modify_commands_line()
 {
     local name
 
-    IFS=, read -r name x < <( echo "$gcsv" )
+    IFS=, read -r name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -2015,7 +2015,7 @@ modify_servicedeps_line()
     IFS=, read dephostname dephostgroupname depsvcdesc \
         hostname hostgroupname svcdesc inheritsparent \
         execfailcriteria notiffailcriteria period disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $dephostname == *" "* || $dephostgroupname == *" "* || \
        $hostname == *" "* || $hostgroupname == *" "* ]] && {
@@ -2055,7 +2055,7 @@ modify_hostdeps_line()
     IFS=, read dephostname dephostgroupname \
         hostname hostgroupname inheritsparent \
         execfailcriteria notiffailcriteria period disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $dephostname == *" "* || $dephostgroupname == *" "* || \
        $hostname == *" "* || $hostgroupname == *" "* ]] && {
@@ -2094,7 +2094,7 @@ modify_serviceesc_line()
 {
     IFS=, read hostname hostgroupname svcdesc contacts contactgroups \
         firstnotif lastnotif notifinterval period escopts disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $hostname == *" "* || $hostgroupname == *" "* ]] && {
         echo "NAGCTL ERROR: Field cannot contain spaces."
@@ -2145,7 +2145,7 @@ modify_serviceesc_line()
     item_merge ${gfile_ncols[$FILE_SERVICEESC]} "$olditem" "$gcsv"
 
     # Check for contact[group]s
-    IFS=, read x x x contacts contactgroups x < <( echo "$gcsv" )
+    IFS=, read x x x contacts contactgroups x <<<"$gcsv" 
     [[ -z $contacts && -z $contactgroups ]] && {
         echo -n "NAGCTL ERROR: Must have a contact or contactgroup."
         echo " Will not modify item."
@@ -2170,7 +2170,7 @@ modify_hostesc_line()
 {
     IFS=, read hostname hostgroupname contacts contactgroups \
         firstnotif lastnotif notifinterval period escopts disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $hostname == *" "* || $hostgroupname == *" "* ]] && {
         echo "NAGCTL ERROR: Field cannot contain spaces."
@@ -2219,7 +2219,7 @@ modify_hostesc_line()
     item_merge ${gfile_ncols[$FILE_HOSTESC]} "$olditem" "$gcsv"
 
     # Check for contact[group]s
-    IFS=, read x x contacts contactgroups x < <( echo "$gcsv" )
+    IFS=, read x x contacts contactgroups x <<<"$gcsv" 
     [[ -z $contacts && -z $contactgroups ]] && {
         echo -n "NAGCTL ERROR: Must have a contact or contactgroup."
         echo " Will not modify item."
@@ -2244,7 +2244,7 @@ modify_serviceextinfo_line()
 {
     IFS=, read hostname svcdesc notes notes_url action_url \
         icon_image icon_image_alt disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $hostname == *" "* ]] && {
         echo "NAGCTL ERROR: Field cannot contain spaces."
@@ -2280,7 +2280,7 @@ modify_hostextinfo_line()
     IFS=, read hostname notes notes_url action_url \
         icon_image icon_image_alt vrml_image statusmap_image \
         coords2d coords3d disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $hostname == *" "* ]] && {
         echo "NAGCTL ERROR: Field cannot contain spaces."
@@ -2322,7 +2322,7 @@ add_hosttemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups x x x notifperiod \
-        notifopts x checkperiod x check_command x < <( echo "$gcsv" )
+        notifopts x checkperiod x check_command x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -2412,7 +2412,7 @@ add_servicetemplate_line()
     local name
 
     IFS=, read name x contacts contactgroups notifopts x x x x notifperiod \
-        x checkperiod x < <( echo "$gcsv" )
+        x checkperiod x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #contacts=`echo "$gcsv" | cut -d, -f3`
@@ -2493,7 +2493,7 @@ add_host_line()
     local name i s
 
     IFS=, read name x ipaddress template hostgroups contacts contactgroups \
-        x servicesets disable x < <( echo "$gcsv" )
+        x servicesets disable x <<<"$gcsv" 
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
@@ -2614,7 +2614,7 @@ add_service_line()
     local name svcdesc
 
     IFS=, read name template command svcdesc servicegroups \
-        contacts contactgroups x < <( echo "$gcsv" )
+        contacts contactgroups x <<<"$gcsv" 
 
     #command=`echo "$command" | grep -o '[-A-Za-z0-9_]*'`
     command=`echo "$command" | sed -nr 's/%21/!/g;s/(^[^!]*)(!|%21|$).*/\1/p'`
@@ -2699,7 +2699,7 @@ add_hostgroups_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -2727,7 +2727,7 @@ add_servicegroups_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -2755,7 +2755,7 @@ add_contacts_line()
 {
     local name
 
-    IFS=, read name x x x svcnp svcopt x hstnp hstopt x < <( echo "$gcsv" )
+    IFS=, read name x x x svcnp svcopt x hstnp hstopt x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #svcnp=`echo "$gcsv" | cut -d, -f5`
@@ -2823,7 +2823,7 @@ add_contactgroups_line()
 {
     local name i
 
-    IFS=, read name x memberlist x < <( echo "$gcsv" )
+    IFS=, read name x memberlist x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #memberlist=`echo "$gcsv" | cut -d, -f3`
@@ -2861,7 +2861,7 @@ add_servicesets_line()
     local name svcdesc
 
     IFS=, read name template command svcdesc servicegroups contacts \
-        contactgroups x < <( echo "$gcsv" )
+        contactgroups x <<<"$gcsv" 
 
     #command=`echo "$command" | grep -o '[-A-Za-z0-9_]*'`
     command=`echo "$command" | sed -nr 's/%21/!/g;s/(^[^!]*)(!|%21|$).*/\1/p'`
@@ -2939,7 +2939,7 @@ add_timeperiods_line()
 {
     local name
 
-    IFS=, read name x x exclude x < <( echo "$gcsv" )
+    IFS=, read name x x exclude x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
     #exclude=`echo "$gcsv" | cut -d, -f4`
@@ -2978,7 +2978,7 @@ add_commands_line()
 {
     local name
 
-    IFS=, read -r name x < <( echo "$gcsv" )
+    IFS=, read -r name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -3013,7 +3013,7 @@ add_servicedeps_line()
     IFS=, read dephostname dephostgroupname depsvcdesc \
         hostname hostgroupname svcdesc inheritsparent \
         execfailcriteria notiffailcriteria period disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $dephostname == *" "* || $dephostgroupname == *" "* || \
        $hostname == *" "* || $hostgroupname == *" "* ]] && {
@@ -3089,7 +3089,7 @@ add_hostdeps_line()
     IFS=, read dephostname dephostgroupname \
         hostname hostgroupname inheritsparent \
         execfailcriteria notiffailcriteria period disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $dephostname == *" "* || $dephostgroupname == *" "* || \
        $hostname == *" "* || $hostgroupname == *" "* ]] && {
@@ -3167,7 +3167,7 @@ add_serviceesc_line()
 
     IFS=, read hostname hostgroupname svcdesc contacts contactgroups \
         firstnotif lastnotif notifinterval period escopts disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $hostname == *" "* || $hostgroupname == *" "* ]] && {
         echo "NAGCTL ERROR: Field cannot contain spaces."
@@ -3248,7 +3248,7 @@ add_hostesc_line()
 
     IFS=, read hostname hostgroupname contacts contactgroups \
         firstnotif lastnotif notifinterval period escopts disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $hostname == *" "* || $hostgroupname == *" "* ]] && {
         echo "NAGCTL ERROR: Field cannot contain spaces."
@@ -3329,7 +3329,7 @@ add_serviceextinfo_line()
 
     IFS=, read hostname svcdesc notes notes_url action_url \
         icon_image icon_image_alt disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $hostname == *" "* ]] && {
         echo "NAGCTL ERROR: Field cannot contain spaces."
@@ -3371,7 +3371,7 @@ add_hostextinfo_line()
     IFS=, read hostname notes notes_url action_url \
         icon_image icon_image_alt vrml_image statusmap_image \
         coords2d coords3d disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $hostname == *" "* ]] && {
         echo "NAGCTL ERROR: Field cannot contain spaces."
@@ -3512,7 +3512,7 @@ check_nagiosconfig()
         while read a; do
             [[ $a == "Total Warnings"* ]] && b=$a
             [[ $a == "Total Errors"* ]] && c=$a
-        done < <( sudo $NAGIOSBIN -v $NAG_CONFIG )
+        done <<<$( sudo $NAGIOSBIN -v $NAG_CONFIG )
     else
         sudo $NAGIOSBIN -v $NAG_CONFIG | tee $tmp
         if grep -qs "Total Warnings" $tmp; then
@@ -3548,7 +3548,7 @@ delete_hosttemplate_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -3580,7 +3580,7 @@ delete_servicetemplate_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -3616,7 +3616,7 @@ delete_host_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -3648,7 +3648,7 @@ delete_service_line()
 {
     local name svcdesc
 
-    IFS=, read name x x svcdesc x < <( echo "$gcsv" )
+    IFS=, read name x x svcdesc x <<<"$gcsv" 
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
@@ -3682,7 +3682,7 @@ delete_hostgroups_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -3714,7 +3714,7 @@ delete_servicegroups_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -3746,7 +3746,7 @@ delete_contacts_line()
 {
     local name t
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -3758,37 +3758,37 @@ delete_contacts_line()
     lockdir
     if item_exists 3 $FILE_CONTACTGROUPS "$name"; then
         t=`item_search "3" $FILE_CONTACTGROUPS ".*$name\>" | head -1`
-        IFS=, read nname x < <( echo "$t" )
+        IFS=, read nname x <<<"$t" 
         echo -n "NAGCTL ERROR: Contact '$name' is referenced by one or more"
         echo " Contact Groups ($nname ...). Will not delete."
         RETVAL=15
     elif item_exists 3 $FILE_SERVICETEMPLATES "$name"; then
         t=`item_search "3" $FILE_SERVICETEMPLATES ".*$name\>" | head -1`
-        IFS=, read nname x < <( echo "$t" )
+        IFS=, read nname x <<<"$t" 
         echo -n "NAGCTL ERROR: Contact '$name' is referenced by one"
         echo " or more service templates ($nname ...). Will not delete."
         RETVAL=15
     elif item_exists 3 $FILE_HOSTTEMPLATES "$name"; then
         t=`item_search "3" $FILE_HOSTTEMPLATES "$name" | head -1`
-        IFS=, read nname x < <( echo "$t" )
+        IFS=, read nname x <<<"$t" 
         echo -n "NAGCTL ERROR: Contact '$name' is referenced by one"
         echo " or more host templates ($nname ...). Will not delete."
         RETVAL=15
     elif item_exists 6 $FILE_HOSTS "$name"; then
         t=`item_search "6" $FILE_HOSTS "$name" | head -1`
-        IFS=, read nname x < <( echo "$t" )
+        IFS=, read nname x <<<"$t" 
         echo -n "NAGCTL ERROR: Contact '$name' is referenced by one"
         echo " or more hosts ($nname ...). Will not delete."
         RETVAL=15
     elif item_exists 6 $FILE_SERVICES "$name"; then
         t=`item_search "6" $FILE_SERVICES "$name" | head -1`
-        IFS=, read nname x x svcdesc x < <( echo "$t" )
+        IFS=, read nname x x svcdesc x <<<"$t" 
         echo -n "NAGCTL ERROR: Contact '$name' is referenced by one"
         echo " or more services ($nname:$svcdesc ...). Will not delete."
         RETVAL=15
     elif item_exists 6 $FILE_SERVICESETS "$name"; then
         t=`item_search "6" $FILE_SERVICESETS "$name" | head -1`
-        IFS=, read nname x x svcdesc x < <( echo "$t" )
+        IFS=, read nname x x svcdesc x <<<"$t" 
         echo -n "NAGCTL ERROR: Contact '$name' is referenced by one"
         echo " or more service sets ($nname:$svcdesc ...). Will not delete."
         RETVAL=15
@@ -3810,7 +3810,7 @@ delete_contactgroups_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -3858,7 +3858,7 @@ delete_servicesets_line()
 {
     local name svcdesc numitems=0 wildcard=0
 
-    IFS=, read name x x svcdesc x < <( echo "$gcsv" )
+    IFS=, read name x x svcdesc x <<<"$gcsv" 
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
@@ -3874,7 +3874,7 @@ delete_servicesets_line()
     if [[ $numitems -eq 1 || $wildcard -eq 1 ]]; then
         if item_exists 9 $FILE_HOSTS "$name"; then
             t=`item_search "9" $FILE_HOSTS "$name" | head -1`
-            IFS=, read nname x < <( echo "$t" )
+            IFS=, read nname x <<<"$t" 
             echo -n "NAGCTL ERROR: Service set '$name' is referenced by one"
             echo " or more hosts ($nname ...). Will not delete."
             unlockdir
@@ -3899,7 +3899,7 @@ delete_timeperiods_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -3955,7 +3955,7 @@ delete_commands_line()
 {
     local name
 
-    IFS=, read name x < <( echo "$gcsv" )
+    IFS=, read name x <<<"$gcsv" 
 
     #name=`echo "$gcsv" | cut -d, -f1`
 
@@ -4007,7 +4007,7 @@ delete_servicedeps_line()
     IFS=, read dephostname dephostgroupname depsvcdesc \
         hostname hostgroupname svcdesc inheritsparent \
         execfailcriteria notiffailcriteria period disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $dephostname == *" "* || $dephostgroupname == *" "* || \
        $hostname == *" "* || $hostgroupname == *" "* ]] && {
@@ -4043,7 +4043,7 @@ delete_hostdeps_line()
     IFS=, read dephostname dephostgroupname \
         hostname hostgroupname inheritsparent \
         execfailcriteria notiffailcriteria period disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $dephostname == *" "* || $dephostgroupname == *" "* || \
        $hostname == *" "* || $hostgroupname == *" "* ]] && {
@@ -4078,7 +4078,7 @@ delete_serviceesc_line()
 {
     IFS=, read hostname hostgroupname svcdesc contacts contactgroups \
         firstnotif lastnotif notifinterval period escopts disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $hostname == *" "* || $hostgroupname == *" "* ]] && {
         echo "NAGCTL ERROR: Field cannot contain spaces."
@@ -4111,7 +4111,7 @@ delete_hostesc_line()
 {
     IFS=, read hostname hostgroupname contacts contactgroups \
         firstnotif lastnotif notifinterval period escopts disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $hostname == *" "* || $hostgroupname == *" "* ]] && {
         echo "NAGCTL ERROR: Field cannot contain spaces."
@@ -4142,7 +4142,7 @@ delete_serviceextinfo_line()
 {
     IFS=, read hostname svcdesc notes notes_url action_url \
         icon_image icon_image_alt disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $hostname == *" "* ]] && {
         echo "NAGCTL ERROR: Field cannot contain spaces."
@@ -4174,7 +4174,7 @@ delete_hostextinfo_line()
     IFS=, read hostname notes notes_url action_url \
         icon_image icon_image_alt vrml_image statusmap_image \
         coords2d coords3d disable x \
-        < <( echo "$gcsv" )
+        <<<"$gcsv" 
 
     [[ $hostname == *" "* ]] && {
         echo "NAGCTL ERROR: Field cannot contain spaces."
@@ -4238,7 +4238,7 @@ pipecmd_enablehostsvcchecks()
             desc=`echo $a | cut -d, -f4`
             printf "[%lu] ENABLE_PASSIVE_SVC_CHECKS;$name;$desc\n" \
                 $now > $COMMANDFILE
-        done < <( item_search 1 $FILE_SERVICES "$name" )
+        done <<<$( item_search 1 $FILE_SERVICES "$name" )
 
         sleep 1
 
@@ -4251,7 +4251,7 @@ pipecmd_enablehostsvcchecks()
                 printf "[%lu] ENABLE_SVC_CHECK;$name;$desc\n" $now \
                     > $COMMANDFILE
             }
-        done < <( item_search 1 $FILE_SERVICES "$name" )
+        done <<<$( item_search 1 $FILE_SERVICES "$name" )
     fi
     unlockdir
 
@@ -4292,7 +4292,7 @@ pipecmd_disablehostsvcchecks()
             printf \
                 "[%lu] PROCESS_SERVICE_CHECK_RESULT;$name;$desc;0;$comment\n" \
                 $now >$COMMANDFILE
-        done < <( item_search 1 $FILE_SERVICES "$name" )
+        done <<<$( item_search 1 $FILE_SERVICES "$name" )
 
         # TODO: Nagios does not seem to process its external command queue in
         # the order in which items are queued, hence these silly sleeps.
@@ -4314,7 +4314,7 @@ pipecmd_disablehostsvcchecks()
             desc=`echo $a | cut -d, -f4`
             printf "[%lu] DISABLE_PASSIVE_SVC_CHECKS;$name;$desc\n" \
                 $now > $COMMANDFILE
-        done < <( item_search 1 $FILE_SERVICES "$name" )
+        done <<<$( item_search 1 $FILE_SERVICES "$name" )
     fi
     unlockdir
 
@@ -4499,7 +4499,7 @@ pipecmd_delhostdowntime()
         now=`date +%s`
         while read id; do
             echo "[$now] DEL_HOST_DOWNTIME;$id" >$COMMANDFILE
-        done < <( sed -n "/hostdowntime/,/downtime_id/ {
+        done <<<$( sed -n "/hostdowntime/,/downtime_id/ {
             /host_name=$name/,/downtime_id/ {
             s/[[:space:]]*downtime_id=//p} }" $STATUSFILE )
     fi
