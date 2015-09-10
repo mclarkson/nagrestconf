@@ -16,7 +16,7 @@
     # ------------------------------------------------------------------------
 
     define( "SCRIPTNAME", "index.php" );
-    define( "VERSION", "v1.173" );
+    define( "VERSION", "v1.174" );
     define( "LIBDIR", "/usr/share/nagrestconf/htdocs/nagrestconf/" );
 
     # ------------------------------------------------------------------------
@@ -9486,6 +9486,12 @@
         print '<input class="field" type="text" id="fcontactgroup"';
         print ' value="'.$contactgroups.'" name="contactgroups">';
         print '</p>';
+        # Custom Variables
+        print '<p>';
+        print '<label for="fcustomvars">Custom Variables</label>';
+        print '<input class="field" type="text" id="fcustomvars"';
+        print ' value="'.$customvars.'" name="customvars">';
+        print '</p>';
 
         ###:TAB2
         print '</div>';
@@ -9513,9 +9519,9 @@
 
         ###:TAB3
         print '<div id="fragment-3">';
-        # Contact
+        # Parents
         print '<p>';
-        print '<label for="fcontact">Parents</label>';
+        print '<label for="fparents">Parents</label>';
         print '<input class="field" type="text" id="fparents"';
         print ' value="'.$parents.'" name="parents">';
         print '</p>';
@@ -9931,6 +9937,12 @@
         print '<input class="field" type="text" id="econtactgroup"';
         print ' value="" name="contactgroups">';
         print '</p>';
+        # Custom Variables
+        print '<p>';
+        print '<label for="fcustomvars">Custom Variables</label>';
+        print '<input class="field" type="text" id="fcustomvars"';
+        print ' value="" name="customvars">';
+        print '</p>';
 
         ###:TAB2
         print '</div>';
@@ -9956,9 +9968,9 @@
 
         ###:TAB3
         print '<div id="fragment-3">';
-        # Contact
+        # Parents
         print '<p>';
-        print '<label for="fcontact">Parents</label>';
+        print '<label for="fparents">Parents</label>';
         print '<input class="field" type="text" id="fparents"';
         print ' value="" name="parents">';
         print '</p>';
