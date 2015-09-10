@@ -9,7 +9,7 @@
 # File:     config_create.sh
 # Author:   Mark Clarkson
 # Date:     20 May 2010
-# Version:  0.13
+# Version:  0.14
 # Modified:
 #           2010-07-23 Mark Clarkson
 #           * Now writes hosttemplates, servicetemplates and contacts files.
@@ -23,6 +23,8 @@
 #           * Added active_checks_enabled support to hosts and services.
 #           2011-09-06 Mark Clarkson
 #           * Can be used for both dcc and slc now via DCC variable.
+#           2015-09-10 Mark Clarkson
+#           * Added customvars for hosts.
 #
 # Purpose:  This a utility to help with creation of Nagios configuration
 #           files. For more information type, 
@@ -584,7 +586,8 @@ create_host_files()
             retainstatusinfo retainnonstatusinfo notifinterval \
             firstnotifdelay notifperiod notifopts notifications_enabled \
             stalkingoptions notes notes_url icon_image icon_image_alt \
-            vrml_image statusmap_image coords2d coords3d action_url x \
+            vrml_image statusmap_image coords2d coords3d action_url \
+            customvars x \
             < <(echo "$a")
 
         [[ "$disable" == "1" || \
@@ -596,6 +599,8 @@ create_host_files()
             shostgroups=`echo "$shostgroups" \
                 | sed "s/^/${gconfigprefix}-/;s/ / ${gconfigprefix}-/g"`
         }
+
+        [[ -n $customvars ]] && customvars="${customvars//\`/,}"
 
         # Create the file. Filename is the hostname.
 
@@ -643,6 +648,12 @@ create_host_files()
             ## TODO ## CHECK contact_group exists in gateway_contacts.setup
             t="${contact_groups// /,}"
             Echo "       contact_groups  +$t"
+        }
+        [[ -n $customvars ]] && {
+            while read -d"," cv
+            do
+                echo "        ${cv%%|*}                  ${cv##*|}"
+            done < <(echo "$customvars,")
         }
         [[ -n $displayname ]] && {
             echo "       display_name $displayname"
