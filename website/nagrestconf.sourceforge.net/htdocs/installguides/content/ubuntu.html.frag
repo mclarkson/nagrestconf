@@ -25,7 +25,7 @@
           <h3>Install using the Deb packages.</h3>
           <p>Get the packages for Ubuntu from the <a href="/downloads.php">download page</a> then copy them to the server.</p>
           <p>Open a terminal window or ssh session then install nagrestconf and all plugins:</p>
-          <pre>apt-get update
+          <pre>sudo apt-get update
 sudo apt-get install gdebi-core
 sudo gdebi nagrestconf_1.174_all.deb
 sudo dpkg -i nagrestconf-services-plugin_1.174_all.deb \
