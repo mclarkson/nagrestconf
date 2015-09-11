@@ -243,6 +243,9 @@ install -D -m 755 plugins/smorg_backup_btn.php ${RPM_BUILD_ROOT}/usr/share/nagre
 %{__rm} -rf %{buildroot}
 
 %changelog
+* Fri Sep 11 2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
+- Fixes and enhancements.
+
 * Mon Aug 17 2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
 - Added Bulk Tools plugin for the Hosts tab.
 

@@ -16,7 +16,7 @@
     # ------------------------------------------------------------------------
 
     define( "SCRIPTNAME", "index.php" );
-    define( "VERSION", "v1.174" );
+    define( "VERSION", "v1.174.1" );
     define( "LIBDIR", "/usr/share/nagrestconf/htdocs/nagrestconf/" );
 
     # ------------------------------------------------------------------------
@@ -9639,6 +9639,20 @@
         autocomplete_jscript( "aserviceset" );
         print '</script>';
 
+        # Auto-complete for parents
+        $hgs = get_and_sort_hosts( );
+        print '<script>';
+        print '$( document ).ready( function() {';
+        print 'var fparents = [';
+        $comma="";
+        foreach( $hgs as $item ) {
+            print "$comma\"".$item["name"]."\"";
+            $comma=",";
+        }
+        print'];';
+        autocomplete_jscript( "fparents" );
+        print '</script>';
+
         exit( 0 );
     }
 
@@ -9750,6 +9764,8 @@
             $query_str["customvars"] = "-";
         if( empty( $query_str["notes"] ) )
             $query_str["notes"] = "-";
+        if( empty( $query_str["parents"] ) )
+            $query_str["parents"] = "-";
         $json = json_encode( $query_str );
 
         # Do the REST add host request

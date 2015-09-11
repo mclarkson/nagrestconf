@@ -1428,7 +1428,7 @@ modify_host_line()
     local name disabled a is_ip
 
     IFS=, read name x ipaddress template hostgroups contacts contactgroups \
-        x servicesets disable x x command x <<<"$gcsv" 
+        x servicesets disable x parents command x <<<"$gcsv" 
 
     # IP check is disabled (Issue #26)
     #is_ip='^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.)){3}'
@@ -1504,6 +1504,23 @@ modify_host_line()
         for i in $contactgroups; do
             if ! item_exists 1 $FILE_CONTACTGROUPS "$i"; then
                 echo -n "NAGCTL ERROR: Contact Group '$i' not found."
+                echo " Will not modify host."
+                unlockdir
+                exit 13
+            fi
+        done
+    }
+
+    [[ -n $parents && $parents != "-" ]] && {
+        [[ $parents == $name ]] && {
+            echo -n "NAGCTL ERROR: Host cannot be a parent of itself."
+            echo " Will not modify host."
+            unlockdir
+            exit 13
+        }
+        for i in $parents; do
+            if ! item_exists 1 $FILE_HOSTS "$i"; then
+                echo -n "NAGCTL ERROR: Parent '$i' not found."
                 echo " Will not modify host."
                 unlockdir
                 exit 13
@@ -3628,6 +3645,10 @@ delete_host_line()
     lockdir
     if item_exists 1 $FILE_SERVICES "$name"; then
         echo -n "NAGCTL ERROR: Host is referenced by one or more services."
+        echo " Will not delete."
+        RETVAL=15
+    elif item_exists 12 $FILE_HOSTS "$name"; then
+        echo -n "NAGCTL ERROR: Host is a parent to one or more hosts."
         echo " Will not delete."
         RETVAL=15
     else
