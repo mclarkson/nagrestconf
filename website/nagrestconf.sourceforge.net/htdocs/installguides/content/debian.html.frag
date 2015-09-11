@@ -6,7 +6,7 @@
         <!-- Content -->
         <div class="row" style="padding-left:10px;padding-right:20px;">
           <h1>Debian Installation Guide</h1>
-          <p>This page details how to install nagrestonf on <a href="http://www.debian.org">Debian</a> Wheezy or Lenny.</p>
+          <p>This page details how to install nagrestonf on <a href="http://www.debian.org">Debian</a> Wheezy or Jessie.</p>
           <p>Packages that nagrestconf depends on, such as Nagios and Apache, will be installed
              automatically.</p>
           <h3>Before installation</h3>
@@ -25,13 +25,13 @@
           <h3>Install using the Deb packages.</h3>
           <p>Get the packages for Debian from the <a href="/downloads.php">download page</a> then copy them to the server.</p>
           <p>Open a terminal window or ssh session then install nagrestconf and all plugins:</p>
-          <pre>apt-get update
-apt-get install gdebi-core sudo
-gdebi nagrestconf_1.173_all.deb
-dpkg -i nagrestconf-services-plugin_1.173_all.deb \
-      nagrestconf-services-bulktools-plugin_1.173_all.deb \
-      nagrestconf-hosts-bulktools-plugin_1.173_all.deb \
-      nagrestconf-backup-plugin_1.173_all.deb</pre>
+          <pre>sudo apt-get update
+sudo apt-get install gdebi-core sudo tar cron
+sudo gdebi nagrestconf_1.174.1_all.deb
+sudo dpkg -i nagrestconf-services-plugin_1.174.1_all.deb \
+      nagrestconf-services-bulktools-plugin_1.174.1_all.deb \
+      nagrestconf-hosts-bulktools-plugin_1.174.1_all.deb \
+      nagrestconf-backup-plugin_1.174.1_all.deb</pre>
 
           <h3>Configure the Operating System</h3>
           <p>Use the two helper scripts 'nagrestconf_install' and 'slc_configure'.</p>
