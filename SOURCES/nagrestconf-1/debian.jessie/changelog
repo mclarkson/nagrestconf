@@ -1,0 +1,247 @@
+nagrestconf (1.174.1) UNRELEASED; urgency=low
+
+  * Fixes and enhancements.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Sun, 11 Sep 2015 18:32:00 +0000
+
+nagrestconf (1.174) UNRELEASED; urgency=low
+
+  * Fixes and enhancements.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Sun, 06 Sep 2015 18:45:00 +0000
+
+nagrestconf (1.173) UNRELEASED; urgency=low
+
+  * Upstream fixes and enhancements.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 06 Mar 2014 11:29:00 +0000
+
+nagrestconf (1.172) UNRELEASED; urgency=low
+
+  * Minor fix.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 20 Jan 2014 22:06:00 +0000
+
+nagrestconf (1.171) UNRELEASED; urgency=low
+
+  * Added extra fields for host/service cloning.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 20 Jan 2014 12:04:00 +0000
+
+nagrestconf (1.170) UNRELEASED; urgency=low
+
+  * Checks for notif opts and auto-complete for check periods.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 06 Jan 2014 22:32:00 +0000
+
+nagrestconf (1.169) UNRELEASED; urgency=low
+
+  * Checks for notif opts and auto-complete for check periods.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 06 Jan 2014 22:32:00 +0000
+
+nagrestconf (1.168) UNRELEASED; urgency=low
+
+  * Bug squashing.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 06 Jan 2014 22:32:00 +0000
+
+nagrestconf (1.167) UNRELEASED; urgency=low
+
+  * Bug squashing.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 06 Jan 2014 22:32:00 +0000
+
+nagrestconf (1.166) UNRELEASED; urgency=low
+
+  * Fix 'unable to edit command'.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 06 Jan 2014 22:32:00 +0000
+
+nagrestconf (1.165) UNRELEASED; urgency=low
+
+  * Bug fixes.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 06 Jan 2014 22:32:00 +0000
+
+nagrestconf (1.164) UNRELEASED; urgency=low
+
+  * Bug fixes.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 06 Jan 2014 22:32:00 +0000
+
+nagrestconf (1.163) UNRELEASED; urgency=low
+
+  * New Backup & Restore plugin.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 03 Jan 2014 22:23:00 +0000
+
+nagrestconf (1.162) UNRELEASED; urgency=low
+
+  * Project icon and parent template field added.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 30 Dec 2013 20:08:00 +0000
+
+nagrestconf (1.161) UNRELEASED; urgency=low
+
+  * Bug Fixes
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 03 Dec 2013 20:08:00 +0000
+
+nagrestconf (1.160) UNRELEASED; urgency=low
+
+  * Bulk import, bulk refresh, autocomplete and bugfixes.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 03 Dec 2013 20:08:00 +0000
+
+nagrestconf (1.159) UNRELEASED; urgency=low
+
+  * Plugins.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 03 Dec 2013 20:08:00 +0000
+
+nagrestconf (1.158) UNRELEASED; urgency=low
+
+  * Plugins.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Thu, 29 Jul 2013 23:08:00 +0000
+
+nagrestconf (1.157) UNRELEASED; urgency=low
+
+  * Fixes to get GUI working in Internet Explorer 8.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Thu, 03 Jul 2013 21:18:00 +0000
+
+nagrestconf (1.156) UNRELEASED; urgency=low
+
+  * Show an error message when the GUI can not retrieve its data using REST.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Thu, 02 Jul 2013 22:18:00 +0000
+
+nagrestconf (1.155) UNRELEASED; urgency=low
+
+  * Filter by hostgroup GUI not updating fix.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Thu, 24 Jun 2013 20:28:00 +0000
+
+nagrestconf (1.154) UNRELEASED; urgency=low
+
+  * Jquery, theme and ui updates.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Thu, 20 Jun 2013 20:28:00 +0000
+
+nagrestconf (1.152) UNRELEASED; urgency=low
+
+  * Bug fixes
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 11 Jun 2013 11:03:00 +0000
+
+nagrestconf (1.150) UNRELEASED; urgency=low
+
+  * Bug fixes
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 10 Jun 2013 13:48:00 +0000
+
+nagrestconf (1.149) UNRELEASED; urgency=low
+
+  * New 'Apply and Restart' window shows output.
+  * New 'Service Sets' tab added.
+  * Can now change the service name when cloning.
+  * Service and serviceset commands can now contain any text.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 06 Jun 2013 12:42:00 +0000
+
+nagrestconf (1.148) UNRELEASED; urgency=low
+
+  * Broker location change to reflect later mod_gearman.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 10 Apr 2013 15:05:00 +0000
+
+nagrestconf (1.147) UNRELEASED; urgency=low
+
+  * Fix for multiple restarter scripts running on master nagios.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 10 Apr 2013 15:05:00 +0000
+
+nagrestconf (1.146) UNRELEASED; urgency=low
+
+  * Enhancements and Bugfixes.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 14 Jan 2013 09:40:00 +0000
+
+nagrestconf (1.0.11) UNRELEASED; urgency=low
+
+  * Enhancements and Bugfixes.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 14 Jan 2013 09:40:00 +0000
+
+nagrestconf (1.0.10) UNRELEASED; urgency=low
+
+  * Bugfixes and features.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 31 Dec 2012 09:40:00 +0000
+
+nagrestconf (1.0.9) UNRELEASED; urgency=low
+
+  * Added schedulehostdowntime and delhostdowntime
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 14 Nov 2012 20:59:42 +0000
+
+nagrestconf (1.0.8) UNRELEASED; urgency=low
+
+  * Bugfixes
+  * Added more nagios directives to servicetemplates.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 08 Nov 2012 10:54:22 +0000
+
+nagrestconf (1.0.8) UNRELEASED; urgency=low
+
+  * Added nagios objects: service dependencies, host dependencies,
+    service escalations, host escalations, extra service info and
+    extra host info.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Wed, 07 Nov 2012 21:46:22 +0000
+
+nagrestconf (1.0.6) UNRELEASED; urgency=low
+
+  * Added more nagios directives to the REST api. Host/Service groups and
+    timeperiods now complete.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 05 Nov 2012 12:21:22 +0000
+
+nagrestconf (1.0.5) UNRELEASED; urgency=low
+
+  * Added more nagios directives to the REST api. Services and servicesets now complete.
+  * Added more nagios directives to the REST api. Host templates now complete.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Sun, 04 Nov 2012 22:19:32 +0000
+
+nagrestconf (1.0.4) UNRELEASED; urgency=low
+
+  * Added more nagios directives to the REST api. Hosts now complete.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Tue, 01 Nov 2012 15:31:32 +0100
+
+nagrestconf (1.0.3) UNRELEASED; urgency=low
+
+  * Fixes (to Contacts) from upstream.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Tue, 22 Oct 2012 19:31:32 +0100
+
+nagrestconf (1.0.2) UNRELEASED; urgency=low
+
+  * Added upgrade script.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Tue, 04 Sep 2012 19:31:32 +0100
+
+nagrestconf (1.0.1) UNRELEASED; urgency=low
+
+  * Added more nagios directives to the REST api. Contacts now complete.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Tue, 04 Sep 2012 16:51:32 +0100
+
+nagrestconf (1.0) UNRELEASED; urgency=low
+
+  * Initial release.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Fri, 20 Jul 2012 13:11:52 +0100
