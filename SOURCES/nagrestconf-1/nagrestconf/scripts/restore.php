@@ -58,7 +58,7 @@ if (isset($_FILES)) {
                     {
                         $code = 400;
                         $error = 'There was a problem unpacking the package'.
-                                 " into '$tempdir'.";
+                                 " into '$tempdir'. 'tar xzf' failed.";
                     } else {
                         $d = dir( $tempdir );
                         while (false !== ($entry = $d->read())) {
