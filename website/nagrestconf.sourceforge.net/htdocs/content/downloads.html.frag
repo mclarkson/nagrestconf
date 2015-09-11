@@ -17,9 +17,15 @@
           </thead>
           <tbody>
           <tr>
-          <td>Debian</td>
+          <td>Debian Wheezy</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Debian/">Latest Debian packages</a></td>
-          <td>1.172</td>
+          <td>1.174.1</td>
+          <td><a href="/installguides/debian.php">Install Guide</a></td>
+          <!--<td></td>-->
+          </tr>
+          <td>Debian Jessie</td>
+          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Debian/">Latest Debian packages</a></td>
+          <td>-</td>
           <td><a href="/installguides/debian.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>

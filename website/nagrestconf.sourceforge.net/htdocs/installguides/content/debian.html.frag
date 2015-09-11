@@ -35,23 +35,18 @@ sudo dpkg -i nagrestconf-services-plugin_1.174.1_all.deb \
 
           <h3>Configure the Operating System</h3>
           <p>Use the two helper scripts 'nagrestconf_install' and 'slc_configure'.</p>
-          <pre>nagrestconf_install -a
-slc_configure --folder=local</pre>
-          <p>For Debian Wheezy add the crontab to the correct location.</p>
-          <p>This is not required for Debian Lenny.</p>
-          <pre>cat /var/spool/cron/root &gt;&gt;/var/spool/cron/crontabs/root
-chmod 0600 /var/spool/cron/crontabs/root
-service cron restart</pre>
+          <pre>sudo nagrestconf_install -a
+sudo slc_configure --folder=local</pre>
           <p>Change two variables in nagios.cfg</p>
-          <pre>sed -i 's/check_external_commands=0/check_external_commands=1/g' /etc/nagios3/nagios.cfg
-sed -i 's/enable_embedded_perl=1/enable_embedded_perl=0/g' /etc/nagios3/nagios.cfg</pre>
+          <pre>sudo sed -i 's/check_external_commands=0/check_external_commands=1/g' /etc/nagios3/nagios.cfg
+sudo sed -i 's/enable_embedded_perl=1/enable_embedded_perl=0/g' /etc/nagios3/nagios.cfg</pre>
           <p>Relax permissions for the pipes</p>
-          <pre>chmod 770 /var/lib/nagios3/rw/</pre>
+          <pre>sudo chmod 770 /var/lib/nagios3/rw/</pre>
           <!--<p>Create a password for nagiosadmin - for GUI access to nagios.</p>
           <pre>htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin a_password</pre>
           -->
           <p>Create a password for nagrestconfadmin - for GUI access to nagrestconf.</p>
-          <pre>htpasswd -bc /etc/nagios3/nagrestconf.users nagrestconfadmin a_password</pre>
+          <pre>sudo htpasswd -bc /etc/nagios3/nagrestconf.users nagrestconfadmin a_password</pre>
           <p>Note that, by default, the nagrestconf GUI can only be reached from the host it was installed on, localhost. To enable connecting to nagrestconf from other hosts edit the apache configuration.</p>
           <p>For example,</p>
           <!--<p>Edit /etc/apache2/conf.d/nagios.conf:</p>
@@ -60,16 +55,16 @@ sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/htpasswd.users#i' \
     /etc/apache2/conf.d/nagios3.conf</pre>
           -->
           <p>Edit /etc/apache2/conf.d/nagrestconf.conf:</p>
-          <pre>cp /etc/apache2/conf.d/nagrestconf.conf /tmp
-sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios3/nagrestconf.users#i' \
+          <pre>sudo cp /etc/apache2/conf.d/nagrestconf.conf /tmp
+sudo sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios3/nagrestconf.users#i' \
     /etc/apache2/conf.d/nagrestconf.conf
-sed -i 's/allow from 127.0.0.1/allow from all/i' \
+sudo sed -i 's/allow from 127.0.0.1/allow from all/i' \
     /etc/apache2/conf.d/nagrestconf.conf
-sed -i 's/#Require/Require/i'     /etc/apache2/conf.d/nagrestconf.conf
-sed -i 's/#Auth/Auth/i'     /etc/apache2/conf.d/nagrestconf.conf</pre>
+sudo sed -i 's/#Require/Require/i'     /etc/apache2/conf.d/nagrestconf.conf
+sudo sed -i 's/#Auth/Auth/i'     /etc/apache2/conf.d/nagrestconf.conf</pre>
           <p>Restart apache and nagios</p>
-          <pre>service apache2 restart
-service nagios3 restart</pre>
+          <pre>sudo service apache2 restart
+sudo service nagios3 restart</pre>
           <p>The nagios restart will show errors since the configuration is empty.</p>
 
           <h3>Test nagrestconf and nagios</h3>
