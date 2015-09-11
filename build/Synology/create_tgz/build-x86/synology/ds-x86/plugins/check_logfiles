@@ -1,5 +1,6 @@
-#! /usr/bin/perl -w
+#! /usr/bin/perl 
 # nagios: -epn
+use warnings;
 package Devel::TraceMethods;
 
 use strict;
@@ -673,15 +674,18 @@ use strict;
 use IO::File;
 use File::Basename;
 use File::Spec;
+use File::Find;
+use File::Path;
 use Cwd;
 use Data::Dumper;
 #use Net::Domain qw(hostname hostdomain hostfqdn);
 use Socket;
 use POSIX qw(strftime);
 use IPC::Open2;
+use Errno;
 
 
-use constant GZIP => '/usr/bin/gzip';
+use constant GZIP => '/bin/gzip';
 my $ERROR_OK = 0;
 my $ERROR_WARNING = 1;
 my $ERROR_CRITICAL = 2;
@@ -698,6 +702,11 @@ $| = 1;
 eval "require Win32;";
 #eval "require Net::Domain qw(hostname hostdomain hostfqdn);";
 eval "require Net::Domain;";
+{
+  local $^W = 0; # shut up!
+  eval "require 'syscall.ph'";
+  eval "require 'sys/resource.ph'";
+}
 
 sub new {
   my $class = shift;
@@ -716,29 +725,39 @@ sub init {
   $year += 1900; $mon += 1;
   $self->{tracefile} = $self->system_tempdir().'/check_logfiles.trace';
   $self->{trace} = -e $self->{tracefile} ? 1 : 0;
+  $self->{verbose} = $params->{verbose} || 0;
+  $self->{htmlencode} = $params->{htmlencode} || 0;
   $self->{seekfilesdir} = $params->{seekfilesdir} || '/var/tmp/check_logfiles';
   $self->{protocolsdir} = $params->{protocolsdir} || '/tmp';
-  $self->{scriptpath} = $params->{scriptpath} || '/usr/contrib/nagios';
+  $self->{scriptpath} = $params->{scriptpath} || '/bin:/sbin:/usr/bin:/usr/sbin';
   $self->{protocolretention} = ($params->{protocolretention} || 7) * 24 * 3600;
   $self->{macros} = $params->{macros};
-  $self->{timeout} = $params->{timeout};
-  $self->{pidfile} = $params->{pidfile} || '/var/run/check_logfiles.pid';
+  $self->{timeout} = $params->{timeout} || 360000;
+  $self->{pidfile} = $params->{pidfile};
   $self->{perfdata} = "";
   $self->{searches} = [];
   $self->{selectedsearches} = $params->{selectedsearches} || [];
   $self->{dynamictag} = $params->{dynamictag} || "";
   $self->{cmdlinemacros} = $params->{cmdlinemacros} || {};
   $self->{reset} = $params->{reset} || 0;
+  $self->{unstick} = $params->{unstick} || 0;
+  $self->{rununique} = $params->{rununique} || 0;
+  $self->{warning} = $params->{warning} || 0;
+  $self->{critical} = $params->{critical} || 0;
+  $self->init_macros;
   $self->default_options({ prescript => 1, smartprescript => 0,
       supersmartprescript => 0, postscript => 1, smartpostscript => 0,
       supersmartpostscript => 0, report => 'short', maxlength => 4096,
-      seekfileerror => 'critical',
+      seekfileerror => 'critical', logfileerror => 'critical', 
+      maxmemsize => 0, rotatewait => 0, htmlencode => 0,
+      outputhitcount => 1,
   });
   if ($params->{cfgfile}) {
     if (ref($params->{cfgfile}) eq "ARRAY") {
       # multiple cfgfiles found in a config dir
       my @tmp_searches = ();
       $self->{cfgbase} = $params->{cfgbase} || "check_logfiles";
+      $self->late_init_macros;
       foreach my $cfgfile (@{$params->{cfgfile}}) {
         $self->{cfgfile} = $cfgfile;
         if (! $self->init_from_file()) {
@@ -772,12 +791,14 @@ sub init {
       # this must be an encoded flat file
       $self->{cfgfile} = $params->{cfgfile};
       $self->{cfgbase} = "flatfile";
+      $self->late_init_macros;
       if (! $self->init_from_file()) {
         return undef;
       }
     } else {
       $self->{cfgfile} = $params->{cfgfile};
       $self->{cfgbase} = (split /\./, basename($self->{cfgfile}))[0];
+      $self->late_init_macros;
       if (! $self->init_from_file()) {
         return undef;
       }
@@ -787,34 +808,43 @@ sub init {
     if (scalar(@{$self->{selectedsearches}})) {
       @{$self->{searches}} = map {
         my $srch = $_;
-        if (grep {/^$srch->{tag}$/} @{$self->{selectedsearches}}) {
+        if (grep { $srch->{tag} eq $_ } @{$self->{selectedsearches}}) {
+          # gilt sowohl fuer normale searches
           $srch;
-        } elsif (grep {/^$srch->{tag}$/} map { $_.'_'.$self->{dynamictag} } @{$self->{selectedsearches}}) {
+        } elsif ($srch->{template} && grep { $srch->{template} eq $_ } @{$self->{selectedsearches}}) {
+          # als auch fuer template (tag ist hier bereits template."_".tag,
+          # wobei tag auf der kommandozeile uebergeben wurde)
+          $srch;
+        } elsif (grep { $_ =~ /[*?]/ && $srch->{tag} =~ /$_/ } @{$self->{selectedsearches}}) {
+          # --selectedsearches "regexp,regexp"
           $srch;
         } elsif ($srch->{tag} eq "prescript") {
           $srch;
         } elsif ($srch->{tag} eq "postscript") {
           $srch;
         } else {
-      	  $self->trace("skipping non-selected search %s", $srch->{tag});
+          $self->trace("skipping non-selected search %s", $srch->{tag});
           ();
         }
       } @{$self->{searches}};
     }
   } else {
     $self->{cfgbase} = $params->{cfgbase} || "check_logfiles";
+    $self->late_init_macros;
     # first the global options (from the commandline in this case)
     $self->refresh_options($params->{options});
-    $self->init_macros;
+    $self->{seekfilesdir} = $self->relocate_dir("seekfilesdir", $self->{seekfilesdir});
+    $self->resolve_macros(\$self->{seekfilesdir});
     foreach (@{$params->{searches}}) {
       $_->{seekfilesdir} = $self->{seekfilesdir};
+      $_->{relocate_seekfilesdir} = $self->{relocate_seekfilesdir};
       $_->{scriptpath} = $self->{scriptpath};
       %{$_->{macros}} = %{$self->{macros}};
       $_->{tracefile} = $self->{tracefile};
       $_->{cfgbase} = $self->{cfgbase};
       if (my $search = Nagios::CheckLogfiles::Search->new($_)) {
         # maybe override default search options with global ones (ex. report)
-        $search->refresh_options($self->get_options('report,seekfileerror'));
+        $search->refresh_default_options($self->get_options('report,seekfileerror,logfileerror'));
         push(@{$self->{searches}}, $search);
       } else {
         $ExitCode = $ERROR_UNKNOWN;
@@ -859,7 +889,7 @@ sub init {
 
 sub init_from_file {
   my $self = shift;
-  my $fullcfgfile;
+  my $abscfgfile;
   #
   #  variables from the config file.
   #
@@ -879,32 +909,50 @@ sub init_from_file {
       $ExitMsg = sprintf "UNKNOWN - syntax error %s", (split(/\n/, $@))[0];
       return undef;
     }
+    $abscfgfile = "/dummy/dummy/".(unpack("H*", $self->{cfgfile}));
   } else {
     if (-f $self->{cfgfile}) {
-      $fullcfgfile = $self->{cfgfile};
+      $abscfgfile = $self->{cfgfile};
     } elsif (-f $self->{cfgfile}.'.cfg') {
-      $fullcfgfile = $self->{cfgfile}.'.cfg';
+      $abscfgfile = $self->{cfgfile}.'.cfg';
     } elsif (-f $ENV{HOME}.'/'.$self->{cfgfile}) {
-      $fullcfgfile = $ENV{HOME}.'/'.$self->{cfgfile};
+      $abscfgfile = $ENV{HOME}.'/'.$self->{cfgfile};
     } elsif (-f $ENV{HOME}.'/'.$self->{cfgfile}.'.cfg') {
-      $fullcfgfile = $ENV{HOME}.'/'.$self->{cfgfile}.'.cfg';
+      $abscfgfile = $ENV{HOME}.'/'.$self->{cfgfile}.'.cfg';
     } else {
       $ExitCode = $ERROR_UNKNOWN;
       $ExitMsg = sprintf "UNKNOWN - can not load configuration file %s", 
           $self->{cfgfile};
       return undef;
     }
-    $fullcfgfile = File::Spec->rel2abs($fullcfgfile) 
-        unless File::Spec->file_name_is_absolute($fullcfgfile);
+    $abscfgfile = File::Spec->rel2abs($abscfgfile) 
+        unless File::Spec->file_name_is_absolute($abscfgfile);
+    delete $INC{$abscfgfile}; # this is mostly because of the tests which cache the cfgfile
     eval {
-      require $fullcfgfile;
+      require $abscfgfile;
     };
     if ($@) {
       $ExitCode = $ERROR_UNKNOWN;
       $ExitMsg = sprintf "UNKNOWN - syntax error %s", (split(/\n/, $@))[0];
       return undef;
     }
-  } 
+    # We might need this for a pidfile
+  }
+
+  $self->merge_macros($MACROS); # merge the defaultmacros with macros from the file
+  $seekfilesdir ||= $self->{seekfilesdir};
+  $protocolsdir ||= $self->{protocolsdir};
+  $scriptpath ||= $self->{scriptpath};
+  # We might need this for a pidfile
+  $self->{abscfgfile} = $abscfgfile;
+  $seekfilesdir = $self->relocate_dir("seekfilesdir", $seekfilesdir, dirname(dirname($abscfgfile)));
+  return undef if ! $seekfilesdir;
+  $protocolsdir = $self->relocate_dir("protocolsdir", $protocolsdir, dirname(dirname($abscfgfile)));
+  $scriptpath = $self->relocate_dir("scriptpath", $scriptpath, dirname(dirname($abscfgfile)));
+  $self->resolve_macros(\$seekfilesdir);
+  $self->resolve_macros(\$protocolsdir);
+  $self->resolve_macros(\$scriptpath);
+
   $self->{tracefile} = $tracefile if $tracefile;
   $self->{trace} = -e $self->{tracefile} ? 1 : 0;
   # already done one level above $self->{cfgbase} = (split /\./, basename($self->{cfgfile}))[0];
@@ -920,11 +968,9 @@ sub init_from_file {
   $self->{postscriptparams} = $postscriptparams if $postscriptparams;
   $self->{postscriptstdin} = $postscriptstdin if $postscriptstdin;
   $self->{postscriptdelay} = $postscriptdelay if $postscriptdelay;
-  $self->{macros} = $MACROS if $MACROS;
-  $self->{timeout} = $timeout if $timeout;
+  $self->{timeout} = $timeout || 360000;
   $self->{pidfile} = $pidfile if $pidfile;
   $self->{privatestate} = {};
-  $self->init_macros;
   $self->refresh_options($options);
   if (@logs) {
     #
@@ -951,6 +997,7 @@ sub init_from_file {
   }
   foreach (@searches) {
     $_->{seekfilesdir} = $self->{seekfilesdir};
+    $_->{relocate_seekfilesdir} = $self->{relocate_seekfilesdir};
     $_->{scriptpath} = $self->{scriptpath};
     %{$_->{macros}} = %{$self->{macros}};
     $_->{tracefile} = $self->{tracefile};
@@ -961,7 +1008,7 @@ sub init_from_file {
     }
     $_->{dynamictag} = $self->{dynamictag};
     if (my $search = Nagios::CheckLogfiles::Search->new($_)) {
-      $search->refresh_options($self->get_options('report,seekfileerror'));
+      $search->refresh_options($self->get_options('report,seekfileerror,logfileerror'));
       push(@{$self->{searches}}, $search);
       $_->{privatestate}->{$search->{tag}} = $search->{privatestate};
     } else {
@@ -1000,6 +1047,25 @@ sub run {
     }
     return $self;
   }
+  if ($self->{unstick}) {
+    foreach my $search (@{$self->{searches}}) {
+      if ($search->{tag} ne "prescript" && $search->{tag} ne "postscript") {
+        $search->unstick();
+      }
+    }
+    return $self;
+  }
+  if ($self->{rununique}) {
+    $self->{pidfile} = $self->{pidfile} || $self->construct_pidfile();
+    if (! $self->check_pidfile()) {
+      $self->trace("Exiting because another check is already running");
+      printf STDERR "Exiting because another check is already running\n";
+      exit 3;
+    }
+  }
+  if ($self->get_option('rotatewait')) {
+    $self->await_while_rotate();
+  }
   foreach my $search (@{$self->{searches}}) {
     if (1) { # there will be a timesrunningout variable
       if ($search->{tag} eq "postscript") {
@@ -1015,8 +1081,10 @@ sub run {
           #  have the last word.
           #
           $self->reset_result();        
-        }     	
+        }       
       }      
+      $search->{verbose} = $self->{verbose};
+      $search->{timeout} = $self->{timeout};
       $search->run();
       if (($search->{tag} eq "prescript") && 
           ($search->{options}->{supersmartscript}) &&
@@ -1074,7 +1142,36 @@ sub run {
     }
   }
   $self->cleanup_protocols();
+  if ($self->get_option("htmlencode")) {
+    $self->htmlencode(\$self->{exitmessage});
+    $self->htmlencode(\$self->{long_exitmessage});
+  }
+  if ($self->{rununique}) {
+    $self->cleanup_pidfile();
+  }
   return $self;
+}
+
+sub htmlencode {
+  my $self = shift;
+  my $pstring = shift;
+  return if ! $$pstring;
+  $$pstring =~ s/&/&amp/g;
+  $$pstring =~ s/</&lt/g;
+  $$pstring =~ s/>/&gt/g;
+  $$pstring =~ s/"/&quot/g;
+}
+
+
+sub await_while_rotate {
+  my $self = shift;
+  my($sec, $min, $hour, $mday, $mon, $year) = (localtime)[0, 1, 2, 3, 4, 5];
+  if (($min == 0 || $min == 15 || $min == 30 || $min == 45) && $sec < 15) {
+    $self->trace("waiting until **:**:15");
+    foreach (1..(15 - $sec)) {
+      sleep 1;
+    }
+  }
 }
 
 sub formulate_result {
@@ -1094,10 +1191,11 @@ sub formulate_result {
   } else {
     $self->{hint} .= ")";
   }
-  foreach my $level qw(CRITICAL WARNING UNKNOWN OK) {
+  foreach my $level (qw(CRITICAL WARNING UNKNOWN OK)) {
     $self->{exitcode} = $ERRORS{$level};
     if (($level ne "OK") && ($self->{allerrors}->{$level})) {
-      $self->{exitmessage} = sprintf "%s - %s - %s %s", $level, $self->{hint},
+      $self->{exitmessage} = sprintf "%s%s - %s %s", $level, 
+          $self->get_option("outputhitcount") ? " - ".$self->{hint} : "",
           $self->{lastmsg}->{$level}, 
           ($self->{allerrors}->{$level} == 1 ? "" : "...");
       last;
@@ -1126,6 +1224,7 @@ sub formulate_long_result {
   my $line = "";
    
   foreach my $search (@{$self->{searches}}) {
+    next if $search->{tag} eq 'postscript';
     if (scalar(@{$search->{matchlines}->{CRITICAL}}) ||
         scalar(@{$search->{matchlines}->{WARNING}}) ||
         scalar(@{$search->{matchlines}->{UNKNOWN}})) {
@@ -1150,7 +1249,7 @@ sub formulate_long_result {
       } else {
         last;
       }
-      foreach my $level qw(CRITICAL WARNING UNKNOWN) {
+      foreach my $level (qw(CRITICAL WARNING UNKNOWN)) {
         foreach my $message (@{$search->{matchlines}->{$level}}) {
           if ($self->get_option('report') eq "html") {
             $message =~ s/</&lt;/g;
@@ -1180,12 +1279,22 @@ sub formulate_long_result {
 sub reset_result {
   my $self = shift;
   $self->{allerrors} = { OK => 0, WARNING => 0, CRITICAL => 0, UNKNOWN => 0 };
+  foreach my $search (@{$self->{searches}}) {
+    next if $search->{tag} eq 'postscript';
+    next if $search->{tag} eq 'prescript';
+    $search->{matchlines} = {
+        OK => [],
+        WARNING => [],
+        CRITICAL => [],
+        UNKNOWN => [],
+    }
+  }
 }
 
 sub reset {
   my $self = shift;
   $self->{allerrors} = { OK => 0, WARNING => 0, CRITICAL => 0, UNKNOWN => 0 };
-  foreach my $level qw(OK CRITICAL WARNING UNKNOWN) {
+  foreach my $level (qw(OK CRITICAL WARNING UNKNOWN)) {
     $self->{lastmsg}->{$level} = "";
   }
   foreach my $search (@{$self->{searches}}) {
@@ -1221,7 +1330,6 @@ sub init_macros {
   #  Set default values for the built-in macros.
   #
   my $DEFAULTMACROS = {
-      CL_SERVICEDESC => $self->{cfgbase},
       CL_DATE_YYYY => sprintf("%04d", $year),
       CL_DATE_YY => substr($year,2,2),
       CL_DATE_MM => sprintf("%02d", $mon),
@@ -1231,7 +1339,6 @@ sub init_macros {
       CL_DATE_SS => sprintf("%02d", $sec),
       CL_DATE_TIMESTAMP => sprintf("%10d", time),
       CL_DATE_CW => sprintf("%02d", $cw),
-      CL_NSCA_SERVICEDESC => $self->{cfgbase},
       CL_NSCA_HOST_ADDRESS => "127.0.0.1",
       CL_NSCA_PORT => 5667,
       CL_NSCA_TO_SEC => 10,
@@ -1286,6 +1393,24 @@ sub init_macros {
   return $self;
 }
 
+sub late_init_macros {
+  # these are macros filled with values that do not exist before
+  # the Nagios::CheckLogfiles object has been fully initialized
+  my $self = shift;
+  $self->{macros}->{CL_SERVICEDESC} = $self->{cfgbase};
+  $self->{macros}->{CL_NSCA_SERVICEDESC} = $self->{cfgbase};
+  $self->{macros}->{CL_WARNING} = $self->{warning};
+  $self->{macros}->{CL_CRITICAL} = $self->{critical};
+}
+
+sub merge_macros {
+  my $self = shift;
+  my $extramacros = shift;
+  foreach (keys %{$extramacros}) {
+    $self->{macros}->{$_} = $extramacros->{$_};
+  }
+}
+
 #
 #  Resolve macros in a string. 
 #  If a second parameter is given, then this string is meant as a regular expression.
@@ -1294,6 +1419,7 @@ sub init_macros {
 sub resolve_macros {
   my $self = shift;
   my $pstring = shift;
+  return if ! defined $$pstring;
   while ($$pstring =~ /\$(.+?)\$/g) {
     my $maybemacro = $1;
     if (exists $self->{macros}->{$maybemacro}) {
@@ -1307,13 +1433,14 @@ sub resolve_macros {
 sub resolve_macros_in_pattern {
   my $self = shift;
   my $pstring = shift;
+  return if ! $$pstring;
   while ($$pstring =~ /\$(.+?)\$/g) {
   # das alte bleibt hier stehen als denkmal der schande
   #while ($$pstring =~ /.*\$(\w+)\$.*/g) { 
     my $maybemacro = $1;
     if (exists $self->{macros}->{$maybemacro}) {
       my $macro = $self->{macros}->{$maybemacro};
-   	  #
+       #
       #  Escape the most commonly used special characters so they will no longer
       #  be treated like special characters in a pattern.
       #
@@ -1328,8 +1455,10 @@ sub resolve_macros_in_pattern {
 sub default_options {
   my $self = shift;
   my $defaults = shift;
+  $self->{defaultoptions} = {};
   while (my($key, $value) = each %{$defaults}) {
     $self->{options}->{$key} = $value;
+    $self->{defaultoptions}->{$key} = $value;
   }
 }
 
@@ -1366,6 +1495,44 @@ sub get_options {
   }
 }
 
+sub get_non_default_options {
+  my $self = shift;
+  my $list = shift;
+  if (! $list) {
+    my %h = map {
+      ($_, $self->{options}->{$_})
+    } grep {
+      ! exists $self->{defaultoptions}->{$_} ||
+          "$self->{defaultoptions}->{$_}" ne "$self->{options}->{$_}";
+    } keys %{$self->{options}};
+    return \%h;
+  } else {
+    my %h = map {
+      ($_, $self->{options}->{$_})
+    } grep {
+      ! exists $self->{defaultoptions}->{$_} ||
+          "$self->{defaultoptions}->{$_}" ne "$self->{options}->{$_}";
+    } split(',', $list);
+    return \%h;
+  }
+}
+
+sub refresh_default_options {
+  my $self = shift;
+  my $options = shift;
+  if ($options) {
+    if (ref($options) eq 'HASH') { # already as hash
+      foreach my $option (keys %{$options}) {
+        my $optarg = $options->{$option};
+        if (! exists $self->{defaultoptions}->{$option} ||
+            "$self->{defaultoptions}->{$option}" eq "$self->{options}->{$option}") {
+          $self->{options}->{$option} = $optarg;
+        }
+      }
+    }
+  }
+}
+
 sub refresh_options {
   my $self = shift;
   my $options = shift;
@@ -1385,8 +1552,8 @@ sub refresh_options {
         $option =~ s/^\s+//;
         $option =~ s/\s+$//;
         if ($option =~ /(.*)=(.*)/) {
-        	$option = $1;
-        	$optarg = $2;
+          $option = $1;
+          $optarg = $2;
           $optarg =~ s/^"//;
           $optarg =~ s/"$//;
           $optarg =~ s/^'//;
@@ -1394,9 +1561,9 @@ sub refresh_options {
         }
         foreach my $defoption (keys %{$self->{options}}) {
           if ($option eq $defoption) {
-            if ($optarg) {
-            	# example: sticky=3600,syslogclient="winhost1.dom"
-            	$self->{options}->{$defoption} = $optarg;
+            if (defined $optarg) {
+              # example: sticky=3600,syslogclient="winhost1.dom"
+              $self->{options}->{$defoption} = $optarg;
             } else {
               $self->{options}->{$defoption} = 1;
             }
@@ -1449,7 +1616,7 @@ sub trace {
   push(@{$self->{tracebuffer}}, @_);
   if ($self->{verbose}) {
     printf("%s: ", scalar localtime);
-    printf($format, @_);
+    printf($format."\n", @_);
   }
   if ($self->{trace}) {
     my $logfh = new IO::File;
@@ -1490,9 +1657,10 @@ sub action {
     } else {
       $envmacro = "CHECK_LOGFILES_".$macro;
     }
-    $ENV{$envmacro} = $self->{macros}->{$macro};
+    $ENV{$envmacro} = defined($self->{macros}->{$macro}) ? 
+        $self->{macros}->{$macro} : "";
   }
-  $ENV{CHECK_LOGFILES_SERVICESTATE} = qw(OK WARNING CRITICAL UNKNOWN)
+  $ENV{CHECK_LOGFILES_SERVICESTATE} = (qw(OK WARNING CRITICAL UNKNOWN))
       [$ENV{CHECK_LOGFILES_SERVICESTATEID}];
   if (ref $script eq "CODE") {
     $self->trace("script is of type %s", ref $script);
@@ -1539,7 +1707,7 @@ sub action {
   } else {
     my $pathsep = ($^O =~ /MSWin/) ? ';' : ':';
     foreach my $dir (split(/$pathsep/, $self->{scriptpath})) {
-      if ( -x $dir.'/'.$script ) {
+      if ( -x $dir.'/'.$script || ( -f $dir.'/'.$script && $^O =~ /cygwin|MSWin/ && $script =~ /\.(bat|exe)$/i )) {
         $self->trace(sprintf "found script in %s/%s", $dir, $script);
         $cmd = sprintf "%s/%s", $dir, $script;
         if ($^O =~ /MSWin/) {
@@ -1571,7 +1739,7 @@ sub action {
         my $wait = 0;
         my $maxlines = 100;
         if (! ref($scriptstdin eq "ARRAY")) {
-        	$scriptstdin = [$scriptstdin];
+          $scriptstdin = [$scriptstdin];
         }
         foreach (@{$scriptstdin}) {
           $self->resolve_macros(\$_);
@@ -1581,6 +1749,8 @@ sub action {
         #  characters must be expanded.
         $stdinformat[0] =~ s/\\t/\t/g;
         $stdinformat[0] =~ s/\\n/\n/g;
+        # if there is a % in CL_SERVICEOUTPUT we have to escape it
+        $stdinformat[0] =~ s/%/%%/g;
         $SIG{'PIPE'} = sub {};
         $SIG{'CHLD'} = sub {};
         my($chld_out, $chld_in);
@@ -1703,6 +1873,82 @@ sub getfilefingerprint {
       # google for "tunneling"
       return sprintf "0:%d", (stat $file)[10];
       #return "0:0";
+    } elsif ($^O eq "linux") {
+      open(MTAB, "/etc/mtab");
+      my @mtab = <MTAB>;
+      close MTAB;
+      my @nfsmounts = grep {
+        substr($_->[2], 0, 3) eq "nfs"
+      } map {
+        my ($dev, $mountpoint, $fstype, $rest) = split(/\s+/, $_);
+        [$mountpoint, length($mountpoint), $fstype];
+      } @mtab;
+      if (@nfsmounts) {
+        # we have nfs mounts
+        if (-l $file) {
+          # Maybe the logfile is a symlink pointing to a file residing
+          # in an nfs-mounted directory. we need to resolve the link.
+          # The following find-routine was copied from
+          # http://www.stonehenge.com/merlyn/UnixReview/col27.html
+          # The author was Randal L. Schwartz, a renowned expert
+          # on the Perl programming language. Thanks Randal!
+          my $dir = cwd;
+          find(sub {
+            my @right = split /\//, $File::Find::name;
+            my @left = do {
+              @right && ($right[0] eq "") ?
+                shift @right :            # quick way
+                  split /\//, $dir;
+            };    # first element always null
+            while (@right) {
+              my $item = shift @right;
+              next if $item eq "." or $item eq "";
+              if ($item eq "..") {
+                pop @left if @left > 1;
+                next;
+              }
+              my $link = readlink (join "/", @left, $item);
+              if (defined $link) {
+                my @parts = split /\//, $link;
+                if (@parts && ($parts[0] eq "")) { # absolute
+                  @left = shift @parts;   # quick way
+                }
+                unshift @right, @parts;
+                next;
+              } else {
+                push @left, $item;
+                next;
+              }
+            }
+            $self->trace("%s is a symlink pointing to %s",
+                $file, join("/", @left));
+            $file = join("/", @left);
+          }, ($file));
+        }
+        $file = File::Spec->rel2abs($file)
+            unless File::Spec->file_name_is_absolute($file);
+        my @mountpoints = sort {
+            $b->[1] <=> $a->[1]
+        } grep {
+            substr($file, 0, $_->[1]) eq $_->[0];
+        } map {
+            my ($dev, $mountpoint, $fstype, $rest) = split(/\s+/, $_);
+            # printf STDERR "line: %s,%s,%s\n", $dev, $mountpoint, $fstype;
+            [$mountpoint, length($mountpoint), $fstype];
+        } @mtab;
+        if (substr($mountpoints[0][2], 0, 3) eq "nfs") {
+          # At least under RedHat 5 we saw a strange phenomenon:
+          # The device number of an nfs-mounted volume changed from time 
+          # to time, and so did the logfile fingerprint.
+          # That's the reason, why we only use the inode for rotation detection
+          # in such an environment.
+          return sprintf "%d", (stat $file)[1];
+        } else {
+          return sprintf "%d:%d", (stat $file)[0], (stat $file)[1];
+        }
+      } else {
+        return sprintf "%d:%d", (stat $file)[0], (stat $file)[1];
+      }
     } else {
       return sprintf "%d:%d", (stat $file)[0], (stat $file)[1];
     }
@@ -1749,6 +1995,24 @@ sub getfileisreadable {
   }
 }
 
+sub getfileisexecutable {
+  my $self = shift;
+  my $file = shift;
+  if ($^O =~ /MSWin/) {
+    printf STDERR "not yet\n";
+  } elsif (-x $file) {
+    return 1;
+  } else {
+    use filetest 'access';
+    $self->trace("stat (%s) failed, try access instead", $file);
+    if (-x $file) {
+      return 1;
+    } else { 
+      return 0;
+    }
+  } 
+} 
+
 sub old_getfileisreadable {
   my $self = shift;
   my $file = shift;
@@ -1781,7 +2045,113 @@ sub system_tempdir {
         if defined $ENV{windir};
     return 'C:\Temp';
   } else {
-  	return "/tmp";
+    return "/tmp";
+  }
+}
+
+sub construct_pidfile {
+  my $self = shift;
+  $self->{pidfilebase} = $self->{abscfgfile};
+  $self->{pidfilebase} =~ s/\//_/g;
+  $self->{pidfilebase} =~ s/\\/_/g; 
+  $self->{pidfilebase} =~ s/:/_/g;
+  $self->{pidfilebase} =~ s/\s/_/g;
+  $self->{pidfilebase} =~ s/\.cfg$//g;
+  if (scalar(keys %{$self->{cmdlinemacros}})) {
+    my $macrostring = "macros_";
+    foreach my $key (sort keys %{$self->{cmdlinemacros}}) {
+      $macrostring .= $key."=".$self->{cmdlinemacros}->{$key}."_";
+    }
+    $macrostring =~ s/\//_/g;
+    $macrostring =~ s/\\/_/g; 
+    $macrostring =~ s/:/_/g;
+    $macrostring =~ s/\s/_/g;
+    $self->{pidfilebase} .= "_".$macrostring;
+  }
+  return sprintf "%s/%s.pid", $self->{seekfilesdir},
+      $self->{pidfilebase};
+}
+
+sub write_pidfile {
+  my $self = shift;
+  if (! -d dirname($self->{pidfile})) {
+    eval "require File::Path;";
+    if (defined(&File::Path::mkpath)) {
+      import File::Path;
+      eval { mkpath(dirname($self->{pidfile})); };
+    } else {
+      my @dirs = ();
+      map { 
+          push @dirs, $_;
+          mkdir(join('/', @dirs)) 
+              if join('/', @dirs) && ! -d join('/', @dirs);
+      } split(/\//, dirname($self->{pidfile}));
+    }
+  }
+  my $fh = new IO::File;
+  $fh->autoflush(1);
+  if ($fh->open($self->{pidfile}, "w")) {
+    $fh->printf("%s", $$);
+    $fh->close();
+  } else {
+    $self->trace("Could not write pidfile %s", $self->{pidfile});
+    die "pid file could not be written";
+  }
+}
+
+sub check_pidfile {
+  my $self = shift;
+  my $fh = new IO::File;
+  if ($fh->open($self->{pidfile}, "r")) {
+    my $pid = $fh->getline();
+    $fh->close();
+    if (! $pid) {
+      $self->trace("Found pidfile %s with no valid pid. Exiting.", 
+          $self->{pidfile});
+      return 0;
+    } else {
+      $self->trace("Found pidfile %s with pid %d", $self->{pidfile}, $pid);
+      kill 0, $pid;
+      if ($! == Errno::ESRCH) {
+        $self->trace("This pidfile is stale. Writing a new one");
+        $self->write_pidfile();
+        return 1;
+      } else {
+        my $is_a_check_logfiles = 0;
+        open(KILL, "/bin/ps -o args -e|");
+        while (<KILL>) {
+          if (/^(\d+)\s+.*check_logfiles.*/) {
+            if ($1 == $pid) {
+              $is_a_check_logfiles = 1;
+            }
+          }
+        }
+        close KILL;
+        if ($is_a_check_logfiles) {
+          $self->trace("This pidfile is held by a running process. Exiting");
+          return 0;
+        } else {
+          $self->trace("This pidfile is held by some other process. Writing a new one");
+          $self->write_pidfile();
+          return 1;
+        }
+      }
+    }
+  } else {
+    $self->trace("Found no pidfile. Writing a new one");
+    $self->write_pidfile();
+    return 1;
+  }
+}
+
+sub cleanup_pidfile {
+  my $self = shift;
+  if ($self->{pidfile}) {
+    $self->trace(sprintf "Cleanup pidfile. %s", -f $self->{pidfile} ? "Yes" : "No");
+    -f $self->{pidfile} && unlink $self->{pidfile};
+    $self->trace(sprintf "Cleaned up pidfile. %s", ! -f $self->{pidfile} ? "Yes" : "No");
+  } else {
+    $self->trace("Not running with a pidfile");
   }
 }
 
@@ -1811,7 +2181,7 @@ sub run_as_daemon {
               $self->trace(sprintf "%s%s\n%s", $self->{exitmessage},
                   $self->{perfdata} ? "|".$self->{perfdata} : "",
                   $self->{long_exitmessage} ?
-                      $self->{long_exitmessage}."\n" : "");
+                  $self->{long_exitmessage}."\n" : "");
               $self->reset();
               foreach (1..$delay) {
                 if (Win32::Daemon::State() == SERVICE_RUNNING()) {
@@ -1865,15 +2235,28 @@ sub run_as_daemon {
       }
     }
   } else {
+    # pidfile must be created before the chdir because it is based on the
+    # cfgfile which can be a relative path
+    $self->{pidfile} = $self->{pidfile} || $self->construct_pidfile();
+    if (! $self->check_pidfile()) {
+      $self->trace("Exiting because another daemon is already running");
+      printf STDERR "Exiting because another daemon is already running\n";
+      exit 3;
+    }
+    if (! POSIX::setsid()) {
+      $self->trace("Cannot detach from controlling terminal");
+      printf STDERR "Cannot detach from controlling terminal\n";
+      exit 3;
+    }
+    $self->set_memory_limit();
     chdir '/';
-    die "cannot detach from controlling terminal" unless POSIX::setsid();
     exit if (fork());
     exit if (fork());
+    $self->write_pidfile();
     open STDIN, '+>/dev/null';
     open STDOUT, '+>&STDIN';
     open STDERR, '+>&STDIN';
     my $keep_going = 1;
-    # $self->{pidfile};
     $self->trace(sprintf "Daemon running with pid %d", $$);
     foreach my $signal (qw(HUP INT TERM QUIT)) {
       $SIG{$signal}  = sub {
@@ -1896,6 +2279,7 @@ sub run_as_daemon {
         }
       }
     } while($keep_going);
+    $self->cleanup_pidfile();
     $self->trace("Daemon exiting...");
   }
 }
@@ -1913,10 +2297,10 @@ sub install_windows_service {
       my $fullpath = Win32::GetFullPathName($0);
       my ($cwd, $base, $ext) = ( $fullpath =~ /^(.*\\)(.*)\.(.*)$/ ) [0..2] ;
       my $servicepath = ($ext eq 'exe') ?
-          "\"$fullpath\"" : "\"$^X\"";
+        "\"$fullpath\"" : "\"$^X\"";
       my $serviceparameters = ($ext eq 'exe') ?
-          "--daemon --config \"$cfgfile\"" :
-          " \"$fullpath\" --daemon --config \"$cfgfile\"";
+        "--daemon --config \"$cfgfile\"" :
+        " \"$fullpath\" --daemon --config \"$cfgfile\"";
       my $service = {
         machine => '',
         name => $servicename,
@@ -1932,7 +2316,7 @@ sub install_windows_service {
         $self->{exitcode} = 0;
       } else {
         $self->{exitmessage} = 'Failed to add service: '.
-            Win32::FormatMessage(Win32::Daemon::GetLastError());
+          Win32::FormatMessage(Win32::Daemon::GetLastError());
         $self->{exitcode} = 3;
       }
     } else {
@@ -1956,7 +2340,7 @@ sub deinstall_windows_service {
         $self->{exitcode} = 0;
       } else {
         $self->{exitmessage} = 'Failed to deinstall service: '.
-            Win32::FormatMessage(Win32::Daemon::GetLastError());
+          Win32::FormatMessage(Win32::Daemon::GetLastError());
         $self->{exitcode} = 3;
       }
     }
@@ -1966,11 +2350,127 @@ sub deinstall_windows_service {
   }
 }
 
+
+# We won't allow check_logfiles to consume 70GB of memory any more :-)
+sub set_memory_limit {
+  my $self = shift;
+  my $limit = $self->get_option("maxmemsize"); # megabytes
+  if (! $limit) {
+    return;
+  } elsif ($limit < 200) {
+    $self->trace("I won't run with at least 200MB memory");
+    printf STDERR "I won't run with at least 200MB memory\n";
+    exit 3;
+  } elsif ($^O eq "solaris" && ! defined(&SYS_setrlimit)) {
+      # From /usr/include/sys/syscall.h and /usr/include/sys/resource.h
+      eval 'sub SYS_setrlimit () {128;}';
+      eval 'sub SYS_getrlimit () {129;}';
+      eval 'sub RLIMIT_AS () {6;}';
+  } elsif (! defined(&SYS_setrlimit)) {
+    $self->trace("I dont't know how to set resource limits");
+    printf STDERR "I dont't know how to set resource limits\n";
+    exit 3;
+  }
+  $SIG{'SEGV'} = sub {
+    # usually the perl interpreter aborts after a failed mmap with a
+    # "Out of memory" message. Do not expect to execute a signal handler.
+    printf "I received a SIGSEGV\n";
+    exit 3;
+  };
+  my $soft_as_limit = int(1024 * 1024 * $limit);
+  my $hard_as_limit = int(1024 * 1024 * $limit);
+  # L! = native long unsigned int
+  my $limits = pack "L!L!", $soft_as_limit, $hard_as_limit;
+  if (syscall(&SYS_setrlimit, &RLIMIT_AS, $limits) == -1) {
+    $self->trace("Cannot set address space limits (%s)", "$!");
+    printf STDERR "Cannot set address space limits (%s)\n", "$!";
+    exit 3;
+  } else {
+    syscall(&SYS_getrlimit, &RLIMIT_AS, $limits);
+    my ($new_soft_as_limit, $new_hard_as_limit) = unpack "L!L!", $limits;
+    if ($new_soft_as_limit != $soft_as_limit) {
+      $self->trace("Cannot set address space limits (!=)");
+      printf STDERR "Cannot set address space limits (!=)\n";
+      exit 3;
+    } else {
+      $self->trace("Setting address space limits to %.2fMB", $limit);
+    }
+  }
+}
+
+sub relocate_dir {
+  # $seekfilesdir = $self->relocate_dir("seekfilesdir", $seekfilesdir, dirname(dirname($abscfgfile)))) {
+  my $self = shift;
+  my $type = shift;
+  my $olddir = shift;
+  my $basedir = shift;
+  my $newdir = "";
+  if ($olddir =~ /^(autodetect|homevartmp):(.*)/) {
+    # this is a hint for the search which will move its seekfile
+    # from here to it's new location
+    $self->{"relocate_".$type} = $2;
+    $self->resolve_macros(\$self->{"relocate_".$type});
+  }
+  if ($olddir =~ /^autodetect/) {
+    if ($type eq "scriptpath") {
+      $newdir = join(($^O =~ /MSWin/) ? ';' : ':', grep {
+          -d $_
+      } map {
+          $basedir.$_;
+      } ('/local/lib/nagios/plugins', '/lib/nagios/plugins'));
+    } else {
+      if (-d $basedir.'/var/tmp' && -w $basedir.'/var/tmp') {
+        $newdir = $basedir.'/var/tmp/check_logfiles';
+        mkdir($newdir);
+      } elsif (-d $basedir.'/tmp' && -w $basedir.'/tmp') {
+        $newdir = $basedir.'/tmp/check_logfiles';
+        mkdir($newdir);
+      } elsif ($type eq "seekfilesdir") {
+        $ExitCode = $ERROR_UNKNOWN;
+        $ExitMsg = sprintf "UNKNOWN - unable to autodetect an adequate seekfilesdir";
+        return undef;
+      } else {
+        $newdir = $self->system_tempdir();
+      }
+    }
+    return $newdir;
+  } elsif ($olddir =~ /^homevartmp/) {
+    if ($type eq "scriptpath") {
+    } else {
+      foreach my $basedir ($ENV{OMD_ROOT}, $ENV{HOME}) {
+        next if ! $basedir;
+        foreach my $dir ("/var/tmp", "/tmp") {
+          eval {
+            mkpath($basedir.$dir."/check_logfiles");
+          };
+          next if $@;
+          $newdir = $basedir.$dir."/check_logfiles";
+          mkdir($newdir);
+          last;
+        }
+        last if $newdir;
+      }
+      if (! $newdir && $type eq "seekfilesdir") {
+        $ExitCode = $ERROR_UNKNOWN;
+        $ExitMsg = sprintf "UNKNOWN - unable to autodetect an adequate seekfilesdir";
+        return undef;
+      } elsif (! $newdir) {
+        $newdir = $self->system_tempdir();
+      }
+    }
+    return $newdir;
+  } else {
+    return $olddir;
+  }
+}
+
+
 package Nagios::CheckLogfiles::Search;
 
 use strict;
 use Exporter;
 use File::Basename;
+use File::Copy;
 use POSIX qw(SSIZE_MAX);
 #use Unicode::Normalize;
 #use Encode;
@@ -2003,6 +2503,7 @@ sub new {
   $self->{scriptdelay} = $params->{scriptdelay};
   $self->{cfgbase} = $params->{cfgbase} || "check_logfiles";
   $self->{seekfilesdir} = $params->{seekfilesdir} || $self->system_tempdir();
+  $self->{relocate_seekfilesdir} = $params->{relocate_seekfilesdir};
   $self->{archivedir} = $params->{archivedir};
   $self->{scriptpath} = $params->{scriptpath};
   $self->{macros} = $params->{macros};
@@ -2031,20 +2532,20 @@ sub new {
     if (exists $params->{tivolimapping}) {
       foreach (keys %{$params->{tivolimapping}}) {
         $tivoliparams->{severity_mappings}->{lc $_} = 0 if 
-            $params->{tivolimapping}->{$_} =~ /(?i)ok/;
+          $params->{tivolimapping}->{$_} =~ /(?i)ok/;
         $tivoliparams->{severity_mappings}->{lc $_} = 1 if 
-            $params->{tivolimapping}->{$_} =~ /(?i)warning/;
+          $params->{tivolimapping}->{$_} =~ /(?i)warning/;
         $tivoliparams->{severity_mappings}->{lc $_} = 2 if 
-            $params->{tivolimapping}->{$_} =~ /(?i)critical/;
+          $params->{tivolimapping}->{$_} =~ /(?i)critical/;
         $tivoliparams->{severity_mappings}->{lc $_} = 3 if 
-            $params->{tivolimapping}->{$_} =~ /(?i)unknown/;
+          $params->{tivolimapping}->{$_} =~ /(?i)unknown/;
         $tivoliparams->{severity_mappings}->{lc $_} =
-            $params->{tivolimapping}->{$_} if 
-            $params->{tivolimapping}->{$_} =~ /\d/;
+          $params->{tivolimapping}->{$_} if 
+          $params->{tivolimapping}->{$_} =~ /\d/;
       }
     }
     if ($self->{tivoli}->{object} = Nagios::Tivoli::Config::Logfile->new(
-        $tivoliparams )) {
+          $tivoliparams )) {
     } else {
       die "could not create tivoli object from $params->{tivolipatterns}";
     }
@@ -2058,24 +2559,24 @@ sub new {
   }
   $self->{privatestate} = {};
   my $class = sprintf "Nagios::CheckLogfiles::Search::%s",
-      join "::", map {
-          (uc substr($_, 0, 1)).substr($_, 1);
-      } split(/::/, $self->{type});
+     join "::", map {
+       (uc substr($_, 0, 1)).substr($_, 1);
+     } split(/::/, $self->{type});
   bless $self, $class;
   if (! $self->can("init")) {
-  	#
-  	#  Maybe $class was not defined in this file. Try to find 
-  	#  the external module.
-  	#
+    #
+    #  Maybe $class was not defined in this file. Try to find 
+    #  the external module.
+    #
     my $module = $class.".pm";
     $module =~ s/::/\//g;
-  	foreach (@INC) {
-  	  if (-f $_."/$module") {
-  	    require $module;
-  	    bless $self, $class;
-  	    last;
-  	  }
-  	}
+    foreach (@INC) {
+      if (-f $_."/$module") {
+        require $module;
+        bless $self, $class;
+        last;
+      }
+    }
   }
   if ($self->can("init")) {
     if ($self->init($params)) {
@@ -2106,11 +2607,14 @@ sub init {
   $self->{exceptions} = { OK => [], WARNING => [], CRITICAL => [], UNKNOWN => [] };
   $self->{threshold} = { OK => 0, WARNING => 0, CRITICAL => 0, UNKNOWN => 0 };
   $self->{thresholdcnt} = { OK => 0, WARNING => 0, CRITICAL => 0, UNKNOWN => 0 };
+  $self->{thresholdtimes} = { OK => [], WARNING => [], CRITICAL => [], UNKNOWN => [] };
+  $self->{patternkeys} = { OK => {}, WARNING => {}, CRITICAL => {}, UNKNOWN => {} };
+  $self->{filepatterns} = {};
   $self->{hasinversepat} = 0;
   $self->{likeavirgin} = 0;
   $self->{linesread} = 0;
   $self->{linenumber} = 0; # used for context
-  $self->{perfdata} = "";
+    $self->{perfdata} = "";
   $self->{max_readsize} = 1024 * 1024 * 128;
   # sysread can only read SSIZE_MAX bytes in one operation.
   # this is often (1024 * 1024 * 1024 * 2) - 1 = 2GB - 1
@@ -2126,12 +2630,14 @@ sub init {
   $self->default_options({ script => 0, smartscript => 0, supersmartscript => 0,
       protocol => 1, count => 1, syslogserver => 0, logfilenocry => 1,
       perfdata => 1, case => 1, sticky => 0, syslogclient => 0,
-      savethresholdcount => 1, encoding => 0, maxlength => 0, 
+      savethresholdcount => 1, thresholdexpiry => 0, encoding => 0, maxlength => 0, 
       lookback => 0, context => 0, allyoucaneat => 0, randominode => 0,
       preferredlevel => 0,
       warningthreshold => 0, criticalthreshold => 0, unknownthreshold => 0,
-      report => 'short', seekfileerror => 'critical',
-      archivedirregexp => 0,
+      report => 'short',
+      seekfileerror => 'critical', logfileerror => 'critical', 
+      archivedirregexp => 0, 
+      capturegroups => 0,
   });
   $self->refresh_options($params->{options});
   #
@@ -2139,17 +2645,21 @@ sub init {
   #
   if (exists $self->{template} && exists $self->{dynamictag}) {
     $self->{macros}->{CL_TAG} = $self->{dynamictag};
+    $self->{macros}->{CL_tag} = lc $self->{dynamictag};
     $self->{macros}->{CL_TEMPLATE} = $self->{template};
   } else {
     $self->resolve_macros(\$self->{tag});
     $self->{macros}->{CL_TAG} = $self->{tag};
+    # http://www.nagios-portal.org/wbb/index.php?page=Thread&threadID=18392
+    # this saves a lot of time when you are working with oracle alertlogs
+    $self->{macros}->{CL_tag} = lc $self->{tag};
   }
   $self->{logfile_before_resolving} = $self->{logfile};
   $self->resolve_macros(\$self->{logfile});
   $self->{macros}->{CL_LOGFILE} = $self->{logfile};
   $self->{logbasename} = basename($self->{logfile});
   $self->{archivedir} = exists $params->{archivedir} ? $params->{archivedir} :
-      dirname($self->{logfile});
+    dirname($self->{logfile});
   $self->resolve_macros(\$self->{archivedir});
   #
   #  Preliminary filter
@@ -2184,19 +2694,134 @@ sub init {
   #
   #  Setup the structure describing what to search for.
   #
-  foreach my $level qw(OK CRITICAL WARNING UNKNOWN) {
+  foreach my $level (qw(OK CRITICAL WARNING UNKNOWN)) {
     #
     #  if a single pattern was given as a scalar, force it into an array
     #  and resolve macros.
     #
     if (exists $params->{(lc $level).'patterns'}) {
-      if (ref($params->{(lc $level).'patterns'}) ne 'ARRAY') {
-        $self->{patterns}->{$level} = [$params->{(lc $level).'patterns'}];
+      if (ref($params->{(lc $level).'patterns'}) eq 'HASH') {
+        map {
+          my $value = $params->{(lc $level).'patterns'}->{$_};
+          $self->{patternkeys}->{$level}->{$value} = $_;
+        } keys %{$params->{(lc $level).'patterns'}};
+        my $tmphash = $params->{(lc $level).'patterns'};
+        $params->{(lc $level).'patterns'} = [];
+        @{$params->{(lc $level).'patterns'}} = values %{$tmphash};
+      } elsif (ref($params->{(lc $level).'patterns'}) eq 'ARRAY') {
       } else {
-        push(@{$self->{patterns}->{$level}}, @{$params->{(lc $level).'patterns'}});
+        $params->{(lc $level).'patterns'} =
+            [$params->{(lc $level).'patterns'}];
       }
+    }
+    if (exists $params->{(lc $level).'exceptions'}) {
+      if (ref($params->{(lc $level).'exceptions'}) eq 'HASH') {
+        $params->{(lc $level).'exceptions'} =
+            values %{$params->{(lc $level).'exceptions'}};
+        my $tmphash = $params->{(lc $level).'exceptions'};
+        $params->{(lc $level).'exceptions'} = [];
+        @{$params->{(lc $level).'exceptions'}} = values %{$tmphash};
+      } elsif (ref($params->{(lc $level).'exceptions'}) eq 'ARRAY') {
+      } else {
+        $params->{(lc $level).'exceptions'} =
+            [$params->{(lc $level).'exceptions'}];
+      }
+    }
+  }
+  if (exists $params->{patternfiles}) {
+    if (ref($params->{patternfiles}) ne 'ARRAY') {
+      $params->{patternfiles} = [$params->{patternfiles}];
+    }
+    foreach my $patternfile (@{$params->{patternfiles}}) {
+      our($criticalpatterns, $warningpatterns,
+          $criticalexceptions, $warningexceptions);
+      ($criticalpatterns, $warningpatterns,
+          $criticalexceptions, $warningexceptions) = (undef, undef, undef, undef);
+      eval {
+        do $patternfile;
+      };
+      if ($@) {
+        printf STDERR "%s\n", $@;
+        $self->addevent(3, $@);
+      } else {
+        my $filepatterns = {};
+        $filepatterns->{criticalpatterns} = $criticalpatterns
+            if $criticalpatterns;
+        $filepatterns->{warningpatterns} = $warningpatterns
+            if $warningpatterns;
+        $filepatterns->{criticalexceptions} = $criticalexceptions
+            if $criticalexceptions;
+        $filepatterns->{warningexceptions} = $warningexceptions
+            if $warningexceptions;
+        foreach my $level (qw(ok warning critical unknown)) {
+          # normalize
+          if (exists $filepatterns->{$level.'patterns'}) {
+            if (ref($filepatterns->{$level.'patterns'}) eq 'HASH') {
+              map {
+                my $value = $filepatterns->{$level.'patterns'}->{$_};
+                $self->{patternkeys}->{uc $level}->{$value} = $_;
+              } keys %{$filepatterns->{$level.'patterns'}};
+              my $tmphash = $filepatterns->{$level.'patterns'};
+              $filepatterns->{$level.'patterns'} = [];
+              @{$filepatterns->{$level.'patterns'}} = values %{$tmphash};
+            } elsif (ref($filepatterns->{$level.'patterns'}) eq 'ARRAY') {
+            } else {
+              $filepatterns->{$level.'patterns'} = 
+                  [$filepatterns->{$level.'patterns'}];
+            }
+          }
+          if (exists $filepatterns->{$level.'exceptions'}) {
+            if (ref($filepatterns->{$level.'exceptions'}) eq 'HASH') {
+              map {
+                my $value = $filepatterns->{$level.'exceptions'}->{$_};
+                $self->{patternkeys}->{uc $level}->{$value} = $_;
+              } keys %{$filepatterns->{$level.'exceptions'}};
+              my $tmphash = $filepatterns->{$level.'exceptions'};
+              $filepatterns->{$level.'exceptions'} = [];
+              @{$filepatterns->{$level.'exceptions'}} = values %{$tmphash};
+            } elsif (ref($filepatterns->{$level.'exceptions'}) eq 'ARRAY') {
+            } else {
+              $filepatterns->{$level.'exceptions'} =
+                  [$filepatterns->{$level.'exceptions'}];
+            }
+          }
+          if (exists $params->{$level.'patterns'}) {
+            if (exists $filepatterns->{$level.'patterns'}) {
+              unshift(@{$params->{$level.'patterns'}},
+                  @{$filepatterns->{$level.'patterns'}});
+            }
+          } else {
+            if (exists $filepatterns->{$level.'patterns'}) {
+              @{$params->{$level.'patterns'}} = 
+                  @{$filepatterns->{$level.'patterns'}};
+            }
+          }
+          if (exists $params->{$level.'exceptions'}) {
+            if (exists $filepatterns->{$level.'exceptions'}) {
+              unshift(@{$params->{$level.'exceptions'}},
+                  @{$filepatterns->{$level.'exceptions'}});
+            }
+          } else {
+            if (exists $filepatterns->{$level.'exceptions'}) {
+              @{$params->{$level.'exceptions'}} = 
+                  @{$filepatterns->{$level.'exceptions'}};
+            }
+          }
+        }
+      }
+    }
+  }
+  foreach my $level (qw(OK CRITICAL WARNING UNKNOWN)) {
+    #
+    #  if a single pattern was given as a scalar, force it into an array
+    #  and resolve macros.
+    #
+    if (exists $params->{(lc $level).'patterns'}) {
+      @{$self->{patterns}->{$level}} = @{$params->{(lc $level).'patterns'}};
       foreach my $pattern (@{$self->{patterns}->{$level}}) {
+        my $key = $self->{patternkeys}->{$level}->{$pattern};
         $self->resolve_macros_in_pattern(\$pattern);
+        $self->{patternkeys}->{$level}->{$pattern} = $key;
       }
       #
       #  separate the pattern arrays. patterns beginning with a "!" will raise
@@ -2220,18 +2845,18 @@ sub init {
       #  prepend the patterns with (?i) if the case insensitivity option is set 
       #
       if (! $self->{options}->{case}) {
-      	foreach my $pattern (@{$self->{patterns}->{$level}}) {
-      	  $pattern = '(?i)'.$pattern;
-      	}
-      	foreach my $pattern (@{$self->{negpatterns}->{$level}}) {
-      	  $pattern = '(?i)'.$pattern;
-      	}
+        foreach my $pattern (@{$self->{patterns}->{$level}}) {
+          $pattern = '(?i)'.$pattern;
+        }
+        foreach my $pattern (@{$self->{negpatterns}->{$level}}) {
+          $pattern = '(?i)'.$pattern;
+        }
       }
       #
       #  ignore the match unless a minimum of threshold occurrances were found
       #
-      if ((! $self->{options}->{(lc $level).'threshold'}) &&
-          ($params->{(lc $level).'threshold'})) {
+      if (! $self->{options}->{(lc $level).'threshold'} &&
+          $params->{(lc $level).'threshold'}) {
         $self->{options}->{(lc $level).'threshold'} =
             $params->{(lc $level).'threshold'};
       }
@@ -2246,22 +2871,18 @@ sub init {
       }
     }
     if (exists $params->{(lc $level).'exceptions'}) {
-      if (ref($params->{(lc $level).'exceptions'}) ne 'ARRAY') {
-        $self->{exceptions}->{$level} = [$params->{(lc $level).'exceptions'}];
-      } else {
-        push(@{$self->{exceptions}->{$level}}, @{$params->{(lc $level).'exceptions'}});
-      }
+      push(@{$self->{exceptions}->{$level}}, @{$params->{(lc $level).'exceptions'}});
       foreach my $pattern (@{$self->{exceptions}->{$level}}) {
         $self->resolve_macros_in_pattern(\$pattern);
       }
       if (! $self->{options}->{case}) {
-      	foreach my $pattern (@{$self->{exceptions}->{$level}}) {
-      	  $pattern = '(?i)'.$pattern;
-      	}
+        foreach my $pattern (@{$self->{exceptions}->{$level}}) {
+          $pattern = '(?i)'.$pattern;
+        }
       }
     }
   }
-  foreach my $level qw(CRITICAL WARNING UNKNOWN) {
+  foreach my $level (qw(CRITICAL WARNING UNKNOWN)) {
     foreach my $pattern (@{$self->{negpatterns}->{$level}}) {
       push(@{$self->{negpatterncnt}->{$level}}, 0);
     }
@@ -2282,6 +2903,12 @@ sub init {
           # oder SysLogD
       LABEL => $self->{macros}->{CL_HOSTNAME}, # NON-TME
     );
+  }
+  #
+  # expiry time of hits
+  #
+  if (! $self->{options}->{thresholdexpiry} && $params->{thresholdexpiry}) {
+    $self->{options}->{thresholdexpiry} = $params->{thresholdexpiry};
   }
   $self->construct_seekfile();
   $self->{NH_detection} = ($^O =~ /MSWin/) ? 0 : 1;
@@ -2312,6 +2939,11 @@ sub construct_seekfile {
   $self->{pre2seekfile} = sprintf "%s/%s.%s.%s", $self->{seekfilesdir},
       $self->{cfgbase}, $self->{logbasename},
       $self->{tag} eq "default" ? "seek" : $self->{seekfiletag};
+  if ($self->{relocate_seekfilesdir}) {
+    $self->{relocate_seekfile} = sprintf "%s/%s.%s.%s", $self->{relocate_seekfilesdir},
+        $self->{cfgbase}, $self->{seekfilebase},
+        $self->{tag} eq "default" ? "seek" : $self->{tag};
+  }
 }
 
 sub force_cfgbase {
@@ -2345,6 +2977,18 @@ sub rewind {
   return $self;
 }
 
+sub unstick {
+  my $self = shift;
+  $self->loadstate();
+  foreach (keys %{$self->{laststate}}) {
+    $self->{newstate}->{$_} = $self->{laststate}->{$_};
+  }
+  $self->addevent(0, "unstick");
+  $self->trace("remove the sticky error with --unstick");
+  $self->{laststate}->{laststicked} = 0;
+  $self->savestate();
+  return $self;
+}
 
 sub run {
   my $self = shift;
@@ -2415,6 +3059,9 @@ sub loadstate {
     if (! $self->{laststate}->{logfile}) {
       $self->{laststate}->{logfile} = $self->{logfile};
     }
+    if (! $self->{laststate}->{logtime}) {
+      $self->{laststate}->{logtime} = 0;
+    }
     if (! $self->{laststate}->{devino}) {
       # upgrade vom < 1.4 on the fly
       $self->{laststate}->{devino} = $self->getfilefingerprint($self->{logfile});
@@ -2425,11 +3072,29 @@ sub loadstate {
     if (! $self->{laststate}->{serviceoutput}) {
       $self->{laststate}->{serviceoutput} = "OK";
     }
-    foreach my $level qw(CRITICAL WARNING UNKNOWN) {
-      if (exists $self->{laststate}->{thresholdcnt}->{$level}) {
-        $self->{thresholdcnt}->{$level} =
-            $self->{laststate}->{thresholdcnt}->{$level};
-      } 
+    foreach my $level (qw(CRITICAL WARNING UNKNOWN)) {
+      if ($self->get_option('thresholdexpiry')) {
+        if (exists $self->{laststate}->{thresholdcnt}->{$level}) {
+          $self->{thresholdtimes}->{$level} = $self->{laststate}->{thresholdtimes}->{$level} || [];
+          # expire
+          $self->trace(sprintf "!!!!!!!!!!found %d counted %s hits",
+              scalar(@{$self->{thresholdtimes}->{$level}}), $level);
+          @{$self->{thresholdtimes}->{$level}} = grep {
+              time - $_ <= $self->get_option('thresholdexpiry')
+          } @{$self->{thresholdtimes}->{$level}};
+          $self->trace(sprintf "!!!!!!!!!!!!after expiring %d %s counts are left",
+              scalar(@{$self->{thresholdtimes}->{$level}}), $level);
+          $self->{thresholdcnt}->{$level} = scalar(@{$self->{thresholdtimes}->{$level}});
+        } else {
+          $self->{thresholdcnt}->{$level} = 0;
+          $self->{thresholdtimes}->{$level} = [];
+        }
+      } else {
+        if (exists $self->{laststate}->{thresholdcnt}->{$level}) {
+          $self->{thresholdcnt}->{$level} =
+              $self->{laststate}->{thresholdcnt}->{$level};
+        } 
+      }
     }
     $self->trace("LS lastlogfile = %s", $self->{laststate}->{logfile});
     $self->trace("LS lastoffset = %u / lasttime = %d (%s) / inode = %s",
@@ -2457,23 +3122,33 @@ sub loadstate {
       $self->loadstate() if -f $self->{seekfile};
       return $self;
     }
+    if ($self->{relocate_seekfilesdir}) {
+      $self->trace("relocatable seekfile %s found. move it to %s",
+          $self->{relocate_seekfile}, $self->{seekfile});
+      move $self->{relocate_seekfile}, $self->{seekfile};
+      $self->trace("and call load_state again");
+      $self->loadstate() if -f $self->{seekfile};
+      return $self;
+    }
     $self->{likeavirgin} = 1;
     $self->trace("no seekfile %s found", $self->{seekfile});
     if (-e $self->{logfile}) {
-    	$self->trace(sprintf "but logfile %s found", $self->{logfile});
+      $self->trace(sprintf "but logfile %s found", $self->{logfile});
       #  Fake a "the logfile was not touched" situation.
       $self->trace('eat all you can') if $self->{options}->{allyoucaneat};
       $self->{laststate} = {
           logoffset => ($self->{options}->{allyoucaneat} ?
               0 : $self->getfilesize($self->{logfile})),
-          logtime => (stat $self->{logfile})[10],
+          #logtime => (stat $self->{logfile})[10] - ($self->{options}->{allyoucaneat} ? 1 : 0), # force a check
+          #logtime => (stat $self->{logfile})[10],
+          logtime => 0,
           devino => $self->getfilefingerprint($self->{logfile}),
           logfile => $self->{logfile},
           servicestateid => 0,
           serviceoutput => "OK",
       };
     } else {
-    	$self->trace("and no logfile found");
+      $self->trace("and no logfile found");
       #  This is true virginity 
       $self->{laststate} = {
           logoffset => 0,
@@ -2522,6 +3197,7 @@ sub savestate {
   my $self = shift;
   my $seekfh = new IO::File;
   my $now = time;
+  $@ = undef; # reset this. when a pre-3.0 statefile was read, this is set
   $self->searchresult(); # calculate servicestateid and serviceoutput
   if ($self->{options}->{sticky}) {
     if ($self->get_option('report') ne 'short') {
@@ -2604,7 +3280,7 @@ sub savestate {
               $self->addevent($self->{newstate}->{servicestateid},
                   $self->{newstate}->{serviceoutput});
             }
-          }  	  		
+          }          
         }
       }
     } else {
@@ -2613,16 +3289,18 @@ sub savestate {
         $self->{newstate}->{laststicked} = $now;
         $self->trace("stick until %s", 
             scalar localtime ($self->{newstate}->{laststicked} + 
-            $self->{maxstickytime}));  	  
-      }  		
+            $self->{maxstickytime}));      
+      }      
     }
   }  
   # save threshold counts if a threshold exists for a level
   if ($self->{options}->{savethresholdcount}) {
-    foreach my $level qw(CRITICAL WARNING UNKNOWN) {
+    foreach my $level (qw(CRITICAL WARNING UNKNOWN)) {
       if ($self->{threshold}->{$level}) {
         $self->{newstate}->{thresholdcnt}->{$level} =
             $self->{thresholdcnt}->{$level};
+        $self->{newstate}->{thresholdtimes}->{$level} =
+            $self->{thresholdtimes}->{$level};
       }
     } 
   }
@@ -2630,7 +3308,18 @@ sub savestate {
   $self->{newstate}->{privatestate} = $self->{privatestate};
   $self->{newstate}->{runcount} = $self->{laststate}->{runcount};
   $self->{newstate}->{runtime} = $now;
-  mkdir $self->{seekfilesdir} if ! -d $self->{seekfilesdir};
+  # check if the file can be written
+  if (! -d $self->{seekfilesdir}) {
+    eval {
+      use File::Path;
+      mkpath $self->{seekfilesdir};
+    };
+  }
+  if ($@ || ! -w $self->{seekfilesdir}) {
+    $self->addevent($self->get_option('seekfileerror'), 
+        sprintf "cannot write status file %s! check your filesystem (permissions/usage/integrity) and disk devices", $self->{seekfile});
+    return $self;
+  }
   if ($seekfh->open($self->{seekfile}, "w")) {
     my $dumpstate = Data::Dumper->new([$self->{newstate}], [qw(state)]);
     #printf("save %s\n", $dumpstate->Dump());
@@ -2714,6 +3403,32 @@ sub scan {
   my $self = shift;
   my $actionfailed = 0;
   my $resetted = 0;
+  $self->{timedout} = 0;
+
+  if ($self->{timeout} != 360000) {
+    # 360000 is the default, meaning there was no --timeout
+    use POSIX ':signal_h';
+    if ($^O =~ /MSWin/) {
+      local $SIG{'ALRM'} = sub {
+        $self->trace(sprintf "timeout after %d seconds in search %s",
+            $self->{timeout} - 1, $self->{tag});
+        $self->{timedout} = 1;
+        die "alarm\n";
+      };
+    } else {
+      my $mask = POSIX::SigSet->new( SIGALRM );
+      my $action = POSIX::SigAction->new(sub {
+        $self->trace(sprintf "timeout after %d seconds in search %s",
+            $self->{timeout} - 1, $self->{tag});
+        $self->{timedout} = 1;
+        die "alarm\n" ;
+      }, $mask);
+      my $oldaction = POSIX::SigAction->new();
+      sigaction(SIGALRM ,$action ,$oldaction );
+    }
+    alarm($self->{timeout} - 1); # 1 second before the global unknown timeout
+  }
+
   my $needfilter = scalar(@{$self->{preliminaryfilter}->{NEED}});
   my $skipfilter = scalar(@{$self->{preliminaryfilter}->{SKIP}});
   foreach my $logfile (@{$self->{relevantfiles}}) {
@@ -2761,13 +3476,19 @@ sub scan {
       }
       $self->trace("fake seek positioned at offset %u", $logfile->{offset});
     }
+
     while (my $line = $logfile->{fh}->getline()) {
+      if ($self->{timedout}) {
+        $self->trace(sprintf "leaving the scan loop after %d lines",
+            $self->{linesread});
+        last;
+      }
       my $filteredout = 0;
       $self->{linesread}++;
       if (! $logfile->{seekable}) { $logfile->{offset} += length($line) }
       if ($self->{options}->{encoding}) {
-      	# i am sure this is completely unreliable
-      	$line = Encode::encode("ascii", 
+        # i am sure this is completely unreliable
+        $line = Encode::encode("ascii", 
             Encode::decode($self->{options}->{encoding}, $line));
         # the input stream is somewhat binary, so chomp doesn't know
         # it neads to remove \r\n on windows.
@@ -2780,32 +3501,32 @@ sub scan {
       #  can pass.
       #
       if ($needfilter) {
-      	foreach my $filter (@{$self->{preliminaryfilter}->{NEED}}) {
-      	  if ($line !~ /$filter/) {
-      	  	$self->trace(sprintf "no need for %s", $line);
-      	  	$filteredout = 1;
-      	  	last;
-      	  }
-      	}
+        foreach my $filter (@{$self->{preliminaryfilter}->{NEED}}) {
+          if ($line !~ /$filter/) {
+            $self->trace(sprintf "no need for %s", $line);
+            $filteredout = 1;
+            last;
+          }
+        }
       }
       #
       #  Skip lines with blacklist patterns
       #
       if ($skipfilter) {
-      	foreach my $filter (@{$self->{preliminaryfilter}->{SKIP}}) {
-      	  if ($line =~ /$filter/) {
-      	  	$self->trace(sprintf "skip unwanted %s", $line);
-      	  	$self->trace(sprintf "because matching %s", $filter);
-      	  	$filteredout = 1;
-      	  	last;
-      	  }
-      	}      	
+        foreach my $filter (@{$self->{preliminaryfilter}->{SKIP}}) {
+          if ($line =~ /$filter/) {
+            $self->trace(sprintf "skip unwanted %s", $line);
+            $self->trace(sprintf "because matching %s", $filter);
+            $filteredout = 1;
+            last;
+          }
+        }        
       }
       next if $filteredout;
       $self->{linenumber}++;
       $self->update_context(0, $line); # store this line as before
       my $matches = {};
-      foreach my $nagioslevel qw(CRITICAL WARNING UNKNOWN) {
+      foreach my $nagioslevel (qw(CRITICAL WARNING UNKNOWN)) {
         my $level = $nagioslevel; # because it needs to be modified
         my $outplayed = 0;
         $matches->{$level} = [];
@@ -2839,13 +3560,13 @@ sub scan {
         if (scalar(@{$matches->{$preferredlevel}}) > 0) {
           # es gibt z.b. einen criticaltreffer und critical ist preferred
           # d.h. alle anderen level fliegen raus
-          foreach my $level qw(CRITICAL WARNING UNKNOWN) {
+          foreach my $level (qw(CRITICAL WARNING UNKNOWN)) {
             $matches->{$level} = [] unless $level eq $preferredlevel;
           }
         }
         
       }
-      foreach my $nagioslevel qw(CRITICAL WARNING UNKNOWN) {
+      foreach my $nagioslevel (qw(CRITICAL WARNING UNKNOWN)) {
         my $level = $nagioslevel; # because it needs to be modified
         foreach my $patcnt (@{$matches->{$level}}) {
           my $pattern = @{$self->{patterns}->{$level}}[$patcnt];
@@ -2858,9 +3579,16 @@ sub scan {
                     $self->{threshold}->{$level} - 
                     $self->{thresholdcnt}->{$level});
                 $self->{thresholdcnt}->{$level}++;
+                if ($self->get_option('thresholdexpiry')) {
+                  push(@{$self->{thresholdtimes}->{$level}}, time);
+                }
                 next;
               } else {
                 $self->{thresholdcnt}->{$level} = 0;
+                $self->trace("count this match");
+                if ($self->get_option('thresholdexpiry')) {
+                  $self->{thresholdtimes}->{$level} = [];
+                }
               }
             }
             if ($self->{tivoli}->{object}) {
@@ -2870,12 +3598,30 @@ sub scan {
               $level = (qw(OK WARNING CRITICAL UNKNOWN))[$self->{tivoli}->{match}->{exit_code}];
               next if $self->{tivoli}->{match}->{format_name} eq 'NO MATCHING RULE';
               $line = $self->{tivoli}->{match}->{subject};
+            } else {
+              $self->{privatestate}->{matchingpattern} = $pattern;
             }
             if ($self->{options}->{script}) {
               $self->{macros}->{CL_SERVICESTATE} = $level;
               $self->{macros}->{CL_SERVICESTATEID} = $ERRORS{$level};
               $self->{macros}->{CL_SERVICEOUTPUT} = $line;
+              $self->{macros}->{CL_PATTERN_PATTERN} = $pattern;
               $self->{macros}->{CL_PATTERN_NUMBER} = $patcnt;
+              if (exists $self->{patternkeys}->{$level}->{$pattern} &&
+                  defined $self->{patternkeys}->{$level}->{$pattern}) {
+                $self->{macros}->{CL_PATTERN_KEY} = 
+                    $self->{patternkeys}->{$level}->{$pattern}
+              } else {
+                $self->{macros}->{CL_PATTERN_KEY} = "unknown_pattern";
+              }
+              if ($self->{options}->{capturegroups}) {
+                $line =~ /$pattern/;
+                no strict 'refs';
+                foreach (1..10) {
+                  $self->{macros}->{CL_CAPTURE_GROUPS} = $_ if (defined ${$_});
+                  $self->{macros}->{'CL_CAPTURE_GROUP'.$_} = ${$_} if (defined ${$_});
+                }
+              }
               my ($actionsuccess, $actionrc, $actionoutput) =
                   $self->action($self->{script}, $self->{scriptparams},
                   $self->{scriptstdin}, $self->{scriptdelay},
@@ -2919,11 +3665,16 @@ sub scan {
         if ($line =~ /$pattern/) {
           $self->trace("remedy pattern %s wipes out previous errors",
               $pattern);
+          $self->trace("remedy pattern %s in line %s", $pattern,$line);
           $self->{options}->{sticky}++ if $self->{options}->{sticky};
           # such a remedypattern neutralizes previous error
           $self->{matchlines}->{WARNING} = [];
           $self->{matchlines}->{CRITICAL} = [];
           $self->{matchlines}->{UNKNOWN} = [];
+          # and also intermediate results which did not hit a threshold so far
+          $self->{thresholdcnt}->{WARNING} = 0;
+          $self->{thresholdcnt}->{CRITICAL} = 0;
+          $self->{thresholdcnt}->{UNKNOWN} = 0;
           last;
         }
       }   
@@ -2936,8 +3687,9 @@ sub scan {
     $self->{laststate}->{logoffset} = 0;
     $self->{newstate}->{logoffset} = $logfile->{seekable} ?
         $logfile->{fh}->tell() : $logfile->{offset};
-    $self->{newstate}->{logtime} = (stat $logfile->{fh})[9];
-    $self->{newstate}->{devino} = $self->getfilefingerprint($logfile->{fh});
+    $self->{newstate}->{logtime} = (stat $logfile->{fh})[9] if $logfile->{statable};
+    #$self->{newstate}->{devino} = $self->getfilefingerprint($logfile->{fh});
+    $self->{newstate}->{devino} = $self->getfilefingerprint($logfile->{filename});
     $self->trace("stopped reading at position %u",
         $self->{newstate}->{logoffset});
   }
@@ -2945,7 +3697,7 @@ sub scan {
   #  if patterns beginning with ! were not found, treat this as an alert.
   #
   if ($self->{hasinversepat}) {
-    foreach my $level qw(CRITICAL WARNING) {
+    foreach my $level (qw(CRITICAL WARNING)) {
       my $patcnt = -1;
       foreach my $pattern (@{$self->{negpatterns}->{$level}}) {
         $patcnt++;
@@ -2970,7 +3722,7 @@ sub scan {
               $self->addevent($level, sprintf("MISSING: %s", $pattern));
             }
           } else {
-      	    $self->addevent($level, sprintf("MISSING: %s", $pattern));
+            $self->addevent($level, sprintf("MISSING: %s", $pattern));
           }
         }
       }
@@ -3016,29 +3768,29 @@ sub addfilter {
   my $need = shift;
   my $pattern = shift;
   if ($need) {
-    push(@{$self->{preliminaryfilter}->{NEED}}, $pattern);	
+    push(@{$self->{preliminaryfilter}->{NEED}}, $pattern);  
   } else {
-    push(@{$self->{preliminaryfilter}->{SKIP}}, $pattern);   	
+    push(@{$self->{preliminaryfilter}->{SKIP}}, $pattern);     
   }
 }
 
 sub searchresult {
   my $self = shift;
   if (scalar @{$self->{matchlines}->{CRITICAL}}) {
-  	$self->{newstate}->{servicestateid} = 2;
-  	$self->{newstate}->{serviceoutput} = 
-  	    ${$self->{matchlines}->{CRITICAL}}[$#{$self->{matchlines}->{CRITICAL}}];
+    $self->{newstate}->{servicestateid} = 2;
+    $self->{newstate}->{serviceoutput} = 
+        ${$self->{matchlines}->{CRITICAL}}[$#{$self->{matchlines}->{CRITICAL}}];
   } elsif (scalar @{$self->{matchlines}->{WARNING}}) {
-  	$self->{newstate}->{servicestateid} = 1;
-  	$self->{newstate}->{serviceoutput} = 
-  	    ${$self->{matchlines}->{WARNING}}[$#{$self->{matchlines}->{WARNING}}];
+    $self->{newstate}->{servicestateid} = 1;
+    $self->{newstate}->{serviceoutput} = 
+        ${$self->{matchlines}->{WARNING}}[$#{$self->{matchlines}->{WARNING}}];
   } elsif (scalar @{$self->{matchlines}->{UNKNOWN}}) {
     $self->{newstate}->{servicestateid} = 3;
-  	$self->{newstate}->{serviceoutput} = 
-  	    ${$self->{matchlines}->{UNKNOWN}}[$#{$self->{matchlines}->{UNKNOWN}}];
+    $self->{newstate}->{serviceoutput} = 
+        ${$self->{matchlines}->{UNKNOWN}}[$#{$self->{matchlines}->{UNKNOWN}}];
   } else {
-  	$self->{newstate}->{servicestateid} = 0;
-  	$self->{newstate}->{serviceoutput} = "";
+    $self->{newstate}->{servicestateid} = 0;
+    $self->{newstate}->{serviceoutput} = "";
   }
   if ($self->{option}->{sticky} && $self->get_option('report') ne 'short') {
     # damit long/html output erhalten bleibt und nicht nur der letzte treffer
@@ -3052,9 +3804,10 @@ sub reset {
   $self->{lastmsg} = { OK => "", WARNING => "", CRITICAL => "", UNKNOWN => "" };
   $self->{negpatterncnt} = { OK => [], WARNING => [], CRITICAL => [], UNKNOWN => [] };
   $self->{thresholdcnt} = { OK => 0, WARNING => 0, CRITICAL => 0, UNKNOWN => 0 };
+  $self->{thresholdtimes} = { OK => [], WARNING => [], CRITICAL => [], UNKNOWN => [] };
   #$self->{preliminaryfilter} = { SKIP => [], NEED => [] };
   $self->{perfdata} = "";
-  foreach my $level qw(CRITICAL WARNING UNKNOWN) {
+  foreach my $level (qw(CRITICAL WARNING UNKNOWN)) {
     foreach my $pat (@{$self->{negpatterns}->{$level}}) {
       push(@{$self->{negpatterncnt}->{$level}}, 0);
     }
@@ -3142,31 +3895,11 @@ sub analyze_situation {
     #  rotated/recreated and grown very fast.
     $self->trace(sprintf "the logfile grew to %d",
         $self->getfilesize($self->{logfile}));
-    if ($self->{likeavirgin}) {
-      # if the logfile grew because we initialized the plugin with an offset of 0, position
-      # at the end of the file and skip this search. otherwise lots of outdated messages could
-      # match and raise alerts.
-      if ($self->{options}->{allyoucaneat}) {
-        $self->trace("allyoucaneat the virgin");
-        $self->{laststate}->{logoffset} = 0;
-        $self->{logmodified} = 1; # normally, virgins are not scanned. force it.
-      } else {
-        $self->{laststate}->{logoffset} = $self->getfilesize($self->{logfile});
-      }
-    } else {
-      $self->{logmodified} = 1;
-      # this is only relevant if
-      # 1.a new logfile is created using the same inode as the deleted logfile
-      # 2.the new logfile grew beyond the size of the last logfile before check_logfile ran
-      #if ($self->{firstline} ne $self->{laststate}->{firstline}) {
-      #	$self->trace(sprintf "a new logfile grew beyond the end of the last logfile");
-      #	$self->{laststate}->{logoffset} = 0;
-      #}
-    }
+    $self->{logmodified} = 1;
   } elsif ($self->getfilesize($self->{logfile}) == 0) {
-  	#
-  	#  the logfile was either truncated or deleted and touched.
-  	#  nothing to do except reset the position
+    #
+    #  the logfile was either truncated or deleted and touched.
+    #  nothing to do except reset the position
     $self->{logmodified} = 0;
     $self->{laststate}->{logoffset} = 0;  
     $self->{laststate}->{logtime} = (stat $self->{logfile})[9];
@@ -3183,7 +3916,7 @@ sub analyze_situation {
     $self->trace(sprintf "reset to offset 0");
   } elsif ($self->getfilesize($self->{logfile}) == 
         $self->{laststate}->{logoffset}) {
-  	$self->trace(sprintf "the logfile did not change");
+    $self->trace(sprintf "the logfile did not change");
   } else {
     $self->trace("I HAVE NO IDEA WHAT HAPPENED");
   }
@@ -3194,13 +3927,13 @@ sub collectfiles {
   my $self = shift;
   my @rotatedfiles = ();
   if ($self->{logmodified}) {
-  	my $fh = new IO::File;
+    my $fh = new IO::File;
     # cygwin lets you open files even after chmodding them to 0000, so double check with -r
     if ($self->getfileisreadable($self->{logfile})) {
       $fh->open($self->{logfile}, "r");
       $self->trace("opened logfile %s", $self->{logfile});
       push(@rotatedfiles, 
-          { filename => $self->{logfile}, fh => $fh, seekable => 1 });
+          { filename => $self->{logfile}, fh => $fh, seekable => 1, statable => 1 });
       $self->trace("logfile %s (modified %s / accessed %s / inode %d / inode changed %s)",
           $self->{logfile},
           scalar localtime((stat $self->{logfile})[9]),
@@ -3210,19 +3943,21 @@ sub collectfiles {
     } else {
       if (-e $self->{logfile}) {
         #  permission problem
-        $self->trace("could not open logfile %s", $self->{logfile});
-        $self->addevent('CRITICAL', sprintf "could not open logfile %s",
+        $self->trace("insufficient permissions to open logfile %s",
+            $self->{logfile});
+        $self->addevent($self->get_option('logfileerror'),
+            sprintf "insufficient permissions to open logfile %s",
             $self->{logfile});
       } else {
-      	if ($self->{options}->{logfilenocry}) {
-      	  # logfiles which are not rotated but deleted and re-created may be missing
+        if ($self->{options}->{logfilenocry}) {
+          # logfiles which are not rotated but deleted and re-created may be missing
           #  maybe a rotation situation, a typo in the configfile,...
           $self->trace("could not find logfile %s", $self->{logfile});
           $self->addevent('UNKNOWN', sprintf "could not find logfile %s",
               $self->{logfile});
         } else {
-      	  # dont care.
-      	  $self->trace("could not find logfile %s, but that's ok",
+          # dont care.
+          $self->trace("could not find logfile %s, but that's ok",
               $self->{logfile});  
         }
       }
@@ -3298,9 +4033,9 @@ sub analyze_situation {
         $self->{logmodified} = 1;
       }
     } elsif ($self->getfilesize($self->{logfile}) == 0) {
-    	#
-    	#  the logfile was either truncated or deleted and touched.
-    	#  nothing to do except reset the position
+      #
+      #  the logfile was either truncated or deleted and touched.
+      #  nothing to do except reset the position
       $self->{logrotated} = 1;  
       $self->{laststate}->{logtime} = (stat $self->{logfile})[9];
     } elsif ($self->getfilesize($self->{logfile}) < 
@@ -3362,6 +4097,9 @@ sub analyze_situation {
       #       and is more than previous:
       #       - Modified = true
       #       - Rotated = true (we can't actually tell, so need to play safe)
+    } elsif ($self->{likeavirgin}) {
+      $self->trace(sprintf "likevirgin, either eat it all or position at the end");
+      $self->{logmodified} = 1;
     } elsif ($filetime == $lastfiletime) {
       $self->trace(sprintf "Log file has the same modified time: %s ",
           scalar localtime($filetime));
@@ -3395,7 +4133,6 @@ sub collectfiles {
     $self->trace("looking for rotated files in %s with pattern %s",
         $self->{archivedir}, $self->{filenamepattern});
 
-
     if ($self->get_option('archivedirregexp')) {
       my $volume = undef;
       my @catdirs = ();
@@ -3416,7 +4153,6 @@ sub collectfiles {
       } grep /^$self->{filenamepattern}/, readdir(DIR);
       closedir(DIR);
     }
-
 
     #opendir(DIR, $self->{archivedir});
     #@rotatedfiles = map { 
@@ -3448,7 +4184,7 @@ sub collectfiles {
                 $archive);
             if ($fh->open('gzip -dc < '.$archive.'|')) {
               ({ filename => $archive,
-                  fh => $fh, seekable => 0,
+                  fh => $fh, seekable => 0, statable => 0,
                   modtime => (stat $archive)[9],
                   fingerprint => $self->getfilefingerprint($archive).':'.$self->getfilesize($archive) });
             } else {
@@ -3460,7 +4196,7 @@ sub collectfiles {
                 $archive);
             if ($fh->open('bzip2 -d < '.$archive.'|')) {
               ({ filename => $archive,
-                  fh => $fh, seekable => 0,
+                  fh => $fh, seekable => 0, statable => 0,
                   modtime => (stat $archive)[9],
                   fingerprint => $self->getfilefingerprint($archive).':'.$self->getfilesize($archive) });
             } else {
@@ -3470,7 +4206,7 @@ sub collectfiles {
           } else {
             if ($fh->open($archive, "r")) {
               ({ filename => $archive,
-                  fh => $fh, seekable => 1,
+                  fh => $fh, seekable => 1, statable => 1,
                   size => $self->getfilesize($fh),
                   modtime => (stat $archive)[9],
                   fingerprint => $self->getfilefingerprint($archive).':'.$self->getfilesize($archive) });
@@ -3503,13 +4239,13 @@ sub collectfiles {
     }
   }
   if ($self->{logmodified}) {
-  	my $fh = new IO::File;
+    my $fh = new IO::File;
     # cygwin lets you open files even after chmodding them to 0000, so double check with -r
     if ($self->getfileisreadable($self->{logfile})) {
       $fh->open($self->{logfile}, "r");
       $self->trace("opened logfile %s", $self->{logfile});
       push(@rotatedfiles, 
-          { filename => $self->{logfile}, fh => $fh, seekable => 1,
+          { filename => $self->{logfile}, fh => $fh, seekable => 1, statable => 1,
           size => $self->getfilesize($self->{logfile}),
           fingerprint => $self->getfilefingerprint($self->{logfile}).':'.$self->getfilesize($self->{logfile}) });
       $self->trace("logfile %s (modified %s / accessed %s / inode %d / inode changed %s)",
@@ -3521,19 +4257,21 @@ sub collectfiles {
     } else {
       if (-e $self->{logfile}) {
         #  permission problem
-        $self->trace("could not open logfile %s", $self->{logfile});
-        $self->addevent('CRITICAL', sprintf "could not open logfile %s",
+        $self->trace("insufficient permissions to open logfile %s",
+            $self->{logfile});
+        $self->addevent($self->get_option('logfileerror'),
+            sprintf "insufficient permissions to open logfile %s", 
             $self->{logfile});
       } else {
-      	if ($self->{options}->{logfilenocry}) {
-      	  # logfiles which are not rotated but deleted and re-created may be missing
+        if ($self->{options}->{logfilenocry}) {
+          # logfiles which are not rotated but deleted and re-created may be missing
           #  maybe a rotation situation, a typo in the configfile,...
           $self->trace("could not find logfile %s", $self->{logfile});
           $self->addevent('UNKNOWN', sprintf "could not find logfile %s",
               $self->{logfile});
-       	} else {
-      	  # dont care.
-      	  $self->trace("could not find logfile %s, but that's ok", $self->{logfile});
+        } else {
+          # dont care.
+          $self->trace("could not find logfile %s, but that's ok", $self->{logfile});
         }
       }
     }
@@ -3557,6 +4295,20 @@ sub collectfiles {
       $seen{$_->{fingerprint}} = $_->{filename};
       $_;
     }
+  } reverse @rotatedfiles;
+  # cleanup again. this is for rotating::uniform, where the current logfile is
+  # analyzed twice. with a fast-growing logfile it may happen that we find
+  # the current logfile with two different fingerprints (dev:inode:size) here
+  %seen = ();
+  @rotatedfiles = reverse map {
+    if (exists $seen{$_->{filename}}) {
+      $self->trace("skipping duplicate %s (was growing during analysis)",
+          $_->{filename});
+      ();
+    } else {
+      $seen{$_->{filename}} = 1;
+      $_;  
+    }    
   } reverse @rotatedfiles;
   if (0 && (scalar(@rotatedfiles) == 1) &&
       ($rotatedfiles[0]->{filename} eq $self->{logfile}) &&
@@ -3595,6 +4347,9 @@ sub prepare {
   } elsif ("LOGLOG0GZLOG1GZ" eq uc($self->{rotation})) {
     $self->{filenamepattern} = sprintf '^%s\.((0)|([1-9]+[0-9]*))\.gz$',
         $self->{logbasename};
+  } elsif ("LOGLOG0BZ2LOG1BZ2" eq uc($self->{rotation})) {
+    $self->{filenamepattern} = sprintf '^%s\.((0)|([1-9]+[0-9]*))\.bz2$',
+        $self->{logbasename};
   } elsif ("LOGLOG0LOG1" eq uc($self->{rotation})) {
     $self->{filenamepattern} = sprintf '^%s\.((0)|([1-9]+[0-9]*))$',
         $self->{logbasename};
@@ -3614,6 +4369,9 @@ sub prepare {
   } elsif ("BMWHPUX" eq uc($self->{rotation})) {
     $self->{filenamepattern} = sprintf 'OLD%s|%s\\.[A-Z][0-9]+_[0-9]+\\.gz$',
         $self->{logbasename}, $self->{logbasename};
+  } elsif ("EHL" eq uc($self->{rotation})) {
+    $self->{filenamepattern} = sprintf '^%s_%s\.\d\d\d\d_\d+_\d+_\d+_\d+_\d+$',
+        $self->{macros}->{CL_HOSTNAME}, $self->{logbasename};
   } elsif ("MOD_LOG_ROTATE" eq uc($self->{rotation})) {
     $self->{filenamepattern} = sprintf 'access\.log\.\d{10}';
     bless $self, "Nagios::CheckLogfiles::Search::Rotating::Uniform";
@@ -3730,6 +4488,11 @@ sub construct_seekfile {
   $self->{pre2seekfile} = sprintf "%s/%s.%s.%s", $self->{seekfilesdir},
       $self->{cfgbase}, $self->{logbasename},
       $self->{tag} eq "default" ? "seek" : $self->{tag};
+  if ($self->{relocate_seekfilesdir}) {
+    $self->{relocate_seekfile} = sprintf "%s/%s.%s.%s", $self->{relocate_seekfilesdir},
+        $self->{cfgbase}, $self->{seekfilebase},
+        $self->{tag} eq "default" ? "seek" : $self->{tag};
+  }
   $self->trace("rewrote uniform seekfile to %s", $self->{seekfile});
   return $self;
 }
@@ -3753,13 +4516,27 @@ sub new {
   my $self = bless {}, shift;
   return $self->init(shift);
 }
-    
+
+sub init {
+  my $self = shift;
+  my $params = shift;
+  $self->default_options({ savestate => 0, });
+  $self->SUPER::init($params);
+}
+
 sub loadstate {
   my $self = shift;
+  if ($self->get_option('savestate')) {
+    $self->SUPER::loadstate();
+  }
   $self->{laststate}->{logoffset} = 0;
 }
 
 sub savestate {
+  my $self = shift;
+  if ($self->get_option('savestate')) {
+    $self->SUPER::savestate();
+  }
 }
 
 sub analyze_situation {
@@ -3775,13 +4552,15 @@ sub collectfiles {
     $fh->open($self->{logfile}, "r");
     $self->trace("opened logfile %s", $self->{logfile});
     push(@rotatedfiles,
-        { filename => $self->{logfile}, fh => $fh, seekable => 1 });
+        { filename => $self->{logfile}, fh => $fh, seekable => 1, statable => 1 });
   } else {
     if (-e $self->{logfile}) {
       #  permission problem
-      $self->trace("could not open logfile %s", $self->{logfile});
-      $self->addevent('CRITICAL', sprintf "could not open logfile %s",
-          $self->{logfile});
+        $self->trace("insufficient permissions to open logfile %s", 
+            $self->{logfile});
+        $self->addevent($self->get_option('logfileerror'),
+            sprintf "insufficient permissions to open logfile %s",
+            $self->{logfile});
     } else {
       if ($self->{options}->{logfilenocry}) {
         $self->trace("could not find logfile %s", $self->{logfile});
@@ -3827,7 +4606,7 @@ sub init {
   $self->{scriptdelay} = $params->{scriptdelay};   
   $self->default_options({ script => 0, protocol => 0, count => 1,
       smartscript => 0, supersmartscript => 0,
-      report => 'short', seekfileerror => 'critical', });
+      report => 'short', seekfileerror => 'critical', logfileerror => 'critical' });
   $self->{matchlines} = { OK => [], WARNING => [], CRITICAL => [], UNKNOWN => [] };
   $self->{lastmsg} = { OK => "", WARNING => "", CRITICAL => "", UNKNOWN => "" };
   $self->{trace} = -e $self->{tracefile} ? 1 : 0;
@@ -3894,7 +4673,7 @@ sub init {
   $self->{privatestate} = $params->{privatestate};   
   $self->default_options({ script => 0, protocol => 0, count => 1,
       smartscript => 0, supersmartscript => 0,
-      report => 'short', seekfileerror => 'critical', });
+      report => 'short', seekfileerror => 'critical', logfileerror => 'critical', });
   $self->{matchlines} = { OK => [], WARNING => [], CRITICAL => [], UNKNOWN => [] };
   $self->{lastmsg} = { OK => "", WARNING => "", CRITICAL => "", UNKNOWN => "" };
   $self->{trace} = -e $self->{tracefile} ? 1 : 0;
@@ -3985,6 +4764,90 @@ sub collectfiles {
   my $self = shift;
 }
 
+package Nagios::CheckLogfiles::Search::Executable;
+
+use strict;
+use Exporter;
+use File::Basename;
+use vars qw(@ISA);
+
+use constant OK => 0;
+use constant WARNING => 1;
+use constant CRITICAL => 2;
+use constant UNKNOWN => 3;
+
+@ISA = qw(Nagios::CheckLogfiles::Search);
+
+sub new {
+  my $self = bless {}, shift;
+  return $self->init(shift);
+}
+
+sub init {
+  my $self = shift;
+  my $params = shift;
+  $self->default_options({ exeargs => "", });
+  $self->SUPER::init($params);
+}
+
+    
+sub analyze_situation {
+  my $self = shift;
+  $self->{logmodified} = 1; 
+}
+
+sub collectfiles {
+  my $self = shift;
+  my @rotatedfiles = ();
+  my $fh = new IO::File;
+  #if ($self->getfileisreadable($self->{logfile})) {
+  if ($self->getfileisexecutable($self->{logfile})) {
+    my $cmdline = $self->{logfile}.
+        ($self->get_option('exeargs') ? " ".$self->get_option('exeargs') : "").
+        " 2>&1|";
+    $fh->open($cmdline);
+    $self->trace("opened command %s", $cmdline);
+    push(@{$self->{relevantfiles}},
+      { filename => $self->{logfile}, 
+        fh => $fh, seekable => 0, statable => 1,
+        modtime => time,
+        fingerprint => "0:0" });
+  } else {
+    if (-e $self->{logfile}) {
+      #  permission problem
+      $self->trace("could not open logfile %s", $self->{logfile});
+      $self->addevent('CRITICAL', sprintf "could not open logfile %s",
+          $self->{logfile});
+    } else {
+      if ($self->get_option('logfilenocry')) {
+        $self->trace("could not find scriptfile %s", $self->{logfile});
+        $self->addevent('UNKNOWN', sprintf "could not find scriptfile %s",
+            $self->{logfile});
+      } else {
+        # dont care.
+        $self->trace("could not find scriptfile %s, but that's ok",
+            $self->{logfile});
+      }
+    }
+  }
+}
+
+sub loadstate {
+  my $self = shift;
+  $self->SUPER::loadstate();
+  $self->{laststate}->{logoffset} = 0;
+}
+
+sub savestate {
+  my $self = shift;
+  foreach (keys %{$self->{laststate}}) {
+    $self->{newstate}->{$_} = $self->{laststate}->{$_};
+  }
+  $self->SUPER::savestate();
+}
+
+
+
 package Nagios::CheckLogfiles::Search::Errpt;
 
 use strict;
@@ -4014,7 +4877,7 @@ sub init {
   $self->SUPER::init($params);
   $self->{clo} = {
   	path => $params->{errpt}->{path} ? 
-  	    $params->{errpt}->{path} : "errpt",
+  	    $params->{errpt}->{path} : "/usr/bin/errpt",
     errortype => $params->{errpt}->{errortype},
     errorclass => $params->{errpt}->{errorclass},
     errorlabel => $params->{errpt}->{errorlabel},
@@ -4093,7 +4956,7 @@ sub collectfiles {
     if ($fh->open($errpt)) {
       push(@{$self->{relevantfiles}},
         { filename => "errpt|",
-          fh => $fh, seekable => 0,
+          fh => $fh, seekable => 0, statable => 1,
           modtime => $self->{errpt}->{endtime},
           fingerprint => "0:0" });
     } else {
@@ -4102,6 +4965,21 @@ sub collectfiles {
     }
   }
 }
+
+sub unstick {
+  my $self = shift;
+  $self->loadstate();
+  foreach (keys %{$self->{laststate}}) {
+    $self->{newstate}->{$_} = $self->{laststate}->{$_};
+  }
+  $self->addevent(0, "unstick");
+  $self->trace("remove the sticky error with --unstick");
+  $self->{laststate}->{laststicked} = 0;
+  $self->{errpt}->{endtime} = $self->{laststate}->{logtime};
+  $self->savestate();
+  return $self;
+}
+
 
 package Nagios::CheckLogfiles::Search::Ipmitool;
 
@@ -4150,11 +5028,13 @@ sub init {
   $self->SUPER::init($params);
   $self->{clo} = {
       path => $params->{ipmitool}->{path} ?
-          $params->{ipmitool}->{path} : "ipmitool",
+          $params->{ipmitool}->{path} : "/usr/bin/ipmitool",
       ## cache => exists $params->{ipmitool}->{cache} ? 1 : 0,
       ## using a local cache makes no sense here
       ## maybe checking remote sdr will be a feature in the future
-      listcmd => exists $params->{ipmitool}->{elist} ? "elist" : "list"
+      extraparams => exists $params->{ipmitool}->{extraparams} ?
+          $params->{ipmitool}->{extraparams} : "",
+      listcmd => exists $params->{ipmitool}->{elist} ? "elist" : "list",
   };
 }
 
@@ -4165,14 +5045,19 @@ sub prepare {
       $self->system_tempdir(), $self->{tag};
   $self->{sdrcache} = sprintf "%s/ipmitool.sdr.cache",
       $self->system_tempdir();
+  #$self->trace("cache param %s %s", $self->{clo}->{cache}, $self->{sdrcache});
+  #$self->trace("list cmd %s", $self->{clo}->{listcmd});
+  #$self->trace("time - foo %s", (time - (stat($self->{sdrcache}))[9]));
+  #$self->trace("system comand: %s %s", $self->{clo}->{path}, $self->{sdrcache});
   if ($self->{clo}->{cache} && (! -f $self->{sdrcache} || 
-      ((time - ($self->{sdrcache})[9]) > 86400))) {
+      ((time - (stat($self->{sdrcache}))[9]) > 86400))) {
     ## $self->trace("creating/refreshing sdr cache %s", $self->{sdrcache});
     ## system($self->{clo}->{path}.' sdr dump '.$self->{sdrcache}.' >/dev/null 2>&1');
   }
   unlink $self->{logfile};
-  my $ipmitool_sel_list = sprintf "%s %s sel %s 2>&1 |",
+  my $ipmitool_sel_list = sprintf "%s %s %s sel %s 2>&1 |",
       $self->{clo}->{path}, 
+      $self->{clo}->{extraparams}, 
       $self->{clo}->{cache} ? "-S $self->{sdrcache}" : "",
       $self->{clo}->{listcmd};
   my $ipmitool_fh = new IO::File;
@@ -4279,6 +5164,7 @@ sub init {
   $self->resolve_macros(\$self->{oraalert}->{tns}->{connect});
   $self->resolve_macros(\$self->{oraalert}->{tns}->{username});
   $self->resolve_macros(\$self->{oraalert}->{tns}->{password});
+  return $self;
 }
     
 sub prepare {
@@ -4370,7 +5256,7 @@ sub collectfiles {
         $self->trace(sprintf "reopen logfile");
         push(@{$self->{relevantfiles}},
           { filename => "eventlog|",
-            fh => $fh, seekable => 0,
+            fh => $fh, seekable => 0, statable => 1,
             modtime => time, # not relevant because already analyzed
             fingerprint => "0:0" });
       }
@@ -4553,7 +5439,7 @@ sub collectfiles {
         $self->trace(sprintf "reopen logfile");
         push(@{$self->{relevantfiles}},
           { filename => "esxdiag",
-            fh => $fh, seekable => 1,
+            fh => $fh, seekable => 1, statable => 1,
             modtime => time,
             fingerprint => "0:0" });
       }
@@ -4569,6 +5455,7 @@ use utf8;
 use File::Basename;
 use File::Find;
 use Getopt::Long;
+
 #import Devel::TraceMethods qw( 
 #    Nagios::CheckLogfiles
 #    Nagios::CheckLogfiles::Search
@@ -4602,7 +5489,10 @@ use constant CRITICAL => 2;
 use constant UNKNOWN => 3;
 
 Getopt::Long::Configure qw(no_ignore_case); # compatibility with old perls
-use vars qw (%commandline);
+use vars qw (%commandline $SEEKFILESDIR $PROTOCOLSDIR $SCRIPTPATH);
+$SEEKFILESDIR = '/var/tmp/check_logfiles';
+$PROTOCOLSDIR = '/tmp';
+$SCRIPTPATH = '/bin:/sbin:/usr/bin:/usr/sbin';
 my @cfgfiles = ();
 my $needs_restart = 0;
 my $enough_info = 0;
@@ -4618,7 +5508,7 @@ my $plugin_revision = '$Revision: 1.0 $ ';
 my $progname = basename($0);
 
 sub print_version {
-  printf "%s v3.4.2\n", basename($0);
+  printf "%s v3.7.1.4\n", basename($0);
 }
 
 sub print_help {
@@ -4631,9 +5521,7 @@ This plugin looks for patterns in logfiles, even in those who were rotated
 since the last run of this plugin.
 
 You can find the complete documentation at 
-http://www.consol.com/opensource/nagios/check-logfiles
-or
-http://www.consol.de/opensource/nagios/check-logfiles
+http://labs.consol.de/nagios/check_logfiles/
 
 Usage: check_logfiles [-t timeout] -f <configfile>
 
@@ -4704,6 +5592,11 @@ my @params = (
     "daemon:i",
     "report=s",
     "reset",
+    "unstick",
+    #
+    # limit process address space to i megabytes
+    #
+    "maxmemsize=i",
     #
     #
     #
@@ -4728,6 +5621,11 @@ my @params = (
     "macro=s%",
     "seekfileerror=s",
     #
+    # thresholds
+    #
+    "warning=s",
+    "critical=s",
+    #
     # search
     #
     "template=s",
@@ -4739,6 +5637,7 @@ my @params = (
     "criticalexception=s",
     "warningpattern=s",
     "warningexception=s",
+    "patternfile=s",
     "okpattern=s",
     "type=s",
     "archivedir=s",
@@ -4755,11 +5654,16 @@ my @params = (
     "noperfdata",
     "winwarncrit",
     "lookback=s",
+    "allyoucaneat",
     "context=i",
     "criticalthreshold=i",
     "warningthreshold=i",
     "encoding=s",
     "preferredlevel=s",
+    "logfileerror=s",
+    "rotatewait",
+    "rununique",
+    "htmlencode",
 );
 if (! GetOptions(\%commandline, @params)) {
   print_help();
@@ -4782,7 +5686,7 @@ if (exists $commandline{config}) {
   $enough_info = 1;
 } elsif (exists $commandline{logfile}) {
   $enough_info = 1;
-} elsif (exists $commandline{type} && $commandline{type} =~ /^eventlog/) {
+} elsif (exists $commandline{type} && $commandline{type} =~ /^(eventlog|errpt|ipmitool|wevtutil|executable|dumpel)/) {
   $enough_info = 1;
 } elsif (exists $commandline{deinstall}) {
   $commandline{type} = 'dummy';
@@ -4887,101 +5791,127 @@ if (exists $commandline{warningpattern}) {
   delete $commandline{warningpattern} if
       $commandline{warningpattern} eq 'match_never_ever';
 }
+if (! exists $commandline{seekfilesdir}) {
+  if (exists $ENV{OMD_ROOT}) {
+    $commandline{seekfilesdir} = $ENV{OMD_ROOT}."/var/tmp/check_logfiles";
+  } else {
+    $commandline{seekfilesdir} = $SEEKFILESDIR;
+  } 
+}
+
+if ($^O eq "hpux") {
+  $ENV{PATH} = $ENV{PATH}.":/usr/contrib/bin";
+}
+
 if (my $cl = Nagios::CheckLogfiles->new({
-      cfgfile => $commandline{config} ? $commandline{config} : undef,
-      searches => [ 
-          map {
-            if (exists $commandline{type}) {
-              # "eventlog" or "eventlog:eventlog=application,include,source=cdrom,source=dvd,eventid=23,eventid=29,operation=or,exclude,eventid=4711,operation=and"
-              my ($type, $details) = split(":", $commandline{type});
-              $_->{type} = $type;
-              if ($details) {
-                $_->{$type} = {};
-                my $toplevel = $_->{$type};
-                foreach my $detail (split(",", $details)) {
-                  my ($key, $value) = split("=", $detail);
-                  if ($value) {
-               	    if (exists $toplevel->{$key}) {
-                      $toplevel->{$key} .= ','.$value;
-                    } else {
-                      $toplevel->{$key} = $value;	
-                    }
+    cfgfile => $commandline{config} ? $commandline{config} : undef,
+    searches => [ 
+        map {
+          if (exists $commandline{type} && $commandline{type} eq 'rotating::uniform') {
+            $_->{type} = $commandline{type};
+          } elsif (exists $commandline{type}) {
+            # "eventlog" or "eventlog:eventlog=application,include,source=cdrom,source=dvd,eventid=23,eventid=29,operation=or,exclude,eventid=4711,operation=and"
+            my ($type, $details) = split(":", $commandline{type});
+            $_->{type} = $type;
+            if ($details) {
+              $_->{$type} = {};
+              my $toplevel = $_->{$type};
+              foreach my $detail (split(",", $details)) {
+                my ($key, $value) = split("=", $detail);
+                if ($value) {
+             	    if (exists $toplevel->{$key}) {
+                    $toplevel->{$key} .= ','.$value;
                   } else {
-                    $_->{$type}->{$key} = {};
-                    $toplevel = $_->{$type}->{$key};
+                    $toplevel->{$key} = $value;	
                   }
+                } else {
+                  $_->{$type}->{$key} = {};
+                  $toplevel = $_->{$type}->{$key};
                 }
               }
             }
-            $_;
           }
-          map { # ausputzen
-              foreach my $key (keys %{$_}) { 
-      	      delete $_->{$key} unless $_->{$key}}; $_;
-          } ({
-          tag => 
-              $commandline{tag} ? $commandline{tag} : undef,
-          logfile => 
-              $commandline{logfile} ? $commandline{logfile} : undef,
-          type => 
-              $commandline{type} ? $commandline{type} : undef,
-          rotation => 
-              $commandline{rotation} ? $commandline{rotation} : undef,
-          tivolipatterns =>
-              $commandline{tivolipattern} ?
-                  $commandline{tivolipattern} : undef,
-          criticalpatterns =>
-              $commandline{criticalpattern} ?
-                  $commandline{criticalpattern} : undef,
-          criticalexceptions =>
-              $commandline{criticalexception} ?
-                  $commandline{criticalexception} : undef,
-          warningpatterns =>
-              $commandline{warningpattern} ?
-                  $commandline{warningpattern} : undef,
-          warningexceptions =>
-              $commandline{warningexception} ?
-                  $commandline{warningexception} : undef,
-          okpatterns =>
-              $commandline{okpattern} ?
-                  $commandline{okpattern} : undef,
-          options => join(',', grep { $_ }
-              $commandline{noprotocol} ? "noprotocol" : undef,
-              $commandline{nocase} ? "nocase" : undef,
-              $commandline{noperfdata} ? "noperfdata" : undef,
-              $commandline{winwarncrit} ? "winwarncrit" : undef,
-              $commandline{nologfilenocry} ? "nologfilenocry" : undef,
-              $commandline{syslogserver} ? "syslogserver" : undef,
-              $commandline{syslogclient} ? "syslogclient=".$commandline{syslogclient} : undef,
-              $commandline{maxlength} ? "maxlength=".$commandline{maxlength} : undef,
-              $commandline{lookback} ? "lookback=".$commandline{lookback} : undef,
-              $commandline{context} ? "context=".$commandline{context} : undef,
-              $commandline{allyoucaneat} ? "allyoucaneat" : undef,
-              $commandline{criticalthreshold} ? "criticalthreshold=".$commandline{criticalthreshold} : undef,
-              $commandline{warningthreshold} ? "warningthreshold=".$commandline{warningthreshold} : undef,
-              $commandline{encoding} ? "encoding=".$commandline{encoding} : undef,
-              defined $commandline{sticky} ? "sticky".($commandline{sticky} ? "=".$commandline{sticky} : "") : undef,
-              $commandline{preferredlevel} ? "preferredlevel=".$commandline{preferredlevel} : undef,
-          ),
-          archivedir =>
-              $commandline{archivedir} ?
-                  $commandline{archivedir} : undef,
-      })],
-      options => join(',', grep { $_ }
-          $commandline{report} ? "report=".$commandline{report} : undef,
-          $commandline{seekfileerror} ? "seekfileerror=".(uc $commandline{seekfileerror}) : undef,
-      ),
-      selectedsearches => [split(/,/, $commandline{selectedsearches})],
-      dynamictag => $commandline{tag} ? $commandline{tag} : undef,
-      #report => $commandline{report} ? $commandline{report} : undef,
-      cmdlinemacros => $commandline{macro},
-      seekfilesdir => $commandline{seekfilesdir} ? $commandline{seekfilesdir} : undef,
-      protocolsdir => $commandline{protocolsdir} ? $commandline{protocolsdir} : undef,
-      protocolsretention => $commandline{protocolsretention} ? $commandline{protocolsretention} : undef,
-      reset => $commandline{reset} ? $commandline{reset} : undef,
+          $_;
+        }
+        map { # ausputzen
+            foreach my $key (keys %{$_}) { 
+    	      delete $_->{$key} unless $_->{$key}}; $_;
+        } ({
+        tag => 
+            $commandline{tag} ? $commandline{tag} : undef,
+        logfile => 
+            $commandline{logfile} ? $commandline{logfile} : undef,
+        type => 
+            $commandline{type} ? $commandline{type} : undef,
+        rotation => 
+            $commandline{rotation} ? $commandline{rotation} : undef,
+        tivolipatterns =>
+            $commandline{tivolipattern} ?
+                $commandline{tivolipattern} : undef,
+        criticalpatterns =>
+            $commandline{criticalpattern} ?
+                $commandline{criticalpattern} : undef,
+        criticalexceptions =>
+            $commandline{criticalexception} ?
+                $commandline{criticalexception} : undef,
+        warningpatterns =>
+            $commandline{warningpattern} ?
+                $commandline{warningpattern} : undef,
+        warningexceptions =>
+            $commandline{warningexception} ?
+                $commandline{warningexception} : undef,
+        okpatterns =>
+            $commandline{okpattern} ?
+                $commandline{okpattern} : undef,
+        patternfiles =>
+            $commandline{patternfile} ?
+                $commandline{patternfile} : undef,
+        options => join(',', grep { $_ }
+            $commandline{noprotocol} ? "noprotocol" : undef,
+            $commandline{nocase} ? "nocase" : undef,
+            $commandline{noperfdata} ? "noperfdata" : undef,
+            $commandline{winwarncrit} ? "winwarncrit" : undef,
+            $commandline{nologfilenocry} ? "nologfilenocry" : undef,
+            $commandline{syslogserver} ? "syslogserver" : undef,
+            $commandline{syslogclient} ? "syslogclient=".$commandline{syslogclient} : undef,
+            $commandline{maxlength} ? "maxlength=".$commandline{maxlength} : undef,
+            $commandline{lookback} ? "lookback=".$commandline{lookback} : undef,
+            $commandline{context} ? "context=".$commandline{context} : undef,
+            $commandline{allyoucaneat} ? "allyoucaneat" : undef,
+            $commandline{criticalthreshold} ? "criticalthreshold=".$commandline{criticalthreshold} : undef,
+            $commandline{warningthreshold} ? "warningthreshold=".$commandline{warningthreshold} : undef,
+            $commandline{encoding} ? "encoding=".$commandline{encoding} : undef,
+            defined $commandline{sticky} ? "sticky".($commandline{sticky} ? "=".$commandline{sticky} : "") : undef,
+            $commandline{preferredlevel} ? "preferredlevel=".$commandline{preferredlevel} : undef,
+        ),
+        archivedir =>
+            $commandline{archivedir} ?
+                $commandline{archivedir} : undef,
+    })],
+    options => join(',', grep { $_ }
+        $commandline{report} ? "report=".$commandline{report} : undef,
+        $commandline{seekfileerror} ? "seekfileerror=".(uc $commandline{seekfileerror}) : undef,
+        $commandline{logfileerror} ? "logfileerror=".(uc $commandline{logfileerror}) : undef,
+        $commandline{maxmemsize} ? "maxmemsize=".$commandline{maxmemsize} : undef,
+        $commandline{rotatewait} ? "rotatewait" : undef,
+        $commandline{htmlencode} ? "htmlencode" : undef,
+    ),
+    selectedsearches => [split(/,/, $commandline{selectedsearches})],
+    dynamictag => $commandline{tag} ? $commandline{tag} : undef,
+    #report => $commandline{report} ? $commandline{report} : undef,
+    cmdlinemacros => $commandline{macro},
+    seekfilesdir => $commandline{seekfilesdir} ? $commandline{seekfilesdir} : undef,
+    protocolsdir => $commandline{protocolsdir} ? $commandline{protocolsdir} : undef,
+    scriptpath => $commandline{scriptpath} ? $commandline{scriptpath} : undef,
+    protocolsretention => $commandline{protocolsretention} ? $commandline{protocolsretention} : undef,
+    reset => $commandline{reset} ? $commandline{reset} : undef,
+    unstick => $commandline{unstick} ? $commandline{unstick} : undef,
+    rununique => $commandline{rununique} ? $commandline{rununique} : undef,
+    warning => $commandline{warning} ? $commandline{warning} : undef,
+    critical => $commandline{critical} ? $commandline{critical} : undef,
   })) {
   $cl->{verbose} = $commandline{verbose} ? 1 : 0;
-  $cl->{timeout} = $commandline{timeout} ? $commandline{timeout} : 60;
+  $cl->{timeout} = $commandline{timeout} ? $commandline{timeout} : 360000;
   if ($commandline{install}) {
     $cl->install_windows_service($commandline{service}, $commandline{config},
         $commandline{username}, $commandline{password});
@@ -4992,9 +5922,11 @@ if (my $cl = Nagios::CheckLogfiles->new({
   } else {
     $cl->run();
   }
-  printf "%s%s\n%s", $cl->{exitmessage},
+  my $exitmessage      = $cl->{exitmessage};
+  my $long_exitmessage = $cl->{long_exitmessage} ? $cl->{long_exitmessage}."\n" : "";
+  printf "%s%s\n%s", $exitmessage,
       $cl->{perfdata} ? "|".$cl->{perfdata} : "",
-      $cl->{long_exitmessage} ? $cl->{long_exitmessage}."\n" : "";
+      $long_exitmessage;
   exit $cl->{exitcode};
 } else {
   printf "%s\n", $Nagios::CheckLogfiles::ExitMsg;
