@@ -16,8 +16,10 @@
 -->
             <dt>User Guide</dt>
               <dd><a href="/documentation/userguide.php">Discover how to use the Graphical User Interface.</a><br /><small>&nbsp;</small></dd>
+<!--
             <dt>Plugins</dt>
               <dd><span class="text-danger">TODO </span><a href="">Find out how to write a nagrestconf plugin.</a><br /><small>&nbsp;</small></dd>
+-->
           </dl>
 
 <!--
@@ -66,6 +68,14 @@
               <dd><a href="http://blogger.smorg.co.uk/2014/02/nagrestconf-service-sets.html">Describes what Service Sets are for.</a><br /><small>&nbsp;</small></dd>
             <dt>Synagios Ports</dt>
               <dd><a href="http://blogger.smorg.co.uk/2014/02/changing-default-synagios-port.html">How to change the port for nagios, nagrestconf and pnp4nagios for Synology devices.</a><br /><small>&nbsp;</small></dd>
+            <dt>Synagios SNMP</dt>
+              <dd><a href="http://blogger.smorg.co.uk/2015/07/synology-nas-monitoring-with-synagios.html">Example of monitoring a remote server using SNMP.</a><br /><small>&nbsp;</small></dd>
+            <dt>Synagios Plugins</dt>
+              <dd><a href="http://blogger.smorg.co.uk/2015/07/monitoring-external-smtp-relay-service.html">Example of setting up an existing plugin.</a><br /><small>&nbsp;</small></dd>
+            <dt>Synagios HTTPS</dt>
+              <dd><a href="http://blogger.smorg.co.uk/2015/09/synagios-enabling-https-for-nagrestconf.html">How to enable HTTPS.</a><br /><small>&nbsp;</small></dd>
+            <dt>GD2 File Names</dt>
+              <dd><a href="http://blogger.smorg.co.uk/2015/09/here-are-all-gd2-file-names-that-can-be.html">Image file names for the Nagios Status Map.</a><br /><small>&nbsp;</small></dd>
           </dl>
 
         </div>
