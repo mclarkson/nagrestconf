@@ -116,6 +116,8 @@ run()
 setup_chroot()
 # ---------------------------------------------------------------------------
 {
+    export LC_ALL=C
+
     cd $ROOTNAGIOSDIR
     mount --bind /dev dev
     mount --bind /proc proc
@@ -151,8 +153,13 @@ EnD
     run "chmod +x /sbin/start-stop-daemon"
 
     run "gdebi --apt-line nagrestconf_* | tail -2 | head -1 | xargs apt-get -qy install"
-    run "apt-get install -qy pnp4nagios"
-    run "apt-get install -qy nagios-nrpe-plugin"
+
+    # Install other packages for create_tgz.d/
+    cd $ROOT
+    for i in create_tgz.d/*.sh; do
+      source $i
+    done
+    cd $ROOTNAGIOSDIR
 
     run "dpkg -i *.deb"
     run "nagrestconf_install -a"
