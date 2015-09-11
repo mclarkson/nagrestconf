@@ -25,12 +25,12 @@
           </tr>
           <td>Debian Jessie</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Debian/">Latest Debian packages</a></td>
-          <td>-</td>
+          <td>1.174.1</td>
           <td><a href="/installguides/debian.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
           <tr>
-          <td>Ubuntu</td>
+          <td>Ubuntu Trusty</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Ubuntu/">Latest Ubuntu packages</a></td>
           <td>1.174</td>
           <td><a href="/installguides/ubuntu.php">Install Guide</a></td>

@@ -48,7 +48,7 @@ sudo sed -i 's/enable_embedded_perl=1/enable_embedded_perl=0/g' /etc/nagios3/nag
           <p>Create a password for nagrestconfadmin - for GUI access to nagrestconf.</p>
           <pre>sudo htpasswd -bc /etc/nagios3/nagrestconf.users nagrestconfadmin a_password</pre>
           <p>Note that, by default, the nagrestconf GUI can only be reached from the host it was installed on, localhost. To enable connecting to nagrestconf from other hosts edit the apache configuration.</p>
-          <p>For example,</p>
+          <p>For example, for Wheezy:</p>
           <!--<p>Edit /etc/apache2/conf.d/nagios.conf:</p>
           <pre>cp /etc/apache2/conf.d/nagios3.conf /tmp
 sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/htpasswd.users#i' \
@@ -62,6 +62,20 @@ sudo sed -i 's/allow from 127.0.0.1/allow from all/i' \
     /etc/apache2/conf.d/nagrestconf.conf
 sudo sed -i 's/#Require/Require/i'     /etc/apache2/conf.d/nagrestconf.conf
 sudo sed -i 's/#Auth/Auth/i'     /etc/apache2/conf.d/nagrestconf.conf</pre>
+          <p>Or, for Jessie:</p>
+          <!--<p>Edit /etc/apache2/conf-available/nagios.conf:</p>
+          <pre>cp /etc/apache2/conf.d/nagios3.conf /tmp
+sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/htpasswd.users#i' \
+    /etc/apache2/conf.d/nagios3.conf</pre>
+          -->
+          <p>Edit /etc/apache2/conf-available/nagrestconf.conf:</p>
+          <pre>sudo cp /etc/apache2/conf-available/nagrestconf.conf /tmp
+sudo sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios3/nagrestconf.users#i' \
+    /etc/apache2/conf-available/nagrestconf.conf
+sudo sed -i 's/allow from 127.0.0.1/allow from all/i' \
+    /etc/apache2/conf-available/nagrestconf.conf
+sudo sed -i 's/#Require/Require/i'     /etc/apache2/conf-available/nagrestconf.conf
+sudo sed -i 's/#Auth/Auth/i'     /etc/apache2/conf-available/nagrestconf.conf</pre>
           <p>Restart apache and nagios</p>
           <pre>sudo service apache2 restart
 sudo service nagios3 restart</pre>
