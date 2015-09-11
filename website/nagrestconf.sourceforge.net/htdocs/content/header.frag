@@ -5,7 +5,7 @@
     <meta name="author" content="">
     <meta http-equiv="expires" content="0">
     <meta http-equiv="pragma" content="no-cache">
-    <link rel="shortcut icon" href="ico/favicon.png">
+    <link rel="shortcut icon" href="/ico/favicon.png">
 
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">

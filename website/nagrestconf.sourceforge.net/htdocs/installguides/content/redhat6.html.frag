@@ -26,39 +26,39 @@
           <h3>Install using the RPM packages.</h3>
           <p>Get the RPM packages for Centos/Redhat 6 from the <a href="/downloads.php">download page</a> then copy them to the server.</p>
           <p>Open a terminal window or ssh session then add the  <a href="http://fedoraproject.org/wiki/EPEL">EPEL</a> repository to satisfy dependencies later on.</p>
-          <pre>rpm -ivh https://anorien.csc.warwick.ac.uk/mirrors/epel/6/i386/epel-release-6-8.noarch.rpm</pre>
+          <pre>sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm</pre>
           <p>Open a terminal window or ssh session then install nagrestconf and all plugins:</p>
-          <pre>yum --nogpg install nagrestconf-1.173-1.noarch.rpm \
-    nagrestconf-services-tab-plugin-1.173-1.noarch.rpm \
-    nagrestconf-services-bulktools-plugin-1.173-1.noarch.rpm \
-    nagrestconf-hosts-bulktools-plugin-1.173-1.noarch.rpm \
-    nagrestconf-backup-plugin-1.173-1.noarch.rpm</pre>
+          <pre>sudo yum --nogpg install nagrestconf-1.174.1-1.noarch.rpm \
+    nagrestconf-services-tab-plugin-1.174.1-1.noarch.rpm \
+    nagrestconf-services-bulktools-plugin-1.174.1-1.noarch.rpm \
+    nagrestconf-hosts-bulktools-plugin-1.174.1-1.noarch.rpm \
+    nagrestconf-backup-plugin-1.174.1-1.noarch.rpm</pre>
 
           <h3>Configure the Operating System</h3>
           <p> <span class="text-danger">Ensure selinux is disabled</span>, instructions <a href="https://www.centos.org/docs/5/html/5.1/Deployment_Guide/sec-sel-enable-disable.html">here</a>.</p>
           <p>Use the two helper scripts 'nagrestconf_install' and 'slc_configure'.</p>
-          <pre>nagrestconf_install -a
-slc_configure --folder=local</pre>
+          <pre>sudo nagrestconf_install -a
+sudo slc_configure --folder=local</pre>
           <p>Create a password for nagiosadmin - for GUI access to nagios.</p>
-          <pre>htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin a_password</pre>
+          <pre>sudo htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin a_password</pre>
           <p>Create a password for nagrestconfadmin - for GUI access to nagrestconf.</p>
-          <pre>htpasswd -bc /etc/nagios/nagrestconf.users nagrestconfadmin a_password</pre>
+          <pre>sudo htpasswd -bc /etc/nagios/nagrestconf.users nagrestconfadmin a_password</pre>
           <p>Note that, by default, the nagrestconf GUI can only be reached from the host it was installed on, localhost. To enable connecting to nagrestconf from other hosts edit the apache configuration.</p>
           <p>For example,</p>
           <p>Edit /etc/httpd/conf.d/nagios.conf:</p>
-          <pre>cp /etc/httpd/conf.d/nagios.conf /tmp
-sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/htpasswd.users#i' \
+          <pre>sudo cp /etc/httpd/conf.d/nagios.conf /tmp
+sudo sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/htpasswd.users#i' \
     /etc/httpd/conf.d/nagios.conf</pre>
           <p>Edit /etc/httpd/conf.d/nagrestconf.conf:</p>
-          <pre>cp /etc/httpd/conf.d/nagrestconf.conf /tmp
-sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/nagrestconf.users#i' \
+          <pre>sudo cp /etc/httpd/conf.d/nagrestconf.conf /tmp
+sudo sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/nagrestconf.users#i' \
     /etc/httpd/conf.d/nagrestconf.conf
-sed -i 's/allow from 127.0.0.1/allow from all/i' \
+sudo sed -i 's/allow from 127.0.0.1/allow from all/i' \
     /etc/httpd/conf.d/nagrestconf.conf
-sed -i 's/#Require/Require/i'     /etc/httpd/conf.d/nagrestconf.conf
-sed -i 's/#Auth/Auth/i'     /etc/httpd/conf.d/nagrestconf.conf</pre>
+sudo sed -i 's/#Require/Require/i'     /etc/httpd/conf.d/nagrestconf.conf
+sudo sed -i 's/#Auth/Auth/i'     /etc/httpd/conf.d/nagrestconf.conf</pre>
           <p>Restart apache</p>
-          <pre>service httpd restart</pre>
+          <pre>sudo service httpd restart</pre>
 
           <h3>Test nagrestconf and nagios</h3>
           <p>The nagrestsconf and nagios web interfaces should be accessible now.<p>
@@ -85,7 +85,7 @@ sed -i 's/#Auth/Auth/i'     /etc/httpd/conf.d/nagrestconf.conf</pre>
           trying to run the host and service checks.</p>
           <p>Install the plugins your distribution provides.</p>
           <p>Choose the required plugins or install them all as below.</p>
-          <pre>yum install nagios-plugins-all nagios-plugins-nrpe</pre>
+          <pre>sudo yum install nagios-plugins-all nagios-plugins-nrpe</pre>
 
           <p>That's it!</p>
 
