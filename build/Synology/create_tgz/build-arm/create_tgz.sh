@@ -164,14 +164,19 @@ EnD
     run "dpkg -i *.deb"
     run "nagrestconf_install -a"
     run "slc_configure --folder=local"
-    run "mv /var/spool/cron/root /var/spool/cron/crontabs/"
-    run "chmod 0600 /var/spool/cron/crontabs/root"
+    # Fixed in nagrestconf_install:
+    #run "mv /var/spool/cron/root /var/spool/cron/crontabs/"
+    #run "chmod 0600 /var/spool/cron/crontabs/root"
 
     # Change 80 to 8888 and 443 to 4443
     run "sed -i 's/80/8888/g;s/443/4443/g' /etc/apache2/ports.conf"
     # Change access permissions
     #run "sed -i 's/\(Allow from \).*/\1all/' /etc/apache2/conf.d/nagrestconf.conf"
-    cat >$ROOTNAGIOSDIR/etc/apache2/conf.d/nagrestconf.conf <<EnD
+
+    # Wheezy
+    #cat >$ROOTNAGIOSDIR/etc/apache2/conf.d/nagrestconf.conf <<EnD
+    # Jessie
+    cat >$ROOTNAGIOSDIR/etc/apache2/conf-available/nagrestconf.conf <<EnD
 Alias /nagrestconf "/usr/share/nagrestconf/htdocs/nagrestconf"
 
 <Directory /usr/share/nagrestconf/htdocs/nagrestconf/>

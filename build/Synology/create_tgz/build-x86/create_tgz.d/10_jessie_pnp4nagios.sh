@@ -23,7 +23,7 @@ EnD
 run "apt-get update"
 run "apt-get install -qy pnp4nagios"
 
-sed 's#AuthUserFile.*#AuthUserFile /etc/nagios3/htpasswd.users#' \
+sed -i 's#AuthUserFile.*#AuthUserFile /etc/nagios3/htpasswd.users#' \
     $ROOTNAGIOSDIR/etc/apache2/conf-available/pnp4nagios.conf
 }
 
