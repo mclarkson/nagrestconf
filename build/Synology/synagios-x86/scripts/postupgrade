@@ -12,7 +12,7 @@ TMPDIR="$SYNOPKG_PKGDEST_VOL/@tmp/Synagios_upgrade_temp"
 cd $SYNOPKG_PKGDEST/nagios-chroot/
 
 # Apache 2.2 to 2.4
-mv etc/apache2 etc/apache.new
+mv etc/apache2 etc/apache2.new
 
 tar xzf $TMPDIR/config.tgz
 

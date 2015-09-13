@@ -10,7 +10,7 @@ TMPDIR="$SYNOPKG_PKGDEST_VOL/@tmp/Synagios_upgrade_temp"
 # Copy config and state files back
 
 # Apache 2.2 to 2.4
-mv etc/apache2 etc/apache.new
+mv etc/apache2 etc/apache2.new
 
 cd $SYNOPKG_PKGDEST/nagios-chroot/
 
