@@ -6,6 +6,28 @@
         <!-- Content -->
         <div class="row" style="padding-left:10px;padding-right:20px;">
           <h1>News</h1>
+          <p><strong>13 September 2015 - Software updates.</strong></p>
+            <blockquote>
+              Nagrestconf version 1.174.1 released. Notable changes:
+              <ul>
+                <li>Make synology log output useful. Closes #2.</li>
+                <li>Refresh hosts page after restore. Closes #20.</li>
+                <li>Install nagios_nrpe_plugin. Closes #21.</li>
+                <li>Status Map Image fields added for templates. Closes #22.</li>
+                <li>Added 'parents' field to hosts dialog. Closes #17.</li>
+                <li>Allow hostnames, not just ip addresses. Closes #26.</li>
+                <li>Alias field added to clone host dialog. Closes #29.</li>
+                <li>Added Host Custom Variables and Notes fields to REST and UI. Closes #38.</li>
+                <li>Added extra dependencies for really minimal systems.</li>
+              </ul>
+              Synagios version 0.14 released. Notable changes:
+              <ul>
+                <li>Includes Nagrestconf 1.174.1.</li>
+                <li>Base Operating System updated from Debian Wheezy to Debian Jessie.</li>
+                <li>Nagios updated to 3.5.1.</li>
+                <li>Pnp4nagios updated to 0.6.24.</li>
+              </ul>
+            </blockquote>
           <p><strong>11 March 2014 - Synagios update.</strong></p>
             <blockquote>
               Synagios version 0.13 beta released with updates for the newly released DSM 5.0.
