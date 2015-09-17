@@ -1,5 +1,5 @@
 %define name nagrestconf
-%define version 1
+%define version 1.174.2
 %define php php
 %if "%{?dist}" == ".el5"
 %define php php53
