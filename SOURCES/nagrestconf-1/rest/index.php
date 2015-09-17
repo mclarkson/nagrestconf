@@ -703,6 +703,9 @@ class WriteCmd
             case self::PIPECMD_DISABLEHOSTSVCCHECKS:
                 $retval = $this->createDisablehostsvcchecksPipecmdCmd();
                 break;
+            case self::PIPECMD_DISABLESVCCHECK:
+                $retval = $this->createDisablesvccheckPipecmdCmd();
+                break;
             case self::PIPECMD_ENABLESVCCHECK:
                 $retval = $this->createEnablesvccheckPipecmdCmd();
                 break;
