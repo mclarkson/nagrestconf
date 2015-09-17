@@ -102,7 +102,7 @@ for PKG in `( cd SPECS; ls *.spec )`; do
     #POINTRELEASE=$SVN_REV
 
     # Use the debian version number from the changelog
-    POINTRELEASE=`head -1 ./SOURCES/nagrestconf-1/debian/changelog | sed 's/^.*(1\.//;s/).*//'`
+    POINTRELEASE=`head -1 ./SOURCES/nagrestconf-1/debian.jessie/changelog | sed 's/^.*(1\.//;s/).*//'`
 
 	echo "Package Release: $RELEASE"
 	echo "New Version No.: $VERSION.${POINTRELEASE}"

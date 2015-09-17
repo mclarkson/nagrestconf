@@ -1,6 +1,6 @@
-nagrestconf (1.174.1) UNRELEASED; urgency=low
+nagrestconf (1.174.2) UNRELEASED; urgency=low
 
-  * Fixes and enhancements.
+  * Pipecmd fix.
 
  -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Sun, 11 Sep 2015 18:32:00 +0000
 
