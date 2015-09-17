@@ -60,7 +60,7 @@
           <tr>
           <td>Redhat 6</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Redhat 6/">Latest Redhat 6 packages</a></td>
-          <td>-</td>
+          <td>1.174.1</td>
           <td><a href="/installguides/redhat6.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
@@ -81,14 +81,14 @@
           <tr>
           <td>Synology Diskstation - x86</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Synology/x86/">Latest Synology x86 packages</a></td>
-          <td>0.13</td>
+          <td>0.14</td>
           <td><a href="/installguides/synology.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
           <tr><!-- class="danger">-->
           <td>Synology Diskstation - arm</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Synology/arm/">Latest Synology arm packages</a></td>
-          <td>0.13</td>
+          <td>0.14</td>
           <td><a href="/installguides/synology.php">Install Guide</a></td>
           <!--<td>Please report if this works for you.</td>-->
           </tr>
