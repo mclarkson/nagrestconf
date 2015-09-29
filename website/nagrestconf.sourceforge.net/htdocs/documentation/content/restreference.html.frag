@@ -891,9 +891,9 @@ cellspacing="0" cellpadding="4">
 </tr>
 <tr>
 <td align="center" valign="top"><p class="table"><em>6.</em></p></td>
-<td align="left" valign="top"><p class="table">Contact</p></td>
+<td align="left" valign="top"><p class="table">Contacts</p></td>
 <td align="center" valign="top"><p class="table">LM</p></td>
-<td align="left" valign="top"><p class="table">contact</p></td>
+<td align="left" valign="top"><p class="table">contacts</p></td>
 <td align="left" valign="top"><p class="table">contacts</p></td>
 </tr>
 <tr>
@@ -1185,6 +1185,17 @@ cellspacing="0" cellpadding="4">
 </tr>
 </tbody>
 </table>
+</div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img alt="Note" src="data:image/png;base64,
+" />
+</td>
+<td class="content">When using '/show/hosts' the contacts field is output as
+'contact', without the 's', but set with 'contacts', with the 's' as shown
+above.</td>
+</tr></table>
 </div>
 </div>
 <div class="sect3">
