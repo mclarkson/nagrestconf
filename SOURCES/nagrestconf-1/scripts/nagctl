@@ -1458,7 +1458,7 @@ modify_host_line()
         fi
     }
 
-    [[ -n $servicesets ]] && {
+    [[ -n $servicesets && $servicesets != "-" ]] && {
         for i in $servicesets; do
             if ! item_exists 1 $FILE_SERVICESETS "$i"; then
                 echo -n "NAGCTL ERROR: Service Set '$i' not found."
