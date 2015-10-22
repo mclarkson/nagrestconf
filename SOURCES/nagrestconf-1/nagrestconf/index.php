@@ -388,6 +388,11 @@
              desc: "Notify when flapping starts/stops."
          },
          {
+             value: "s",
+             label: "scheduled downtime",
+             desc: "Notify when scheduled downtime starts/ends."
+         },
+         {
              value: "n",
              label: "none",
              desc: "Disable all host notifications."
@@ -7984,6 +7989,8 @@
         # Handle deleting fields
         if( ! strlen( $query_str["notifications_enabled"] ) )
             $query_str["notifications_enabled"] = "-";
+        if( empty( $query_str["notifopts"] ) )
+            $query_str["notifopts"] = "-";
         if( ! strlen( $query_str["retainstatusinfo"] ) )
             $query_str["retainstatusinfo"] = "-";
         if( ! strlen( $query_str["retainnonstatusinfo"] ) )
@@ -11101,6 +11108,8 @@
         # Handle deleting fields
         if( ! strlen( $query_str["notifications_enabled"] ) )
             $query_str["notifications_enabled"] = "-";
+        if( empty( $query_str["notifopts"] ) )
+            $query_str["notifopts"] = "-";
         if( ! strlen( $query_str["retainstatusinfo"] ) )
             $query_str["retainstatusinfo"] = "-";
         if( ! strlen( $query_str["retainnonstatusinfo"] ) )

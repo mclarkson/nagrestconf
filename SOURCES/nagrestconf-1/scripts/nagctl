@@ -1402,10 +1402,10 @@ modify_servicetemplate_line()
     [[ -n $notifopts && $notifopts != "-" ]] && {
         numterms=`echo "$notifopts" | grep -Eo '([^ ]*)?' | wc -l`
         numvalidterms=`echo "$notifopts" | \
-            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bn( |$))?' | wc -l`
+            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bs( |$)|\bn( |$))?' | wc -l`
         [[ $numterms -ne $numvalidterms ]] && {
             echo -n "NAGCTL ERROR: Notifopts '$notifopts' contains invalid"
-            echo " option(s). Only w, u, c, r, f, or n are allowed."
+            echo " option(s). Only w, u, c, r, f, s, or n are allowed."
             unlockdir
             exit 14
         }
@@ -1587,7 +1587,8 @@ modify_service_line()
     local name svcdesc
 
     IFS=, read name template command svcdesc servicegroups \
-        contacts contactgroups x x x disable x x <<<"$gcsv" 
+        contacts contactgroups x x x disable x x x x x x x x x \
+        x x x x x x x x x x x x x x svcopt x <<<"$gcsv" 
 
     #[[ -n $command ]] && command=`echo "$command" | grep -o '^[-A-Za-z0-9_]*'`
     [[ -n $command ]] && command=`echo "$command" | \
@@ -1674,6 +1675,18 @@ modify_service_line()
             unlockdir
             exit 16
         fi
+    }
+
+    [[ -n $svcopt && $svcopt != "-"  ]] && {
+        numterms=`echo "$svcopt" | grep -Eo '([^ ]*)?' | wc -l`
+        numvalidterms=`echo "$svcopt" | \
+            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bs( |$)|\bn( |$))?' | wc -l`
+        [[ $numterms -ne $numvalidterms ]] && {
+            echo -n "NAGCTL ERROR: Service notif opts '$svcopt' contains invalid"
+            echo " option(s). Only w, u, c, r, f, s, or n are allowed."
+            unlockdir
+            exit 14
+        }
     }
 
     olditem=`item_search2 1 4 $FILE_SERVICES "$name" "$svcdesc"`
@@ -1801,10 +1814,10 @@ modify_contacts_line()
     [[ -n $svcopt && $svcopt != "-"  ]] && {
         numterms=`echo "$svcopt" | grep -Eo '([^ ]*)?' | wc -l`
         numvalidterms=`echo "$svcopt" | \
-            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bn( |$))?' | wc -l`
+            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bs( |$)|\bn( |$))?' | wc -l`
         [[ $numterms -ne $numvalidterms ]] && {
             echo -n "NAGCTL ERROR: Service notif opts '$svcopt' contains invalid"
-            echo " option(s). Only w, u, c, r, f, or n are allowed."
+            echo " option(s). Only w, u, c, r, f, s, or n are allowed."
             unlockdir
             exit 14
         }
@@ -2488,10 +2501,10 @@ add_servicetemplate_line()
     [[ -n $notifopts && $notifopts != "-" ]] && {
         numterms=`echo "$notifopts" | grep -Eo '([^ ]*)?' | wc -l`
         numvalidterms=`echo "$notifopts" | \
-            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bn( |$))?' | wc -l`
+            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bs( |$)|\bn( |$))?' | wc -l`
         [[ $numterms -ne $numvalidterms ]] && {
             echo -n "NAGCTL ERROR: Notifopts '$notifopts' contains invalid"
-            echo " option(s). Only w, u, c, r, f, or n are allowed."
+            echo " option(s). Only w, u, c, r, f, s, or n are allowed."
             unlockdir
             exit 14
         }
@@ -2819,10 +2832,10 @@ add_contacts_line()
     [[ -n $svcopt && $svcopt != "-" ]] && {
         numterms=`echo "$svcopt" | grep -Eo '([^ ]*)?' | wc -l`
         numvalidterms=`echo "$svcopt" | \
-            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bn( |$))?' | wc -l`
+            grep -Eo '(\bw( |$)|\bu( |$)|\bc( |$)|\br( |$)|\bf( |$)|\bs( |$)|\bn( |$))?' | wc -l`
         [[ $numterms -ne $numvalidterms ]] && {
             echo -n "NAGCTL ERROR: Service notif opts '$svcopt' contains invalid"
-            echo " option(s). Only w, u, c, r, f, or n are allowed."
+            echo " option(s). Only w, u, c, r, f, s, or n are allowed."
             unlockdir
             exit 14
         }
