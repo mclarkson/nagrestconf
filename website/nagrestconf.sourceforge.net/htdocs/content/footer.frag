@@ -1,4 +1,4 @@
       <footer>
       <hr>
-        <p>&copy; Mark Clarkson 2014</p>
+        <p>&copy; 2014-2015 Mark Clarkson</p>
       </footer>
