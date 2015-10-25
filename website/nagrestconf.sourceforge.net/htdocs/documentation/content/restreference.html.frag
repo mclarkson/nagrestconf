@@ -1541,7 +1541,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>4.</em></p></td>
 <td align="left" valign="top"><p class="table">Service description</p></td>
-<td align="center" valign="top"><p class="table">RK</p></td>
+<td align="center" valign="top"><p class="table">RKE</p></td>
 <td align="left" valign="top"><p class="table">svcdesc</p></td>
 <td align="left" valign="top"><p class="table">service_description</p></td>
 </tr>

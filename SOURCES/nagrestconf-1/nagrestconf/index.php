@@ -9513,9 +9513,12 @@
         print '<div id="fragment-2">';
         # Max check attempts
         print '<p>';
+        $newcmd = urldecode( $command );
+        $newcmd = strtr( $newcmd, array("\""=>"\\\"","\\"=>"\\\\") );
         print '<label for="fcommand">Check Command</label>';
         print '<input class="field" type="text" id="fcommand"';
-        print ' value="'.$command.'" name="command">';
+        print ' value="'.$newcmd.'" name="command">';
+        print '<script>$("#fcommand").val("'.$newcmd.'");</script>';
         print '</p>';
         # Active Checks
         print '<p>';
@@ -9723,6 +9726,13 @@
                 $query_str["activechecks"] = "1";
             else
                 $query_str["activechecks"] = "0";
+
+            if( isset( $query_str["command"] ) ) {
+                $query_str["command"] = strtr( $query_str["command"], 
+                                               array( '"' => '\"',) );
+                $query_str["command"] = urlencode($query_str["command"]);
+            }
+
             $json = json_encode( $query_str );
 
             # Do the REST add host request
@@ -9761,8 +9771,8 @@
             $query_str["contact"] = "-";
         if( empty( $query_str["contactgroups"] ) )
             $query_str["contactgroups"] = "-";
-        if( empty( $query_str["checkcommand"] ) )
-            $query_str["checkcommand"] = "-";
+        if( empty( $query_str["command"] ) )
+            $query_str["command"] = "-";
         if( empty( $query_str["maxcheckattempts"] ) )
             $query_str["maxcheckattempts"] = "-";
         if( empty( $query_str["servicesets"] ) )
@@ -9773,6 +9783,13 @@
             $query_str["notes"] = "-";
         if( empty( $query_str["parents"] ) )
             $query_str["parents"] = "-";
+
+        if( isset( $query_str["command"] ) ) {
+            $query_str["command"] = strtr( $query_str["command"], 
+                                           array( '"' => '\"',) );
+            $query_str["command"] = urlencode($query_str["command"]);
+        }
+
         $json = json_encode( $query_str );
 
         # Do the REST add host request
@@ -9851,6 +9868,11 @@
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
         unset( $query_str["newhost"] );
         $query_str["folder"] = FOLDER;
+        if( isset( $query_str["command"] ) ) {
+            $query_str["command"] = strtr( $query_str["command"], 
+                                           array( '"' => '\"',) );
+            $query_str["command"] = urlencode($query_str["command"]);
+        }
         if( isset( $query_str["activechecks"] ) )
             $query_str["activechecks"] = "1";
         else

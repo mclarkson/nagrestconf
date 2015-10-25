@@ -2103,7 +2103,7 @@ class WriteCmd
         $this->newcmdline .= ",".$disable;
         $this->newcmdline .= ",".$displayname;
         $this->newcmdline .= ",".$parents;
-        $this->newcmdline .= ",".$command;
+        $this->newcmdline .= ",".urlencode($command);
         $this->newcmdline .= ",".$initialstate;
         $this->newcmdline .= ",".$maxcheckattempts;
         $this->newcmdline .= ",".$checkinterval;
@@ -2723,7 +2723,7 @@ class WriteCmd
         $this->newcmdline .= ",".$disable;
         $this->newcmdline .= ",".$displayname;
         $this->newcmdline .= ",".$parents;
-        $this->newcmdline .= ",".$command;
+        $this->newcmdline .= ",".urlencode($command);
         $this->newcmdline .= ",".$initialstate;
         $this->newcmdline .= ",".$maxcheckattempts;
         $this->newcmdline .= ",".$checkinterval;
@@ -4008,7 +4008,7 @@ function main()
             exec( $cmd . ' >/dev/stdout 2>&1', $output, $exit_status );
             if( $exit_status > 0 ) {
                 $rs->sendResponse( 400,
-                                   json_encode($output[0]),
+                                   json_encode($output[0], JSON_UNESCAPED_SLASHES),
                                    'application/json' );
             }
 
@@ -4019,7 +4019,7 @@ function main()
             }
             
             $rs->sendResponse( $rc->getReturnCode(),
-                               json_encode($jsoutput),
+                               json_encode($jsoutput, JSON_UNESCAPED_SLASHES),
                                'application/json' );
             break;
 
@@ -4034,7 +4034,7 @@ function main()
             $cmd = $wc->getCommand();
             if( $wc->getReturnCode() != 200 ) {
                 $rs->sendResponse( $wc->getReturnCode(),
-                                   json_encode($cmd),
+                                   json_encode($cmd, JSON_UNESCAPED_SLASHES),
                                    'application/json' );
             }
             
@@ -4045,7 +4045,7 @@ function main()
             if( $exit_status > 0 ) {
                 $rs->sendResponse( 400,
                                    //json_encode($output[0] . " " . $cmd),
-                                   json_encode($output),
+                                   json_encode($output, JSON_UNESCAPED_SLASHES),
                                    'application/json' );
             }
 
