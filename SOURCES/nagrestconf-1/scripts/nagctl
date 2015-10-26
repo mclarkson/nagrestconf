@@ -1446,7 +1446,7 @@ modify_host_line()
         exit 14
     fi
 
-    [[ -n $command ]] && {
+    [[ -n $command && $command != "-" ]] && {
         if ! item_exists 1 $FILE_COMMANDS "$command"; then
             echo -n "NAGCTL ERROR: Command '$command' not found."
             echo " Will not modify host."
