@@ -1243,11 +1243,8 @@ modify_hosttemplate_line()
     IFS=, read name x contacts contactgroups x x x notifperiod \
         notifopts x checkperiod x check_command x <<<"$gcsv" 
 
-    #name=`echo "$gcsv" | cut -d, -f1`
-    #contacts=`echo "$gcsv" | cut -d, -f3`
-    #contactgroups=`echo "$gcsv" | cut -d, -f4`
-    #notifperiod=`echo "$gcsv" | cut -d, -f8`
-    #checkperiod=`echo "$gcsv" | cut -d, -f11`
+    [[ -n $check_command ]] && check_command=`echo "$command" | \
+        sed -nr 's/%21/!/g;s/(^[^!]*)(!|%21|$).*/\1/p'`
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"
@@ -2354,11 +2351,8 @@ add_hosttemplate_line()
     IFS=, read name x contacts contactgroups x x x notifperiod \
         notifopts x checkperiod x check_command x <<<"$gcsv" 
 
-    #name=`echo "$gcsv" | cut -d, -f1`
-    #contacts=`echo "$gcsv" | cut -d, -f3`
-    #contactgroups=`echo "$gcsv" | cut -d, -f4`
-    #notifperiod=`echo "$gcsv" | cut -d, -f8`
-    #checkperiod=`echo "$gcsv" | cut -d, -f11`
+    [[ -n $check_command ]] && check_command=`echo "$command" | \
+        sed -nr 's/%21/!/g;s/(^[^!]*)(!|%21|$).*/\1/p'`
 
     [[ $name == *" "* ]] && {
         echo "NAGCTL ERROR: 'name' field cannot contain spaces"

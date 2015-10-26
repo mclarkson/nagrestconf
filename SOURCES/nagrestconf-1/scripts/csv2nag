@@ -1560,6 +1560,7 @@ create_hosttemplates()
             Echo "       check_period                 $checkperiod"
         }
         [[ -n $checkcommand ]] && {
+            checkcommand="${checkcommand//\`/,}"
             Echo "       check_command                $checkcommand"
         }
         [[ -n $notifopts ]] && {
