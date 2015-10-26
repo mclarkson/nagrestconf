@@ -1449,7 +1449,6 @@ class WriteCmd
         $this->newcmdline .= ",".$coords2d;
         $this->newcmdline .= ",".$coords3d;
         $this->newcmdline .= ",".$action_url;
-        $this->newcmdline .= ",".$customvars;
 
         $this->newcmdline .= "'";
 
