@@ -8,6 +8,16 @@
           <h1>News</h1>
           <p><strong>13 September 2015 - Software updates.</strong></p>
             <blockquote>
+              Nagrestconf version 1.174.3 released. Notable changes:
+              <ul>
+                <li>Bug Fixes.</li>
+                <li>Allow service notication option 's'. Closes #46</li>
+                <li>Fix host update via GUI. Closes #44</li>
+              </ul>
+              New tool, nrcq, released:
+                <blockquote>
+                Command line tool for accessing the rest api either locally or remotely.
+                </blockquote>
               Nagrestconf version 1.174.1 released. Notable changes:
               <ul>
                 <li>Make synology log output useful. Closes #2.</li>

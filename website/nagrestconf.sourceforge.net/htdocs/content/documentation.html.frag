@@ -58,6 +58,16 @@
               <dd><a href="/documentation/restreference.php">Reference material listing all API options.</a><br /><small>&nbsp;</small></dd>
           </dl>
 
+          <h3>Related Tools</h3>
+          <dl class="dl-horizontal" style="padding-top: 14px">
+            <dt>nrcq</dt>
+              <dd><a href="https://github.com/mclarkson/nrcq">Nagrestconf Query utility written in Google Go.</a><br /><small>&nbsp;</small></dd>
+            <dt>nagrestconf-golib</dt>
+              <dd><a href="https://github.com/mclarkson/nagrestconf-golib">Google Go language bindings (in-progress).</a><br /><small>&nbsp;</small></dd>
+            <dt>nagrestconf-python</dt>
+              <dd><a href="https://github.com/maestrx/nagrestconf-python">Python language bindings and query tool (in-progress).</a><br /><small>&nbsp;</small></dd>
+          </dl>
+
           <h3>Blog Pages</h3>
           <dl class="dl-horizontal" style="padding-top: 14px">
             <dt>Synology Tuning</dt>

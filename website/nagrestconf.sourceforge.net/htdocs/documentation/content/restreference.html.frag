@@ -618,7 +618,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Use</p></td>
-<td align="center" valign="top"><p class="table">RM</p></td>
+<td align="center" valign="top"><p class="table">M</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
 </tr>
@@ -1229,7 +1229,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>2.</em></p></td>
 <td align="left" valign="top"><p class="table">Use</p></td>
-<td align="center" valign="top"><p class="table">RM</p></td>
+<td align="center" valign="top"><p class="table">M</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
 <td align="left" valign="top"><p class="table">use</p></td>
 </tr>

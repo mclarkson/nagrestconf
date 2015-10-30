@@ -27,11 +27,11 @@
           <p>Open a terminal window or ssh session then install nagrestconf and all plugins:</p>
           <pre>sudo apt-get update
 sudo apt-get install gdebi-core sudo tar cron
-sudo gdebi nagrestconf_1.174.1_all.deb
-sudo dpkg -i nagrestconf-services-plugin_1.174.1_all.deb \
-      nagrestconf-services-bulktools-plugin_1.174.1_all.deb \
-      nagrestconf-hosts-bulktools-plugin_1.174.1_all.deb \
-      nagrestconf-backup-plugin_1.174.1_all.deb</pre>
+sudo gdebi nagrestconf_1.174.3_all.deb
+sudo dpkg -i nagrestconf-services-plugin_1.174.3_all.deb \
+      nagrestconf-services-bulktools-plugin_1.174.3_all.deb \
+      nagrestconf-hosts-bulktools-plugin_1.174.3_all.deb \
+      nagrestconf-backup-plugin_1.174.3_all.deb</pre>
 
           <h3>Configure the Operating System</h3>
           <p>Use the two helper scripts 'nagrestconf_install' and 'slc_configure'.</p>
