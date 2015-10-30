@@ -755,7 +755,7 @@ create_host_files()
             echo "       notification_interval $notifinterval"
         }
         [[ -n $firstnotifdelay ]] && {
-            echo "       first_notifdelay $firstnotifdelay"
+            echo "       first_notification_delay $firstnotifdelay"
         }
         [[ -n $notifperiod ]] && {
             Echo "       notification_period $notifperiod"
@@ -1155,7 +1155,7 @@ create_service_entries()
                 echo "       notification_interval $notifinterval"
             }
             [[ -n $firstnotifdelay ]] && {
-                echo "       first_notifdelay $firstnotifdelay"
+                echo "       first_notification_delay $firstnotifdelay"
             }
             [[ -n $notifperiod ]] && {
                 Echo "       notification_period $notifperiod"
@@ -1393,7 +1393,7 @@ create_servicetemplates()
             echo "       notification_interval $notifinter"
         }
         [[ -n $firstnotifdelay ]] && {
-            echo "       first_notifdelay $firstnotifdelay"
+            echo "       first_notification_delay $firstnotifdelay"
         }
         [[ -n $notifperiod ]] && {
             Echo "       notification_period $notifperiod"
@@ -1605,7 +1605,7 @@ create_hosttemplates()
             echo "${flapdetectionoptions// /,}"
         }
         [[ -n $firstnotifdelay ]] && {
-            echo "       first_notifdelay             $firstnotifdelay"
+            echo "       first_notification_delay             $firstnotifdelay"
         }
         [[ -n $notifperiod ]] && {
             Echo "       notification_period          $notifperiod"
