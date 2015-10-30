@@ -13,6 +13,7 @@
                 <li>Bug Fixes.</li>
                 <li>Allow service notication option 's'. Closes #46</li>
                 <li>Fix host update via GUI. Closes #44</li>
+                <li>Fix first_notification_delay. Closes #47</li>
               </ul>
               New tool, nrcq, released:
                 <blockquote>
