@@ -12,7 +12,7 @@
           <p>Set up a Nagios and Nagrestconf server using one of the <a href="/installguide.php">Installation
             Guides</a> and be sure to <strong>import the backup configuration file</strong> as shown in the guide.</p>
 
-          <p>Download the tool, nrcq, from https://github.com/mclarkson/nrcq.</p>
+          <p>Download the tool, nrcq, from <a href="https://github.com/mclarkson/nrcq">https://github.com/mclarkson/nrcq</a>.</p>
 
           <p>Either copy nrcq to the Nagios server and use the tool there, or
             use the tool from your workstation to access nagrestconf remotely.</p>
@@ -146,6 +146,13 @@ nrcq http://localhost/rest modify/hosts -d name:newserver -d hostgroup:mgmt
           <p>The configuration can be applied as before by using 'apply', 'check', then 'restart', or
           by using the nagrestconf Web interface.</p>
 </pre>
+
+          <p>Finally, to delete the value of an option, use the minus sign, '-'. For example, to 
+          delete the host group we just added, type:</p>
+          <pre>
+nrcq http://localhost/rest modify/hosts -d name:newserver -d hostgroup:-
+</pre>
+
           <h3>That's It!</h3>
 
           <p>This tutorial has demonstrated adding, modifying, and deleting a host. Every configuration
