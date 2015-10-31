@@ -104,6 +104,15 @@ do
    POST /delete/$i $PS',"name":".*","svcdesc":".*"'$PE
 done
 </pre>
+Or with nrcq:
+<pre>
+for i in services hosts servicesets hosttemplates \
+         servicetemplates contactgroups contacts  \
+         hostgroups servicegroups timeperiods commands
+do
+   nrcq http://127.0.0.1/rest delete/$i -d "name:.*" -d "svcdesc:.*"
+done
+</pre>
                   <p>NOTE: This will probably not work if the '<a href="/documentation/restreference.php#lessused">
                   Less used and deprecated tables</a>' have been used as they will need to be deleted first.
                   <!-- LIST CONTENT -->
