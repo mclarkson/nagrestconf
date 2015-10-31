@@ -23,7 +23,7 @@
           <p>If using your workstation to connect remotely, use 'ssh' to forward local packets to the remote
             Nagios server. For example, on a Linux or Mac workstation you would type something similar to:</p>
 
-          <code>sudo ssh -L 80:127.0.0.1:80 user@nagios-server</code>
+          <pre>sudo ssh -L 80:127.0.0.1:80 user@nagios-server</pre>
 
           <p>Then, in either case, the URL to use in nrcq will be http://localhost/rest.</p>
 
@@ -72,9 +72,9 @@ delete/hosts
           required fields, prefixed with a star.</p>
           <p>For example, to view the valid options for the hosts table, type:</p>
 
-<code>
+<pre>
 nrcq -l hosts
-</code>
+</pre>
 
           <h3>Add a Host</h3>
 
