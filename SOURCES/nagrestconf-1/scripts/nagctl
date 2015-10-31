@@ -3654,7 +3654,7 @@ delete_host_line()
         echo -n "NAGCTL ERROR: Host is referenced by one or more services."
         echo " Will not delete."
         RETVAL=15
-    elif [[ $name != '.*' || `item_exists 12 $FILE_HOSTS "$name"` ]]; then
+    elif [[ $name != '.*' && `item_exists 12 $FILE_HOSTS "$name"` ]]; then
         echo -n "NAGCTL ERROR: Host is a parent to one or more hosts."
         echo " Will not delete."
         RETVAL=15
