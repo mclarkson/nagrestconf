@@ -6,7 +6,7 @@
         <!-- Content -->
         <div class="row" style="padding-left:10px;padding-right:20px;">
           <h1>News</h1>
-          <p><strong>13 September 2015 - Software updates.</strong></p>
+          <p><strong>30 October 2015 - Software updates.</strong></p>
             <blockquote>
               Nagrestconf version 1.174.3 released. Notable changes:
               <ul>
@@ -15,10 +15,16 @@
                 <li>Fix host update via GUI. Closes #44</li>
                 <li>Fix first_notification_delay. Closes #47</li>
               </ul>
+            </blockquote>
+          <p><strong>29 October 2015 - New Tool.</strong></p>
+            <blockquote>
               New tool, nrcq, released:
                 <blockquote>
                 Command line tool for accessing the rest api either locally or remotely.
                 </blockquote>
+            </blockquote>
+          <p><strong>13 September 2015 - Software updates.</strong></p>
+            <blockquote>
               Nagrestconf version 1.174.1 released. Notable changes:
               <ul>
                 <li>Make synology log output useful. Closes #2.</li>
