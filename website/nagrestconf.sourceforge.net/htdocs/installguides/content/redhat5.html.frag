@@ -39,11 +39,11 @@ EnD
           <p>If php has been installed then it must be uninstalled as php53 is required</p>
           <pre>rpm -qa | grep php | grep -v php53 | xargs rpm -e</pre>
           <p>Open a terminal window or ssh session then install nagrestconf and all plugins:</p>
-          <pre>yum --nogpg install nagrestconf-1.173-1.noarch.rpm \
-    nagrestconf-services-tab-plugin-1.173-1.noarch.rpm \
-    nagrestconf-services-bulktools-plugin-1.173-1.noarch.rpm \
-    nagrestconf-hosts-bulktools-plugin-1.173-1.noarch.rpm \
-    nagrestconf-backup-plugin-1.173-1.noarch.rpm</pre>
+          <pre>yum --nogpg install nagrestconf-1.174.4.noarch.rpm \
+    nagrestconf-services-tab-plugin-1.174.4.noarch.rpm \
+    nagrestconf-services-bulktools-plugin-1.174.4.noarch.rpm \
+    nagrestconf-hosts-bulktools-plugin-1.174.4.noarch.rpm \
+    nagrestconf-backup-plugin-1.174.4.noarch.rpm</pre>
           <p>Finally update 'grep' (This is a workaround for a bug).</p>
           <p>For 64 bit OS, x86_64:</p>
           <pre>rpm -Uvh http://nagrestconf.sourceforge.net/temp/grep-2.6.3-2el5.x86_64.rpm</pre>

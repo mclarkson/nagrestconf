@@ -28,11 +28,11 @@
           <p>Open a terminal window or ssh session then add the  <a href="http://fedoraproject.org/wiki/EPEL">EPEL</a> repository to satisfy dependencies later on.</p>
           <pre>sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm</pre>
           <p>Open a terminal window or ssh session then install nagrestconf and all plugins:</p>
-          <pre>sudo yum --nogpg install nagrestconf-1.174.3-1.noarch.rpm \
-    nagrestconf-services-tab-plugin-1.174.3-1.noarch.rpm \
-    nagrestconf-services-bulktools-plugin-1.174.3-1.noarch.rpm \
-    nagrestconf-hosts-bulktools-plugin-1.174.3-1.noarch.rpm \
-    nagrestconf-backup-plugin-1.174.3-1.noarch.rpm</pre>
+          <pre>sudo yum --nogpg install nagrestconf-1.174.4-1.noarch.rpm \
+    nagrestconf-services-tab-plugin-1.174.4-1.noarch.rpm \
+    nagrestconf-services-bulktools-plugin-1.174.4-1.noarch.rpm \
+    nagrestconf-hosts-bulktools-plugin-1.174.4-1.noarch.rpm \
+    nagrestconf-backup-plugin-1.174.4-1.noarch.rpm</pre>
 
           <h3>Configure the Operating System</h3>
           <p> <span class="text-danger">Ensure selinux is disabled</span>, instructions <a href="https://www.centos.org/docs/5/html/5.1/Deployment_Guide/sec-sel-enable-disable.html">here</a>.</p>
