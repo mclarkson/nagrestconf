@@ -14,7 +14,7 @@ Version: %{version}
 Release: 1
 License: GPL
 Group: Application/System
-Source: nagrestconf-%{version}.tar.gz
+Source: nagrestconf-1.tar.gz
 Requires: bash, grep, nagios >= 3, procmail, sed, gawk, grep, %php >= 5.3, httpd, mod_ssl, subversion, tar, cronie, sudo
 # PreReq: sh-utils
 BuildArch: noarch
