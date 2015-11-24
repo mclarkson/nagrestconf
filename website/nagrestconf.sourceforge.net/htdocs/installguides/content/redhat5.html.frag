@@ -21,6 +21,7 @@
             <li>Configure the Operating System.</li>
             <li>Test nagrestconf and nagios.</li>
             <li>Create an initial configuration.</li>
+            <li>Add Plugins.</li>
           </ul>
 
           <h3>Install using the RPM packages.</h3>
@@ -99,7 +100,7 @@ sed -i 's/#Auth/Auth/i'     /etc/httpd/conf.d/nagrestconf.conf</pre>
           <p>Click 'Close' in the 'Backup/Restore' dialog then refresh the page.</p>
           <p>The new configuration will not appear in the Nagios Web interface until the 'Apply Changes' button is clicked, and then applied.</p>
 
-          <h4>Adding Plugins</h4>
+          <h4>Add Plugins</h4>
           <p>Nagios and Nagrestconf should be installed and working, however,
           the plugins are probably not installed so Nagios will show errors
           trying to run the host and service checks.</p>

@@ -67,7 +67,7 @@
           <tr>
           <td>Centos 6</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Centos 6/">Latest Centos 6 packages</a></td>
-          <td>1.174.1</td>
+          <td>1.174.4</td>
           <td><a href="/installguides/redhat6.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
