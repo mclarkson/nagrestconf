@@ -72,6 +72,13 @@
           <!--<td></td>-->
           </tr>
           <tr>
+          <td>Centos 7</td>
+          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Centos 7/">Latest Centos 7 packages</a></td>
+          <td>1.174.4</td>
+          <td><a href="/installguides/centos7.php">Install Guide</a></td>
+          <!--<td></td>-->
+          </tr>
+          <tr>
           <td>Fedora</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Fedora/">Latest Fedora packages</a></td>
           <td>1.172</td>
