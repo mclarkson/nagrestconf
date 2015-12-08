@@ -59,9 +59,6 @@ EnD
 # Ensure it's executable
 chmod +x /usr/bin/restart_nagios_centos7
 
-# EPEL has Nagios 4 for Centos 7, which supports systemd. Make nagrestconf use it.
-sed -i 's#/etc/init.d/$NAG_INITD restart#service $NAG_INITD restart#' /usr/bin/restart_nagios
-
 systemctl restart crond
 </pre>
 
@@ -69,6 +66,9 @@ systemctl restart crond
           <pre>sudo htpasswd -bc /etc/nagios/passwd nagiosadmin a_password</pre>
           <p>Create a password for nagrestconfadmin - for GUI access to nagrestconf.</p>
           <pre>sudo htpasswd -bc /etc/nagios/nagrestconf.users nagrestconfadmin a_password</pre>
+          <p>Ensure the nagios Query Handler Interface directory is created.</p>
+          <pre>mkdir /var/log/nagios/rw
+chown nagios:nagios /var/log/nagios/rw</pre>
           <p>Note that, by default, the nagrestconf GUI can only be reached from the host it was installed on, localhost. To enable connecting to nagrestconf from other hosts edit the Apache configuration.</p>
           <p>For example,</p>
           <p>Edit /etc/httpd/conf.d/nagios.conf:</p>
@@ -85,9 +85,6 @@ sudo sed -i 's/#Require/Require/i'     /etc/httpd/conf.d/nagrestconf.conf
 sudo sed -i 's/#Auth/Auth/i'     /etc/httpd/conf.d/nagrestconf.conf</pre>
           <p>Restart Apache</p>
           <pre>sudo service httpd restart</pre>
-          <p>Ensure the nagios Query Handler Interface directory is created.</p>
-          <pre>mkdir /var/log/nagios/rw
-chown nagios:nagios /var/log/nagios/rw</pre>
 
           <h3>Test nagrestconf and nagios</h3>
           <p>The nagrestsconf and nagios web interfaces should be accessible now.<p>

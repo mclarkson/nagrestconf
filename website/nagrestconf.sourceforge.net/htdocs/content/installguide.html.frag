@@ -19,6 +19,8 @@
               <dd><a href="installguides/redhat5.php">Install Guide</a><br /><small>&nbsp;</small></dd>
             <dt>Redhat 6 and Centos 6</dt>
               <dd><a href="installguides/redhat6.php">Install Guide</a><br /><small>&nbsp;</small></dd>
+            <dt>Centos 7</dt>
+              <dd><a href="installguides/centos7.php">Install Guide</a><br /><small>&nbsp;</small></dd>
             <dt>Fedora</dt>
               <dd><a href="installguides/fedora.php">Install Guide</a><br /><small>&nbsp;</small></dd>
             <dt>Synology Diskstation</dt>
