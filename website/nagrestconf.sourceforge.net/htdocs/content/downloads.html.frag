@@ -45,35 +45,35 @@
           </tr>
           <tr>
           <td>Redhat 5</td>
-          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Redhat 5/">Latest Redhat 5 packages</a></td>
+          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Redhat/Redhat 5/">Latest Redhat 5 packages</a></td>
           <td>1.173</td>
           <td><a href="/installguides/redhat5.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
           <tr>
           <td>Centos 5</td>
-          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Centos 5/">Latest Centos 5 packages</a></td>
+          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Centos/Centos 5/">Latest Centos 5 packages</a></td>
           <td>1.173</td>
           <td><a href="/installguides/redhat5.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
           <tr>
           <td>Redhat 6</td>
-          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Redhat 6/">Latest Redhat 6 packages</a></td>
+          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Redhat/Redhat 6/">Latest Redhat 6 packages</a></td>
           <td>1.174.1</td>
           <td><a href="/installguides/redhat6.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
           <tr>
           <td>Centos 6</td>
-          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Centos 6/">Latest Centos 6 packages</a></td>
+          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Centos/Centos 6/">Latest Centos 6 packages</a></td>
           <td>1.174.4</td>
           <td><a href="/installguides/redhat6.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
           <tr>
           <td>Centos 7</td>
-          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Centos 7/">Latest Centos 7 packages</a></td>
+          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Centos/Centos 7/">Latest Centos 7 packages</a></td>
           <td>1.174.4</td>
           <td><a href="/installguides/centos7.php">Install Guide</a></td>
           <!--<td></td>-->
@@ -88,14 +88,14 @@
           <tr>
           <td>Synology Diskstation - x86</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Synology/x86/">Latest Synology x86 packages</a></td>
-          <td>0.14</td>
+          <td>0.14.1</td>
           <td><a href="/installguides/synology.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
           <tr><!-- class="danger">-->
           <td>Synology Diskstation - arm</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Synology/arm/">Latest Synology arm packages</a></td>
-          <td>0.14</td>
+          <td>0.14.1</td>
           <td><a href="/installguides/synology.php">Install Guide</a></td>
           <!--<td>Please report if this works for you.</td>-->
           </tr>
