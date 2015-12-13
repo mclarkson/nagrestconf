@@ -84,10 +84,10 @@ sudo service nagios3 restart</pre>
           <h3>Test nagrestconf and nagios</h3>
           <p>The nagrestsconf and nagios web interfaces should be accessible now.<p>
           <p>Log into nagrestconf with user 'nagrestconfadmin', and the password that was set above.</p>
-          <p>The nagrestconf interface will look like the following screen shot.</p>
+          <p>The nagrestconf interface, at 'http://server/nagrestconf', will look like the following screen shot.</p>
           <a href="#img1" onClick="$('#img1').css('display','block'); return false;"><img src="/images/redhat1.png" class="img-thumbnail"></a></p><a id="img1" class="a-imgshow" onClick="$('#img1').css('display','none'); return false;"><img src="/images/redhat1.png" class="imgshow"></a>
           <p>Log into nagios with user 'nagiosadmin', and the password that was set above.</p>
-          <p>The nagios interface will look like the following screen shot.</p>
+          <p>The nagios interface, at 'http://server/nagios3', will look like the following screen shot.</p>
           <a href="#img2" onClick="$('#img2').css('display','block'); return false;"><img src="/images/redhat2.png" class="img-thumbnail"></a></p><a id="img2" class="a-imgshow" onClick="$('#img2').css('display','none'); return false;"><img src="/images/redhat2.png" class="imgshow"></a>
 
           <h3>Create an initial configuration</h3>
