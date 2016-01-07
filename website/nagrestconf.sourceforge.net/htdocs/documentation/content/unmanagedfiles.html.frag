@@ -34,7 +34,6 @@
         </ul>
 
         <p>The unmanaged files generally change infrequently and it is unlikely that they
-        will be added to the REST interface, although a configuration plugin tool for these
-        files is planned.</p>
+        will be added to the REST interface.</p>
 
         <!-- /Content -->
