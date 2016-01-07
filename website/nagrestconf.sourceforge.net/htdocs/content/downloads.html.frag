@@ -25,7 +25,7 @@
           </tr>
           <td>Debian Jessie</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Debian/">Latest Debian packages</a></td>
-          <td>1.174.1</td>
+          <td>1.174.4</td>
           <td><a href="/installguides/debian.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
