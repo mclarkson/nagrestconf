@@ -659,7 +659,8 @@ create_host_files()
             echo "       display_name $displayname"
         }
         [[ -n $parents ]] && {
-            Echo "       parents $parents"
+            t="${parents// /,}"
+            Echo "       parents $t"
         }
         [[ -n $command ]] && {
             Echo "       check_command $command"
