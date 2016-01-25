@@ -16,7 +16,7 @@
     # ------------------------------------------------------------------------
 
     define( "SCRIPTNAME", "index.php" );
-    define( "VERSION", "v1.174.4" );
+    define( "VERSION", "v1.174.5" );
     define( "LIBDIR", "/usr/share/nagrestconf/htdocs/nagrestconf/" );
 
     # ------------------------------------------------------------------------
@@ -6685,6 +6685,7 @@
 
         # Not so nice, disable Enter key.
         print "<script>".
+              "if( ! window.sopen ) window.sopen = [];".
               "$(document).ready(function() {".
               "  $(document).keydown(function(event){".
               "      if(event.keyCode == 13) {".
@@ -6818,10 +6819,16 @@
             print " $('#hid$x').html(data);";
             #print ' alert(data);';
             print " }); ";
+            print " window.sopen[$x-1]=window.sopen[$x-1]==1?0:1;";
             print " $('#hid$x').toggleClass(\"hidden\"); });";
             print "$('#$x').bind('mouseenter mouseleave', function(event){";
             print " $(this).toggleClass(\"linkover\");});";
         }
+        print "window.numsitems=".($num-1).";";
+        print " for(var i=0; i<window.numsitems; i++) {";
+        print "  if( window.sopen[i]==1 ) {";
+        print "   $('#'+(i+1)).trigger('click');";
+        print "   window.sopen[i]=1; } }";
         print "</script>";
     }
 
@@ -8421,6 +8428,7 @@
 
         # Not so nice, disable Enter key.
         print "<script>".
+              " if( ! window.hopen ) window.hopen = [];".
               "$(document).ready(function() {".
         #      "  $(document).keydown(function(event){".
         #      "      if(event.keyCode == 13) {".
@@ -8758,10 +8766,16 @@
             print " $('#hid$x').html(data);";
             #print ' alert(data);';
             print " }); ";
+            print " window.hopen[$x-1]=window.hopen[$x-1]==1?0:1;";
             print " $('#hid$x').toggleClass(\"hidden\"); });";
             print "$('#$x').bind('mouseenter mouseleave', function(event){";
             print " $(this).toggleClass(\"linkover\");});";
         }
+        print "window.numhitems=".($num-1).";";
+        print " for(var i=0; i<window.numhitems; i++) {";
+        print "  if( window.hopen[i]==1 ) {";
+        print "   $('#'+(i+1)).trigger('click');";
+        print "   window.hopen[i]=1; } }";
         print "</script>";
     }
 
