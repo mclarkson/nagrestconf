@@ -88,5 +88,10 @@
               <dd><a href="http://blogger.smorg.co.uk/2015/09/here-are-all-gd2-file-names-that-can-be.html">Image file names for the Nagios Status Map.</a><br /><small>&nbsp;</small></dd>
           </dl>
 
+          <h3>On the Web</h3>
+          <dl class="dl-horizontal" style="padding-top: 14px">
+            <dt>Synagios (Danish)</dt>
+              <dd><a href="https://www.youtube.com/watch?v=rK_6VZ7c-UY">Sådan installeres Nagios overvågning på Synology NAS [ synoguides.dk ].</a><br /><small>&nbsp;</small></dd>
+          </dl>
         </div>
       </div>
