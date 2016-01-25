@@ -100,6 +100,76 @@ nrcq http://localhost/rest delete/hosts -d "name:.*" -d "svcdesc:.*"
               </li>
 
             </ol>
+            <li><p>How to rename things.</p></li>
+            <ol>
+
+              <li><a href="#_">Rename a hostgroup.</a>
+                <div style="display: none">
+                  <!-- LIST CONTENT -->
+                  <p>It is not possible to rename key fields once they have been created. In general the user must copy/clone the item to a different name.</p>
+                  <p>To change the name of a hostgroup, say 'app' to 'legapp' using the GUI, the following steps would need to be followed:</p>
+                  <ol>
+                      <li>In the Groups Tab - Create a new 'legapp' hostgroup.</li>
+                      <li>In the Hosts Tab - Filter by 'app' hostgroup.</li>
+                      <li>Click Bulk Tools to open it. Bulk Tools will operate on all items shown.</li>
+                      <li>'Field to change' - choose 'hostgroup'</li>
+                      <li>'Change action' - choose 'replace'</li>
+                      <li>'Text' - type 'legapp', then Apply Changes</li>
+                  </ol>
+                  <p>The 'app' hostgroup can now be deleted. If any items are still left in the app group then <i>nagrestconf</i> won't allow it to be deleted.</p>
+                  <p>The above procedure can be completed using a shell script and <i>nrcq</i> for much finer control. So, for example, below is a script named 'change_hostgroup.sh' that will change any hostgroup name. The text 'NAGIOSHOST' should be changed to the name of your Nagios host, where nagrestconf `lives'.</p>
+                  <pre>
+#!/bin/bash
+
+orig_hgname=$1
+new_hgname=$2
+description=$3
+URL="http://NAGIOSHOST/rest"
+
+[[ -z $1 || -z $2 || -z $3 ]] && {
+  echo "Change a hostgroup name."
+  echo "Usage: `basename $0` old_name new_name description"
+  exit 1
+}
+
+# Make sure orig_hgname exists
+h=`nrcq $URL show/hostgroups -f "name:\b$orig_hgname\b"`
+[[ -z $h ]] && {
+  echo "Hostgroup, '$orig_hgname', does not exist."
+  exit 1
+}
+
+# Make sure new_hgname does not exist
+h=`nrcq $URL show/hostgroups -f "name:\b$new_hgname\b"`
+[[ -n $h ]] && {
+  echo "Hostgroup, '$new_hgname', exists!"
+  exit 1
+}
+
+# Add the host group
+nrcq $URL add/hostgroups -d "name:$new_hgname" -d "alias:$description"
+
+# Change existing hosts that have old_name in the hostgroup
+
+hosts=`nrcq $URL show/hosts -f hostgroup:legapp | sed -n 's/^ *name://p'`
+
+for host in $hosts; do
+  echo nrcq $URL modify/hosts -d "name:$host" -d "hostgroup:$new_hgname"
+  nrcq $URL modify/hosts -d "name:$host" -d "hostgroup:$new_hgname"
+done
+
+# Delete the old hostgroup
+nrcq $URL delete/hostgroups -d "name:$orig_hgname"
+</pre>
+                  <p>The script could be used to change 'app' to 'legapp', by typing:</p>
+                  <pre>
+bash change_hostgroup.sh app legapp "Legacy App Servers"
+</pre>
+                  <!-- LIST CONTENT -->
+                </div>
+              </li>
+
+            </ol>
 
 
           </ul>
