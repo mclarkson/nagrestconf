@@ -106,8 +106,8 @@ nrcq http://localhost/rest delete/hosts -d "name:.*" -d "svcdesc:.*"
               <li><a href="#_">Rename a hostgroup.</a>
                 <div style="display: none">
                   <!-- LIST CONTENT -->
-                  <p>It is not possible to rename key fields once they have been created. In general the user must copy/clone the item to a different name.</p>
-                  <p>To change the name of a hostgroup, say 'app' to 'legapp' using the GUI, the following steps would need to be followed:</p>
+                  <p>It is not possible to rename key fields once they have been created. In general the user must copy/clone the item to a different name, then delete the original item.</p>
+                  <p>To change the name of a hostgroup, say from 'app' to 'legapp' using the GUI, the following steps would need to be followed:</p>
                   <ol>
                       <li>In the Groups Tab - Create a new 'legapp' hostgroup.</li>
                       <li>In the Hosts Tab - Filter by 'app' hostgroup.</li>
@@ -117,14 +117,15 @@ nrcq http://localhost/rest delete/hosts -d "name:.*" -d "svcdesc:.*"
                       <li>'Text' - type 'legapp', then Apply Changes</li>
                   </ol>
                   <p>The 'app' hostgroup can now be deleted. If any items are still left in the app group then <i>nagrestconf</i> won't allow it to be deleted.</p>
-                  <p>The above procedure can be completed using a shell script and <i>nrcq</i> for much finer control. So, for example, below is a script named 'change_hostgroup.sh' that will change any hostgroup name. The text 'NAGIOSHOST' should be changed to the name of your Nagios host, where nagrestconf `lives'.</p>
+                  <p>The above procedure can be completed using a shell script and <i>nrcq</i>, which will allow for much finer control. So, for example, below is a script named 'change_hostgroup.sh' that will change any hostgroup name. The text 'NAGIOSHOST' should be changed to the name of your Nagios host, where nagrestconf `lives'.</p>
                   <pre>
 #!/bin/bash
+
+URL="http://NAGIOSHOST/rest"
 
 orig_hgname=$1
 new_hgname=$2
 description=$3
-URL="http://NAGIOSHOST/rest"
 
 [[ -z $1 || -z $2 || -z $3 ]] && {
   echo "Change a hostgroup name."
