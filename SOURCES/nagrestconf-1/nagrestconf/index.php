@@ -9455,9 +9455,12 @@
         print '</p>';
         # Alias
         print '<p>';
+        $newalias = urldecode( $alias );
+        $newalias = strtr( $newalias, array("\""=>"\\\"","\\"=>"\\\\") );
         print '<label for="ealias">Alias *</label>';
         print '<input class="field" type="text" id="ealias" name="alias"';
-        print ' value="'.$alias.'" required="required" />';
+        print ' value="'.$newalias.'" required="required" />';
+        print '<script>$("#ealias").val("'.$newalias.'");</script>';
         print '</p>';
         # IP Address
         print '<p>';
@@ -9525,7 +9528,7 @@
         ###:TAB2
         print '</div>';
         print '<div id="fragment-2">';
-        # Max check attempts
+        # Check Command
         print '<p>';
         $newcmd = urldecode( $command );
         $newcmd = strtr( $newcmd, array("\""=>"\\\"","\\"=>"\\\\") );
@@ -9741,6 +9744,12 @@
             else
                 $query_str["activechecks"] = "0";
 
+            if( isset( $query_str["alias"] ) ) {
+                $query_str["alias"] = strtr( $query_str["alias"], 
+                                               array( '"' => '\"',) );
+                $query_str["alias"] = urlencode($query_str["alias"]);
+            }
+
             if( isset( $query_str["command"] ) ) {
                 $query_str["command"] = strtr( $query_str["command"], 
                                                array( '"' => '\"',) );
@@ -9797,6 +9806,12 @@
             $query_str["notes"] = "-";
         if( empty( $query_str["parents"] ) )
             $query_str["parents"] = "-";
+
+        if( isset( $query_str["alias"] ) ) {
+            $query_str["alias"] = strtr( $query_str["alias"], 
+                                           array( '"' => '\"',) );
+            $query_str["alias"] = urlencode($query_str["alias"]);
+        }
 
         if( isset( $query_str["command"] ) ) {
             $query_str["command"] = strtr( $query_str["command"], 
@@ -9882,6 +9897,11 @@
         parse_str( $_SERVER['QUERY_STRING'], $query_str );
         unset( $query_str["newhost"] );
         $query_str["folder"] = FOLDER;
+        if( isset( $query_str["alias"] ) ) {
+            $query_str["alias"] = strtr( $query_str["alias"], 
+                                           array( '"' => '\"',) );
+            $query_str["alias"] = urlencode($query_str["alias"]);
+        }
         if( isset( $query_str["command"] ) ) {
             $query_str["command"] = strtr( $query_str["command"], 
                                            array( '"' => '\"',) );

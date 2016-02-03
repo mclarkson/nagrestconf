@@ -627,6 +627,7 @@ create_host_files()
         echo "define host {"
         Echo "       use             $hosttempl"
         echo "       host_name       $hostname"
+        alias=`urldecode "$alias"`
         echo "       alias           $alias"
         echo "       address         $ipaddr"
         [[ -n $shostgroups ]] && {
@@ -663,6 +664,7 @@ create_host_files()
             Echo "       parents $t"
         }
         [[ -n $command ]] && {
+            command=`urldecode "$command"`
             Echo "       check_command $command"
         }
         [[ -n $initialstate ]] && {

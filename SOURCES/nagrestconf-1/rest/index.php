@@ -2091,7 +2091,7 @@ class WriteCmd
         extract( $this->jsonadata, EXTR_SKIP );
 
         $this->newcmdline .= $name . ",";
-        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= urlencode($alias) . ",";
         $this->newcmdline .= $ipaddress . ",";
         $this->newcmdline .= $template . ",";
         $this->newcmdline .= $hostgroup . ",";
@@ -2711,7 +2711,7 @@ class WriteCmd
         extract( $this->jsonadata, EXTR_SKIP );
 
         $this->newcmdline .= $name . ",";
-        $this->newcmdline .= $alias . ",";
+        $this->newcmdline .= urlencode($alias) . ",";
         $this->newcmdline .= $ipaddress . ",";
         $this->newcmdline .= $template . ",";
         $this->newcmdline .= $hostgroup . ",";
