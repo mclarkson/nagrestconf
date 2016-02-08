@@ -6,6 +6,27 @@
         <!-- Content -->
         <div class="row" style="padding-left:10px;padding-right:20px;">
           <h1>News</h1>
+          <p><strong>8 February 2016 - Software updates.</strong></p>
+            <blockquote>
+              Nagrestconf version 1.174.5 released. Notable changes:
+              <ul>
+                <li>Allow special characters in Host Alias field. Closes #55.</li>
+                <li>GUI usability enhancements.</li>
+                <li>Multiple parents fix. Fixes issue #53.</li>
+              </ul>
+              Nrcq version 0.1.2 released:
+              <ul>
+                <li>Added extra encoding for Host's Alias field.</li>
+              </ul>
+              This version of nrcq should be used with nagrestconf 1.174.5.
+            </blockquote>
+          <p><strong>9 November 2015 - Software updates.</strong></p>
+            <blockquote>
+              Nagrestconf version 1.174.4 released with fix for Centos 6. Notable changes:
+              <ul>
+                <li>PHP 5.3.3 Centos 6 - GUI only shows error message #49.</li>
+              </ul>
+            </blockquote>
           <p><strong>30 October 2015 - Software updates.</strong></p>
             <blockquote>
               Nagrestconf version 1.174.3 released. Notable changes:
