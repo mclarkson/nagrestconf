@@ -229,7 +229,7 @@
         print '<div id="qfilter">';
         print "<p style='margin-bottom:10px'>Filter by Name:<br>".
               "<input class='filtermain' id='hregex' name='hregex' type='text'".
-              " style='width:100px;'".
+              " style='width:95px;'".
               " value='".$hfilter."'".
               " />".
               "</p>";
