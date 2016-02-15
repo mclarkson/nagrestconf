@@ -235,7 +235,7 @@
               "</p>";
         print "<p style='margin-bottom:10px'>Filter by Service:<br>".
               "<input class='filtermain' id='sregex' name='sregex' type='text'".
-              " style='width:100px;'".
+              " style='width:95px;'".
               " value='".$sfilter."'".
               " /><span class='btn ui-corner-all' ".
               " onClick='".
