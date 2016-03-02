@@ -8543,8 +8543,8 @@
         print '</div>';
         print '<div id="qfilter">';
         print "<p style='margin-bottom:10px'>Filter by Name:<br>".
-              "<input class='filtermain' id='hregex' name='hregex' type='text'".
-              " style='width:95px;'".
+              "<input class='fieldgrey' id='hregex' name='hregex' type='text'".
+              " style='width:100px;'".
               " value='".$hfilter."'".
               " /><span class='btn ui-corner-all' ".
               " onClick='".
@@ -8553,7 +8553,7 @@
               "'>go</span>".
               "</p>";
         print "<script>";
-        print "$('.filtermain').keypress(function (e) {";
+        print "$('.fieldgrey').keypress(function (e) {";
         print "  if (e.which == 13) {";
         print "    var a=encodeURIComponent($(\"#sregex\").val());".
               "    var b=encodeURIComponent($(\"#hregex\").val());".
