@@ -279,13 +279,16 @@ EnD
     cat >config <<EnD
 {
     ".url": {
-        "com.Synagios.Synagios": {
-            "type": "legacy",
-            "allUsers": false,
+        "uk.co.smorg.synagios": {
             "title": "Synagios",
-            "desc": "Synagios - monitoring with your NAS.",
+            "desc": "Synagios monitoring",
             "icon": "images/meerkat_{0}.png",
-            "url": "3rdparty/Synagios/redirect.cgi"
+            "type": "url",
+            "protocol": "http",
+            "port": "8888",
+            "url": "/nagrestconf",
+            "allUsers": false,
+            "grantPrivilege": "local"
         }
     }
 }

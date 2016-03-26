@@ -52,4 +52,36 @@ else
     run "htpasswd -bc /etc/nagios3/nagrestconf.users nagrestconfadmin \"$NAGRESTCONF_PASSWORD\""
 fi
 
+chown www-data:www-data /etc/nagios3/objects/local
+chown -R www-data:www-data /etc/nagios3/objects/local/setup
+chown -R www-data:www-data /etc/nagios3/objects/local/setup.known_good
+chown www-data:root /run/lock/apache2
+chown Debian-exim:Debian-exim /run/exim4
+chown nagios:nagios /run/nagios3
+chown www-data:www-data /usr/share/nagrestconf/htdocs/nagrestconf/download
+chown -R www-data:www-data /usr/share/nagrestconf/htdocs/nagrestconf/upload
+chown -R man:root /var/cache/man
+chown www-data:www-data /var/cache/apache2/mod_cache_disk
+chown nagios:www-data /var/cache/nagios3
+chown nagios:nagios /var/lib/nagios3
+chown nagios:nagios /var/lib/nagios3/spool
+chown nagios:nagios /var/lib/nagios3/spool/checkresults
+chown nagios:www-data /var/lib/nagios3/rw
+chown nagios:nagios /var/lib/nagios
+chown nagios:www-data /var/lib/pnp4nagios
+chown -R nagios:nagios /var/lib/pnp4nagios/perfdata
+chown -R Debian-exim:adm /var/log/exim4
+chown nagios:adm /var/log/nagios3
+chown -R nagios:adm /var/log/nagios3/archives
+chown nagios:www-data /var/log/pnp4nagios
+chown nagios:nagios /var/log/pnp4nagios/stats
+chown Debian-exim:Debian-exim /var/spool/exim4
+chown Debian-exim:Debian-exim /var/spool/exim4/db
+chown Debian-exim:Debian-exim /var/spool/exim4/input
+chown Debian-exim:Debian-exim /var/spool/exim4/msglog
+chown nagios:nagios /var/spool/pnp4nagios
+chown nagios:nagios /var/spool/pnp4nagios/npcd
+chown nagios:nagios /var/spool/pnp4nagios/nagios
+chown www-data:www-data /var/tmp/nagctl.output.tmp
+
 exit 0
