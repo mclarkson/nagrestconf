@@ -1,6 +1,6 @@
 package="Synagios"
-dsmappname="com.Synagios.Synagios"
-version="0.14"
+dsmappname="uk.co.smorg.synagios"
+version="0.14.2"
 description="Synagios is a complete monitoring solution for your network that includes three core components: monitoring with Nagios, configuration with Nagrestconf, and graphing with Pnp4Nagios."
 support_url="http://nagrestconf.smorg.co.uk/support.php"
 maintainer="Mark Clarkson"
@@ -13,7 +13,7 @@ report_url="http://nagrestconf.smorg.co.uk/support.php"
 install_reboot="no"
 startable="yes"
 extractsize="435630060"
-checksum="0e2294eb5c03cd5b0acc6baf30ac0807"
+checksum="7d27347196d3513143865c69ec8e80a1"
 distributor_url="http://nagrestconf.smorg.co.uk/documentation/gettingstartedguid.php"
 package_icon="iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAABmJLR0QA/wD/AP+g
 vaeTAAAACXBIWXMAAA3UAAAN1AHvkboVAAAAB3RJTUUH3gEPCTEXy7xX4wAAHflJ

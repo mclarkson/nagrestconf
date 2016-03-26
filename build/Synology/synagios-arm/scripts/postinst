@@ -1,6 +1,11 @@
 #!/bin/sh
 NAGCHROOT="$SYNOPKG_PKGDEST/nagios-chroot"
 
+run_nofail()
+{
+    echo "$1" | chroot $NAGCHROOT
+}
+
 run()
 {
     echo "$1" | chroot $NAGCHROOT
@@ -51,5 +56,37 @@ if [ "${NAGRESTCONF_PASSWORD}x" = "x" ]; then
 else
     run "htpasswd -bc /etc/nagios3/nagrestconf.users nagrestconfadmin \"$NAGRESTCONF_PASSWORD\""
 fi
+
+run_nofail "chown www-data:www-data /etc/nagios3/objects/local"
+run_nofail "chown -R www-data:www-data /etc/nagios3/objects/local/setup"
+run_nofail "chown -R www-data:www-data /etc/nagios3/objects/local/setup.known_good"
+run_nofail "chown www-data:root /run/lock/apache2"
+run_nofail "chown Debian-exim:Debian-exim /run/exim4"
+run_nofail "chown nagios:nagios /run/nagios3"
+run_nofail "chown www-data:www-data /usr/share/nagrestconf/htdocs/nagrestconf/download"
+run_nofail "chown -R www-data:www-data /usr/share/nagrestconf/htdocs/nagrestconf/upload"
+run_nofail "chown -R man:root /var/cache/man"
+run_nofail "chown www-data:www-data /var/cache/apache2/mod_cache_disk"
+run_nofail "chown nagios:www-data /var/cache/nagios3"
+run_nofail "chown nagios:nagios /var/lib/nagios3"
+run_nofail "chown nagios:nagios /var/lib/nagios3/spool"
+run_nofail "chown nagios:nagios /var/lib/nagios3/spool/checkresults"
+run_nofail "chown nagios:www-data /var/lib/nagios3/rw"
+run_nofail "chown nagios:nagios /var/lib/nagios"
+run_nofail "chown nagios:www-data /var/lib/pnp4nagios"
+run_nofail "chown -R nagios:nagios /var/lib/pnp4nagios/perfdata"
+run_nofail "chown -R Debian-exim:adm /var/log/exim4"
+run_nofail "chown nagios:adm /var/log/nagios3"
+run_nofail "chown -R nagios:adm /var/log/nagios3/archives"
+run_nofail "chown nagios:www-data /var/log/pnp4nagios"
+run_nofail "chown nagios:nagios /var/log/pnp4nagios/stats"
+run_nofail "chown Debian-exim:Debian-exim /var/spool/exim4"
+run_nofail "chown Debian-exim:Debian-exim /var/spool/exim4/db"
+run_nofail "chown Debian-exim:Debian-exim /var/spool/exim4/input"
+run_nofail "chown Debian-exim:Debian-exim /var/spool/exim4/msglog"
+run_nofail "chown nagios:nagios /var/spool/pnp4nagios"
+run_nofail "chown nagios:nagios /var/spool/pnp4nagios/npcd"
+run_nofail "chown nagios:nagios /var/spool/pnp4nagios/nagios"
+run_nofail "chown www-data:www-data /var/tmp/nagctl.output.tmp"
 
 exit 0
