@@ -6,6 +6,14 @@
         <!-- Content -->
         <div class="row" style="padding-left:10px;padding-right:20px;">
           <h1>News</h1>
+          <p><strong>26 March 2016 - Software updates.</strong></p>
+            <blockquote>
+              Synagios version 0.14.2 released. Notable changes:
+              <ul>
+                <li>Fixes for DSM 6</li>
+                <li>Updated to Nagrestconf 1.174.5.</li>
+              </ul>
+            </blockquote>
           <p><strong>8 February 2016 - Software updates.</strong></p>
             <blockquote>
               Nagrestconf version 1.174.5 released. Notable changes:
