@@ -88,14 +88,14 @@
           <tr>
           <td>Synology Diskstation - x86</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Synology/x86/">Latest Synology x86 packages</a></td>
-          <td>0.14.1</td>
+          <td>0.14.2</td>
           <td><a href="/installguides/synology.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
           <tr><!-- class="danger">-->
           <td>Synology Diskstation - arm</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Synology/arm/">Latest Synology arm packages</a></td>
-          <td>0.14.1</td>
+          <td>0.14.2</td>
           <td><a href="/installguides/synology.php">Install Guide</a></td>
           <!--<td>Please report if this works for you.</td>-->
           </tr>
