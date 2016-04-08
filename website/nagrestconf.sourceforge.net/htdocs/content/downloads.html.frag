@@ -72,9 +72,9 @@
           <!--<td></td>-->
           </tr>
           <tr>
-          <td>Centos 7</td>
+          <td>Centos 7 (+ Nagios 4)</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Centos/Centos 7/">Latest Centos 7 packages</a></td>
-          <td>1.174.4</td>
+          <td>1.174.5</td>
           <td><a href="/installguides/centos7.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
