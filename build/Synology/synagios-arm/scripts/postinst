@@ -88,5 +88,6 @@ run_nofail "chown nagios:nagios /var/spool/pnp4nagios"
 run_nofail "chown nagios:nagios /var/spool/pnp4nagios/npcd"
 run_nofail "chown nagios:nagios /var/spool/pnp4nagios/nagios"
 run_nofail "chown www-data:www-data /var/tmp/nagctl.output.tmp"
+run_nofail "chown root:mail /var/mail"
 
 exit 0
