@@ -47,9 +47,9 @@ start() {
 
     # Add the hostname to /etc/hosts
     h=`cat /proc/sys/kernel/hostname`
-    if ! grep -qsw "$h" /etc/hosts; then
-        sed -i '/^127.0.0.2 /d' /etc/hosts
-        echo "127.0.0.2 $h" >>/etc/hosts
+    if ! grep -qsw "$h" etc/hosts; then
+        chroot . sed -i '/^127.0.0.2 /d' /etc/hosts
+        chroot . bash -c "echo \"127.0.0.2 $h\" >>/etc/hosts"
     fi
 
     echo "All services started succesfully." >> $SYNOPKG_TEMP_LOGFILE

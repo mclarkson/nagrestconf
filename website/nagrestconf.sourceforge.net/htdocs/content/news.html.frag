@@ -6,6 +6,23 @@
         <!-- Content -->
         <div class="row" style="padding-left:10px;padding-right:20px;">
           <h1>News</h1>
+          <p><strong>14 April 2016 - Software updates.</strong></p>
+            <blockquote>
+              Synagios version 0.14.3 released. Notable changes:
+              <ul>
+                <li>More fixes for DSM 6</li>
+                <ul>
+                  <li>New mailsender binary<br />- Reported by Thomas Rosin</li>
+                  <ul>
+                    <li>Statically built binary that runs on DSM6 x86</li>
+                    <li>Now accepts lowercase 'data' SMTP command</li>
+                  </ul>
+                  <li>Adds system host name to chroot's /etc/hosts file.<br />- Reported by Thomas Rosin</li>
+                  <li>Log shows the processes running inside the chroot again.</li>
+                  <li>Fix ownership details for /var/mail.<br />- Reported by Thomas Rosin</li>
+                </ul>
+              </ul>
+            </blockquote>
           <p><strong>26 March 2016 - Software updates.</strong></p>
             <blockquote>
               Synagios version 0.14.2 released. Notable changes:
