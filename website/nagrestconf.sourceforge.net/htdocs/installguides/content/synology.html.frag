@@ -22,7 +22,7 @@
             <li>[optional] Restore the sample backup configuration.</li>
           </ul>
           <h3>Identify your Diskstation architecture.</h3>
-          <p>Find your Diskstation in <a href="http://forum.synology.com/wiki/index.php/What_kind_of_CPU_does_my_NAS_have">this list</a>, and look for the words, 'x86' or 'arm', next to the model of your diskstation to identify the CPU architecture.
+          <p>Find your Diskstation in <a href="https://web.archive.org/web/20160323065142/http://forum.synology.com/wiki/index.php/What_kind_of_CPU_does_my_NAS_have">this archived list</a>, and look for the words, 'x86' or 'arm', next to the model of your diskstation to identify the CPU architecture. If you can't find your Synology device in the list then try both packages - the one that doesn't work will refuse to install.</p>
           <h3>Download the '.spk' file from sourceforge.</h3>
           <p>Get the correct '.spk' file, according to your Diskstation CPU architecture, from the <a href="/downloads.php">download page</a>.
           <h3>Log into the Diskstation GUI.</h3>
