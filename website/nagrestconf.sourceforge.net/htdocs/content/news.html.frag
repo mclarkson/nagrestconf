@@ -4,8 +4,19 @@
           </p>
 
         <!-- Content -->
+
         <div class="row" style="padding-left:10px;padding-right:20px;">
           <h1>News</h1>
+          <p><strong>13 June 2016 - Software updates.</strong></p>
+            <blockquote>
+              Synagios version 0.14.4 released for ARM. Notable changes:
+              <ul>
+                <li>Added new Synology model DS216j</li>
+                <ul>
+                  <li>Reported by Thomas Wittmann.</li>
+                </ul>
+              </ul>
+            </blockquote>
           <p><strong>14 April 2016 - Software updates.</strong></p>
             <blockquote>
               Synagios version 0.14.3 released. Notable changes:
