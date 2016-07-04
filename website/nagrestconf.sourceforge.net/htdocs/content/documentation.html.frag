@@ -93,7 +93,7 @@
             <dt>Synagios (Danish)</dt>
               <dd><a href="https://www.youtube.com/watch?v=rK_6VZ7c-UY">Sådan installeres Nagios overvågning på Synology NAS [ synoguides.dk ].</a><br /><small>&nbsp;</small></dd>
             <dt>Synagios Powerline</dt>
-              <dd><a href="https://groups.google.com/forum/#!topic/synagios-users/jm7z71CKtSU">Monitoring Devolo DLAN with Synagios (Thomas Wittman).</a><br /><small>&nbsp;</small></dd>
+              <dd><a href="https://groups.google.com/forum/#!topic/synagios-users/jm7z71CKtSU">Monitoring Devolo DLAN with Synagios (Thomas Wittmann).</a><br /><small>&nbsp;</small></dd>
           </dl>
         </div>
       </div>
