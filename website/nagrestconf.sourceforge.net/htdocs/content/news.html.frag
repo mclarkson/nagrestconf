@@ -7,6 +7,16 @@
 
         <div class="row" style="padding-left:10px;padding-right:20px;">
           <h1>News</h1>
+          <p><strong>06 September 2016 - Software updates.</strong></p>
+            <blockquote>
+              Synagios version 0.14.5 released for x86. Notable changes:
+              <ul>
+                <li>Added new Synology model DS416play</li>
+                <ul>
+                  <li>Reported by Thomas Larsson.</li>
+                </ul>
+              </ul>
+            </blockquote>
           <p><strong>13 June 2016 - Software updates.</strong></p>
             <blockquote>
               Synagios version 0.14.4 released for ARM. Notable changes:
