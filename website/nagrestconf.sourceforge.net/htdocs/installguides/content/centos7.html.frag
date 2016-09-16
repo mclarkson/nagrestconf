@@ -25,14 +25,17 @@
 
           <h3>Install using the RPM packages.</h3>
           <p>Get the RPM packages for Centos 7 from the <a href="/downloads.php">download page</a> then copy them to the server.</p>
+          <p>Alternatively, log onto the server and use wget to get the files directly. Copy and paste the following one-liner to download directly:<p>
+          <pre>for i in nagrestconf-1.174.6-1.noarch.rpm nagrestconf-backup-plugin-1.174.6-1.noarch.rpm nagrestconf-hosts-bulktools-plugin-1.174.6-1.noarch.rpm nagrestconf-services-bulktools-plugin-1.174.6-1.noarch.rpm nagrestconf-services-tab-plugin-1.174.6-1.noarch.rpm; do wget -O $i https://sourceforge.net/projects/nagrestconf/files/Centos/Centos%207/latest/$i/download; done</pre>
+
           <p>Open a terminal window or ssh session then add the  <a href="http://fedoraproject.org/wiki/EPEL">EPEL</a> repository to satisfy dependencies later on.</p>
           <pre>sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</pre>
           <p>Open a terminal window or ssh session then install nagrestconf and all plugins:</p>
-          <pre>sudo yum --nogpg install nagrestconf-1.174.4-1.noarch.rpm \
-    nagrestconf-services-tab-plugin-1.174.4-1.noarch.rpm \
-    nagrestconf-services-bulktools-plugin-1.174.4-1.noarch.rpm \
-    nagrestconf-hosts-bulktools-plugin-1.174.4-1.noarch.rpm \
-    nagrestconf-backup-plugin-1.174.4-1.noarch.rpm</pre>
+          <pre>sudo yum --nogpg install nagrestconf-1.174.6-1.noarch.rpm \
+    nagrestconf-services-tab-plugin-1.174.6-1.noarch.rpm \
+    nagrestconf-services-bulktools-plugin-1.174.6-1.noarch.rpm \
+    nagrestconf-hosts-bulktools-plugin-1.174.6-1.noarch.rpm \
+    nagrestconf-backup-plugin-1.174.6-1.noarch.rpm</pre>
 
           <h3>Configure the Operating System</h3>
           <p> <span class="text-danger">Ensure selinux is disabled</span>, instructions <a href="https://www.centos.org/docs/5/html/5.1/Deployment_Guide/sec-sel-enable-disable.html">here</a>.</p>
@@ -43,13 +46,15 @@ sudo slc_configure --folder=local</pre>
           <p>Supply a wrapper script for init.d since Centos 7 uses systemd. This is a temporary fix.</p>
           <pre>[[ ! -e /etc/init.d/nagios ]] &amp;&amp; { echo -e '#!/bin/bash\nsystemctl -o verbose $1 nagios.service' &gt;/etc/init.d/nagios; chmod +x /etc/init.d/nagios; }</pre>
           <p>To enable automatic restart, the cron job needs to be modified to enter the Apache namespace. This is a temporary fix.</p>
-          <pre># Delete the nagrestconf cron job
-sed -i '/restart_nagios/d' /var/spool/cron/root
+          <pre># Save list of cron jobs with the restarter filtered out
+crontab -l | grep -v "nsenter.*nagios_centos" >newcron
 
-# Add a new one
-cat &gt;&gt;/var/spool/cron/root &lt;&lt;EnD
-* * * * * /usr/bin/nsenter -t \$(ps ax -o ppid,comm,pid | sed -n "s/^ *1 *httpd *\([0-9]*\)/\1/p") -m /usr/bin/restart_nagios_centos7
-EnD
+# Add a new cron job to the list
+echo '* * * * * /usr/bin/nsenter -t $(ps ax -o ppid,comm,pid | sed -n "s/^ *1 *httpd *\([0-9]*\)/\1/p") -m /usr/bin/restart_nagios_centos7' &gt;&gt;newcron
+
+# Replace the crontab with newcron
+crontab newcron
+rm newcron
 
 # Create the restarter
 cat &gt;/usr/bin/restart_nagios_centos7 &lt;&lt;EnD
