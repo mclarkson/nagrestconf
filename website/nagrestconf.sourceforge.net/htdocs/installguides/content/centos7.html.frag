@@ -63,8 +63,6 @@ EnD
 
 # Ensure it's executable
 chmod +x /usr/bin/restart_nagios_centos7
-
-systemctl restart crond
 </pre>
 
           <p>Create a password for nagiosadmin - for GUI access to nagios.</p>
