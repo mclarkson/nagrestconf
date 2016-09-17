@@ -23,15 +23,17 @@
             <li>Add Plugins.</li>
           </ul>
 
+          <p class="text-danger">Run all the commands on this page as the root user, so, for example, run 'sudo su -' before running any other commands.</p>
+
           <h3>Install using the RPM packages.</h3>
           <p>Get the RPM packages for Centos 7 from the <a href="/downloads.php">download page</a> then copy them to the server.</p>
           <p>Alternatively, log onto the server and use wget to get the files directly. Copy and paste the following one-liner to download directly:<p>
           <pre>for i in nagrestconf-1.174.6-1.noarch.rpm nagrestconf-backup-plugin-1.174.6-1.noarch.rpm nagrestconf-hosts-bulktools-plugin-1.174.6-1.noarch.rpm nagrestconf-services-bulktools-plugin-1.174.6-1.noarch.rpm nagrestconf-services-tab-plugin-1.174.6-1.noarch.rpm; do wget -O $i https://sourceforge.net/projects/nagrestconf/files/Centos/Centos%207/latest/$i/download; done</pre>
 
           <p>Open a terminal window or ssh session then add the  <a href="http://fedoraproject.org/wiki/EPEL">EPEL</a> repository to satisfy dependencies later on.</p>
-          <pre>sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</pre>
+          <pre>rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</pre>
           <p>Open a terminal window or ssh session then install nagrestconf and all plugins:</p>
-          <pre>sudo yum --nogpg install nagrestconf-1.174.6-1.noarch.rpm \
+          <pre>yum --nogpg install nagrestconf-1.174.6-1.noarch.rpm \
     nagrestconf-services-tab-plugin-1.174.6-1.noarch.rpm \
     nagrestconf-services-bulktools-plugin-1.174.6-1.noarch.rpm \
     nagrestconf-hosts-bulktools-plugin-1.174.6-1.noarch.rpm \
@@ -40,8 +42,8 @@
           <h3>Configure the Operating System</h3>
           <p> <span class="text-danger">Ensure selinux is disabled</span>, instructions <a href="https://www.centos.org/docs/5/html/5.1/Deployment_Guide/sec-sel-enable-disable.html">here</a>.</p>
           <p>Use the two helper scripts 'nagrestconf_install' and 'slc_configure'.</p>
-          <pre>sudo nagrestconf_install -a
-sudo slc_configure --folder=local</pre>
+          <pre>nagrestconf_install -a
+slc_configure --folder=local</pre>
 
           <p>Supply a wrapper script for init.d since Centos 7 uses systemd. This is a temporary fix.</p>
           <pre>[[ ! -e /etc/init.d/nagios ]] &amp;&amp; { echo -e '#!/bin/bash\nsystemctl -o verbose $1 nagios.service' &gt;/etc/init.d/nagios; chmod +x /etc/init.d/nagios; }</pre>
@@ -66,28 +68,28 @@ chmod +x /usr/bin/restart_nagios_centos7
 </pre>
 
           <p>Create a password for nagiosadmin - for GUI access to nagios.</p>
-          <pre>sudo htpasswd -bc /etc/nagios/passwd nagiosadmin a_password</pre>
+          <pre>htpasswd -bc /etc/nagios/passwd nagiosadmin a_password</pre>
           <p>Create a password for nagrestconfadmin - for GUI access to nagrestconf.</p>
-          <pre>sudo htpasswd -bc /etc/nagios/nagrestconf.users nagrestconfadmin a_password</pre>
+          <pre>htpasswd -bc /etc/nagios/nagrestconf.users nagrestconfadmin a_password</pre>
           <p>Ensure the nagios Query Handler Interface directory is created.</p>
           <pre>mkdir /var/log/nagios/rw
 chown nagios:nagios /var/log/nagios/rw</pre>
           <p>Note that, by default, the nagrestconf GUI can only be reached from the host it was installed on, localhost. To enable connecting to nagrestconf from other hosts edit the Apache configuration.</p>
           <p>For example,</p>
           <p>Edit /etc/httpd/conf.d/nagios.conf:</p>
-          <pre>sudo cp /etc/httpd/conf.d/nagios.conf /tmp
-sudo sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/passwd#i' \
+          <pre>cp /etc/httpd/conf.d/nagios.conf /tmp
+sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/passwd#i' \
     /etc/httpd/conf.d/nagios.conf</pre>
           <p>Edit /etc/httpd/conf.d/nagrestconf.conf:</p>
-          <pre>sudo cp /etc/httpd/conf.d/nagrestconf.conf /tmp
-sudo sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/nagrestconf.users#i' \
+          <pre>cp /etc/httpd/conf.d/nagrestconf.conf /tmp
+sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/nagrestconf.users#i' \
     /etc/httpd/conf.d/nagrestconf.conf
-sudo sed -i 's/allow from 127.0.0.1/allow from all/i' \
+sed -i 's/allow from 127.0.0.1/allow from all/i' \
     /etc/httpd/conf.d/nagrestconf.conf
-sudo sed -i 's/#Require/Require/i'     /etc/httpd/conf.d/nagrestconf.conf
-sudo sed -i 's/#Auth/Auth/i'     /etc/httpd/conf.d/nagrestconf.conf</pre>
+sed -i 's/#Require/Require/i'     /etc/httpd/conf.d/nagrestconf.conf
+sed -i 's/#Auth/Auth/i'     /etc/httpd/conf.d/nagrestconf.conf</pre>
           <p>Restart Apache</p>
-          <pre>sudo service httpd restart</pre>
+          <pre>service httpd restart</pre>
 
           <h3>Test nagrestconf and nagios</h3>
           <p>The nagrestsconf and nagios web interfaces should be accessible now.<p>
@@ -114,7 +116,7 @@ sudo sed -i 's/#Auth/Auth/i'     /etc/httpd/conf.d/nagrestconf.conf</pre>
           trying to run the host and service checks.</p>
           <p>Install the plugins your distribution provides.</p>
           <p>Choose the required plugins or install them all as below.</p>
-          <pre>sudo yum install nagios-plugins-all nagios-plugins-nrpe</pre>
+          <pre>yum install nagios-plugins-all nagios-plugins-nrpe</pre>
 
           <p>That's it!</p>
 
