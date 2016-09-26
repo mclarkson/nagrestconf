@@ -1835,16 +1835,30 @@ create_timeperiods()
         Echo "       timeperiod_name   $name"
         echo "       alias             $alias"
         [[ -n $definition ]] && {
+            nl=""
             while read -d"," b
             do
-                printf "       %-17s ${b##*|}\n" "${b%%|*}"
+                if [[ $b != [0-9]* ]]; then
+                    printf "$nl       %-17s ${b##*|}" "${b%%|*}"
+                else
+                    printf ",$b"
+                fi
+                nl="\n"
             done <<<"$definition,"
+            echo
         }
         [[ -n $exception ]] && {
+            nl=""
             while read -d"," b
             do
-                printf "       %-17s ${b##*|}\n" "${b%%|*}"
+                if [[ $b != [0-9]* ]]; then
+                    printf "$nl       %-17s ${b##*|}" "${b%%|*}"
+                else
+                    printf ",$b"
+                fi
+                nl="\n"
             done <<<"$exception,"
+            echo
         }
         [[ -n $exclude ]] && {
             t="${exclude// /,}"
