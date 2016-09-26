@@ -7813,8 +7813,15 @@
         print '<input class="field" type="text" id="contactgroup"';
         print ' value="'.$freshnessthresh.'" name="freshnessthresh">';
         print '</p>';
-        # Passive Checks
+        # Notes
         print '<p style="margin-top: 12px;">';
+        print '<label for="snotes">Notes</label>';
+        print '<input class="field" type="text" id="snotes"';
+        print ' value="'.$notes.'" name="notes">';
+        print '</p>';
+        print '</div>';
+        # Passive Checks
+        print '<p>';
         print '<label for="spassivechecks">Passive Checks Enabled</label>';
         print '<select name="passivechecks" id="spassivechecks" class="field">';
         $selected=""; if( ! strlen($passivechecks) ) $selected="selected";
@@ -7845,13 +7852,6 @@
         print '<input class="field" type="checkbox" id="sactivechecks"';
         print ' name="activechecks" '.$checked.' />';
         print '</p>';
-        # Notes
-        print '<p>';
-        print '<label for="snotes">Notes</label>';
-        print '<input class="field" type="text" id="snotes"';
-        print ' value="'.$notes.'" name="notes">';
-        print '</p>';
-        print '</div>';
 
         ###:TAB3
         print '<div id="fragment-3">';
