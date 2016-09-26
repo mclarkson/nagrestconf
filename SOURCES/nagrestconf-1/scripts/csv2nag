@@ -9,7 +9,7 @@
 # File:     config_create.sh
 # Author:   Mark Clarkson
 # Date:     20 May 2010
-# Version:  0.14
+# Version:  0.15
 # Modified:
 #           2010-07-23 Mark Clarkson
 #           * Now writes hosttemplates, servicetemplates and contacts files.
@@ -25,6 +25,8 @@
 #           * Can be used for both dcc and slc now via DCC variable.
 #           2015-09-10 Mark Clarkson
 #           * Added customvars for hosts.
+#           2016-09-26 Mark Clarkson
+#           * Added customvars for hosttemplates.
 #
 # Purpose:  This a utility to help with creation of Nagios configuration
 #           files. For more information type, 
@@ -1496,8 +1498,10 @@ create_hosttemplates()
             firstnotifdelay notifications_enabled \
             stalkingoptions notes notes_url icon_image \
             icon_image_alt vrml_image statusmap_image coords2d \
-            coords3d action_url x \
+            coords3d action_url customvars x \
             <<<"$a"
+
+        [[ -n $customvars ]] && customvars="${customvars//\`/,}"
 
         echo "define host {"
         # not in nagios 3
@@ -1559,6 +1563,12 @@ create_hosttemplates()
                 echo "${cgroups// /,}"
             }
         fi
+        [[ -n $customvars ]] && {
+            while read -d"," cv
+            do
+                echo "       ${cv%%|*}                    ${cv##*|}"
+            done <<<"$customvars,"
+        }
         [[ -n $checkperiod ]] && {
             Echo "       check_period                 $checkperiod"
         }
@@ -1567,7 +1577,7 @@ create_hosttemplates()
             Echo "       check_command                $checkcommand"
         }
         [[ -n $notifopts ]] && {
-            echo -n "       notification_options         "
+            echo -n "       notification_options          "
             echo "${notifopts// /,}"
         }
         [[ -n $passivechecks ]] && {
@@ -1809,7 +1819,7 @@ create_timeperiods()
 # Arguments:    None
 # Returns:      Nothing
 {
-    local a b name alias definition exclude disable
+    local a b name alias definition exclude disable nl
 
     check_for_setup_file "$gfntimeperiodsetup"
     [[ $G_BREAKOUT -eq 1 ]] && return

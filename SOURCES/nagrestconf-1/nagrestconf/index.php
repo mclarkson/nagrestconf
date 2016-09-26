@@ -16,7 +16,7 @@
     # ------------------------------------------------------------------------
 
     define( "SCRIPTNAME", "index.php" );
-    define( "VERSION", "v1.174.6" );
+    define( "VERSION", "v1.174.7" );
     define( "LIBDIR", "/usr/share/nagrestconf/htdocs/nagrestconf/" );
 
     # ------------------------------------------------------------------------
@@ -3696,6 +3696,18 @@
         print '<input class="field" type="text" id="vnotifopts" '.
               'value="d u r" name="notifopts" />';
         print '</p>';
+        # Custom Variables
+        print '<p>';
+        print '<label for="ncustomvars">Custom Variables</label>';
+        print '<input class="field" type="text" id="ncustomvars"';
+        print ' value="" name="customvars">';
+        print '</p>';
+        # Notes
+        print '<p>';
+        print '<label for="snotes">Notes</label>';
+        print '<input class="field" type="text" id="snotes"';
+        print ' value="" name="notes">';
+        print '</p>';
         # Passive Checks
         print '<p>';
         print '<label for="spassivechecks">Passive Checks Enabled</label>';
@@ -4162,6 +4174,18 @@
         print '<input class="field" type="text" id="wnotifopts" '.
               'value="'.$notifopts.'" name="notifopts" />';
         print '</p>';
+        # Custom Variables
+        print '<p>';
+        print '<label for="ecustomvars">Custom Variables</label>';
+        print '<input class="field" type="text" id="ecustomvars"';
+        print ' value="'.$customvars.'" name="customvars">';
+        print '</p>';
+        # Notes
+        print '<p>';
+        print '<label for="enotes">Notes</label>';
+        print '<input class="field" type="text" id="enotes"';
+        print ' value="'.$notes.'" name="notes">';
+        print '</p>';
         # Passive Checks
         print '<p>';
         print '<label for="spassivechecks">Passive Checks Enabled</label>';
@@ -4386,8 +4410,12 @@
         # Handle deleting fields
         if( empty( $query_str["contacts"] ) )
             $query_str["contacts"] = "-";
+        if( empty( $query_str["customvars"] ) )
+            $query_str["customvars"] = "-";
         if( empty( $query_str["contactgroups"] ) )
             $query_str["contactgroups"] = "-";
+        if( empty( $query_str["notes"] ) )
+            $query_str["notes"] = "-";
         if( empty( $query_str["notifopts"] ) )
             $query_str["notifopts"] = "-";
         if( ! strlen( $query_str["retainstatusinfo"] ) )
@@ -4530,6 +4558,18 @@
         print '<label for="xnotifopts">Notif Opts</label>';
         print '<input class="field" type="text" id="xnotifopts" '.
               'value="w u c r" name="notifopts" />';
+        print '</p>';
+        # Custom Variables
+        print '<p>';
+        print '<label for="scustomvars">Custom Variables</label>';
+        print '<input class="field" type="text" id="scustomvars"';
+        print ' value="" name="customvars">';
+        print '</p>';
+        # Notes
+        print '<p>';
+        print '<label for="tnotes">Notes</label>';
+        print '<input class="field" type="text" id="tnotes"';
+        print ' value="" name="notes">';
         print '</p>';
         # Passive Checks
         print '<p>';
@@ -4977,6 +5017,18 @@
         print '<input class="field" type="text" id="ynotifopts" '.
               'value="'.$notifopts.'" name="notifopts" />';
         print '</p>';
+        # Custom Variables
+        print '<p>';
+        print '<label for="scustomvars">Custom Variables</label>';
+        print '<input class="field" type="text" id="scustomvars"';
+        print ' value="'.$customvars.'" name="customvars">';
+        print '</p>';
+        # Notes
+        print '<p>';
+        print '<label for="tnotes">Notes</label>';
+        print '<input class="field" type="text" id="tnotes"';
+        print ' value="'.$notes.'" name="notes">';
+        print '</p>';
         # Passive Checks
         print '<p>';
         print '<label for="spassivechecks">Passive Checks Enabled</label>';
@@ -5189,6 +5241,8 @@
             $query_str["contacts"] = "-";
         if( empty( $query_str["contactgroups"] ) )
             $query_str["contactgroups"] = "-";
+        if( empty( $query_str["customvars"] ) )
+            $query_str["customvars"] = "-";
         if( empty( $query_str["notifopts"] ) )
             $query_str["notifopts"] = "-";
         if( ! strlen( $query_str["retainstatusinfo"] ) )
@@ -5199,6 +5253,8 @@
             $query_str["action_url"] = "-";
         if( ! strlen( $query_str["passivechecks"] ) )
             $query_str["passivechecks"] = "-";
+        if( ! strlen( $query_str["notes"] ) )
+            $query_str["notes"] = "-";
         if( ! strlen( $query_str["notifications_enabled"] ) )
             $query_str["notifications_enabled"] = "-";
         if( ! strlen( $query_str["icon_image"] ) )
@@ -7819,7 +7875,6 @@
         print '<input class="field" type="text" id="snotes"';
         print ' value="'.$notes.'" name="notes">';
         print '</p>';
-        print '</div>';
         # Passive Checks
         print '<p>';
         print '<label for="spassivechecks">Passive Checks Enabled</label>';
@@ -7852,6 +7907,7 @@
         print '<input class="field" type="checkbox" id="sactivechecks"';
         print ' name="activechecks" '.$checked.' />';
         print '</p>';
+        print '</div>';
 
         ###:TAB3
         print '<div id="fragment-3">';

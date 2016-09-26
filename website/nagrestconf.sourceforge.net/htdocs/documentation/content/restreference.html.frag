@@ -1432,7 +1432,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>31.</em></p></td>
 <td align="left" valign="top"><p class="table">Notes</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 </tr>
@@ -1491,6 +1491,13 @@ cellspacing="0" cellpadding="4">
 <td align="center" valign="top"><p class="table">E</p></td>
 <td align="left" valign="top"><p class="table">action_url</p></td>
 <td align="left" valign="top"><p class="table">action_url</p></td>
+</tr>
+<tr>
+<td align="center" valign="top"><p class="table"><em>40.</em></p></td>
+<td align="left" valign="top"><p class="table">Custom variable</p></td>
+<td align="center" valign="top"><p class="table">C</p></td>
+<td align="left" valign="top"><p class="table">customvars</p></td>
+<td align="left" valign="top"><p class="table">N/A</p></td>
 </tr>
 </tbody>
 </table>
@@ -2460,7 +2467,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="center" valign="top"><p class="table"><em>35.</em></p></td>
 <td align="left" valign="top"><p class="table">Notes</p></td>
-<td align="center" valign="top"><p class="table">X</p></td>
+<td align="center" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 <td align="left" valign="top"><p class="table">notes</p></td>
 </tr>

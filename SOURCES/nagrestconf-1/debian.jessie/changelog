@@ -1,3 +1,9 @@
+nagrestconf (1.174.7) UNRELEASED; urgency=low
+
+  * Bug fixes.
+
+ -- Mark Clarkson <mark.clarkson@smorg.co.uk>  Mon, 26 Sep 2016 18:32:00 +0000
+
 nagrestconf (1.174.6) UNRELEASED; urgency=low
 
   * Bug fixes.
