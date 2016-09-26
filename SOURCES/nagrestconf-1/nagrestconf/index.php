@@ -7847,7 +7847,7 @@
         print '</p>';
         # Notes
         print '<p>';
-        print '<label for="snotes">Custom Variables</label>';
+        print '<label for="snotes">Notes</label>';
         print '<input class="field" type="text" id="snotes"';
         print ' value="'.$notes.'" name="notes">';
         print '</p>';
