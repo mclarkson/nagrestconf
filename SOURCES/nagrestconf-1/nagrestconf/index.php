@@ -11430,7 +11430,7 @@
 
         # Service Description
         print '<p>';
-        print '<label for="svcdesc">Description</label>';
+        print '<label for="svcdesc">Description *</label>';
         print '<input class="field" type="text" id="svcdesc" name="svcdesc"';
         print ' value="" />';
         print '</p>';
