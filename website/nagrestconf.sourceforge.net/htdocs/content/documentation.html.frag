@@ -96,6 +96,8 @@
               <dd><a href="https://groups.google.com/forum/#!topic/synagios-users/jm7z71CKtSU">Monitoring Devolo DLAN with Synagios (Thomas Wittmann).</a><br /><small>&nbsp;</small></dd>
             <dt>Synagios Graphs</dt>
               <dd><a href="https://groups.google.com/forum/#!topic/synagios-users/7ZEdWFTmtfs">Enable PNP graphs on mouseover (Thomas Wittmann).</a><br /><small>&nbsp;</small></dd>
+            <dt>Nagrestconf Ansible</dt>
+              <dd><a href="https://github.com/rotaecho/nagios-api">Install and configure nagios/nagrestconf using ansible (William Pool).</a><br /><small>&nbsp;</small></dd>
           </dl>
         </div>
       </div>
