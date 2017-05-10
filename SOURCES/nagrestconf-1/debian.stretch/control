@@ -1,0 +1,51 @@
+Source: nagrestconf
+Section: net
+Priority: optional
+Maintainer: Mark Clarkson <mark.clarkson@smorg.co.uk>
+Build-Depends: debhelper (>= 8)
+Standards-Version: 3.9.1
+Homepage: http://smorg.co.uk
+Bugs: https://lists.sourceforge.net/lists/listinfo/nagrestconf-users
+
+Package: nagrestconf
+Architecture: all
+Depends: ${misc:Depends}, apache2, cron, nagios3, sed (>=4), gawk, grep (>=2), php, subversion, procmail, php-curl, curl
+Description: REST interface and configuration GUI for Nagios.
+ Nagrestconf:
+ .
+  * allows Nagios to be configured using a REST api.
+  * allows the server to be restarted using the REST api.
+  * provides a Web GUI for configuring built on the REST api.
+ .
+ It can be useful for:
+ .
+  * Bulk loading
+  * Bulk editing
+  * Automation
+  * Catching common configuration mistakes
+ .
+
+Package: nagrestconf-services-plugin
+Architecture: all
+Depends: ${misc:Depends}, nagrestconf
+Description: Configuration tools for Nagios.
+ This package provides the 'Services Tab' plugin.
+
+Package: nagrestconf-services-bulktools-plugin
+Architecture: all
+Depends: ${misc:Depends}, nagrestconf, nagrestconf-services-plugin
+Description: Configuration tools for Nagios.
+ This package provides the 'Bulk Tools' plugin for the Services tab.
+
+Package: nagrestconf-hosts-bulktools-plugin
+Architecture: all
+Depends: ${misc:Depends}, nagrestconf
+Description: Configuration tools for Nagios.
+ This package provides the 'Bulk Tools' plugin for the Hosts tab.
+
+Package: nagrestconf-backup-plugin
+Architecture: all
+Depends: ${misc:Depends}, nagrestconf
+Description: Configuration tools for Nagios.
+ This package provides the 'Backup & Restore' plugin.
+

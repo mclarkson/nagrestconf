@@ -11,7 +11,9 @@
           <dl class="dl-horizontal">
             <dt>Debian</dt>
               <dd><a href="installguides/debian.php">Install Guide</a><br /><small>&nbsp;</small></dd>
-            <dt>Ubuntu</dt>
+            <dt>Ubuntu 16.04 (Xenial Xerus)</dt>
+              <dd><a href="installguides/ubuntu_xenial.php">Install Guide</a><br /><small>&nbsp;</small></dd>
+            <dt>Ubuntu 14.04 (Trusty Tahr)</dt>
               <dd><a href="installguides/ubuntu.php">Install Guide</a><br /><small>&nbsp;</small></dd>
             <dt>Raspberry Pi</dt>
               <dd><a href="installguides/raspberrypi.php">Install Guide</a><br /><small>&nbsp;</small></dd>

@@ -5,8 +5,8 @@
 
         <!-- Content -->
         <div class="row" style="padding-left:10px;padding-right:20px;">
-          <h1>Ubuntu Trusty Installation Guide</h1>
-          <p>This page details how to install nagrestonf on <a href="http://www.ubuntu.com/">Ubuntu 14.04 Trusty</a>.</p>
+          <h1>Ubuntu Xenial Installation Guide</h1>
+          <p>This page details how to install nagrestonf on <a href="http://www.ubuntu.com/">Ubuntu 16.04 (Xenial)</a>.</p>
           <p>Packages that nagrestconf depends on, such as Nagios and Apache, will be installed
              automatically.</p>
           <h3>Before installation</h3>
@@ -23,30 +23,27 @@
           </ul>
 
           <h3>Install using the Deb packages.</h3>
-          <p>Get the packages for Ubuntu Trusty from the <a href="/downloads.php">download page</a> then copy them to the server.</p>
+          <p>Get the packages for Ubuntu Xenial from the <a href="/downloads.php">download page</a> then copy them to the server.</p>
           <p>Open a terminal window or ssh session then install nagrestconf and all plugins:</p>
           <pre>sudo apt-get update
 sudo apt-get install gdebi-core
-sudo gdebi nagrestconf_1.174.3_all.deb
-sudo dpkg -i nagrestconf-services-plugin_1.174.3_all.deb \
-      nagrestconf-services-bulktools-plugin_1.174.3_all.deb \
-      nagrestconf-hosts-bulktools-plugin_1.174.3_all.deb \
-      nagrestconf-backup-plugin_1.174.3_all.deb</pre>
+sudo gdebi nagrestconf_1.174.7_all.deb
+sudo dpkg -i nagrestconf-services-plugin_1.174.7_all.deb \
+      nagrestconf-services-bulktools-plugin_1.174.7_all.deb \
+      nagrestconf-hosts-bulktools-plugin_1.174.7_all.deb \
+      nagrestconf-backup-plugin_1.174.7_all.deb</pre>
 
           <h3>Configure the Operating System</h3>
           <p>Use the two helper scripts 'nagrestconf_install' and 'slc_configure'.</p>
           <pre>sudo nagrestconf_install -a
 sudo slc_configure --folder=local</pre>
-          <p>Enable the REST and GUI applications.</p>
-          <pre>sudo ln -s /etc/apache2/conf.d/nagrestconf.conf /etc/apache2/conf-enabled/
-sudo ln -s /etc/apache2/conf.d/rest.conf /etc/apache2/conf-enabled/</pre>
           <p>Change two variables in nagios.cfg</p>
           <pre>sudo sed -i 's/check_external_commands=0/check_external_commands=1/g' /etc/nagios3/nagios.cfg
 sudo sed -i 's/enable_embedded_perl=1/enable_embedded_perl=0/g' /etc/nagios3/nagios.cfg</pre>
           <p>Relax permissions for the pipes</p>
           <pre>sudo chmod 770 /var/lib/nagios3/rw/</pre>
           <!--<p>Create a password for nagiosadmin - for GUI access to nagios.</p>
-          <pre>htpasswd -bc /etc/nagios/htpasswd.users nagiosadmin a_password</pre>
+          <pre>htpasswd -bc /etc/nagios3/htpasswd.users nagiosadmin a_password</pre>
           -->
           <p>Create a password for nagrestconfadmin - for GUI access to nagrestconf.</p>
           <pre>sudo htpasswd -bc /etc/nagios3/nagrestconf.users nagrestconfadmin a_password</pre>
@@ -58,13 +55,13 @@ sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios/htpasswd.users#i' \
     /etc/apache2/conf.d/nagios3.conf</pre>
           -->
           <p>Edit /etc/apache2/conf.d/nagrestconf.conf:</p>
-          <pre>sudo cp /etc/apache2/conf.d/nagrestconf.conf /tmp
+          <pre>sudo cp /etc/apache2/conf-available/nagios3.conf /tmp
 sudo sed -i 's#AuthUserFile .*#AuthUserFile /etc/nagios3/nagrestconf.users#i' \
-    /etc/apache2/conf.d/nagrestconf.conf
+    /etc/apache2/conf-available/nagrestconf.conf
 sudo sed -i 's/allow from 127.0.0.1/allow from all/i' \
-    /etc/apache2/conf.d/nagrestconf.conf
-sudo sed -i 's/#Require/Require/i'     /etc/apache2/conf.d/nagrestconf.conf
-sudo sed -i 's/#Auth/Auth/i'     /etc/apache2/conf.d/nagrestconf.conf</pre>
+    /etc/apache2/conf-available/nagrestconf.conf
+sudo sed -i 's/#Require/Require/i'     /etc/apache2/conf-available/nagrestconf.conf
+sudo sed -i 's/#Auth/Auth/i'     /etc/apache2/conf-available/nagrestconf.conf</pre>
           <p>Restart apache and nagios</p>
           <pre>sudo service apache2 restart
 sudo service nagios3 restart</pre>

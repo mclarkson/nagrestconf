@@ -30,6 +30,13 @@
           <!--<td></td>-->
           </tr>
           <tr>
+          <td>Ubuntu Xenial</td>
+          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Ubuntu/">Latest Ubuntu Xenial packages</a></td>
+          <td>1.174.7</td>
+          <td><a href="/installguides/ubuntu_xenial.php">Install Guide</a></td>
+          <!--<td></td>-->
+          </tr>
+          <tr>
           <td>Ubuntu Trusty</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Ubuntu/">Latest Ubuntu packages</a></td>
           <td>1.174</td>
