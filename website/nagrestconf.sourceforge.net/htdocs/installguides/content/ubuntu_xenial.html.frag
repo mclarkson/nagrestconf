@@ -24,6 +24,12 @@
 
           <h3>Install using the Deb packages.</h3>
           <p>Get the packages for Ubuntu Xenial from the <a href="/downloads.php">download page</a> then copy them to the server.</p>
+          <p>Instead of downloading manually it is possible to use wget from the server where nagrestconf is to be installed. Use the following wget commands:</p>
+          <pre>wget https://sourceforge.net/projects/nagrestconf/files/Ubuntu/Xenial%2016.04/1.174.7/nagrestconf_1.174.7_all.deb/download -O nagrestconf_1.174.7_all.deb
+wget https://sourceforge.net/projects/nagrestconf/files/Ubuntu/Xenial%2016.04/1.174.7/nagrestconf-hosts-bulktools-plugin_1.174.7_all.deb/download -O nagrestconf-hosts-bulktools-plugin_1.174.7_all.deb
+wget https://sourceforge.net/projects/nagrestconf/files/Ubuntu/Xenial%2016.04/1.174.7/nagrestconf-services-plugin_1.174.7_all.deb/download -O nagrestconf-services-plugin_1.174.7_all.deb
+wget https://sourceforge.net/projects/nagrestconf/files/Ubuntu/Xenial%2016.04/1.174.7/nagrestconf-backup-plugin_1.174.7_all.deb/download -O nagrestconf-backup-plugin_1.174.7_all.deb
+wget https://sourceforge.net/projects/nagrestconf/files/Ubuntu/Xenial%2016.04/1.174.7/nagrestconf-services-bulktools-plugin_1.174.7_all.deb/download -O nagrestconf-services-bulktools-plugin_1.174.7_all.deb
           <p>Open a terminal window or ssh session then install nagrestconf and all plugins:</p>
           <pre>sudo apt-get update
 sudo apt-get install gdebi-core
