@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -u
+set -e
+
+# Do pre inst stuff
+
+exit
+
