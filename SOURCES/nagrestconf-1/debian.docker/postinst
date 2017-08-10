@@ -21,7 +21,7 @@ set -e
 case "$1" in
     configure)
         # enable modules we need
-        a2enmod php5
+        a2enmod php7.0
         a2enmod auth_basic
         a2enmod rewrite
         a2enconf nagrestconf.conf
