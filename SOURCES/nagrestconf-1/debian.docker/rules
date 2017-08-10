@@ -35,8 +35,8 @@ install: build
 	dh_installdirs
 
 	# Conf
-	install -D -m 640 etc/httpd/conf.d/nagrestconf.conf.debian $(DESTDIR)/etc/apache2/conf-available/nagrestconf.conf
-	install -D -m 640 etc/httpd/conf.d/rest.conf.debian $(DESTDIR)/etc/apache2/conf-available/rest.conf
+	install -D -m 640 etc/httpd/conf.d/nagrestconf.conf.docker $(DESTDIR)/etc/apache2/conf-available/nagrestconf.conf
+	install -D -m 640 etc/httpd/conf.d/rest.conf.docker $(DESTDIR)/etc/apache2/conf-available/rest.conf
 	install -D -m 640 etc/nagrestconf/nagrestconf.ini $(DESTDIR)/etc/nagrestconf/nagrestconf.ini
 	install -D -m 640 etc/nagrestconf/csv2nag.conf $(DESTDIR)/etc/nagrestconf/csv2nag.conf
 	install -D -m 640 etc/nagrestconf/nagctl.conf.debian $(DESTDIR)/etc/nagrestconf/nagctl.conf
