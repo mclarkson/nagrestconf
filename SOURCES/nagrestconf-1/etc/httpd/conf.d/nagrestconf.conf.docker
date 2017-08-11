@@ -9,7 +9,7 @@ Alias /nagrestconf "/usr/share/nagrestconf/htdocs/nagrestconf"
   # Require authentication
   AuthName "Nagrestconf Access"
   AuthType Basic
-  AuthUserFile /etc/nagios/nagrestconf.users
+  AuthUserFile /etc/nagrestconf/nagrestconf.users
 
   <IfModule mod_authz_core.c>
       # Apache 2.4

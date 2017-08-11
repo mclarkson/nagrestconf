@@ -9,7 +9,7 @@ Alias /rest /usr/share/nagrestconf/htdocs/rest
   # Require authentication
   AuthName "REST Access" 
   AuthType Basic 
-  AuthUserFile /etc/nagios/restapi.users 
+  AuthUserFile /etc/nagrestconf/restapi.users 
 
   <IfModule mod_authz_core.c>
       # Apache 2.4
