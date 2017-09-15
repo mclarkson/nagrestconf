@@ -6,8 +6,37 @@
       <!-- Content -->
       <div class="row" style="padding-left:10px;padding-right:20px;">
         <h1>Downloads</h1>
-          <p>Please read the install guide for your platform.</p>
+          <p>Please read the installation guide for your platform.</p>
           <table class="table table-striped">
+          <thead>
+          <th>Platform</th>
+          <th>Download link</th>
+          <th>Version Tested</th>
+          <th>Install Guide</th>
+          <!--<th>Notes</th>-->
+          </thead>
+          <tbody>
+          <tr>
+          <td>Synology Diskstation - x86</td>
+          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Synology/x86/">Latest Synology x86 packages</a></td>
+          <td>0.14.5</td>
+          <td><a href="/installguides/synology.php">Install Guide</a></td>
+          <!--<td></td>-->
+          </tr>
+          <tr><!-- class="danger">-->
+          <td>Synology Diskstation - arm</td>
+          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Synology/arm/">Latest Synology arm packages</a></td>
+          <td>0.14.4</td>
+          <td><a href="/installguides/synology.php">Install Guide</a></td>
+          <!--<td>Please report if this works for you.</td>-->
+          </tr>
+          </thead>
+        </table>
+
+        <p>The following downloads are now deprecated.</p>
+        <p>Please use the Docker installation method shown in '<a href="/installguide.php">Installation Guides</a>'.</p>
+
+        <table class="table table-striped">
           <thead>
           <th>Platform</th>
           <th>Download link</th>
@@ -91,20 +120,6 @@
           <td>1.172</td>
           <td><a href="/installguides/fedora.php">Install Guide</a></td>
           <!--<td></td>-->
-          </tr>
-          <tr>
-          <td>Synology Diskstation - x86</td>
-          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Synology/x86/">Latest Synology x86 packages</a></td>
-          <td>0.14.5</td>
-          <td><a href="/installguides/synology.php">Install Guide</a></td>
-          <!--<td></td>-->
-          </tr>
-          <tr><!-- class="danger">-->
-          <td>Synology Diskstation - arm</td>
-          <td><a href="https://sourceforge.net/projects/nagrestconf/files/Synology/arm/">Latest Synology arm packages</a></td>
-          <td>0.14.4</td>
-          <td><a href="/installguides/synology.php">Install Guide</a></td>
-          <!--<td>Please report if this works for you.</td>-->
           </tr>
           </thead>
         </table>

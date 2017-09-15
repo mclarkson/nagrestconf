@@ -7,6 +7,15 @@
 
         <div class="row" style="padding-left:10px;padding-right:20px;">
           <h1>News</h1>
+          <p><strong>15 September 2017 - Docker Support.</strong></p>
+            <blockquote>
+              Docker is now the preferred installation method now that nagrestconf
+              containers have been made available at Docker Hub. This allows for
+              easy installation of the latest Nagios release on most supported
+              platforms, and makes the installation of Nagrestconf extremely simple.
+              This also makes Nagios and Nagrestconf available to container deployment
+              platforms such as Kubernetes.
+            </blockquote>
           <p><strong>06 September 2016 - Software updates.</strong></p>
             <blockquote>
               Synagios version 0.14.5 released for x86. Notable changes:
