@@ -17,6 +17,13 @@
           </thead>
           <tbody>
           <tr>
+          <td>Docker</td>
+          <td><a href="https://hub.docker.com/r/mclarkson/nagrestconf/">Docker Hub</a></td>
+          <td>1.174.7</td>
+          <td><a href="/installguides/docker.php">Install Guide</a></td>
+          <!--<td></td>-->
+          </tr>
+          <tr>
           <td>Synology Diskstation - x86</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Synology/x86/">Latest Synology x86 packages</a></td>
           <td>0.14.5</td>
@@ -34,7 +41,7 @@
         </table>
 
         <p>The following downloads are now deprecated.</p>
-        <p>Please use the Docker installation method shown in '<a href="/installguide.php">Installation Guides</a>'.</p>
+        <p>Please use the Docker installation method listed above for all platforms.</p>
 
         <table class="table table-striped">
           <thead>
