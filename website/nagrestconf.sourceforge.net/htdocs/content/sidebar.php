@@ -26,7 +26,6 @@ EnD;
    
     print <<<EnD
     </div>
-    <img alt="Download nagrestconf" src="https://img.shields.io/sourceforge/dw/nagrestconf.svg">
     </div><!--/span-->
     </div><!--/row-->
 EnD;
