@@ -82,6 +82,8 @@ create_base_chroot()
     }
     mkdir -p $ROOTOSNAMEDIR
     cd $ROOTOSNAMEDIR
+    echo -n "debootstrap $CHROOTOPTS $ROOTOSNAME $ROOTBASENAME"
+    echo " http://ftp.uk.debian.org/debian"
     debootstrap $CHROOTOPTS $ROOTOSNAME $ROOTBASENAME \
         "http://ftp.uk.debian.org/debian"
 }
