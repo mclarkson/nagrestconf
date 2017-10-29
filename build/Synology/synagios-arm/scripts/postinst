@@ -26,7 +26,7 @@ change_port()
     sed -i 's/\(NameVirtualHost.*:\).*/\1'$PORT'/' \
             nagios-chroot/etc/apache2/ports.conf
     sed -i 's/\(<VirtualHost .*:\).*/\1'$PORT'>/' \
-            nagios-chroot/etc/apache2/sites-enabled/000-default
+            nagios-chroot/etc/apache2/sites-enabled/000-default.conf
     sed -i 's/^\(Listen \).*/\1'$PORT'/' \
             nagios-chroot/etc/apache2/ports.conf
     sed -i 's/\(^.*127.0.0.1\)[^\/]*/\1:'$PORT'/' \
