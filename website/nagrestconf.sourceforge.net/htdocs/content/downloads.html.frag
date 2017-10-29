@@ -53,16 +53,24 @@
           </thead>
           <tbody>
           <tr>
-          <td>Debian Wheezy</td>
+          <td>Debian 7.x (Wheezy)</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Debian/">Latest Debian packages</a></td>
           <td>1.174.1</td>
           <td><a href="/installguides/debian.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
-          <td>Debian Jessie</td>
+          <tr>
+          <td>Debian 8.x (Jessie)</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Debian/">Latest Debian packages</a></td>
           <td>1.174.5</td>
           <td><a href="/installguides/debian.php">Install Guide</a></td>
+          <!--<td></td>-->
+          </tr>
+          <tr>
+          <td>Debian 9.x (Stretch)</td>
+          <td>Use Docker</td>
+          <td>-</td>
+          <td><a href="/installguides/docker.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
           <tr>

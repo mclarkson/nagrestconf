@@ -17,8 +17,10 @@
           <p>Docker is the preferred (and easiest!) way to install Nagrestconf, so the following guides are deprecated.<br>
           Please use the docker installation method for all platforms where possible.<br /><small>&nbsp;</small></p>
           <dl class="dl-horizontal">
-            <dt>Debian</dt>
+            <dt>Debian 7.x or 8.x</dt>
               <dd><a href="installguides/debian.php">Install Guide</a><br /><small>&nbsp;</small></dd>
+            <dt>Debian 9.x</dt>
+              <dd><a href="installguides/docker.php">Install Guide</a><br /><small>&nbsp;</small></dd>
             <dt>Ubuntu 16.04 (Xenial Xerus)</dt>
               <dd><a href="installguides/ubuntu_xenial.php">Install Guide</a><br /><small>&nbsp;</small></dd>
             <dt>Ubuntu 14.04 (Trusty Tahr)</dt>
