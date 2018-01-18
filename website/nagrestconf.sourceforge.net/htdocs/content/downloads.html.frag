@@ -26,7 +26,7 @@
           <tr>
           <td>Synology Diskstation - x86</td>
           <td><a href="https://sourceforge.net/projects/nagrestconf/files/Synology/x86/">Latest Synology x86 packages</a></td>
-          <td>0.14.5</td>
+          <td>0.14.7</td>
           <td><a href="/installguides/synology.php">Install Guide</a></td>
           <!--<td></td>-->
           </tr>
