@@ -14,52 +14,37 @@
           <ul>
             <li>Install a compatible Nagios container from
                 <a href="https://hub.docker.com/">Docker Hub</a>.</li>
-            <li>Set the password for the Nagios container.</li>
             <li>Install the Nagrestconf container from Docker Hub.</li>
-            <li>Set the password for the Nagrestconf container.</li>
             <li>Test Nagrestconf and Nagios.</li>
             <li>Create an initial configuration.</li>
           </ul>
           <p>SEE ALSO: <a href="https://github.com/mclarkson/nagrestconf-docker">
-              mclarkson/nagrestconf-docker</a> for alternative installation options.</p>
+              mclarkson/nagrestconf-docker</a> for alternative installation options and to find out
+              how to change the default passwords.</p>
 
           <h3>Install a compatible Nagios container from Docker Hub.</h3>
           <p>Open a terminal window or ssh session on the target server then install
           Nagios using the following commands:</p>
-          <pre>docker run -d --name nagios -v /usr/local/nagios -p 25 -p 8080:80 quantumobject/docker-nagios</pre>
-
-          <h3>Set the password for the Nagios container.</h3>
-          <p>Change the password used to connect to the Nagios Web UI:</p>
-          <pre>docker exec -it nagios /bin/bash
-
-htpasswd /usr/local/nagios/etc/htpasswd.users nagiosadmin
-
-exit</pre>
+          <pre>docker run -d --name nagios4 -p 8080:80 -v /opt/nagios jasonrivers/nagios:latest</pre>
 
           <h3>Install the Nagrestconf container from Docker Hub.</h3>
           <p>The following commands will get the custom configuration and start the nagrestconf container:</p>
-          <pre>wget https://raw.githubusercontent.com/mclarkson/nagrestconf-docker/master/quantumobject_docker-nagios.env
+          <pre>wget https://raw.githubusercontent.com/mclarkson/nagrestconf-docker/master/jasonrivers_docker-nagios.env
 
 docker run -d -p 8880:8080 --name nagrestconf -v /tmp \
-    --volumes-from nagios --env-file quantumobject_docker-nagios.env \
-    mclarkson/nagrestconf</pre>
+  --volumes-from nagios4 --env-file jasonrivers_docker-nagios.env \
+  mclarkson/nagrestconf</pre>
           <p>Then start the nagrestconf-restarter container:</p>
-          <pre>docker run -d --name nagrestconf-restarter --volumes-from nagrestconf mclarkson/nagrestconf-restarter</pre>
-
-          <h3>Set the password for the Nagrestconf container.</h3>
-          <p>Change the password used to connect to the Nagios Web UI:</p>
-          <pre>docker exec -it nagrestconf /bin/bash
-
-htpasswd /usr/local/nagios/etc/htpasswd.users nagrestconfadmin
-
-exit</pre>
+          <pre>docker run -d --name nagrestconf-restarter \
+    -e NAGIOSCMD=/opt/nagios/var/rw/nagios.cmd \
+    --volumes-from nagrestconf mclarkson/nagrestconf-restarter</pre>
 
           <h3>Test Nagrestconf and Nagios</h3>
           <p>The nagrestsconf and nagios web interfaces should be accessible now.<p>
-          <p>Log into nagrestconf with user 'nagrestconfadmin', and the password that was set above.</p>
+          <p>Log into nagrestconf with user 'nagrestconfadmin', and the password 'admin'.</p>
           <p>The nagrestconf interface, at 'http://server:8880/nagrestconf', will look like the following screen shot.</p>
           <a href="#img1" onClick="$('#img1').css('display','block'); return false;"><img src="/images/redhat1.png" class="img-thumbnail"></a></p><a id="img1" class="a-imgshow" onClick="$('#img1').css('display','none'); return false;"><img src="/images/redhat1.png" class="imgshow"></a>
-          <p>Log into nagios with user 'nagiosadmin', and the password that was set above.</p>
+          <p>Log into nagios with user 'nagiosadmin', and the password 'nagios'.</p>
           <p>The nagios interface, at 'http://server/nagios3', will look like the following screen shot.</p>
           <a href="#img2" onClick="$('#img2').css('display','block'); return false;"><img src="/images/redhat2.png" class="img-thumbnail"></a></p><a id="img2" class="a-imgshow" onClick="$('#img2').css('display','none'); return false;"><img src="/images/redhat2.png" class="imgshow"></a>
 
