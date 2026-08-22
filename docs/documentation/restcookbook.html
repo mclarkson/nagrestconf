@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <link rel="shortcut icon" href="/ico/favicon.png">
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/offcanvas.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <title>Nagrestconf - REST Cookbook</title>
+</head>
+<body>
+
+      <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+      <div class="container">
+      <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/index.html" style="padding-top: 10px; padding-bottom: 0px;"><img src="/images/meerkat_32x32.png" style="padding-right: 4px;">Nagrestconf</a>
+      </div>
+      <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/history.html">About</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+        <li><a href="/synagios.html">Synagios</a></li>
+        <li class="active"><a href="/documentation.html">Documentation</a></li>
+        <li><a href="/support.html">Support</a></li>
+      </ul>
+      </div><!-- /.nav-collapse -->
+      </div><!-- /.container -->
+      </div><!-- /.navbar -->
+
+<div class="container">
+<div class="row row-offcanvas row-offcanvas-right">
+<div class="col-xs-12 col-sm-9">
+<p class="pull-right visible-xs">
+<button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+</p>
+
+        <!-- Content -->
+        <style>
+          ul#cookbook li > div > p:first-child {
+            padding-top: 8px;
+            padding-bottom: 2px;
+          }
+          ul#cookbook li:last-child {
+            padding-bottom: 8px;
+          }
+        </style>
+        <div class="row" style="padding-left:10px;padding-right:20px;">
+          <h1>REST Cookbook</h1>
+          <p>All the recipes on this page have been created using Nrcq as shown in
+          the <a href="/documentation/resttut.html">REST Tutorial</a>.</p>
+          <p>Before trying a recipe install nrcq.</p>
+
+          <h2>Recipes</h2>
+          <ul id="cookbook">
+            <li><p>How to remove things.</p></li>
+            <ol>
+
+              <li><a href="#_">Disable a host.</a>
+                <div style="display: none">
+                  <!-- LIST CONTENT -->
+                  <p>Often disabling a host is preferable to deleting it. For example, hosts might be brought up and taken down based on system load, in which case any custom changes, made directly to the host or services, will be lost if they are deleted then later added again.</p>
+                  <p>A host and its services can be easily disabled in the nagrestconf web interface, but to disable a host using the REST interface the services must be disabled before the host can be disabled.</p>
+                  <p>The 'disable' property accepts 0, 1 or 2, which means enabled, disabled, or testing mode, respectively. Wildcards can not be used for modifying properties so the 'filter' option is used to show all of the services for a host.</p>
+                  <p>The following snippet shows how to disable a host, 'server1', and all of its services:</p>
+                  <pre>
+URL="http://127.0.0.1/rest"
+nrcq $URL show/services -f name:server1 \
+    | grep svcdesc \
+    | while IFS=":" read a b; do \
+        nrcq $URL modify/services -d name:server1 -d "svcdesc:$b" -d disable:1
+done
+
+nrcq $URL modify/hosts -d name:server1 -d disable:1
+</pre>
+                  <p>Enabling the host and all of its services needs to be done the other way round and the disable
+                  property should be changed from a '1' to a '0':</p>
+                  <pre>
+URL="http://127.0.0.1/rest"
+nrcq $URL modify/hosts -d name:server1 -d disable:0
+
+nrcq $URL show/services -f name:server1 \
+    | grep svcdesc \
+    | while IFS=":" read a b; do \
+        nrcq $URL modify/services -d name:server1 -d "svcdesc:$b" -d disable:0
+done
+</pre>
+                  <!-- LIST CONTENT -->
+                </div>
+              </li>
+
+              <li><a href="#_">Delete a host.</a>
+                <div style="display: none">
+                  <!-- LIST CONTENT -->
+                  <p>A host and its services can be easily deleted in the nagrestconf web interface, but to delete a host using the REST interface the services must be deleted before the host can be deleted.</p>
+                  <p>The following snippet shows how to delete a host, 'server1', and all of its services:</p>
+                  <pre>
+nrcq http://localhost/rest delete/services -d name:server1 -d "svcdesc:.*"
+nrcq http://localhost/rest delete/hosts -d name:server1
+</pre>
+                  <p>That's all that is required to delete a host and its services.</p>
+                  <!-- LIST CONTENT -->
+                </div>
+              </li>
+
+              <li><a href="#_">Delete the entire configuration.</a>
+                <div style="display: none">
+                  <!-- LIST CONTENT -->
+                  <p>There is no way to quickly delete the entire configuration using the Web interface. The following snippet will completely delete the nagrestconf configuration.</p>
+Or with nrcq:
+<pre>
+for i in services hosts servicesets hosttemplates \
+         servicetemplates contactgroups contacts  \
+         hostgroups servicegroups timeperiods commands
+do
+   nrcq http://127.0.0.1/rest delete/$i -d "name:.*" -d "svcdesc:.*"
+done
+</pre>
+                  <p>NOTE: This will probably not work if the '<a href="/documentation/restreference.html#lessused">
+                  Less used and deprecated tables</a>' have been used as they will need to be deleted first.
+                  <!-- LIST CONTENT -->
+                </div>
+              </li>
+
+              <li><a href="#_">Delete an entire table.</a>
+                <div style="display: none">
+                  <!-- LIST CONTENT -->
+                  <p>A bunch of hosts or services can be deleted from the hosts or services tables by using the Web interface, but bulk deletion is not possible on the other tables.</p>
+                  <p>Use the following snippet to delete the hosts table.</p>
+                  <pre>
+nrcq http://localhost/rest delete/hosts -d "name:.*" -d "svcdesc:.*"
+</pre>
+                  <p>Change 'hosts' in 'delete/hosts' for another table name to delete that instead.</p>
+                  <p>You may have noticed that the 'svcdesc' property is used for 'delete/hosts' when that property does not exist in the hosts table. When a property is used, but does not exist, then the REST interface silently ignores it, so the previous delete command will work for tables that requires the 'svcdesc' property and for those that don't.</p>
+                  <!-- LIST CONTENT -->
+                </div>
+              </li>
+
+            </ol>
+            <li><p>How to rename things.</p></li>
+            <ol>
+
+              <li><a href="#_">Rename a hostgroup.</a>
+                <div style="display: none">
+                  <!-- LIST CONTENT -->
+                  <p>It is not possible to rename key fields once they have been created. In general the user must copy/clone the item to a different name, then delete the original item.</p>
+                  <p>To change the name of a hostgroup, say from 'app' to 'legapp' using the GUI, the following steps would need to be followed:</p>
+                  <ol>
+                      <li>In the Groups Tab - Create a new 'legapp' hostgroup.</li>
+                      <li>In the Hosts Tab - Filter by 'app' hostgroup.</li>
+                      <li>Click Bulk Tools to open it. Bulk Tools will operate on all items shown.</li>
+                      <li>'Field to change' - choose 'hostgroup'</li>
+                      <li>'Change action' - choose 'replace'</li>
+                      <li>'Text' - type 'legapp', then Apply Changes</li>
+                  </ol>
+                  <p>The 'app' hostgroup can now be deleted. If any items are still left in the app group then <i>nagrestconf</i> won't allow it to be deleted.</p>
+                  <p>The above procedure can be completed using a shell script and <i>nrcq</i>, which will allow for much finer control. So, for example, below is a script named 'change_hostgroup.sh' that will change any hostgroup name. The text 'NAGIOSHOST' should be changed to the name of your Nagios host, where nagrestconf `lives'.</p>
+                  <pre>
+#!/bin/bash
+
+URL="http://NAGIOSHOST/rest"
+
+orig_hgname=$1
+new_hgname=$2
+description=$3
+
+[[ -z $1 || -z $2 || -z $3 ]] && {
+  echo "Change a hostgroup name."
+  echo "Usage: `basename $0` old_name new_name description"
+  exit 1
+}
+
+# Make sure orig_hgname exists
+h=`nrcq $URL show/hostgroups -f "name:\b$orig_hgname\b"`
+[[ -z $h ]] && {
+  echo "Hostgroup, '$orig_hgname', does not exist."
+  exit 1
+}
+
+# Make sure new_hgname does not exist
+h=`nrcq $URL show/hostgroups -f "name:\b$new_hgname\b"`
+[[ -n $h ]] && {
+  echo "Hostgroup, '$new_hgname', exists!"
+  exit 1
+}
+
+# Add the host group
+nrcq $URL add/hostgroups -d "name:$new_hgname" -d "alias:$description"
+
+# Change existing hosts that have old_name in the hostgroup
+
+hosts=`nrcq $URL show/hosts -f hostgroup:legapp | sed -n 's/^ *name://p'`
+
+for host in $hosts; do
+  echo nrcq $URL modify/hosts -d "name:$host" -d "hostgroup:$new_hgname"
+  nrcq $URL modify/hosts -d "name:$host" -d "hostgroup:$new_hgname"
+done
+
+# Delete the old hostgroup
+nrcq $URL delete/hostgroups -d "name:$orig_hgname"
+</pre>
+                  <p>The script could be used to change 'app' to 'legapp', by typing:</p>
+                  <pre>
+bash change_hostgroup.sh app legapp "Legacy App Servers"
+</pre>
+                  <!-- LIST CONTENT -->
+                </div>
+              </li>
+
+            </ol>
+
+
+          </ul>
+
+        </div>
+        <!-- /Content -->
+
+</div>
+
+    <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+    <div class="list-group">
+      <a href="/index.html" class="list-group-item">Home</a>
+      <a href="/downloads.html" class="list-group-item">Downloads</a>
+      <a href="/documentation.html" class="list-group-item active">Documentation</a>
+      <a href="/installguide.html" class="list-group-item">Installation Guides</a>
+      <a href="/sourcecode.html" class="list-group-item">Source Code</a>
+      <a href="/news.html" class="list-group-item">News</a>
+      <a href="/gallery.html" class="list-group-item">Gallery</a>
+      <a href="/support.html" class="list-group-item">Support</a>
+      <a href="http://blogger.smorg.co.uk" class="list-group-item">Blog</a>
+    </div>
+    </div>
+    </div><!--/row-->
+
+      <footer>
+      <hr>
+        <p>&copy; 2014-2016 Mark Clarkson</p>
+      </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/offcanvas.js"></script>
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-47357235-1', 'smorg.co.uk');
+  ga('send', 'pageview');
+    </script>
+</body>
+</html>

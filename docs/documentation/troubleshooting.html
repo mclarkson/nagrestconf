@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <link rel="shortcut icon" href="/ico/favicon.png">
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/offcanvas.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <title>Nagrestconf - Troubleshooting</title>
+</head>
+<body>
+
+      <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+      <div class="container">
+      <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/index.html" style="padding-top: 10px; padding-bottom: 0px;"><img src="/images/meerkat_32x32.png" style="padding-right: 4px;">Nagrestconf</a>
+      </div>
+      <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/history.html">About</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+        <li><a href="/synagios.html">Synagios</a></li>
+        <li class="active"><a href="/documentation.html">Documentation</a></li>
+        <li><a href="/support.html">Support</a></li>
+      </ul>
+      </div><!-- /.nav-collapse -->
+      </div><!-- /.container -->
+      </div><!-- /.navbar -->
+
+<div class="container">
+<div class="row row-offcanvas row-offcanvas-right">
+<div class="col-xs-12 col-sm-9">
+<p class="pull-right visible-xs">
+<button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+</p>
+
+        <!-- Content -->
+
+        <h1>Troubleshooting</h1>
+
+        <ol>
+          <li><a href="#1">Problem - Cannot write to ...</a></li>
+          <li><a href="#2">Problem - Non-existent folder</a></li>
+          <li><a href="#3">Problem - Nagios GUI is not updating</a></li>
+          <li><a href="#4">Problem - Sorry, giving up on ...</a></li>
+        </ol>
+
+        <h3>Web Interface</h3>
+
+        <h4 id="1">Problem - Cannot write to ...</h4>
+        <a href="#img1" onClick="$('#img1').css('display','block'); return false;"><img src="/images/trouble_cannot_write.png" class="img-thumbnail"></a></p><a id="img1" class="a-imgshow" onClick="$('#img1').css('display','none'); return false;"><img src="/images/trouble_cannot_write.png" class="imgshow"></a>
+        <tt>
+            Could not execute query using REST.<br />
+            Please check system settings.<br />
+            REST return code: 400<br />
+            Error was:<br />
+            NAGCTL ERROR: Cannot write to /etc/nagios/objects/local/.<br />
+        </tt>
+
+        <h4>Resolution</h4>
+
+        <ul>
+          <li><p>Ensure selinux is off. Use <code>sestatus</code> to check.</p></li>
+          <li><p>Check permissions of directories. They should be:</p>
+          <pre>
+drwxr-x---   root     nagios       /etc/nagios/objects/
+drwxr-xr-x   apache   apache       /etc/nagios/objects/local
+drwxr-xr-x   root     root         /etc/nagios/objects/local/versions
+drwxr-xr-x   root     root         /etc/nagios/objects/local/versions/.svn
+drwxr-xr-x   root     root         /etc/nagios/objects/local/versions/.svn/props
+drwxr-xr-x   root     root         /etc/nagios/objects/local/versions/.svn/text-base
+drwxr-xr-x   root     root         /etc/nagios/objects/local/versions/.svn/tmp
+drwxr-xr-x   root     root         /etc/nagios/objects/local/versions/.svn/tmp/props
+drwxr-xr-x   root     root         /etc/nagios/objects/local/versions/.svn/tmp/text-base
+drwxr-xr-x   root     root         /etc/nagios/objects/local/versions/.svn/tmp/prop-base
+drwxr-xr-x   root     root         /etc/nagios/objects/local/versions/.svn/prop-base
+drwxr-xr-x   root     root         /etc/nagios/objects/local/local-nodes
+drwxr-xr-x   root     root         /etc/nagios/objects/local/local-nodes/empty-hostgroup
+drwxr-xr-x   root     root         /etc/nagios/objects/local/local-nodes/hostgroup1
+drwxr-xr-x   root     root         /etc/nagios/objects/local/local-nodes/mgmt
+drwxr-xr-x   apache   apache       /etc/nagios/objects/local/setup.known_good
+drwxr-xr-x   apache   apache       /etc/nagios/objects/local/setup
+</pre>
+          <p>apache for rpm based systems, www-data for deb based systems</p>
+          </li>
+          <li><p>Check that apache (or www-data) is in the nagios group.</p></li>
+        </ul>
+
+        <hr />
+
+        <h4 id="2">Problem - Non-existent folder</h4>
+        <a href="#img3" onClick="$('#img3').css('display','block'); return false;"><img src="/images/trouble_wrong_folder.png" class="img-thumbnail"></a></p><a id="img3" class="a-imgshow" onClick="$('#img3').css('display','none'); return false;"><img src="/images/trouble_wrong_folder.png" class="imgshow"></a>
+        <tt>
+            Could not execute query using REST.<br />
+            Please check system settings.<br />
+            REST return code: 400<br />
+            Error was:<br />
+            NAGCTL ERROR: Non-existent folder (/etc/nagios/objects/locol).<br />
+        </tt>
+
+        <h4>Resolution</h4>
+
+        <ul>
+          <li><p>Check <tt>/etc/nagrestconf/nagrestconf.ini</tt>.<br />Check that
+          <code>folder[]</code> has the correct folder name.</p></li>
+        </ul>
+
+        <hr />
+
+        <h4 id="3">Problem - Nagios GUI is not updating</h4>
+
+        <p>Configuration changes made in nagrestconf are not shown in the Nagios Web interface.</p>
+
+        <h4>Resolution</h4>
+
+        <ul>
+          <li><p>Press 'Apply Changes' in the left pane on the main page then click 'Apply Configuration' and wait for a successful result.</p></li>
+          <li><p>It can take up to one minute for changes to apply, or up to
+          three minutes for distributed environments.</p></li>
+          <li><p>Ensure the CRON job is active. See the CRON Jobs section in the <a href="/documentation/administration.html">Administration</a> page.</p></li>
+        </ul>
+
+        <hr />
+
+        <h4 id="4">Problem - Sorry, giving up on ...</h4>
+        <a href="#img4" onClick="$('#img4').css('display','block'); return false;"><img src="/images/trouble_giving_up.png" class="img-thumbnail"></a></p><a id="img4" class="a-imgshow" onClick="$('#img4').css('display','none'); return false;"><img src="/images/trouble_giving_up.png" class="imgshow"></a>
+        <tt>
+            Could not execute query using REST.<br />
+            Please check system settings.<br />
+            REST return code: 400<br />
+            Error was:<br />
+            lockfile: Sorry, giving up on "/etc/nagios/objects/local/setup/directory.lock"<br />
+        </tt>
+
+        <h4>Resolution</h4>
+
+        <ul>
+          <li><p>If the computer rebooted unexpectedly then simply delete the lock file.</p></li>
+          <li><p>Ensure no one is applying a configuration then delete the lock file.</p></li>
+        </ul>
+
+        <!-- /Content -->
+
+</div>
+
+    <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+    <div class="list-group">
+      <a href="/index.html" class="list-group-item">Home</a>
+      <a href="/downloads.html" class="list-group-item">Downloads</a>
+      <a href="/documentation.html" class="list-group-item active">Documentation</a>
+      <a href="/installguide.html" class="list-group-item">Installation Guides</a>
+      <a href="/sourcecode.html" class="list-group-item">Source Code</a>
+      <a href="/news.html" class="list-group-item">News</a>
+      <a href="/gallery.html" class="list-group-item">Gallery</a>
+      <a href="/support.html" class="list-group-item">Support</a>
+      <a href="http://blogger.smorg.co.uk" class="list-group-item">Blog</a>
+    </div>
+    </div>
+    </div><!--/row-->
+
+      <footer>
+      <hr>
+        <p>&copy; 2014-2016 Mark Clarkson</p>
+      </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/offcanvas.js"></script>
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-47357235-1', 'smorg.co.uk');
+  ga('send', 'pageview');
+    </script>
+</body>
+</html>

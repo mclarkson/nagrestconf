@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <link rel="shortcut icon" href="/ico/favicon.png">
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/offcanvas.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <title>Nagrestconf - Administration</title>
+</head>
+<body>
+
+      <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+      <div class="container">
+      <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/index.html" style="padding-top: 10px; padding-bottom: 0px;"><img src="/images/meerkat_32x32.png" style="padding-right: 4px;">Nagrestconf</a>
+      </div>
+      <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/history.html">About</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+        <li><a href="/synagios.html">Synagios</a></li>
+        <li class="active"><a href="/documentation.html">Documentation</a></li>
+        <li><a href="/support.html">Support</a></li>
+      </ul>
+      </div><!-- /.nav-collapse -->
+      </div><!-- /.container -->
+      </div><!-- /.navbar -->
+
+<div class="container">
+<div class="row row-offcanvas row-offcanvas-right">
+<div class="col-xs-12 col-sm-9">
+<p class="pull-right visible-xs">
+<button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+</p>
+
+        <!-- Content -->
+
+        <h1>Administration</h1>
+
+        <h3>Upload and Download Files</h3>
+
+        <p>Upload and download directories store uploaded csv files, backups, and restore
+        files. These files are not deleted after use and generally do not take up much space.</p>
+        <p>These files can be safely deleted at any time or a cron job can be used to clear out
+        these directories periodically.</p>
+        <p><strong>NOTE:</strong> Do not delete the directories, only delete the contents.</p>
+        <p>Using bash to delete the directory contents for all files over a month old:</p>
+        <pre>
+find /usr/share/nagrestconf/htdocs/nagrestconf/{upload,download} \
+    -type f -mtime +30 -exec rm -f {} \;
+</pre>
+
+        <h3 id="cron">CRON Jobs</h3>
+
+        <p>CRON, the periodic scheduler, is used to schedule nagios restarts
+        and configuration imports from slave servers.</p>
+        <p>Currently the cron jobs are added to root's crontab, but they
+        will be moved to the system crontabs in the future.</p>
+        <p>For standalone or slave servers ensure that the following crontab
+        entry exists:</p>
+        <pre>
+* * * * * /usr/bin/test -e /tmp/nagios_restart_request &amp;&amp; ( /bin/rm /tmp/nagios_restart_request; /usr/bin/restart_nagios; )
+</pre>
+        <p>The frequency can be changed to reduce the number of restarts if the configuration changes often. This may be desirable for larger environments that make use of a lot of automation.</p>
+        <p><strong>NOTE:</strong> the crontab is different for Fedora. Please see the
+        <a href="/installguides/fedora.html">Fedora Installation Guide</a>.</p>
+        <p>For collector nodes use:</p>
+        <pre>
+* * * * * /usr/bin/update_nagios
+</pre>
+
+        <p>For slave servers, in distributed environments, the following cron job
+        may also be required:</p>
+
+        <pre>*/10 * * * * /usr/bin/auto_reschedule_nagios_check</pre>
+
+        <p>Refer to <a href="/documentation/toolscommands.html">Tools and Commands</a> for more information.</p>
+
+        <h3>Plugins</h3>
+
+        <p>Plugins can be enabled or disabled by installing or uninstalling the plugin
+        package, or by adding/deleting symbolic links in:</p>
+        
+        <p><code>/usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled/</code></p>
+        
+        <p>The order that plugins are loaded does matter, for example, the Services Tab must be loaded
+        before the Services Bulk Tool. Ordering is achieved by prefixing the plugin name with a
+        number. The order is currently as follows:</p>
+        
+        <ul>
+          <li>06_smorg_backup_btn.php</li>
+          <li>10_smorg_services_tab.php</li>
+          <li>50_smorg_hosts_bulktools_btn.php</li>
+          <li>50_smorg_services_bulktools_btn.php</li>
+        </ul>
+
+        <p>No ongoing administration is required but if a link is removed from the plugins-enabled
+        directory, be sure to recreate the link prefixed with the correct number.</p>
+
+        <p>Example: Delete then recreate the Backup and Restore plugin link.</p>
+
+        <p>Delete the plugin link:</p>
+        <pre>
+cd /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled
+rm 06_smorg_backup_btn.php
+</pre>
+        <p>Recreate the plugin link:</p>
+        <pre>
+cd /usr/share/nagrestconf/htdocs/nagrestconf/plugins-enabled
+ln -s ../plugins/smorg_backup_btn.php 06_smorg_backup_btn.php
+</pre>
+
+        <!-- /Content -->
+
+</div>
+
+    <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+    <div class="list-group">
+      <a href="/index.html" class="list-group-item">Home</a>
+      <a href="/downloads.html" class="list-group-item">Downloads</a>
+      <a href="/documentation.html" class="list-group-item active">Documentation</a>
+      <a href="/installguide.html" class="list-group-item">Installation Guides</a>
+      <a href="/sourcecode.html" class="list-group-item">Source Code</a>
+      <a href="/news.html" class="list-group-item">News</a>
+      <a href="/gallery.html" class="list-group-item">Gallery</a>
+      <a href="/support.html" class="list-group-item">Support</a>
+      <a href="http://blogger.smorg.co.uk" class="list-group-item">Blog</a>
+    </div>
+    </div>
+    </div><!--/row-->
+
+      <footer>
+      <hr>
+        <p>&copy; 2014-2016 Mark Clarkson</p>
+      </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/offcanvas.js"></script>
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-47357235-1', 'smorg.co.uk');
+  ga('send', 'pageview');
+    </script>
+</body>
+</html>

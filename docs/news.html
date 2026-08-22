@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <link rel="shortcut icon" href="/ico/favicon.png">
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/offcanvas.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <title>Nagrestconf - News</title>
+</head>
+<body>
+
+      <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+      <div class="container">
+      <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/index.html" style="padding-top: 10px; padding-bottom: 0px;"><img src="/images/meerkat_32x32.png" style="padding-right: 4px;">Nagrestconf</a>
+      </div>
+      <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/history.html">About</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+        <li><a href="/synagios.html">Synagios</a></li>
+        <li><a href="/documentation.html">Documentation</a></li>
+        <li><a href="/support.html">Support</a></li>
+      </ul>
+      </div><!-- /.nav-collapse -->
+      </div><!-- /.container -->
+      </div><!-- /.navbar -->
+
+<div class="container">
+<div class="row row-offcanvas row-offcanvas-right">
+
+        <div class="col-xs-12 col-sm-9">
+          <p class="pull-right visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+          </p>
+
+        <!-- Content -->
+
+        <div class="row" style="padding-left:10px;padding-right:20px;">
+          <h1>News</h1>
+          <p><strong>15 September 2017 - Docker Support.</strong></p>
+            <blockquote>
+              Docker is now the preferred installation method now that nagrestconf
+              containers have been made available at Docker Hub. This allows for
+              easy installation of the latest Nagios release on most supported
+              platforms, and makes the installation of Nagrestconf extremely simple.
+              This also makes Nagios and Nagrestconf available to container deployment
+              platforms such as Kubernetes.
+            </blockquote>
+          <p><strong>06 September 2016 - Software updates.</strong></p>
+            <blockquote>
+              Synagios version 0.14.5 released for x86. Notable changes:
+              <ul>
+                <li>Added new Synology model DS416play</li>
+                <ul>
+                  <li>Reported by Thomas Larsson.</li>
+                </ul>
+              </ul>
+            </blockquote>
+          <p><strong>13 June 2016 - Software updates.</strong></p>
+            <blockquote>
+              Synagios version 0.14.4 released for ARM. Notable changes:
+              <ul>
+                <li>Added new Synology model DS216j</li>
+                <ul>
+                  <li>Reported by Thomas Wittmann.</li>
+                </ul>
+              </ul>
+            </blockquote>
+          <p><strong>14 April 2016 - Software updates.</strong></p>
+            <blockquote>
+              Synagios version 0.14.3 released. Notable changes:
+              <ul>
+                <li>More fixes for DSM 6</li>
+                <ul>
+                  <li>New mailsender binary<br />- Reported by Thomas Rosin</li>
+                  <ul>
+                    <li>Statically built binary that runs on DSM6 x86</li>
+                    <li>Now accepts lowercase 'data' SMTP command</li>
+                  </ul>
+                  <li>Adds system host name to chroot's /etc/hosts file.<br />- Reported by Thomas Rosin</li>
+                  <li>Log shows the processes running inside the chroot again.</li>
+                  <li>Fix ownership details for /var/mail.<br />- Reported by Thomas Rosin</li>
+                </ul>
+              </ul>
+            </blockquote>
+          <p><strong>26 March 2016 - Software updates.</strong></p>
+            <blockquote>
+              Synagios version 0.14.2 released. Notable changes:
+              <ul>
+                <li>Fixes for DSM 6</li>
+                <li>Updated to Nagrestconf 1.174.5.</li>
+              </ul>
+            </blockquote>
+          <p><strong>8 February 2016 - Software updates.</strong></p>
+            <blockquote>
+              Nagrestconf version 1.174.5 released. Notable changes:
+              <ul>
+                <li>Allow special characters in Host Alias field. Closes #55.</li>
+                <li>GUI usability enhancements.</li>
+                <li>Multiple parents fix. Fixes issue #53.</li>
+              </ul>
+              Nrcq version 0.1.2 released:
+              <ul>
+                <li>Added extra encoding for Host's Alias field.</li>
+              </ul>
+              This version of nrcq should be used with nagrestconf 1.174.5.
+            </blockquote>
+          <p><strong>9 November 2015 - Software updates.</strong></p>
+            <blockquote>
+              Nagrestconf version 1.174.4 released with fix for Centos 6. Notable changes:
+              <ul>
+                <li>PHP 5.3.3 Centos 6 - GUI only shows error message #49.</li>
+              </ul>
+            </blockquote>
+          <p><strong>30 October 2015 - Software updates.</strong></p>
+            <blockquote>
+              Nagrestconf version 1.174.3 released. Notable changes:
+              <ul>
+                <li>Bug Fixes.</li>
+                <li>Allow service notication option 's'. Closes #46</li>
+                <li>Fix host update via GUI. Closes #44</li>
+                <li>Fix first_notification_delay. Closes #47</li>
+              </ul>
+            </blockquote>
+          <p><strong>29 October 2015 - New Tool.</strong></p>
+            <blockquote>
+              New tool, nrcq, released:
+                <blockquote>
+                Command line tool for accessing the rest api either locally or remotely.
+                </blockquote>
+            </blockquote>
+          <p><strong>13 September 2015 - Software updates.</strong></p>
+            <blockquote>
+              Nagrestconf version 1.174.1 released. Notable changes:
+              <ul>
+                <li>Make synology log output useful. Closes #2.</li>
+                <li>Refresh hosts page after restore. Closes #20.</li>
+                <li>Status Map Image fields added for templates. Closes #22.</li>
+                <li>Added 'parents' field to hosts dialog. Closes #17.</li>
+                <li>Allow hostnames, not just ip addresses. Closes #26.</li>
+                <li>Alias field added to clone host dialog. Closes #29.</li>
+                <li>Added Host Custom Variables and Notes fields to REST and UI. Closes #38.</li>
+                <li>Added extra dependencies for really minimal systems.</li>
+              </ul>
+              Synagios version 0.14 released. Notable changes:
+              <ul>
+                <li>Includes Nagrestconf 1.174.1.</li>
+                <li>Base Operating System updated from Debian Wheezy to Debian Jessie.</li>
+                <li>Nagios updated to 3.5.1.</li>
+                <li>Pnp4nagios updated to 0.6.24.</li>
+                <li>Installed nagios_nrpe_plugin. Closes #21.</li>
+              </ul>
+            </blockquote>
+          <p><strong>11 March 2014 - Synagios update.</strong></p>
+            <blockquote>
+              Synagios version 0.13 beta released with updates for the newly released DSM 5.0.
+            </blockquote>
+          <p><strong>09 March 2014 - Software updates.</strong></p>
+            <blockquote>
+              Nagrestconf version 1.173 beta released. Notable changes:
+              <ul>
+                <li>Visual changes to the sidebar.</li>
+                <li>Bug fixes, see the <a href="https://github.com/mclarkson/nagrestconf/issues?milestone=1&page=1&state=closed" target="_blank">
+                    Issues</a> page on GitHub for more information.</li>
+              </ul>
+              Synagios version 0.12 beta released. Notable changes:
+              <ul>
+                <li>Includes Nagrestconf 1.173.</li>
+                <li>The port can now be selected when installing the package. Thanks to patmtp35 and InsomniacSoftware
+                    for pointing this out.</li>
+                <li>Bug fixes, see the <a href="https://github.com/mclarkson/nagrestconf/issues?milestone=1&page=1&state=closed" target="_blank">
+                    Issues</a> page on GitHub for more information.</li>
+              </ul>
+            </blockquote>
+          <p><strong>03 February 2014 - SyNagios on ARM working.</strong></p>
+            <blockquote>
+              SyNagios for ARM devices is now working. It has been tested on the smaller
+              Synology DS112 NAS device with 256MB of RAM and means that SyNagios should
+              work on a large range of Synology devices.
+            </blockquote>
+          <p><strong>24 January 2014 - Web site goes live.</strong></p>
+            <blockquote>
+            The Nagrestconf web site is now available. Content is being added and it is far
+            from complete but it's a start!
+            </blockquote>
+          <p><strong>16 January 2014 - SyNagios package released.</strong></p>
+            <blockquote>
+            Nagrestconf has been packaged up with Nagios and PNP4Nagios for Synology Diskstation
+            storage devices. Both x86 and arm packages have been released but only the x86 pacakge
+            has been tested so far. Setting up Nagios, PNP4Nagios and Nagrestconf on Synology is
+            really simple, taking just a few clicks, and provides monitoring, graphing, and
+            configuration in a single downloadable package.
+            </blockquote>
+          <p><strong>13 January 2014 - Nagrestconf goes from Alpha to Beta.</strong></p>
+            <blockquote>
+            After many years in alpha, Nagrestconf has finally moved to Beta. Most bugs have been
+            fixed and no more features will be added to this version, although bug fixes and
+            plugins may still be added.
+            </blockquote>
+        </div>
+        <!-- /Content -->
+
+        </div><!--/span-->
+
+    <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+    <div class="list-group">
+      <a href="/index.html" class="list-group-item">Home</a>
+      <a href="/downloads.html" class="list-group-item">Downloads</a>
+      <a href="/documentation.html" class="list-group-item">Documentation</a>
+      <a href="/installguide.html" class="list-group-item">Installation Guides</a>
+      <a href="/sourcecode.html" class="list-group-item">Source Code</a>
+      <a href="/news.html" class="list-group-item active">News</a>
+      <a href="/gallery.html" class="list-group-item">Gallery</a>
+      <a href="/support.html" class="list-group-item">Support</a>
+      <a href="http://blogger.smorg.co.uk" class="list-group-item">Blog</a>
+    </div>
+    </div>
+    </div><!--/row-->
+
+      <footer>
+      <hr>
+        <p>&copy; 2014-2016 Mark Clarkson</p>
+      </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/offcanvas.js"></script>
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-47357235-1', 'smorg.co.uk');
+  ga('send', 'pageview');
+    </script>
+</body>
+</html>

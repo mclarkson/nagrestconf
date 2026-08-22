@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <link rel="shortcut icon" href="/ico/favicon.png">
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/offcanvas.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <title>Nagrestconf - Documentation</title>
+</head>
+<body>
+
+      <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+      <div class="container">
+      <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/index.html" style="padding-top: 10px; padding-bottom: 0px;"><img src="/images/meerkat_32x32.png" style="padding-right: 4px;">Nagrestconf</a>
+      </div>
+      <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/history.html">About</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+        <li><a href="/synagios.html">Synagios</a></li>
+        <li class="active"><a href="/documentation.html">Documentation</a></li>
+        <li><a href="/support.html">Support</a></li>
+      </ul>
+      </div><!-- /.nav-collapse -->
+      </div><!-- /.container -->
+      </div><!-- /.navbar -->
+
+<div class="container">
+<div class="row row-offcanvas row-offcanvas-right">
+
+        <div class="col-xs-12 col-sm-9">
+          <p class="pull-right visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+          </p>
+
+        <!-- Content -->
+        <div class="row" style="padding-left:10px;padding-right:20px;">
+
+          <h1>Documentation</h1>
+
+          <h3>Web Interface Documentation</h3>
+          <dl class="dl-horizontal" style="padding-top: 14px">
+<!--
+            <dt>Getting Started</dt>
+              <dd><a href="/documentation/gsg.html">A short introduction to the Nagrestconf user interface.</a><br /><small>&nbsp;</small></dd>
+-->
+            <dt>User Guide</dt>
+              <dd><a href="/documentation/userguide.html">Discover how to use the Graphical User Interface.</a><br /><small>&nbsp;</small></dd>
+<!--
+            <dt>Plugins</dt>
+              <dd><span class="text-danger">TODO </span><a href="">Find out how to write a nagrestconf plugin.</a><br /><small>&nbsp;</small></dd>
+-->
+          </dl>
+
+<!--
+          <h3>Synagios Documentation</h3>
+          <dl class="dl-horizontal" style="padding-top: 14px">
+            <dt>Getting Started</dt>
+              <dd><a href="/documentation/synagiosgsg.html">A short introduction for Synagios users on Synology devices.</a><br /><small>&nbsp;</small></dd>
+          </dl>
+-->
+
+          <h3>Administration</h3>
+          <dl class="dl-horizontal" style="padding-top: 14px">
+            <dt>Administration</dt>
+              <dd><a href="/documentation/administration.html">System administration and maintenance.</a><br /><small>&nbsp;</small></dd>
+            <dt>Troubleshooting</dt>
+              <dd><a href="/documentation/troubleshooting.html">Common problems and resolution.</a><br /><small>&nbsp;</small></dd>
+            <dt>Unmanaged Files</dt>
+              <dd><a href="/documentation/unmanagedfiles.html">Nagios configuration files that are not managed by nagrestconf.</a><br /><small>&nbsp;</small></dd>
+            <dt>File System Layout</dt>
+              <dd><a href="/documentation/filesyslayout.html">Find out where files and programs are stored.</a><br /><small>&nbsp;</small></dd>
+            <dt>Tools and Commands</dt>
+              <dd><a href="/documentation/toolscommands.html">Get information about all the tools and commands.</a><br /><small>&nbsp;</small></dd>
+            <dt>Configuration Files</dt>
+              <dd><a href="/documentation/configfiles.html">All configuration files and their options.</a><br /><small>&nbsp;</small></dd>
+            <dt>Subversion</dt>
+              <dd><a href="/documentation/subversion.html">Rolling the configuration back to an earlier time.</a><br /><small>&nbsp;</small></dd>
+          </dl>
+
+          <h3>REST API</h3>
+          <dl class="dl-horizontal" style="padding-top: 14px">
+            <dt>Tutorial</dt>
+              <dd><a href="/documentation/resttut.html">Discover how to use the API in simple steps.</a><br /><small>&nbsp;</small></dd>
+            <dt>Cookbook</dt>
+              <dd><a href="/documentation/restcookbook.html">A page of REST snippets.</a><br /><small>&nbsp;</small></dd>
+            <dt>Reference</dt>
+              <dd><a href="/documentation/restreference.html">Reference material listing all API options.</a><br /><small>&nbsp;</small></dd>
+          </dl>
+
+          <h3>Related Tools</h3>
+          <dl class="dl-horizontal" style="padding-top: 14px">
+            <dt>nrcq</dt>
+              <dd><a href="https://github.com/mclarkson/nrcq">Nagrestconf Query utility written in Google Go.</a><br /><small>&nbsp;</small></dd>
+            <dt>nagrestconf-golib</dt>
+              <dd><a href="https://github.com/mclarkson/nagrestconf-golib">Google Go language bindings (in-progress).</a><br /><small>&nbsp;</small></dd>
+            <dt>nagrestconf-python</dt>
+              <dd><a href="https://github.com/maestrx/nagrestconf-python">Python language bindings and query tool (in-progress).</a><br /><small>&nbsp;</small></dd>
+          </dl>
+
+          <h3>Blog Pages</h3>
+          <dl class="dl-horizontal" style="padding-top: 14px">
+            <dt>Synology Tuning</dt>
+              <dd><a href="http://blogger.smorg.co.uk/2014/02/synology-diskstation-performance-tuning.html">Performance Tuning with Synagios.</a><br /><small>&nbsp;</small></dd>
+            <dt>Synagios Email</dt>
+              <dd><a href="http://blogger.smorg.co.uk/2014/02/enabling-synagios-email-alerts.html">Setting up email notifications.</a><br /><small>&nbsp;</small></dd>
+            <dt>Service Sets</dt>
+              <dd><a href="http://blogger.smorg.co.uk/2014/02/nagrestconf-service-sets.html">Describes what Service Sets are for.</a><br /><small>&nbsp;</small></dd>
+            <dt>Synagios Ports</dt>
+              <dd><a href="http://blogger.smorg.co.uk/2014/02/changing-default-synagios-port.html">How to change the port for nagios, nagrestconf and pnp4nagios for Synology devices.</a><br /><small>&nbsp;</small></dd>
+            <dt>Synagios SNMP</dt>
+              <dd><a href="http://blogger.smorg.co.uk/2015/07/synology-nas-monitoring-with-synagios.html">Example of monitoring a remote server using SNMP.</a><br /><small>&nbsp;</small></dd>
+            <dt>Synagios Plugins</dt>
+              <dd><a href="http://blogger.smorg.co.uk/2015/07/monitoring-external-smtp-relay-service.html">Example of setting up an existing plugin.</a><br /><small>&nbsp;</small></dd>
+            <dt>Synagios HTTPS</dt>
+              <dd><a href="http://blogger.smorg.co.uk/2015/09/synagios-enabling-https-for-nagrestconf.html">How to enable HTTPS.</a><br /><small>&nbsp;</small></dd>
+            <dt>GD2 File Names</dt>
+              <dd><a href="http://blogger.smorg.co.uk/2015/09/here-are-all-gd2-file-names-that-can-be.html">Image file names for the Nagios Status Map.</a><br /><small>&nbsp;</small></dd>
+          </dl>
+
+          <h3>On the Web</h3>
+          <dl class="dl-horizontal" style="padding-top: 14px">
+            <dt>Synagios (Danish)</dt>
+              <dd><a href="https://www.youtube.com/watch?v=rK_6VZ7c-UY">Sådan installeres Nagios overvågning på Synology NAS [ synoguides.dk ].</a><br /><small>&nbsp;</small></dd>
+            <dt>Synagios Powerline</dt>
+              <dd><a href="https://groups.google.com/forum/#!topic/synagios-users/jm7z71CKtSU">Monitoring Devolo DLAN with Synagios (Thomas Wittmann).</a><br /><small>&nbsp;</small></dd>
+            <dt>Synagios Graphs</dt>
+              <dd><a href="https://groups.google.com/forum/#!topic/synagios-users/7ZEdWFTmtfs">Enable PNP graphs on mouseover (Thomas Wittmann).</a><br /><small>&nbsp;</small></dd>
+            <dt>Nagrestconf Ansible</dt>
+              <dd><a href="https://github.com/rotaecho/nagios-api">Install and configure nagios/nagrestconf using ansible (William Pool).</a><br /><small>&nbsp;</small></dd>
+            <dt>Synagios Speedtest.net</dt>
+              <dd><a href="https://groups.google.com/forum/#!topic/synagios-users/bKZ6vf5ZzTk">Monitoring Internet speed with Synagios (Thomas Wittmann).</a><br /><small>&nbsp;</small></dd>
+          </dl>
+        </div>
+      </div>
+
+    <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+    <div class="list-group">
+      <a href="/index.html" class="list-group-item">Home</a>
+      <a href="/downloads.html" class="list-group-item">Downloads</a>
+      <a href="/documentation.html" class="list-group-item active">Documentation</a>
+      <a href="/installguide.html" class="list-group-item">Installation Guides</a>
+      <a href="/sourcecode.html" class="list-group-item">Source Code</a>
+      <a href="/news.html" class="list-group-item">News</a>
+      <a href="/gallery.html" class="list-group-item">Gallery</a>
+      <a href="/support.html" class="list-group-item">Support</a>
+      <a href="http://blogger.smorg.co.uk" class="list-group-item">Blog</a>
+    </div>
+    </div>
+    </div><!--/row-->
+
+      <footer>
+      <hr>
+        <p>&copy; 2014-2016 Mark Clarkson</p>
+      </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/offcanvas.js"></script>
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-47357235-1', 'smorg.co.uk');
+  ga('send', 'pageview');
+    </script>
+</body>
+</html>

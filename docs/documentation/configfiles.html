@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
+    <link rel="shortcut icon" href="/ico/favicon.png">
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/offcanvas.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <title>Nagrestconf - Configuration Files</title>
+</head>
+<body>
+
+      <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+      <div class="container">
+      <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/index.html" style="padding-top: 10px; padding-bottom: 0px;"><img src="/images/meerkat_32x32.png" style="padding-right: 4px;">Nagrestconf</a>
+      </div>
+      <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/history.html">About</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+        <li><a href="/synagios.html">Synagios</a></li>
+        <li class="active"><a href="/documentation.html">Documentation</a></li>
+        <li><a href="/support.html">Support</a></li>
+      </ul>
+      </div><!-- /.nav-collapse -->
+      </div><!-- /.container -->
+      </div><!-- /.navbar -->
+
+<div class="container">
+<div class="row row-offcanvas row-offcanvas-right">
+<div class="col-xs-12 col-sm-9">
+<p class="pull-right visible-xs">
+<button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+</p>
+
+        <!-- Content -->
+
+        <h1>Configuration Files</h1>
+
+        <p>All the configuration files are stored in /etc/nagrestconf and can
+        be edited from the command line.</p>
+        <p>More information is available in the comments in configuration file.</p>
+
+        <h3>Files</h3>
+
+        <ul>
+          <li><a href="#csv2">csv2nag.conf</a></li>
+          <li><a href="#nagc">nagctl.conf</a></li>
+          <li><a href="#nagr">nagrestconf.ini</a></li>
+          <li><a href="#rest">restart_nagios.conf</a></li>
+        </ul>
+
+        <h3 id="csv2">csv2nag.conf</h3>
+
+        <table class="table table-bordered table-striped">
+          <tr>
+            <td>DCC</td>
+            <td>Set DCC=1 if this is a data centre collector. E.g. DCC=0</td>
+          </tr>
+          <tr>
+            <td>REMOTE_EXECUTOR</td>
+            <td>pnp4nagios helper. E.g. "check_nrpe"</td>
+          </tr>
+          <tr>
+            <td>FRESHNESS_CHECK_COMMAND</td>
+            <td>The command used to check freshness on a collector. E.g. "no-checks-received"</td>
+          </tr>
+        </table>
+
+        <h3 id="nagc">nagctl.conf</h3>
+
+        <table class="table table-bordered table-striped">
+          <tr>
+            <td>NAG_DIR</td>
+            <td>Nagios 'etc' directory. E.g. /etc/nagios</td>
+          </tr>
+          <tr>
+            <td>NAG_OBJ_DIR</td>
+            <td>Where the objects directory is. E.g. $NAG_DIR/objects</td>
+          </tr>
+          <tr>
+            <td>NAG_CONFIG</td>
+            <td>Where nagios.cfg file is. E.g. $NAG_DIR/nagios.cfg</td>
+          </tr>
+          <tr>
+            <td>LIVESTATUSCOMMANDFILE</td>
+            <td>Location of the live status unix pipe. E.g. '/var/log/nagios/rw/live'</td>
+          </tr>
+          <tr>
+            <td>LIVESTATUSUNIXCAT</td>
+            <td>Location of the unixcat command. E.g. '/usr/bin/unixcat'</td>
+          </tr>
+          <tr>
+            <td>COMMANDFILE</td>
+            <td>Where the nagios.cmd file is. E.g. '/var/log/nagios/rw/nagios.cmd'</td>
+          </tr>
+          <tr>
+            <td>STATUSFILE</td>
+            <td>Where the status.dat file is. E.g. '/var/log/nagios/status/status.dat'</td>
+          </tr>
+          <tr>
+            <td>NAGIOSBIN</td>
+            <td>Where nagios is. E.g. /usr/sbin/nagios</td>
+          </tr>
+          <tr>
+            <td>CSV2NAG</td>
+            <td>Where csv2nag is. E.g. "apache"</td>
+          </tr>
+          <tr>
+            <td>WWWUSER</td>
+            <td>The user apache runs as. E.g. "apache"</td>
+          </tr>
+        </table>
+
+        <h3 id="nagr">nagrestconf.ini</h3>
+
+        <table class="table table-bordered table-striped">
+          <tr>
+            <td>resturl</td>
+            <td>The REST API url. E.g. "http://127.0.0.1/rest"</td>
+          </tr>
+          <tr>
+            <td>folder[]</td>
+            <td>The environment name. E.g. "local"</td>
+          </tr>
+          <tr>
+            <td>restuser</td>
+            <td>The REST API user name. E.g. "user"</td>
+          </tr>
+          <tr>
+            <td>restpass</td>
+            <td>The REST API password. E.g. "pass"</td>
+          </tr>
+          <tr>
+            <td>sslkey</td>
+            <td>Pasword-less ssl key. E.g. "/path/to/key"</td>
+          </tr>
+          <tr>
+            <td>sslcert</td>
+            <td>Certificate for the sslkey. E.g. "/path/to/cert"</td>
+          </tr>
+        </table>
+
+        <h3 id="rest">restart_nagios.conf</h3>
+
+        <table class="table table-bordered table-striped">
+          <tr>
+            <td>NAG_INITD</td>
+            <td>Name of the nagios init.d script. E.g. nagios</td>
+          </tr>
+          <tr>
+            <td colspan=2 align="center">Distributed Monitoring Options</td>
+          </tr>
+          <tr>
+            <td>dcc</td>
+            <td>IP address of the collector. E.g. 1.2.3.4</td>
+          </tr>
+          <tr>
+            <td>SSH</td>
+            <td>Alternative ssh tunnel command. E.g. tun1</td>
+          </tr>
+          <tr>
+            <td>SSH_OPTS</td>
+            <td>Supply extra options to ssh. E.g. "-p 2222"</td>
+          </tr>
+        </table>
+
+        <!-- /Content -->
+
+</div>
+
+    <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+    <div class="list-group">
+      <a href="/index.html" class="list-group-item">Home</a>
+      <a href="/downloads.html" class="list-group-item">Downloads</a>
+      <a href="/documentation.html" class="list-group-item active">Documentation</a>
+      <a href="/installguide.html" class="list-group-item">Installation Guides</a>
+      <a href="/sourcecode.html" class="list-group-item">Source Code</a>
+      <a href="/news.html" class="list-group-item">News</a>
+      <a href="/gallery.html" class="list-group-item">Gallery</a>
+      <a href="/support.html" class="list-group-item">Support</a>
+      <a href="http://blogger.smorg.co.uk" class="list-group-item">Blog</a>
+    </div>
+    </div>
+    </div><!--/row-->
+
+      <footer>
+      <hr>
+        <p>&copy; 2014-2016 Mark Clarkson</p>
+      </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/offcanvas.js"></script>
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-47357235-1', 'smorg.co.uk');
+  ga('send', 'pageview');
+    </script>
+</body>
+</html>
